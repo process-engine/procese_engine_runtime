@@ -1,0 +1,52 @@
+{
+  "name": "procese_engine_runtime",
+  "version": "0.1.0",
+  "description": "",
+  "bin": {
+    "process-engine": "./bin/process-engine.js"
+  },
+  "scripts": {
+    "postinstall": "npm rebuild"
+  },
+  "main": "./bin/process-engine.js",
+  "files": [
+    "bin"
+  ],
+  "license": "MIT",
+  "contributors": [
+    "Sebastian Meier <sebastian.meier@5minds.de>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/process-engine/procese_engine_runtime.git"
+  },
+  "bugs": {
+    "url": "https://github.com/process-engine/procese_engine_runtime/issues"
+  },
+  "homepage": "https://github.com/process-engine/procese_engine_runtime#readme",
+  "publishConfig": {
+    "registry": "https://www.npmjs.com"
+  },
+  "dependencies": {
+    "@essential-projects/bootstrapper": "^3.0.0",
+    "@essential-projects/bootstrapper_node": "^3.0.0",
+    "@essential-projects/event_aggregator": "^3.0.0",
+    "@essential-projects/http_extension": "^4.0.0",
+    "@essential-projects/services": "^2.0.0",
+    "@process-engine/consumer_api_core": "^0.18.1",
+    "@process-engine/deployment_api_contracts": "^0.1.0",
+    "@process-engine/deployment_api_core": "^0.1.0",
+    "@process-engine/deployment_api_http": "^0.1.0",
+    "@process-engine/flow_node_instance.repository.sequelize": "^2.2.0",
+    "@process-engine/iam": "^1.2.0",
+    "@process-engine/management_api_contracts": "^0.7.0",
+    "@process-engine/management_api_core": "^0.7.0",
+    "@process-engine/management_api_http": "^0.6.0",
+    "@process-engine/process_engine": "^16.0.0",
+    "@process-engine/process_model.repository.sequelize": "^2.1.1",
+    "@process-engine/timers.repository.sequelize": "^1.0.2",
+    "addict-ioc": "^2.2.11",
+    "fs-extra": "^7.0.0",
+    "loggerhythm": "^3.0.0"
+  }
+}
