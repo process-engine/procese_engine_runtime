@@ -51,4 +51,5 @@ Contained in the application files are the following folders:
 
 ### Authors/Contact information
 
-- Sebastian Meier <sebastian.meier@5minds.de>
+1. [Sebastian Meier](mailto:sebastian.meier@5minds.de)
+1. [Christoph Gnip](mailto:christoph.gnip@5minds.de)
