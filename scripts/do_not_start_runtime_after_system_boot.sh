@@ -22,7 +22,7 @@ Anyway, this could help you:
 
 $ rm ~/Library/LaunchAgents/pm2.*
 
-We're sorry for that, and will fix it as soon it is fixed in pm2.
+We're sorry for that, and will fix it as soon as it is fixed in pm2.
 
 The ProccessEngine Team.
 EOF
