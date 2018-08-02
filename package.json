@@ -1,12 +1,13 @@
 {
-  "name": "procese_engine_runtime",
-  "version": "0.1.0",
+  "name": "@process-engine/procese_engine_runtime",
+  "version": "0.1.0-pre",
   "description": "",
   "bin": {
-    "process-engine": "./bin/process-engine.js"
+    "process-engine": "./index.js"
   },
   "scripts": {
-    "postinstall": "npm rebuild"
+    "postinstall": "npm rebuild",
+    "start": "./index.js"
   },
   "main": "./bin/process-engine.js",
   "files": [
@@ -46,7 +47,8 @@
     "@process-engine/process_model.repository.sequelize": "^2.1.1",
     "@process-engine/timers.repository.sequelize": "^1.0.2",
     "addict-ioc": "^2.2.11",
-    "fs-extra": "^7.0.0",
-    "loggerhythm": "^3.0.0"
+    "loggerhythm": "^3.0.0",
+    "platform-folders": "^0.2.6",
+    "sqlite3": "^4.0.2"
   }
 }
