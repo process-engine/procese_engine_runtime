@@ -44,18 +44,6 @@ pipeline {
         sh('npm run lint || true')
       }
     }
-    stage('build') {
-      steps {
-        sh('node --version')
-        sh('npm run build')
-      }
-    }
-    stage('test') {
-      steps {
-        sh('node --version')
-        sh('npm run test')
-      }
-    }
     stage('publish') {
       steps {
         script {
