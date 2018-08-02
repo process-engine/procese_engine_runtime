@@ -24,28 +24,30 @@ npm install -g @process-engine/process_engine_runtime
 ### Usage
 
 Start the server on your main machine with
+
 ```bash
 process-engine
 ```
 
-When started, the process-engine-instance is avaliable at
+When started, the process-engine-instance is available at
+
 `http://localhost:8000`.
 
 ### Application Files
 
 The application files are stored in:
 
-Platform | Folder Path 
----------|----------
- OS X | `/Users/<Username>/Library/Application Support/process_engine_runtime`
- Linux | `/home/<Username>/.config/process_engine_runtime`
- Windows | `c:\Users\<Username>\AppData\Roaming\process_engine_runtime`
+| Platform  | Folder Path                                                            |
+| --------- | ----------                                                             |
+| OS X      | `/Users/<Username>/Library/Application Support/process_engine_runtime` |
+| Linux     | `/home/<Username>/.config/process_engine_runtime`                      |
+| Windows   | `c:\Users\<Username>\AppData\Roaming\process_engine_runtime`           |
 
 Contained in the application files are the following folders:
 
-Path | Description
----------|----------
-`databases/` | SQLite database files
+| Path         | Description           |
+| ---------    | ----------            |
+| `databases/` | SQLite database files |
 
 ### Authors/Contact information
 
