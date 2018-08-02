@@ -33,6 +33,24 @@ When started, the process-engine-instance is available at
 
 `http://localhost:8000`.
 
+### Setup
+
+**macOS**
+
+In order to start the ProcessEngine on system start, we provide a script.
+
+Use:
+
+```bash
+bash scripts/start_runtime_after_system_boot.sh
+```
+
+This will use pm2 to setup the ProcessEngine as automatically started service.
+
+**Other Platforms**
+
+Currently we have no scripts for setup the service for autostart.
+
 ### Application Files
 
 The application files are stored in:
