@@ -1,6 +1,6 @@
 # Process Engine Runtime
 
-This is a Process Engine Server that can be installed and started globally.
+This is a stand-alone Server of the ProcessEngine, that can be installed and started globally.
 
 ## What are the goals of this project?
 
@@ -14,6 +14,7 @@ Engine.
 ### Setup/Installation
 
 Install all Dependencies
+
 ```bash
 npm install -g @process-engine/process_engine_runtime
 ```
