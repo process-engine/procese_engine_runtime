@@ -63,16 +63,22 @@ function loadIocModules() {
 
 function initializeEnvironment() {
 
-  const getUserDataFolderPath = require('platform-folders').getConfigHome;
   process.env.NODE_ENV = 'production';
 
-  const userDataFolderPath = getUserDataFolderPath();
+  setDatabasePaths();
+}
+
+function setDatabasePaths() {
+
+  const userDataFolderPath = require('platform-folders').getConfigHome();
   const userDataProcessEngineFolderName = 'process_engine_runtime';
   const processEngineDatabaseFolderName = 'databases';
 
-  const processModelRepositoryStoragePath = path.join(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName, 'process_models.sqlite');
-  const flowNodeRepositoryStoragePath = path.join(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName, 'flow_node_instances.sqlite');
-  const timerRepositoryStoragePath = path.join(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName, 'timers.sqlite');
+  const databaseBasePath = path.join(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
+
+  const processModelRepositoryStoragePath = path.join(databaseBasePath, 'process_models.sqlite');
+  const flowNodeRepositoryStoragePath = path.join(databaseBasePath, 'flow_node_instances.sqlite');
+  const timerRepositoryStoragePath = path.join(databaseBasePath, 'timers.sqlite');
 
   process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
   process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
