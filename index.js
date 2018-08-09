@@ -66,6 +66,9 @@ function initializeEnvironment() {
 
   process.env.NODE_ENV = 'production';
 
+  // set current working directory
+  process.chdir(__dirname);
+
   setConfigPath();
   setDatabasePaths();
 }
