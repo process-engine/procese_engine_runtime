@@ -1,11 +1,29 @@
-npm install -g pm2
+#!/bin/sh
 
-# pm2 start ./index.js
+_VERSION="0.0.1"
 
-# pm2 save
+# This script will install and use pm2.
+# We want to register the process-engine-runtime as service,
+# that ist started during system startup.
 
-# startupRegistrationCommand = pm2 startup | grep "^sudo"
+if [[ $(uname) != "Darwin" ]]; then
+    echo "This tool currently works only for macOS. Sorry."
+    exit -1
+fi
 
-echo $USER
+# check if pm2 is already installed
+PM2_NOT_INSTALLED=$(npm -g ls | grep pm2)
 
-# sudo env PATH=$PATH:/Users/$USER/.nvm/versions/node/v8.9.4/bin /Users/$USER/.nvm/versions/node/v8.9.4/lib/node_modules/pm2/bin/pm2 startup launchd -u $USER --hp /Users/$USER
+if [[ -z $PM2_NOT_INSTALLED ]]; then
+    npm install -g pm2
+fi
+
+# TODO: Replace this by: pm2 start process_engine_runtime; when this package is published.
+pm2 start ./index.js
+
+STARTUP_REGISTRATION_COMMAND=$(pm2 startup | grep -v "\[PM2\]")
+
+eval $STARTUP_REGISTRATION_COMMAND
+
+# Persist the process list after restart
+pm2 save -f
