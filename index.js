@@ -66,7 +66,13 @@ function initializeEnvironment() {
 
   process.env.NODE_ENV = 'production';
 
+  setConfigPath();
   setDatabasePaths();
+}
+
+function setConfigPath() {
+  const configPath = path.join(__dirname, 'config');
+  process.env.CONFIG_PATH = configPath;
 }
 
 function setDatabasePaths() {
