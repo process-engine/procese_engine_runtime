@@ -1,0 +1,16 @@
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8000
+  },
+  "parseLimit": "50mb",
+  "api": {
+    "version": "v1"
+  },
+  "routeConfiguration": {
+    "/app*": {
+      "refreshOnInvalidToken": true
+    }
+  },
+  "disableCors": false
+}

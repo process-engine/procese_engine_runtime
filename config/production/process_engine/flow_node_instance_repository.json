@@ -1,0 +1,12 @@
+{
+  "username": null,
+  "password": null,
+  "database": null,
+  "host": null,
+  "port": null,
+  "dialect": "sqlite",
+  "storage": "flow_node_instances.sqlite",
+  "supportBigNumbers": true,
+  "resetPasswordRequestTimeToLive": 12,
+  "logging": false
+} 

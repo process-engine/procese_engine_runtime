@@ -1,0 +1,4 @@
+{
+  "claimPath": "http://localhost:5000/claims/ensure",
+  "disableClaimCheck": true
+}
