@@ -62,9 +62,39 @@ function loadIocModules() {
   return iocModules;
 }
 
+function loadConfiguredEnvironmentOrDefault() {
+
+  const availableEnvironments = [
+    'sqlite',
+    'postgres',
+  ];
+
+  const configuredEnvironment = process.env.NODE_ENV;
+
+  const defaultEnvironment = 'sqlite';
+
+  if (configuredEnvironment === undefined) {
+    process.env.NODE_ENV = defaultEnvironment;
+    return;
+  }
+
+  const isEnvironmentAvailable = availableEnvironments.find((environment) => {
+    return configuredEnvironment === environment;
+  })
+
+  if (isEnvironmentAvailable) {
+    process.env.NODE_ENV = configuredEnvironment;
+    return;
+  }
+
+  console.log(`Configuration for environment "${configuredEnvironment}" is not available.
+Please make sure the configuration files are available at: ${__dirname}/config/${configuredEnvironment}`);
+  process.exit(1);
+}
+
 function initializeEnvironment() {
 
-  process.env.NODE_ENV = 'production';
+  loadConfiguredEnvironmentOrDefault();
 
   // set current working directory
   process.chdir(__dirname);
