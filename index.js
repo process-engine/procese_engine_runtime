@@ -4,6 +4,12 @@ const InvocationContainer = require('addict-ioc').InvocationContainer;
 const logger = require('loggerhythm').Logger.createLogger('bootstrapper');
 const path = require('path');
 
+process.on('unhandledRejection', err => {
+  console.log('-- An unhandled exception was caught! Error: --')
+  console.log(err);
+  console.log('-- end of unhandled exception stack trace --')
+});
+
 startProcessEngine();
 
 async function startProcessEngine() {
