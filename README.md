@@ -48,7 +48,7 @@ __Note:__ This requires a running PostgreSQL instance on your system. The
 standard configuration requires it to run on port `5432`.
 
 ```bash
-NODE_ENV=sqlite process-engine
+NODE_ENV=postgres process-engine
 ```
 
 ### Setup
