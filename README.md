@@ -33,6 +33,24 @@ When started, the process-engine-instance is available at
 
 `http://localhost:8000`.
 
+#### With SQLite Database (default)
+
+```bash
+NODE_ENV=sqlite process-engine
+```
+
+The database files will be placed in the `databases` directory mentioned in
+[Application Files](#application_files).
+
+#### With PostgreSQL Database
+
+__Note:__ This requires a running PostgreSQL instance on your system. The
+standard configuration requires it to run on port `5432`.
+
+```bash
+NODE_ENV=postgres process-engine
+```
+
 ### Setup
 
 **macOS**
@@ -51,7 +69,7 @@ This will use pm2 to setup the ProcessEngine as automatically started service.
 
 Currently we have no scripts for setup the service for autostart.
 
-### Application Files
+### Application Files <a name="application_files"></a>
 
 The application files are stored in:
 
