@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@essential-projects/bootstrapper": "^3.0.0",
-    "@essential-projects/bootstrapper_node": "^3.0.0",
+    "@essential-projects/bootstrapper_node": "feature~update_nconfetti",
     "@essential-projects/event_aggregator": "^3.0.0",
     "@essential-projects/http_extension": "^4.0.0",
     "@essential-projects/services": "^2.0.0",
