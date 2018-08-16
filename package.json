@@ -6,7 +6,6 @@
     "process-engine": "./index.js"
   },
   "scripts": {
-    "postinstall": "npm rebuild",
     "start": "node ./index.js"
   },
   "main": "./index.js",
