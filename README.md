@@ -10,14 +10,24 @@ Engine.
 ### Requirements
 
 - Node >= `7.6.0`
+- Python 2.7.x
 
 ### Setup/Installation
+
 
 Install all Dependencies
 
 ```bash
 npm install -g @process-engine/process_engine_runtime
 ```
+
+__Note:__ If you experience problems during installation on Windows, you can try
+installing the [Windows Build
+Tools](https://www.npmjs.com/package/windows-build-tools) and run the above
+installation command again.
+Please make sure that you run the shell you use for
+the installation as **Administrator**.
+
 
 ## How do I use this project?
 
@@ -32,6 +42,9 @@ process-engine
 When started, the process-engine-instance is available at
 
 `http://localhost:8000`.
+
+__Note:__ If you're on Windows and the command `process-engine` can not be
+found, please make sure your `PATH` is set correctly.
 
 #### With SQLite Database (default)
 
