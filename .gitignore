@@ -1,1 +1,36 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# lock-files
+package-lock.json
+yarn.lock
+
+# build directories
+dist
+
+# auto-generated schemas and documentation
+doc
+schemas
+
+# Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# Dependency directories
 node_modules
+
+# Optional npm cache directory
+.npm
+
+# OSX-finder info-files
+*.DS_Store
+
+# IDE configs
+.vscode
+.idea/
+*.iml
+*.iws
+.classpath
+.project
+.settings/
