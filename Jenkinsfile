@@ -19,7 +19,7 @@ pipeline {
     nodejs "node-lts"
   }
   environment {
-    NPM_RC_FILE = 'developers5minds-token'
+    NPM_RC_FILE = 'process-engine-ci-token'
     NODE_JS_VERSION = 'node-lts'
   }
 
