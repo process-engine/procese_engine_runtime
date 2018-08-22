@@ -31,7 +31,7 @@ the installation as **Administrator**.
 
 ## How do I use this project?
 
-### Usage
+### Starting the ProcessEngine Server
 
 Start the server on your main machine with
 
@@ -64,7 +64,7 @@ standard configuration requires it to run on port `5432`.
 NODE_ENV=postgres process-engine
 ```
 
-### Setup
+### Automatically starting ProcessEngine Server on system startup
 
 **Mac OS**
 
