@@ -1,1 +1,2 @@
-npm install -g pm2 & npm install -g pm2-windows-service & pm2-service-install & pm2 start ./index.js --name process_engine_runtime & pm2 save -f
+@echo off
+npm install -g -s pm2 >nul & npm install -g -s pm2-windows-service >nul & pm2-service-install & pm2 start ./../index.js >nul & pm2 save -f >nul
