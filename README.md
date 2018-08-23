@@ -106,6 +106,7 @@ bug is fixed, we will update the script and release a fix.
 In order to start the ProcessEngine on system start, we provide a script.
 
 There are two scripts:
+
 1. start_runtime_after_system_boot.bat
 1. do_not_start_runtime_after_system_boot.bat
 
@@ -134,11 +135,11 @@ Currently we have no scripts for setup the service for autostart.
 
 The application files are stored in:
 
-| Platform  | Folder Path                                                            |
-| --------- | ----------                                                             |
-| OS X      | `/Users/<Username>/Library/Application Support/process_engine_runtime` |
-| Linux     | `/home/<Username>/.config/process_engine_runtime`                      |
-| Windows   | `c:\Users\<Username>\AppData\Roaming\process_engine_runtime`           |
+| Platform   | Folder Path                                                            |
+| ---------- | ----------                                                             |
+| Macintosch | `/Users/<Username>/Library/Application Support/process_engine_runtime` |
+| Linux      | `/home/<Username>/.config/process_engine_runtime`                      |
+| Windows    | `c:\Users\<Username>\AppData\Roaming\process_engine_runtime`           |
 
 Contained in the application files are the following folders:
 
