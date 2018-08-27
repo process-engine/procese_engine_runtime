@@ -18,8 +18,7 @@ if [[ -z $PM2_NOT_INSTALLED ]]; then
     npm install -g pm2
 fi
 
-# TODO: Replace this by: pm2 start process_engine_runtime; when this package is published.
-pm2 start ./index.js
+pm2 start ./index.js --name process_engine_runtime
 
 STARTUP_REGISTRATION_COMMAND=$(pm2 startup | grep -v "\[PM2\]")
 

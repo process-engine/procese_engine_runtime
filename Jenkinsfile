@@ -27,28 +27,34 @@ pipeline {
     stage('prepare') {
       steps {
         script {
-          raw_package_version = sh(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true).trim()
+          raw_package_version = sh(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
           package_version = raw_package_version.trim()
           echo("Package version is '${package_version}'")
+
+          branch = env.BRANCH_NAME;
+          branch_is_master = branch == 'master';
+          branch_is_develop = branch == 'develop';
+
+          if (branch_is_master) {
+            full_release_version_string = "${package_version}";
+          } else {
+            full_release_version_string = "${package_version}-pre-b${env.BUILD_NUMBER}";
+          }
+
+          // When building a non master or develop branch the release will be a draft.
+          release_will_be_draft = !branch_is_master && !branch_is_develop;
+
+          echo("Branch is '${branch}'")
         }
         nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
           sh('node --version')
-          sh('npm install --ignore-scripts')
+          sh('npm install')
         }
-      }
-    }
-    stage('lint') {
-      steps {
-        sh('node --version')
-        /* we do not want the linting to cause a failed build */
-        sh('npm run lint || true')
       }
     }
     stage('publish') {
       steps {
         script {
-          def branch = env.BRANCH_NAME;
-          def branch_is_master = branch == 'master';
           def new_commit = env.GIT_PREVIOUS_COMMIT != env.GIT_COMMIT;
 
           if (branch_is_master) {
@@ -62,7 +68,7 @@ pipeline {
                 }
               }
 
-              def raw_package_name = sh(script: 'node --print --eval "require(\'./package.json\').name"', returnStdout: true).trim()
+              def raw_package_name = sh(script: 'node --print --eval "require(\'./package.json\').name"', returnStdout: true).trim();
               def current_published_version = sh(script: "npm show ${raw_package_name} version", returnStdout: true).trim();
               def version_has_changed = current_published_version != raw_package_version;
 
@@ -86,8 +92,27 @@ pipeline {
 
             nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
               sh('node --version')
-              sh("npm version ${publish_version} --no-git-tag-version --force")
+              sh("npm version ${publish_version} --allow-same-version --force --no-git-tag-version ")
               sh("npm publish --tag ${publish_tag} --ignore-scripts")
+            }
+          }
+        }
+      }
+    }
+    stage('publish github release') {
+      when {
+        expression { branch_is_master || branch_is_develop }
+      }
+      steps {
+        nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
+          dir('.ci-tools') {
+            sh('npm install')
+          }
+          withCredentials([
+            string(credentialsId: 'process-engine-ci_token', variable: 'RELEASE_GH_TOKEN')
+          ]) {
+            script {
+              sh("node .ci-tools/publish-github-release.js ${full_release_version_string} ${full_release_version_string} ${branch} ${release_will_be_draft} ${!branch_is_master}");
             }
           }
         }

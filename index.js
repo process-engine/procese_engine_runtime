@@ -48,6 +48,7 @@ function loadIocModules() {
     '@essential-projects/event_aggregator',
     '@essential-projects/http_extension',
     '@essential-projects/services',
+    '@essential-projects/timing',
     '@process-engine/consumer_api_core', // Required by the process engine's UserTask handler
     '@process-engine/consumer_api_http',
     '@process-engine/flow_node_instance.repository.sequelize',
