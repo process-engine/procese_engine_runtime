@@ -2,6 +2,7 @@
 
 const InvocationContainer = require('addict-ioc').InvocationContainer;
 const logger = require('loggerhythm').Logger.createLogger('bootstrapper');
+const fs = require('fs');
 const path = require('path');
 
 process.on('unhandledRejection', err => {
@@ -104,7 +105,16 @@ function initializeEnvironment() {
   loadConfiguredEnvironmentOrDefault();
 
   // set current working directory
-  process.chdir(__dirname);
+  const userDataFolderPath = require('platform-folders').getConfigHome();
+  const userDataProcessEngineFolderName = 'process_engine_runtime';
+
+  const workingDir = path.join(userDataFolderPath, userDataProcessEngineFolderName);
+
+  if (!fs.exists(workingDir)) {
+    fs.mkdirSync(workingDir);
+  }
+
+  process.chdir(workingDir);
 
   setConfigPath();
   setDatabasePaths();
