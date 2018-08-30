@@ -110,7 +110,7 @@ function initializeEnvironment() {
 
   const workingDir = path.join(userDataFolderPath, userDataProcessEngineFolderName);
 
-  if (!fs.exists(workingDir)) {
+  if (!fs.existsSync(workingDir)) {
     fs.mkdirSync(workingDir);
   }
 
