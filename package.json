@@ -6,6 +6,7 @@
     "process-engine": "./index.js"
   },
   "scripts": {
+    "migrate": "NODE_ENV=sqlite sh ./scripts/sequelize_migrations.sh",
     "start": "node ./index.js"
   },
   "main": "./index.js",
