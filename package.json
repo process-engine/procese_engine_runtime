@@ -6,7 +6,10 @@
     "process-engine": "./index.js"
   },
   "scripts": {
-    "migrate": "NODE_ENV=sqlite sh ./scripts/sequelize_migrations.sh",
+    "migrate": "npm run migrate-processmodels && npm run migrate-flow-node-instances && npm run migrate-timers",
+    "migrate-processmodels": "SQLITE_STORAGE=process_models NODE_ENV=sqlite sh ./scripts/sequelize_migrations.sh",
+    "migrate-flow-node-instances": "SQLITE_STORAGE=flow_node_instances NODE_ENV=sqlite sh ./scripts/sequelize_migrations.sh",
+    "migrate-timers": "SQLITE_STORAGE=timers NODE_ENV=sqlite sh ./scripts/sequelize_migrations.sh",
     "start": "node ./index.js"
   },
   "main": "./index.js",

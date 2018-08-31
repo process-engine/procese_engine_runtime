@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const env = process.env.NODE_ENV || 'sqlite';
+const storage = process.env.SQLITE_STORAGE;
 
 const userDataFolderPath = require('platform-folders').getConfigHome();
 const userDataProcessEngineFolderName = 'process_engine_runtime';
@@ -9,9 +10,7 @@ const processEngineDatabaseFolderName = 'databases';
 
 const databaseBasePath = path.join(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
 
-// TODO: We REALLY should put ALL tables into the same database!
-// Otherwise the migrations will NOT work as expected, if multiple tables were updated!
-const flowNodeRepositoryStoragePath = path.join(databaseBasePath, 'flow_node_instances.sqlite');
+const storagePath = path.join(databaseBasePath, `${storage}.sqlite`);
 
 const sqliteconfig = `{
   "info": "This file is auto generated and required by the sequelize-cli. Please do not remove.",
@@ -21,7 +20,7 @@ const sqliteconfig = `{
   "host": null,
   "port": null,
   "dialect": "sqlite",
-  "storage": "${flowNodeRepositoryStoragePath}",
+  "storage": "${storagePath}",
   "supportBigNumbers": true,
   "resetPasswordRequestTimeToLive": 12,
   "logging": false
@@ -31,5 +30,5 @@ fs.writeFileSync('./sequelize/sqlite.json', sqliteconfig, 'utf-8');
 
 module.exports = {
   'config': path.resolve('sequelize', `${env}.json`),
-  'migrations-path': path.resolve('sequelize', 'migrations')
+  'migrations-path': path.resolve('sequelize', `migrations/${storage}`)
 }
