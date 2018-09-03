@@ -49,10 +49,10 @@ function writeSqliteConfig() {
     "logging": false
   }`;
 
-  fs.writeFileSync('./sequelize/sqlite.json', sqliteConfig, 'utf-8');
+  fs.writeFileSync('./sequelize/sqlite_temp.json', sqliteConfig, 'utf-8');
 
   const storageConfig = {
-    'config': path.resolve('sequelize', `${env}.json`),
+    'config': path.resolve('sequelize', `${env}_temp.json`),
     'migrations-path': path.resolve('sequelize', 'migrations', `${storage}`)
   }
 
