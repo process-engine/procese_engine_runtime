@@ -6,11 +6,6 @@
     "process-engine": "./bin/index.js"
   },
   "scripts": {
-    "migrate-postgres": "DB_STORAGE=processengine NODE_ENV=postgres sh ./scripts/sequelize_migrations.sh",
-    "migrate-sqlite": "npm run migrate-processmodels && npm run migrate-flow-node-instances && npm run migrate-timers",
-    "migrate-processmodels": "DB_STORAGE=process_model NODE_ENV=sqlite sh ./scripts/sequelize_migrations.sh",
-    "migrate-flow-node-instances": "DB_STORAGE=flow_node_instance NODE_ENV=sqlite sh ./scripts/sequelize_migrations.sh",
-    "migrate-timers": "DB_STORAGE=timer NODE_ENV=sqlite sh ./scripts/sequelize_migrations.sh",
     "start": "node ./bin/index.js"
   },
   "main": "./index.js",
