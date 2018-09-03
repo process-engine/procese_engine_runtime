@@ -5,8 +5,8 @@
   "host": null,
   "port": null,
   "dialect": "sqlite",
-  "storage": "timers.sqlite",
+  "storage": "timer.sqlite",
   "supportBigNumbers": true,
   "resetPasswordRequestTimeToLive": 12,
   "logging": false
-} 
+}
