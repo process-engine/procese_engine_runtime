@@ -86,7 +86,7 @@ module.exports = {
     logger.info('Updating existing foreign key data');
     for (const processToken of processTokens) {
       const flowNodeInstanceIdQueryResult =
-        await queryInterface.sequelize.query(`SELECT flowNodeInstanceId FROM FlowNodeInstances WHERE id = '${processToken.id}'`);
+        await queryInterface.sequelize.query(`SELECT flowNodeInstanceId FROM FlowNodeInstances WHERE id = '${processToken.flowNodeInstanceForeignKey}'`);
 
       const flowNodeInstanceId = flowNodeInstanceIdQueryResult[0][0].flowNodeInstanceId;
 
