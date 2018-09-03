@@ -5,6 +5,8 @@ const logger = require('loggerhythm').Logger.createLogger('bootstrapper');
 const fs = require('fs');
 const path = require('path');
 
+const executeMigrations = require('./migrator').migrate;
+
 process.on('unhandledRejection', err => {
   console.log('-- An unhandled exception was caught! Error: --')
   console.log(err);
@@ -14,9 +16,25 @@ process.on('unhandledRejection', err => {
 // The folder location for the skeleton-electron app was a different one,
 // than the one we are using now. The BPMN Studio needs to be able to provide
 // a path to the databases, so that the backend can access them.
-module.exports = (sqlitePath) => {
+module.exports = async (sqlitePath) => {
+  await runMigrations(sqlitePath);
   startProcessEngine(sqlitePath);
 };
+
+async function runMigrations(sqlitePath) {
+
+  const env = process.env.NODE_ENV || 'sqlite'
+
+  const repositories = [
+    'flow_node_instance',
+    'process_model',
+    'timer',
+  ];
+
+  for (const repository of repositories) {
+    await executeMigrations(env, repository, sqlitePath);
+  }
+}
 
 async function startProcessEngine(sqlitePath) {
 

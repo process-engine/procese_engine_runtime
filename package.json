@@ -30,6 +30,10 @@
   "publishConfig": {
     "registry": "https://www.npmjs.com"
   },
+  "devDependencies": {
+    "@types/sequelize": "4.27.25",
+    "@types/umzug": "2.2.0"
+  },
   "dependencies": {
     "@essential-projects/bootstrapper": "3.0.0",
     "@essential-projects/bootstrapper_node": "3.0.1",
@@ -55,6 +59,8 @@
     "addict-ioc": "2.3.7",
     "loggerhythm": "3.0.3",
     "platform-folders": "0.2.7",
-    "sqlite3": "4.0.2"
+    "sequelize": "4.38.0",
+    "sqlite3": "4.0.2",
+    "umzug": "2.1.0"
   }
 }
