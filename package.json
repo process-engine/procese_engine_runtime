@@ -11,7 +11,7 @@
     "migrate-processmodels": "DB_STORAGE=process_model NODE_ENV=sqlite sh ./scripts/sequelize_migrations.sh",
     "migrate-flow-node-instances": "DB_STORAGE=flow_node_instance NODE_ENV=sqlite sh ./scripts/sequelize_migrations.sh",
     "migrate-timers": "DB_STORAGE=timer NODE_ENV=sqlite sh ./scripts/sequelize_migrations.sh",
-    "start": "node ./bin/index.js"
+    "start": "node ./index.js"
   },
   "main": "./index.js",
   "license": "MIT",
