@@ -17,7 +17,7 @@ process.on('unhandledRejection', err => {
 // by using a simple "require", we need to provide a way for the studio to pass its
 // own path to the Sqlite Repositories to the backend.
 // The easiest way to do this, is by exporting a function that takes that parameter.
-module.exports = (sqlitePath) => {
+module.exports = async (sqlitePath) => {
   await runMigrations(sqlitePath);
   startProcessEngine(sqlitePath);
 }
@@ -29,7 +29,12 @@ async function runMigrations(sqlitePath) {
   // The script can be started via "npm run migrate-sqlite"
   return new Promise((resolve, reject) => {
     logger.info('Running migrations');
-    exec.exec(`SQLITE_PATH=${sqlitePath} npm run migrate-sqlite`, (error, result) => {
+
+    let command = sqlitePath !== undefined
+      ? `SQLITE_PATH=${sqlitePath} npm run migrate-sqlite`
+      : `npm run migrate-sqlite`;
+
+    exec.exec(command, (error, result) => {
       if (error) {
         logger.error('Migrations failed!', error);
         throw error;
