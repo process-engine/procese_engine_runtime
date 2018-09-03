@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
+
 const InvocationContainer = require('addict-ioc').InvocationContainer;
+const exec = require('child_process');
 const logger = require('loggerhythm').Logger.createLogger('bootstrapper');
 const fs = require('fs');
 const path = require('path');
@@ -16,7 +18,27 @@ process.on('unhandledRejection', err => {
 // own path to the Sqlite Repositories to the backend.
 // The easiest way to do this, is by exporting a function that takes that parameter.
 module.exports = (sqlitePath) => {
+  await runMigrations(sqlitePath);
   startProcessEngine(sqlitePath);
+}
+
+async function runMigrations(sqlitePath) {
+  // Note:
+  // Migrations need to be run through the sequelize-cli.
+  // We can use the existing bash script `scripts/sequelize_migrations.sh` for this.
+  // The script can be started via "npm run migrate-sqlite"
+  return new Promise((resolve, reject) => {
+    logger.info('Running migrations');
+    exec.exec(`SQLITE_PATH=${sqlitePath} npm run migrate-sqlite`, (error, result) => {
+      if (error) {
+        logger.error('Migrations failed!', error);
+        throw error;
+      }
+
+      logger.info('Migrations successful!');
+      return resolve();
+    });
+  });
 }
 
 async function startProcessEngine(sqlitePath) {
