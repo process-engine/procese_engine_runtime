@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
-
 const InvocationContainer = require('addict-ioc').InvocationContainer;
-const exec = require('child_process');
 const logger = require('loggerhythm').Logger.createLogger('bootstrapper');
 const fs = require('fs');
 const path = require('path');
@@ -13,77 +11,7 @@ process.on('unhandledRejection', err => {
   console.log('-- end of unhandled exception stack trace --')
 });
 
-// NOTE: Since BPMN Studio does not start the backend through "npm start", but
-// by using a simple "require", we need to provide a way for the studio to pass its
-// own path to the Sqlite Repositories to the backend.
-// The easiest way to do this, is by exporting a function that takes that parameter.
-module.exports = async (sqlitePath) => {
-  await runMigrations(sqlitePath);
-  startProcessEngine(sqlitePath);
-}
-
-async function runMigrations(sqlitePath) {
-  // Note:
-  // Migrations need to be run through the sequelize-cli.
-  // We can use the existing bash script `scripts/sequelize_migrations.sh` for this.
-  //
-  // Keep in mind that the BPMN studio starts the backend through a "require" and NOT "npm start",
-  // meaning we will not be able to access the runtimes own npm scripts!
-  logger.info('Running migrations');
-
-  console.log('-- CURRENT WORKING DIRECTORY --')
-  console.log(`process.cwd(): ${process.cwd()}`);
-  console.log(`__dirname: ${__dirname}`);
-  console.log('-------------------------------')
-
-  // const scriptFilePath = path.join('.', 'scripts', 'sequelize_migrations.sh');
-  const scriptFilePath = path.join('./scripts/sequelize_migrations.sh');
-
-  const repositories = [
-    'process_models',
-    'flow_node_instances',
-    'timers',
-  ];
-
-  let performedSetup = false;
-
-  for (const repository of repositories) {
-
-    let baseCommand = `DB_STORAGE=${repository} NODE_ENV=sqlite `;
-
-    if (performedSetup) {
-      baseCommand = `SKIP_SETUP=true ${baseCommand} `
-    }
-
-    if (sqlitePath !== undefined) {
-      baseCommand = `SQLITE_PATH="${sqlitePath}" ${baseCommand} `
-    }
-
-    const command = `${baseCommand}sh ${scriptFilePath}`;
-
-    logger.info('Running: ', command);
-    await runExec(command);
-
-    performedSetup = true;
-  }
-}
-
-async function runExec(command) {
-
-  return new Promise((resolve, reject) => {
-
-    exec.exec(command, (error, result) => {
-
-      if (error) {
-        logger.error('Migrations failed!', error);
-        throw error;
-      }
-
-      logger.info('Migrations successful!');
-      return resolve();
-    });
-  });
-}
+startProcessEngine();
 
 async function startProcessEngine(sqlitePath) {
 
@@ -130,7 +58,7 @@ function loadIocModules() {
     '@process-engine/management_api_http',
     '@process-engine/deployment_api_core',
     '@process-engine/deployment_api_http',
-    '@process-engine/process_engine',
+    '@process-engine/process_engine_core',
     '@process-engine/process_model.repository.sequelize',
     '@process-engine/timers.repository.sequelize',
   ];
