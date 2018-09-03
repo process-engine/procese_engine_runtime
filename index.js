@@ -26,9 +26,8 @@ async function runMigrations(sqlitePath) {
   // Note:
   // Migrations need to be run through the sequelize-cli.
   // We can use the existing bash script `scripts/sequelize_migrations.sh` for this.
-  // The script can be started via "npm run migrate-sqlite"
   //
-  // Also keep in mind that the BPMN studio starts the backend through a "require" and NOT "npm start",
+  // Keep in mind that the BPMN studio starts the backend through a "require" and NOT "npm start",
   // meaning we will not be able to access the runtimes own npm scripts!
   logger.info('Running migrations');
 
