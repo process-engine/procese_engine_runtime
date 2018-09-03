@@ -9,13 +9,6 @@ _VERSION="0.0.1"
 #     exit -1
 # fi
 
-if [[ -z "${SKIP_SETUP}" ]]; then
-  echo "Verifying sequelize setup. This may take a moment."
-  verifySequelizeSetup
-else
-  echo "Skipping setup verification."
-fi
-
 function verifySequelizeSetup() {
   # check if sequelize-cli and gulp-sequelize are already installed
   GULP_SEQUELIZE_NOT_INSTALLED=$(npm -g ls | grep gulp-sequelize)
@@ -35,6 +28,13 @@ function verifySequelizeSetup() {
     echo "sequelize-cli found.";
   fi
 }
+
+if [[ -z "${SKIP_SETUP}" ]]; then
+  echo "Verifying sequelize setup. This may take a moment."
+  verifySequelizeSetup
+else
+  echo "Skipping setup verification."
+fi
 
 echo "Running migrations..."
 sequelize db:migrate
