@@ -31,7 +31,7 @@ async function runMigrations(sqlitePath) {
     logger.info('Running migrations');
 
     let command = sqlitePath !== undefined
-      ? `SQLITE_PATH=${sqlitePath} npm run migrate-sqlite`
+      ? `SQLITE_PATH="${sqlitePath}" npm run migrate-sqlite`
       : `npm run migrate-sqlite`;
 
     exec.exec(command, (error, result) => {
