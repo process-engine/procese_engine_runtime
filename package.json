@@ -7,7 +7,7 @@
   },
   "scripts": {
     "migrate-postgres": "DB_STORAGE=processengine NODE_ENV=postgres sh ./scripts/sequelize_migrations.sh",
-    "migrate-sqlite": "npm run migrate-processmodels && npm run migrate-flow-node-instances && npm run migrate-timers",
+    "migrate-sqlite": "npm run migrate-processmodels && SKIP_SETUP=true npm run migrate-flow-node-instances && SKIP_SETUP=true npm run migrate-timers",
     "migrate-processmodels": "DB_STORAGE=process_models NODE_ENV=sqlite sh ./scripts/sequelize_migrations.sh",
     "migrate-flow-node-instances": "DB_STORAGE=flow_node_instances NODE_ENV=sqlite sh ./scripts/sequelize_migrations.sh",
     "migrate-timers": "DB_STORAGE=timers NODE_ENV=sqlite sh ./scripts/sequelize_migrations.sh",
