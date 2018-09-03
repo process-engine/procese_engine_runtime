@@ -31,6 +31,11 @@ async function runMigrations(sqlitePath) {
   // meaning we will not be able to access the runtimes own npm scripts!
   logger.info('Running migrations');
 
+  console.log('-- CURRENT WORKING DIRECTORY --')
+  console.log(`process.cwd(): ${process.cwd()}`);
+  console.log(`__dirname: ${__dirname}`);
+  console.log('-------------------------------')
+
   // const scriptFilePath = path.join('.', 'scripts', 'sequelize_migrations.sh');
   const scriptFilePath = path.join('./scripts/sequelize_migrations.sh');
 

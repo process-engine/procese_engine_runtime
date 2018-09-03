@@ -16,6 +16,7 @@
   "main": "./index.js",
   "license": "MIT",
   "contributors": [
+    "Christian Werner <christian.werner@5minds.de>",
     "Sebastian Meier <sebastian.meier@5minds.de>"
   ],
   "repository": {
