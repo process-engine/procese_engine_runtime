@@ -127,11 +127,7 @@ function setConfigPath() {
 
 function setDatabasePaths() {
 
-  const userDataFolderPath = require('platform-folders').getConfigHome();
-  const userDataProcessEngineFolderName = 'process_engine_runtime';
-  const processEngineDatabaseFolderName = 'databases';
-
-  const databaseBasePath = path.join(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
+  const databaseBasePath = getSqliteStoragePath();
 
   const processModelRepositoryStoragePath = path.join(databaseBasePath, 'process_models.sqlite');
   const flowNodeRepositoryStoragePath = path.join(databaseBasePath, 'flow_node_instances.sqlite');
@@ -140,4 +136,19 @@ function setDatabasePaths() {
   process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
   process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
   process.env.process_engine__timer_repository__storage = timerRepositoryStoragePath;
+}
+
+function getSqliteStoragePath() {
+
+  if (process.env.SQLITE_PATH) {
+    return process.env.SQLITE_PATH;
+  }
+
+  const userDataFolderPath = require('platform-folders').getConfigHome();
+  const userDataProcessEngineFolderName = 'process_engine_runtime';
+  const processEngineDatabaseFolderName = 'databases';
+
+  const databaseBasePath = path.resolve(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
+
+  return databaseBasePath;
 }

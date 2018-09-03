@@ -4,18 +4,34 @@ const path = require('path');
 const env = process.env.NODE_ENV || 'sqlite';
 const storage = process.env.DB_STORAGE;
 
-if (env === 'postgres') {
-  writePostgresConfig();
-} else {
-  writeSqliteConfig();
+module.exports = createStorageConfig();
+
+function createStorageConfig() {
+  if (env === 'postgres') {
+    return writePostgresConfig();
+  } else {
+    return writeSqliteConfig();
+  }
 }
 
-function writeSqliteConfig() {
-  const userDataFolderPath = require('platform-folders').getConfigHome();
-  const userDataProcessEngineFolderName = 'process_engine_runtime';
-  const processEngineDatabaseFolderName = 'databases';
+// When using postgres, we do no require any absolute paths, since we are using a config for a remote connection.
+// So we can just point to the existing repository configs.
+function writePostgresConfig() {
 
-  const databaseBasePath = path.join(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
+  const storageConfig = {
+    'config': path.resolve('config', 'postgres', 'process_engine', `${storage}_repository.json`),
+    'migrations-path': path.resolve('sequelize', `migrations', '${storage}`)
+  }
+
+  return storageConfig;
+}
+
+// When using SQLite, we require the absolute location of the storage we want to migrate.
+// Since we are bound to use the sequelize-cli and therefore have no access to the bootstapper
+// or the ioc container, we need to write our own config that points to the correct database.
+function writeSqliteConfig() {
+
+  const databaseBasePath = getSqliteStoragePath();
 
   const storagePath = path.join(databaseBasePath, `${storage}.sqlite`);
 
@@ -34,27 +50,26 @@ function writeSqliteConfig() {
   }`;
 
   fs.writeFileSync('./sequelize/sqlite.json', sqliteConfig, 'utf-8');
+
+  const storageConfig = {
+    'config': path.resolve('sequelize', `${env}.json`),
+    'migrations-path': path.resolve('sequelize', `migrations', '${storage}`)
+  }
+
+  return storageConfig;
 }
 
-function writePostgresConfig() {
-  const postgresConfig = `{
-    "info": "This file is auto generated and required by the sequelize-cli. Please do not remove.",
-    "username": "admin",
-    "password": "admin",
-    "database": "${storage}",
-    "host": "localhost",
-    "port": 5432,
-    "dialect": "postgres",
-    "storage": null,
-    "supportBigNumbers": true,
-    "resetPasswordRequestTimeToLive": 12,
-    "logging": false
-  }`;
+function getSqliteStoragePath() {
 
-  fs.writeFileSync('./sequelize/postgres.json', postgresConfig, 'utf-8');
-}
+  if (process.env.SQLITE_PATH) {
+    return process.env.SQLITE_PATH;
+  }
 
-module.exports = {
-  'config': path.resolve('sequelize', `${env}.json`),
-  'migrations-path': path.resolve('sequelize', `migrations/${storage}`)
+  const userDataFolderPath = require('platform-folders').getConfigHome();
+  const userDataProcessEngineFolderName = 'process_engine_runtime';
+  const processEngineDatabaseFolderName = 'databases';
+
+  const databaseBasePath = path.resolve(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
+
+  return databaseBasePath;
 }
