@@ -27,14 +27,48 @@ async function runMigrations(sqlitePath) {
   // Migrations need to be run through the sequelize-cli.
   // We can use the existing bash script `scripts/sequelize_migrations.sh` for this.
   // The script can be started via "npm run migrate-sqlite"
-  return new Promise((resolve, reject) => {
-    logger.info('Running migrations');
+  //
+  // Also keep in mind that the BPMN studio starts the backend through a "require" and NOT "npm start",
+  // meaning we will not be able to access the runtimes own npm scripts!
+  logger.info('Running migrations');
 
-    let command = sqlitePath !== undefined
-      ? `SQLITE_PATH="${sqlitePath}" npm run migrate-sqlite`
-      : `npm run migrate-sqlite`;
+  const scriptFilePath = path.resolve(__dirname, 'scripts', 'sequelize_migrations.sh');
+
+  const repositories = [
+    'process_models',
+    'flow_node_instances',
+    'timers',
+  ];
+
+  let performedSetup = false;
+
+  for (const repository of repositories) {
+
+    let baseCommand = `DB_STORAGE=${repository} NODE_ENV=sqlite `;
+
+    if (performedSetup) {
+      baseCommand = `SKIP_SETUP=true ${baseCommand} `
+    }
+
+    if (sqlitePath !== undefined) {
+      baseCommand = `SQLITE_PATH="${sqlitePath}" ${baseCommand} `
+    }
+
+    const command = `${baseCommand}sh ${scriptFilePath}`;
+
+    logger.info('Running: ', command);
+    await runExec(command);
+
+    performedSetup = true;
+  }
+}
+
+async function runExec(command) {
+
+  return new Promise((resolve, reject) => {
 
     exec.exec(command, (error, result) => {
+
       if (error) {
         logger.error('Migrations failed!', error);
         throw error;
