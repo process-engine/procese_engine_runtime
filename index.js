@@ -11,13 +11,19 @@ process.on('unhandledRejection', err => {
   console.log('-- end of unhandled exception stack trace --')
 });
 
-startProcessEngine();
+// NOTE: Since BPMN Studio does not start the backend through "npm start", but
+// by using a simple "require", we need to provide a way for the studio to pass its
+// own path to the Sqlite Repositories to the backend.
+// The easiest way to do this, is by exporting a function that takes that parameter.
+module.exports = (sqlitePath) => {
+  startProcessEngine(sqlitePath);
+}
 
-async function startProcessEngine() {
+async function startProcessEngine(sqlitePath) {
 
   const iocModules = loadIocModules();
 
-  initializeEnvironment();
+  initializeEnvironment(sqlitePath);
 
   const container = new InvocationContainer({
     defaults: {
@@ -100,7 +106,7 @@ Please make sure the configuration files are available at: ${__dirname}/config/$
   process.exit(1);
 }
 
-function initializeEnvironment() {
+function initializeEnvironment(sqlitePath) {
 
   loadConfiguredEnvironmentOrDefault();
 
@@ -117,7 +123,7 @@ function initializeEnvironment() {
   process.chdir(workingDir);
 
   setConfigPath();
-  setDatabasePaths();
+  setDatabasePaths(sqlitePath);
 }
 
 function setConfigPath() {
@@ -125,9 +131,9 @@ function setConfigPath() {
   process.env.CONFIG_PATH = configPath;
 }
 
-function setDatabasePaths() {
+function setDatabasePaths(sqlitePath) {
 
-  const databaseBasePath = getSqliteStoragePath();
+  const databaseBasePath = getSqliteStoragePath(sqlitePath);
 
   const processModelRepositoryStoragePath = path.join(databaseBasePath, 'process_models.sqlite');
   const flowNodeRepositoryStoragePath = path.join(databaseBasePath, 'flow_node_instances.sqlite');
@@ -138,10 +144,10 @@ function setDatabasePaths() {
   process.env.process_engine__timer_repository__storage = timerRepositoryStoragePath;
 }
 
-function getSqliteStoragePath() {
+function getSqliteStoragePath(sqlitePath) {
 
-  if (process.env.SQLITE_PATH) {
-    return process.env.SQLITE_PATH;
+  if (sqlitePath) {
+    return sqlitePath;
   }
 
   const userDataFolderPath = require('platform-folders').getConfigHome();
