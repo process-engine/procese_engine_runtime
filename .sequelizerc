@@ -53,7 +53,7 @@ function writeSqliteConfig() {
 
   const storageConfig = {
     'config': path.resolve('sequelize', `${env}.json`),
-    'migrations-path': path.resolve('sequelize', `migrations', '${storage}`)
+    'migrations-path': path.resolve('sequelize', 'migrations', `${storage}`)
   }
 
   return storageConfig;

@@ -1,13 +1,13 @@
 {
-  "info": "This file is auto generated and required by the sequelize-cli. Please do not remove.",
-  "username": null,
-  "password": null,
-  "database": null,
-  "host": null,
-  "port": null,
-  "dialect": "sqlite",
-  "storage": "/Users/christianwerner/Library/Application Support/process_engine_runtime/databases/flow_node_instances.sqlite",
-  "supportBigNumbers": true,
-  "resetPasswordRequestTimeToLive": 12,
-  "logging": false
-}
+    "info": "This file is auto generated and required by the sequelize-cli. Please do not remove.",
+    "username": null,
+    "password": null,
+    "database": null,
+    "host": null,
+    "port": null,
+    "dialect": "sqlite",
+    "storage": "/Users/christianwerner/Library/Application Support/process_engine_runtime/databases/timers.sqlite",
+    "supportBigNumbers": true,
+    "resetPasswordRequestTimeToLive": 12,
+    "logging": false
+  }
