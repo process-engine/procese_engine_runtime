@@ -11,7 +11,12 @@ process.on('unhandledRejection', err => {
   console.log('-- end of unhandled exception stack trace --')
 });
 
-startProcessEngine();
+// The folder location for the skeleton-electron app was a different one,
+// than the one we are using now. The BPMN Studio needs to be able to provide
+// a path to the databases, so that the backend can access them.
+module.exports = (sqlitePath) => {
+  startProcessEngine(sqlitePath);
+};
 
 async function startProcessEngine(sqlitePath) {
 
@@ -129,9 +134,9 @@ function setDatabasePaths(sqlitePath) {
 
   const databaseBasePath = getSqliteStoragePath(sqlitePath);
 
-  const processModelRepositoryStoragePath = path.join(databaseBasePath, 'process_models.sqlite');
-  const flowNodeRepositoryStoragePath = path.join(databaseBasePath, 'flow_node_instances.sqlite');
-  const timerRepositoryStoragePath = path.join(databaseBasePath, 'timers.sqlite');
+  const processModelRepositoryStoragePath = path.join(databaseBasePath, 'process_model.sqlite');
+  const flowNodeRepositoryStoragePath = path.join(databaseBasePath, 'flow_node_instance.sqlite');
+  const timerRepositoryStoragePath = path.join(databaseBasePath, 'timer.sqlite');
 
   process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
   process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
