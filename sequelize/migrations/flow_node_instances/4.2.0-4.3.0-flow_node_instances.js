@@ -14,7 +14,17 @@ const logger = Logger.createLogger('process-engine:migration:sequelize');
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
+    const processTokenTableInfo = await queryInterface.describeTable('ProcessTokens');
+
     logger.info('Running updating migrations');
+
+    const migrationNotRequired = processTokenTableInfo.flowNodeInstanceForeignKey === undefined
+      && processTokenTableInfo.type !== undefined;
+
+    if (migrationNotRequired) {
+      logger.info('The database is already up to date. Nothing to do here.');
+      return;
+    }
 
     // New Column for ProcessToken
     await queryInterface.addColumn(
