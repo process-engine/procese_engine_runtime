@@ -1,9 +1,5 @@
 'use strict';
 
-const Logger = require('loggerhythm').Logger;
-
-const logger = Logger.createLogger('process-engine:migration:sequelize');
-
 const path = require('path');
 const Umzug = require('umzug');
 const sequelizeConnectionManager = require('@essential-projects/sequelize_connection_manager');
@@ -87,7 +83,7 @@ async function createUmzugInstance(sequelize, database) {
       pattern: /\.js$/
     },
     logging: (args) => {
-      logger.info(args);
+      console.log(args);
     },
   });
 
