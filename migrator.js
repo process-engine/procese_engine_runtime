@@ -57,7 +57,14 @@ async function createPostgresConnection(database) {
 
 async function createUmzugInstance(sequelize, database) {
 
-  const migrationsPath = path.resolve(__dirname, 'sequelize', 'migrations', database);
+  const appAsarPathPart = '/Resources/app.asar';
+
+  // Note:
+  // BPMN Studio unpacks these files from the app.asar archive into the content folder, two levels up.
+  // This is done to ensure that the runtime can access these files.
+  const unpackedLocation = __dirname.replace(appAsarPathPart, '');
+
+  const migrationsPath = path.resolve(unpackedLocation, 'sequelize', 'migrations', database);
 
   const umzug = new Umzug({
     storage: 'sequelize',
