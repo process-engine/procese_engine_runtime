@@ -10,7 +10,25 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
-    const processTokenTableInfo = await queryInterface.describeTable('ProcessTokens');
+    const checkIfProcessTokenExists = async () => {
+      // Note
+      // Unfortunately, at migration level, is no such thing as "checkIfTableExits".
+      // We can only query for the table and see if that query causes an exception.
+      try {
+
+        const result = await queryInterface.describeTable('ProcessTokens');
+        return result;
+      } catch (error) {
+        return undefined;
+      }
+    }
+
+    const processTokenTableInfo = await checkIfProcessTokenExists();
+
+    if (!processTokenTableInfo) {
+      console.log('ProcessTokens does not exist. Skipping migrations.');
+      return Promise.resolve();
+    }
 
     console.log('Running updating migrations');
 
