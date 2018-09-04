@@ -48,7 +48,7 @@
     "@process-engine/timers.repository.sequelize": "2.0.2",
     "addict-ioc": "2.3.7",
     "loggerhythm": "3.0.3",
-    "platform-folders": "0.2.6",
+    "platform-folders": "0.2.7",
     "sqlite3": "4.0.2"
   }
 }
