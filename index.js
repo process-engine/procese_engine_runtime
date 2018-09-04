@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const InvocationContainer = require('addict-ioc').InvocationContainer;
-const logger = require('loggerhythm').Logger.createLogger('bootstrapper');
 const fs = require('fs');
 const path = require('path');
 
@@ -58,9 +57,9 @@ async function startProcessEngine(sqlitePath) {
     const bootstrapper = await container.resolveAsync('AppBootstrapper');
     await bootstrapper.start();
 
-    logger.info('Bootstrapper started successfully.');
+    console.log('Bootstrapper started successfully.');
   } catch (error) {
-    logger.error('Bootstrapper failed to start.', error);
+    console.error('Bootstrapper failed to start.', error);
   }
 }
 
