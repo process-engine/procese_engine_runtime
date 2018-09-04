@@ -1,5 +1,9 @@
 'use strict';
 
+const Logger = require('loggerhythm').Logger;
+
+const logger = Logger.createLogger('process-engine:migration:sequelize');
+
 const path = require('path');
 const Umzug = require('umzug');
 const sequelizeConnectionManager = require('@essential-projects/sequelize_connection_manager');
@@ -14,9 +18,8 @@ module.exports.migrate = async (env, database, sqlitePath) => {
     : await createPostgresConnection(database);
 
   const umzugInstance = await createUmzugInstance(sequelizeInstance, database);
+  logger.info('Running database migrations, using Umzug and Sequelize.');
   await umzugInstance.up();
-
-  return Promise.resolve();
 }
 
 async function createSqLiteConnection(sqlitePath, store) {
@@ -83,8 +86,8 @@ async function createUmzugInstance(sequelize, database) {
       path: migrationsPath,
       pattern: /\.js$/
     },
-    logging: function () {
-      console.log.apply(null, arguments);
+    logging: () => {
+      logger.info(arguments);
     },
   });
 
