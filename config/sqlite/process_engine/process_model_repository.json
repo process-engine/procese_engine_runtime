@@ -5,8 +5,8 @@
   "host": null,
   "port": null,
   "dialect": "sqlite",
-  "storage": "process_models.sqlite",
+  "storage": "process_model.sqlite",
   "supportBigNumbers": true,
   "resetPasswordRequestTimeToLive": 12,
   "logging": false
-} 
+}

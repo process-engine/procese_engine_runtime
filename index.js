@@ -5,19 +5,42 @@ const logger = require('loggerhythm').Logger.createLogger('bootstrapper');
 const fs = require('fs');
 const path = require('path');
 
+const executeMigrations = require('./migrator').migrate;
+
 process.on('unhandledRejection', err => {
   console.log('-- An unhandled exception was caught! Error: --')
   console.log(err);
   console.log('-- end of unhandled exception stack trace --')
 });
 
-startProcessEngine();
+// The folder location for the skeleton-electron app was a different one,
+// than the one we are using now. The BPMN Studio needs to be able to provide
+// a path to the databases, so that the backend can access them.
+module.exports = async (sqlitePath) => {
+  await runMigrations(sqlitePath);
+  startProcessEngine(sqlitePath);
+};
 
-async function startProcessEngine() {
+async function runMigrations(sqlitePath) {
+
+  const env = process.env.NODE_ENV || 'sqlite'
+
+  const repositories = [
+    'flow_node_instance',
+    'process_model',
+    'timer',
+  ];
+
+  for (const repository of repositories) {
+    await executeMigrations(env, repository, sqlitePath);
+  }
+}
+
+async function startProcessEngine(sqlitePath) {
 
   const iocModules = loadIocModules();
 
-  initializeEnvironment();
+  initializeEnvironment(sqlitePath);
 
   const container = new InvocationContainer({
     defaults: {
@@ -58,7 +81,7 @@ function loadIocModules() {
     '@process-engine/management_api_http',
     '@process-engine/deployment_api_core',
     '@process-engine/deployment_api_http',
-    '@process-engine/process_engine',
+    '@process-engine/process_engine_core',
     '@process-engine/process_model.repository.sequelize',
     '@process-engine/timers.repository.sequelize',
   ];
@@ -100,7 +123,7 @@ Please make sure the configuration files are available at: ${__dirname}/config/$
   process.exit(1);
 }
 
-function initializeEnvironment() {
+function initializeEnvironment(sqlitePath) {
 
   loadConfiguredEnvironmentOrDefault();
 
@@ -117,7 +140,7 @@ function initializeEnvironment() {
   process.chdir(workingDir);
 
   setConfigPath();
-  setDatabasePaths();
+  setDatabasePaths(sqlitePath);
 }
 
 function setConfigPath() {
@@ -125,19 +148,30 @@ function setConfigPath() {
   process.env.CONFIG_PATH = configPath;
 }
 
-function setDatabasePaths() {
+function setDatabasePaths(sqlitePath) {
+
+  const databaseBasePath = getSqliteStoragePath(sqlitePath);
+
+  const processModelRepositoryStoragePath = path.join(databaseBasePath, 'process_model.sqlite');
+  const flowNodeRepositoryStoragePath = path.join(databaseBasePath, 'flow_node_instance.sqlite');
+  const timerRepositoryStoragePath = path.join(databaseBasePath, 'timer.sqlite');
+
+  process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
+  process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
+  process.env.process_engine__timer_repository__storage = timerRepositoryStoragePath;
+}
+
+function getSqliteStoragePath(sqlitePath) {
+
+  if (sqlitePath) {
+    return sqlitePath;
+  }
 
   const userDataFolderPath = require('platform-folders').getConfigHome();
   const userDataProcessEngineFolderName = 'process_engine_runtime';
   const processEngineDatabaseFolderName = 'databases';
 
-  const databaseBasePath = path.join(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
+  const databaseBasePath = path.resolve(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
 
-  const processModelRepositoryStoragePath = path.join(databaseBasePath, 'process_models.sqlite');
-  const flowNodeRepositoryStoragePath = path.join(databaseBasePath, 'flow_node_instances.sqlite');
-  const timerRepositoryStoragePath = path.join(databaseBasePath, 'timers.sqlite');
-
-  process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
-  process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
-  process.env.process_engine__timer_repository__storage = timerRepositoryStoragePath;
+  return databaseBasePath;
 }

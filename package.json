@@ -1,16 +1,17 @@
 {
   "name": "@process-engine/process_engine_runtime",
-  "version": "1.2.5",
+  "version": "2.0.0",
   "description": "",
   "bin": {
-    "process-engine": "./index.js"
+    "process-engine": "./bin/index.js"
   },
   "scripts": {
-    "start": "node ./index.js"
+    "start": "node ./bin/index.js"
   },
   "main": "./index.js",
   "license": "MIT",
   "contributors": [
+    "Christian Werner <christian.werner@5minds.de>",
     "Sebastian Meier <sebastian.meier@5minds.de>"
   ],
   "repository": {
@@ -23,6 +24,10 @@
   "homepage": "https://github.com/process-engine/procese_engine_runtime#readme",
   "publishConfig": {
     "registry": "https://www.npmjs.com"
+  },
+  "devDependencies": {
+    "@types/sequelize": "4.27.25",
+    "@types/umzug": "2.2.0"
   },
   "dependencies": {
     "@essential-projects/bootstrapper": "3.0.0",
@@ -44,11 +49,13 @@
     "@process-engine/deployment_api_http": "0.2.0",
     "@process-engine/flow_node_instance.repository.sequelize": "4.0.1",
     "@process-engine/process_model.repository.sequelize": "2.1.5",
-    "@process-engine/process_engine": "21.0.5",
+    "@process-engine/process_engine_core": "1.0.0",
     "@process-engine/timers.repository.sequelize": "2.0.2",
     "addict-ioc": "2.3.7",
     "loggerhythm": "3.0.3",
-    "platform-folders": "0.2.6",
-    "sqlite3": "4.0.2"
+    "platform-folders": "0.2.7",
+    "sequelize": "4.38.0",
+    "sqlite3": "4.0.2",
+    "umzug": "2.1.0"
   }
 }
