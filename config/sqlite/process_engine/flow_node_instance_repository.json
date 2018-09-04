@@ -5,8 +5,8 @@
   "host": null,
   "port": null,
   "dialect": "sqlite",
-  "storage": "flow_node_instances.sqlite",
+  "storage": "flow_node_instance.sqlite",
   "supportBigNumbers": true,
   "resetPasswordRequestTimeToLive": 12,
   "logging": false
-} 
+}
