@@ -1,9 +1,5 @@
 'use strict';
 
-const Logger = require('loggerhythm').Logger;
-
-const logger = Logger.createLogger('process-engine:migration:sequelize');
-
 // See manual:
 // https://sequelize.readthedocs.io/en/latest/docs/migrations/#functions
 
@@ -16,13 +12,13 @@ module.exports = {
 
     const processTokenTableInfo = await queryInterface.describeTable('ProcessTokens');
 
-    logger.info('Running updating migrations');
+    console.log('Running updating migrations');
 
     const migrationNotRequired = processTokenTableInfo.flowNodeInstanceForeignKey === undefined
       && processTokenTableInfo.type !== undefined;
 
     if (migrationNotRequired) {
-      logger.info('The database is already up to date. Nothing to do here.');
+      console.log('The database is already up to date. Nothing to do here.');
       return;
     }
 
@@ -56,13 +52,13 @@ module.exports = {
     // Statement { sql: 'SELECT flowNodeInstanceForeignKey FROM ProcessTokens' } ]
     const processTokens = queryResult[0];
 
-    logger.info('Removing old index: flowNodeInstanceForeignKey');
+    console.log('Removing old index: flowNodeInstanceForeignKey');
     await queryInterface.removeIndex('ProcessTokens', 'flowNodeInstanceForeignKey');
 
-    logger.info('Removing old index column');
+    console.log('Removing old index column');
     await queryInterface.removeColumn('ProcessTokens', 'flowNodeInstanceForeignKey');
 
-    logger.info('Updating ProcessTokens.flowNodeInstanceId type to VARCHAR(255) to match the type of FlowNodeInstances.flowNodeInstanceId');
+    console.log('Updating ProcessTokens.flowNodeInstanceId type to VARCHAR(255) to match the type of FlowNodeInstances.flowNodeInstanceId');
     await queryInterface.changeColumn(
       'ProcessTokens',
       'flowNodeInstanceId',
@@ -72,7 +68,7 @@ module.exports = {
       }
     );
 
-    logger.info('Add unique-constraint to FlowNodeInstances.flowNodeInstanceId');
+    console.log('Add unique-constraint to FlowNodeInstances.flowNodeInstanceId');
     await queryInterface.changeColumn(
       'FlowNodeInstances',
       'flowNodeInstanceId',
@@ -83,7 +79,7 @@ module.exports = {
       }
     );
 
-    logger.info('Updating existing foreign key data');
+    console.log('Updating existing foreign key data');
     for (const processToken of processTokens) {
       const flowNodeInstanceIdQueryResult =
         await queryInterface.sequelize.query(`SELECT flowNodeInstanceId FROM FlowNodeInstances WHERE id = '${processToken.flowNodeInstanceForeignKey}'`);
@@ -91,11 +87,11 @@ module.exports = {
       const flowNodeInstanceId = flowNodeInstanceIdQueryResult[0][0].flowNodeInstanceId;
 
       const updateProcessTokenQuery = `UPDATE ProcessTokens SET flowNodeInstanceId = '${flowNodeInstanceId}' WHERE id = '${processToken.id}'`;
-      logger.info('executing: ', updateProcessTokenQuery);
+      console.log('executing: ', updateProcessTokenQuery);
       await queryInterface.sequelize.query(updateProcessTokenQuery);
     }
 
-    logger.info('Adding new index');
+    console.log('Adding new index');
     await queryInterface.addConstraint('ProcessTokens', ['flowNodeInstanceId'], {
       type: 'FOREIGN KEY',
       name: 'FK_process_token_flow_node_instance',
@@ -105,10 +101,10 @@ module.exports = {
       },
       onDelete: 'cascade',
     });
-    logger.info('Migration successful!');
+    console.log('Migration successful!');
   },
   down: async (queryInterface, Sequelize) => {
-    logger.info('Running reverting migrations');
+    console.log('Running reverting migrations');
     return Promise.resolve();
   },
 };

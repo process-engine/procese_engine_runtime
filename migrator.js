@@ -14,9 +14,8 @@ module.exports.migrate = async (env, database, sqlitePath) => {
     : await createPostgresConnection(database);
 
   const umzugInstance = await createUmzugInstance(sequelizeInstance, database);
+  logger.info('Running database migrations, using Umzug and Sequelize.');
   await umzugInstance.up();
-
-  return Promise.resolve();
 }
 
 async function createSqLiteConnection(sqlitePath, store) {
@@ -83,8 +82,8 @@ async function createUmzugInstance(sequelize, database) {
       path: migrationsPath,
       pattern: /\.js$/
     },
-    logging: function () {
-      console.log.apply(null, arguments);
+    logging: (args) => {
+      console.log(args);
     },
   });
 
