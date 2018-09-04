@@ -14,7 +14,6 @@ module.exports.migrate = async (env, database, sqlitePath) => {
     : await createPostgresConnection(database);
 
   const umzugInstance = await createUmzugInstance(sequelizeInstance, database);
-  logger.info('Running database migrations, using Umzug and Sequelize.');
   await umzugInstance.up();
 }
 

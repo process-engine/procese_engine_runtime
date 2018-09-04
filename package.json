@@ -1,6 +1,6 @@
 {
   "name": "@process-engine/process_engine_runtime",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "",
   "bin": {
     "process-engine": "./bin/index.js"
@@ -52,7 +52,6 @@
     "@process-engine/process_engine_core": "1.0.0",
     "@process-engine/timers.repository.sequelize": "2.0.2",
     "addict-ioc": "2.3.7",
-    "loggerhythm": "3.0.3",
     "platform-folders": "0.2.7",
     "sequelize": "4.38.0",
     "sqlite3": "4.0.2",
