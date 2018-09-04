@@ -86,8 +86,8 @@ async function createUmzugInstance(sequelize, database) {
       path: migrationsPath,
       pattern: /\.js$/
     },
-    logging: () => {
-      logger.info(arguments);
+    logging: (args) => {
+      logger.info(args);
     },
   });
 
