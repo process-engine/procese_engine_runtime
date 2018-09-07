@@ -1,8 +1,7 @@
 'use strict';
 
 const should = require('should');
-
-const TestFixtureProvider = require('../../dist/commonjs/test_fixture_provider').TestFixtureProvider;
+const TestFixtureProvider = require('../../dist/commonjs').FixtureProviderProcessEngine;
 
 describe('Process-Engine   Parse BPMN Process into new object model', () => {
 

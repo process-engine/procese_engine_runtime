@@ -1,12 +1,13 @@
 'use strict';
 
+const IamServiceMock = require('../mocks/index').IamServiceMock;
+
 const {
-  IamServiceMock,
   ParallelGatewayTestService,
   ServiceTaskTestService,
-} = require('../dist/commonjs/index');
+} = require('../test_services/index');
 
-const registerInContainer = (container) => {
+export function registerInContainer(container) {
 
   container.register('ParallelGatewayTestService', ParallelGatewayTestService);
   container.register('ServiceTaskTestService', ServiceTaskTestService);
@@ -14,5 +15,3 @@ const registerInContainer = (container) => {
   // This removes the necessity for having a running IdentityServer during testing.
   container.register('IamService', IamServiceMock);
 };
-
-module.exports.registerInContainer = registerInContainer;

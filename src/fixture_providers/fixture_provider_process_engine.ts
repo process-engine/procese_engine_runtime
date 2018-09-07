@@ -2,9 +2,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import {InvocationContainer} from 'addict-ioc';
+
 import {Logger} from 'loggerhythm';
+const logger: Logger = Logger.createLogger('test:bootstrapper');
 
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
+import {IIdentity} from '@essential-projects/iam_contracts';
+
+import {ConsumerContext, IConsumerApiService} from '@process-engine/consumer_api_contracts';
 import {
   ExecutionContext,
   IExecuteProcessService,
@@ -14,33 +19,9 @@ import {
   Model,
 } from '@process-engine/process_engine_contracts';
 
-import {ConsumerContext, IConsumerApiService} from '@process-engine/consumer_api_contracts';
+import {initializeBootstrapper} from './setup_bootstrapper';
 
-import {IIdentity} from '@essential-projects/iam_contracts';
-
-const logger: Logger = Logger.createLogger('test:bootstrapper');
-
-const iocModuleNames: Array<string> = [
-  '@essential-projects/bootstrapper',
-  '@essential-projects/bootstrapper_node',
-  '@essential-projects/event_aggregator',
-  '@essential-projects/services',
-  '@essential-projects/timing',
-  '@process-engine/consumer_api_core',
-  '@process-engine/correlations.repository.sequelize',
-  '@process-engine/flow_node_instance.repository.sequelize',
-  '@process-engine/iam',
-  '@process-engine/process_engine_core',
-  '@process-engine/process_model.repository.sequelize',
-  '@process-engine/timers.repository.sequelize',
-  '../../test',
-];
-
-const iocModules: Array<any> = iocModuleNames.map((moduleName: string): any => {
-  return require(`${moduleName}/ioc_module`);
-});
-
-export class TestFixtureProvider {
+export class FixtureProviderProcessEngine {
   private _executeProcessService: IExecuteProcessService;
   private _executionContextFacade: IExecutionContextFacade;
 
@@ -86,6 +67,8 @@ export class TestFixtureProvider {
   }
 
   public async tearDown(): Promise<void> {
+    const httpExtension: any = await this.container.resolveAsync('HttpExtension');
+    await httpExtension.close();
     await this.bootstrapper.stop();
   }
 
@@ -119,12 +102,6 @@ export class TestFixtureProvider {
       .startAndAwaitEndEvent(this.executionContextFacade, processModel, startEventKey, correlationId, initialToken);
   }
 
-  /**
-   * Generate an absoulte path, which points to the bpmn directory.
-   *
-   * Checks if the cwd is "_integration_tests". If not, that directory name is appended.
-   * This is necessary, because Jenkins uses a different cwd than the local machines do.
-   */
   public getBpmnDirectoryPath(): string {
 
     const bpmnDirectoryName: string = 'bpmn';
@@ -136,17 +113,7 @@ export class TestFixtureProvider {
   private async _initializeBootstrapper(): Promise<void> {
 
     try {
-      this.container = new InvocationContainer({
-        defaults: {
-          conventionCalls: ['initialize'],
-        },
-      });
-
-      for (const iocModule of iocModules) {
-        iocModule.registerInContainer(this.container);
-      }
-
-      this.container.validateDependencies();
+      this.container = await initializeBootstrapper();
 
       const appPath: string = path.resolve(__dirname);
       this.bootstrapper = await this.container.resolveAsync<AppBootstrapper>('AppBootstrapper', [appPath]);

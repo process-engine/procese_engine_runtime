@@ -1,8 +1,8 @@
 'use strict';
 
 const should = require('should');
-const TestFixtureProvider = require('../../dist/commonjs/test_fixture_provider').TestFixtureProvider;
-const startCallbackType = require('@process-engine/consumer_api_contracts').StartCallbackType;
+const TestFixtureProvider = require('../../dist/commonjs').FixtureProviderProcessEngine;
+const startCallbackType = require('@process-engine/consumer_api_contracts').StartCallbackType; //eslint-disable-line
 
 describe('User Tasks - ', () => {
 
