@@ -76,7 +76,7 @@ export class FixtureProviderDeploymentApi {
     // Note: Since the iam service is mocked, it doesn't matter what kind of token is used here.
     // It only matters that one is present.
     this._deploymentContextDefault = <DeploymentContext> {
-      identity: 'deploymentApiIntegrationtestUser',
+      identity: 'defaultUser',
     };
 
     this._deploymentContextForbidden = <DeploymentContext> {

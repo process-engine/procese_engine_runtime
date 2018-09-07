@@ -109,7 +109,7 @@ export class FixtureProviderManagementApi {
     // Note: Since the iam service is mocked, it doesn't matter what kind of token is used here.
     // It only matters that one is present.
     this._managementContext = <ManagementContext> {
-      identity: 'randomtoken',
+      identity: 'defaultUser',
     };
   }
 
@@ -119,7 +119,7 @@ export class FixtureProviderManagementApi {
     const processFilePath: string = path.join(bpmnDirectoryPath, `${processFileName}.bpmn`);
 
     const deploymentContext: DeploymentContext = {
-      identity: 'randomtoken',
+      identity: 'defaultUser',
     };
 
     const processName: string = path.parse(processFileName).name;

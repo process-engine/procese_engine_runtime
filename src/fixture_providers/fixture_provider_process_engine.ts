@@ -130,11 +130,11 @@ export class FixtureProviderProcessEngine {
     // Note: Since the iam service is mocked, it doesn't matter what kind of token is used here.
     // It only matters that one is present.
     const identity: IIdentity = {
-      token: 'randomtoken',
+      token: 'defaultUser',
     };
 
     this._consumerContext = <ConsumerContext> {
-      identity: 'randomtoken',
+      identity: 'defaultUser',
     };
 
     const executionContext: ExecutionContext = new ExecutionContext(identity);
