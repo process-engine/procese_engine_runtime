@@ -19,7 +19,7 @@ import {
   Model,
 } from '@process-engine/process_engine_contracts';
 
-import {initializeBootstrapper} from './setup_bootstrapper';
+import {initializeBootstrapper} from './setup_ioc_container';
 
 export class FixtureProviderProcessEngine {
   private _executeProcessService: IExecuteProcessService;

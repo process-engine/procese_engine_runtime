@@ -12,7 +12,7 @@ import {IIdentity} from '@essential-projects/iam_contracts';
 import {DeploymentContext, IDeploymentApiService} from '@process-engine/deployment_api_contracts';
 import {ExecutionContext, IExecutionContextFacade, IExecutionContextFacadeFactory} from '@process-engine/process_engine_contracts';
 
-import {initializeBootstrapper} from './setup_bootstrapper';
+import {initializeBootstrapper} from './setup_ioc_container';
 
 export class FixtureProviderDeploymentApi {
   private bootstrapper: AppBootstrapper;
@@ -49,6 +49,7 @@ export class FixtureProviderDeploymentApi {
   public async tearDown(): Promise<void> {
     const httpExtension: any = await this.container.resolveAsync('HttpExtension');
     await httpExtension.close();
+    await this.bootstrapper.stop();
   }
 
   public async resolveAsync<T>(moduleName: string, args?: any): Promise<any> {
