@@ -2,7 +2,7 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../dist/commonjs').FixtureProviderManagementApi;
+const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
 describe('Management API:   GET  ->  /processModels', () => {
 
@@ -25,7 +25,7 @@ describe('Management API:   GET  ->  /processModels', () => {
 
     const processModelList = await testFixtureProvider
       .managementApiClientService
-      .getProcessModels(testFixtureProvider.context);
+      .getProcessModels(testFixtureProvider.context.defaultUser);
 
     should(processModelList).have.property('processModels');
 

@@ -2,7 +2,7 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../../dist/commonjs').FixtureProviderConsumerApi;
+const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
 
 const testCase = 'POST -> /process_models/:process_model_id/correlations/:correlation_id/user_tasks/:user_task_id/finish';

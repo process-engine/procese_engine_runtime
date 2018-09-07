@@ -37,14 +37,14 @@ export class ProcessInstanceHandler {
 
     const result: ProcessStartResponsePayload = await this.testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(this.testFixtureProvider.context, processModelId, startEventId, payload, startCallbackType);
+      .startProcessInstance(this.testFixtureProvider.context.defaultUser, processModelId, startEventId, payload, startCallbackType);
 
     return result.correlationId;
   }
 
   public async waitForProcessInstanceToReachUserTask(correlationId: string): Promise<void> {
 
-    const maxNumberOfRetries: number = 10;
+    const maxNumberOfRetries: number = 20;
     const delayBetweenRetriesInMs: number = 500;
 
     const flowNodeInstanceService: IFlowNodeInstanceService = await this.testFixtureProvider.resolveAsync('FlowNodeInstanceService');

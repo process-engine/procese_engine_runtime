@@ -3,7 +3,7 @@
 const should = require('should');
 const uuid = require('uuid');
 
-const TestFixtureProvider = require('../../dist/commonjs').FixtureProviderManagementApi;
+const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
 // NOTE:
 // The deployment api alrady contains extensive testing for this, so there is no need to cover everything here.
@@ -19,7 +19,7 @@ describe('Management API:   POST  ->  /process_models/:process_model_id/update',
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    processModelAsXml = testFixtureProvider.readProcessModelFromFile(processModelId);
+    processModelAsXml = testFixtureProvider.readProcessModelFile(processModelId);
   });
 
   after(async () => {
@@ -36,18 +36,18 @@ describe('Management API:   POST  ->  /process_models/:process_model_id/update',
       overwriteExisting: true,
     };
 
-    await testFixtureProvider.managementApiClientService.updateProcessDefinitionsByName(testFixtureProvider.context, uniqueImportName, importPayload);
+    await testFixtureProvider
+      .managementApiClientService
+      .updateProcessDefinitionsByName(testFixtureProvider.context.defaultUser, uniqueImportName, importPayload);
 
     await assertThatImportWasSuccessful();
   });
 
   async function assertThatImportWasSuccessful() {
 
-    const executionContextFacade = await testFixtureProvider.createExecutionContextFacadeForContext(testFixtureProvider.context);
-
     const processModelService = await testFixtureProvider.resolveAsync('ProcessModelService');
 
-    const existingProcessModel = await processModelService.getProcessModelById(executionContextFacade, processModelId);
+    const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.executionContextFacade, processModelId);
 
     should.exist(existingProcessModel);
   }

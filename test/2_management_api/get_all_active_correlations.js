@@ -2,7 +2,7 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../dist/commonjs').FixtureProviderManagementApi;
+const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
 describe('Management API:   GET  ->  /correlations/active', () => {
 
@@ -19,7 +19,7 @@ describe('Management API:   GET  ->  /correlations/active', () => {
 
     const result = await testFixtureProvider
       .managementApiClientService
-      .startProcessInstance(testFixtureProvider.context, processModelId, 'StartEvent_1', {});
+      .startProcessInstance(testFixtureProvider.context.defaultUser, processModelId, 'StartEvent_1', {});
 
     correlationId = result.correlationId;
 
@@ -39,7 +39,7 @@ describe('Management API:   GET  ->  /correlations/active', () => {
 
     const correlations = await testFixtureProvider
       .managementApiClientService
-      .getAllActiveCorrelations(testFixtureProvider.context);
+      .getAllActiveCorrelations(testFixtureProvider.context.defaultUser);
 
     should(correlations).be.instanceOf(Array);
     should(correlations.length).be.greaterThan(0);

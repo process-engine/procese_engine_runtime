@@ -3,7 +3,7 @@
 const should = require('should');
 const uuid = require('uuid');
 
-const TestFixtureProvider = require('../../dist/commonjs').FixtureProviderDeploymentApi;
+const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
 const importRoute = 'api/deployment/v1/import_process_model';
 
@@ -24,10 +24,10 @@ describe(`Deployment API -> POST ${importRoute}`, () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    authHeadersDefault = createRequestAuthHeaders(testFixtureProvider.context);
-    authHeadersForbidden = createRequestAuthHeaders(testFixtureProvider.contextForbidden);
+    authHeadersDefault = createRequestAuthHeaders(testFixtureProvider.context.defaultUser);
+    authHeadersForbidden = createRequestAuthHeaders(testFixtureProvider.context.restrictedUser);
 
-    processModelAsXml = testFixtureProvider.readProcessModelFromFile(processModelId);
+    processModelAsXml = testFixtureProvider.readProcessModelFile(processModelId);
 
     httpClient = await testFixtureProvider.resolveAsync('HttpService');
   });
@@ -137,11 +137,9 @@ describe(`Deployment API -> POST ${importRoute}`, () => {
 
   async function assertThatImportWasSuccessful() {
 
-    const executionContextFacade = await testFixtureProvider.createExecutionContextFacadeForContext(testFixtureProvider.context);
-
     const processModelService = await testFixtureProvider.resolveAsync('ProcessModelService');
 
-    const existingProcessModel = await processModelService.getProcessModelById(executionContextFacade, processModelId);
+    const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.executionContextFacade, processModelId);
 
     should.exist(existingProcessModel);
   }

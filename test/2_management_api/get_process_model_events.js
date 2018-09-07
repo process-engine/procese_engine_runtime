@@ -2,7 +2,7 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../dist/commonjs').FixtureProviderManagementApi;
+const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
 describe('Management API:   GET  ->  /process_models/:process_model_id/events', () => {
 
@@ -25,7 +25,7 @@ describe('Management API:   GET  ->  /process_models/:process_model_id/events', 
 
     const processModel = await testFixtureProvider
       .managementApiClientService
-      .getEventsForProcessModel(testFixtureProvider.context, processModelId);
+      .getEventsForProcessModel(testFixtureProvider.context.defaultUser, processModelId);
 
     should(processModel).have.property('events');
     should(processModel.events).be.instanceof(Array);

@@ -5,7 +5,7 @@ const uuid = require('uuid');
 
 const StartCallbackType = require('@process-engine/consumer_api_contracts').StartCallbackType; //eslint-disable-line
 
-const TestFixtureProvider = require('../../../dist/commonjs').FixtureProviderConsumerApi;
+const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 
 const testTimeoutMilliseconds = 5000;
 // eslint-disable-next-line

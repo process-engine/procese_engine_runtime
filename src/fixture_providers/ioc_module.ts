@@ -8,24 +8,24 @@ const {
 } = require('../test_services/index');
 
 const ConsumerApiClientService = require('@process-engine/consumer_api_client').ConsumerApiClientService;
-const ConsumerApiExternalAccessor = require('@process-engine/consumer_api_client').ExternalAccessor;
+const ConsumerApiInternalAccessor = require('@process-engine/consumer_api_client').InternalAccessor;
 
 const ManagementApiClientService = require('@process-engine/management_api_client').ManagementApiClientService;
-const ManagementApiExternalAccessor = require('@process-engine/management_api_client').ExternalAccessor;
+const ManagementApiInternalAccessor = require('@process-engine/management_api_client').InternalAccessor;
 
 export function registerInContainer(container) {
 
-  container.register('ConsumerApiExternalAccessor', ConsumerApiExternalAccessor)
-    .dependencies('HttpService');
+  container.register('ConsumerApiInternalAccessor', ConsumerApiInternalAccessor)
+    .dependencies('ConsumerApiService');
 
   container.register('ConsumerApiClientService', ConsumerApiClientService)
-    .dependencies('ConsumerApiExternalAccessor');
+    .dependencies('ConsumerApiInternalAccessor');
 
-  container.register('ManagementApiExternalAccessor', ManagementApiExternalAccessor)
-    .dependencies('HttpService');
+  container.register('ManagementApiInternalAccessor', ManagementApiInternalAccessor)
+    .dependencies('ManagementApiService');
 
   container.register('ManagementApiClientService', ManagementApiClientService)
-    .dependencies('ManagementApiExternalAccessor');
+    .dependencies('ManagementApiInternalAccessor');
 
   container.register('ParallelGatewayTestService', ParallelGatewayTestService);
   container.register('ServiceTaskTestService', ServiceTaskTestService);

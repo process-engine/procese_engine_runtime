@@ -1,7 +1,7 @@
 'use strict';
 
 const should = require('should');
-const TestFixtureProvider = require('../../dist/commonjs').FixtureProviderProcessEngine;
+const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
 describe('Timer Boundary Event - ', () => {
 

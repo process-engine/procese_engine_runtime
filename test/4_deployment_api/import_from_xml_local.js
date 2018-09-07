@@ -3,7 +3,7 @@
 const should = require('should');
 const uuid = require('uuid');
 
-const TestFixtureProvider = require('../../dist/commonjs').FixtureProviderDeploymentApi;
+const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
 describe('Deployment API -> importBpmnFromXml', () => {
 
@@ -18,10 +18,10 @@ describe('Deployment API -> importBpmnFromXml', () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    deploymentContextDefault = testFixtureProvider.context;
-    deploymentContextForbidden = testFixtureProvider.contextForbidden;
+    deploymentContextDefault = testFixtureProvider.context.defaultUser;
+    deploymentContextForbidden = testFixtureProvider.context.restrictedUser;
 
-    processModelAsXml = testFixtureProvider.readProcessModelFromFile(processModelId);
+    processModelAsXml = testFixtureProvider.readProcessModelFile(processModelId);
   });
 
   after(async () => {
@@ -129,11 +129,9 @@ describe('Deployment API -> importBpmnFromXml', () => {
 
   async function assertThatImportWasSuccessful() {
 
-    const executionContextFacade = await testFixtureProvider.createExecutionContextFacadeForContext(deploymentContextDefault);
-
     const processModelService = await testFixtureProvider.resolveAsync('ProcessModelService');
 
-    const existingProcessModel = await processModelService.getProcessModelById(executionContextFacade, processModelId);
+    const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.executionContextFacade, processModelId);
 
     should.exist(existingProcessModel);
   }

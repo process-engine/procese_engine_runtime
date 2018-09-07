@@ -2,7 +2,7 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../../dist/commonjs').FixtureProviderConsumerApi;
+const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 
 describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => {
 

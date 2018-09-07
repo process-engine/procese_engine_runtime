@@ -2,7 +2,7 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../dist/commonjs').FixtureProviderManagementApi;
+const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 const ProcessInstanceHandler = require('../../dist/commonjs').ProcessInstanceHandler;
 
 // NOTE:
@@ -38,7 +38,7 @@ describe(`Management API: ${testCase}`, () => {
 
     const userTaskList = await testFixtureProvider
       .managementApiClientService
-      .getUserTasksForCorrelation(testFixtureProvider.context, correlationId);
+      .getUserTasksForCorrelation(testFixtureProvider.context.defaultUser, correlationId);
 
     assertUserTaskList(userTaskList);
   });
@@ -47,7 +47,7 @@ describe(`Management API: ${testCase}`, () => {
 
     const userTaskList = await testFixtureProvider
       .managementApiClientService
-      .getUserTasksForProcessModel(testFixtureProvider.context, processModelId);
+      .getUserTasksForProcessModel(testFixtureProvider.context.defaultUser, processModelId);
 
     assertUserTaskList(userTaskList);
   });
@@ -56,7 +56,7 @@ describe(`Management API: ${testCase}`, () => {
 
     const userTaskList = await testFixtureProvider
       .managementApiClientService
-      .getUserTasksForProcessModelInCorrelation(testFixtureProvider.context, processModelId, correlationId);
+      .getUserTasksForProcessModelInCorrelation(testFixtureProvider.context.defaultUser, processModelId, correlationId);
 
     assertUserTaskList(userTaskList);
   });
@@ -72,7 +72,7 @@ describe(`Management API: ${testCase}`, () => {
 
     await testFixtureProvider
       .managementApiClientService
-      .finishUserTask(testFixtureProvider.context, processModelId, correlationId, userTaskId, userTaskResult);
+      .finishUserTask(testFixtureProvider.context.defaultUser, processModelId, correlationId, userTaskId, userTaskResult);
   });
 
   function assertUserTaskList(userTaskList) {

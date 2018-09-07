@@ -2,7 +2,7 @@
 
 const should = require('should');
 const uuid = require('uuid');
-const TestFixtureProvider = require('../../dist/commonjs').FixtureProviderProcessEngine;
+const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
 describe('Terminate End Event', () => {
 

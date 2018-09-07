@@ -2,7 +2,7 @@
 
 const moment = require('moment');
 const should = require('should');
-const TestFixtureProvider = require('../../dist/commonjs').FixtureProviderProcessEngine;
+const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
 describe('Intermediate Events - ', () => {
 
