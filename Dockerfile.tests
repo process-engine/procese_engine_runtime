@@ -3,6 +3,8 @@ FROM node:8-alpine
 RUN apk add --no-cache git
 
 WORKDIR /usr/src/app
+ENV PYTHON "/usr/bin/python"
+ENV PYTHONPATH "/usr/bin/python"
 
 COPY bin ./bin
 COPY bpmn ./bpmn
