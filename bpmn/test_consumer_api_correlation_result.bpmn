@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definition_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
+  <bpmn:collaboration id="Collaboration_1cidyxu">
+    <bpmn:participant id="Participant_0px403d" name="test_consumer_api_correlation_result" processRef="test_consumer_api_correlation_result" />
+  </bpmn:collaboration>
+  <bpmn:process id="test_consumer_api_correlation_result" name="test_consumer_api_correlation_result" isExecutable="true">
+    <bpmn:laneSet>
+      <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="role" value="user" />
+          </camunda:properties>
+        </bpmn:extensionElements>
+        <bpmn:flowNodeRef>scriptTask_CreateSampleResult</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Success</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:sequenceFlow id="SequenceFlow_0vspoh6" sourceRef="StartEvent_1" targetRef="scriptTask_CreateSampleResult" />
+    <bpmn:sequenceFlow id="SequenceFlow_0dqpbny" sourceRef="scriptTask_CreateSampleResult" targetRef="EndEvent_Success">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="mapper" value="token.history.scriptTask_CreateSampleResult" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+    </bpmn:sequenceFlow>
+    <bpmn:scriptTask id="scriptTask_CreateSampleResult" name="Create Sample Result">
+      <bpmn:incoming>SequenceFlow_0vspoh6</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0dqpbny</bpmn:outgoing>
+      <bpmn:script>return { scriptOutput: "hello world" }</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="EndEvent_Success" name="Return entire token">
+      <bpmn:incoming>SequenceFlow_0dqpbny</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:startEvent id="StartEvent_1" name="test_consumer_api_correlation_result">
+      <bpmn:outgoing>SequenceFlow_0vspoh6</bpmn:outgoing>
+    </bpmn:startEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1cidyxu">
+      <bpmndi:BPMNShape id="Participant_0px403d_di" bpmnElement="Participant_0px403d">
+        <dc:Bounds x="5" y="4" width="481" height="227" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="99" y="98" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="76" y="134" width="85" height="25" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3">
+        <dc:Bounds x="35" y="4" width="451" height="227" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0vspoh6_di" bpmnElement="SequenceFlow_0vspoh6">
+        <di:waypoint x="135" y="116" />
+        <di:waypoint x="184" y="116" />
+        <di:waypoint x="184" y="116" />
+        <di:waypoint x="231" y="116" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="154" y="109.5" width="90" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_183p48e_di" bpmnElement="scriptTask_CreateSampleResult">
+        <dc:Bounds x="231" y="76" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0by117k_di" bpmnElement="EndEvent_Success">
+        <dc:Bounds x="405" y="98" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="391" y="137" width="64" height="25" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0dqpbny_di" bpmnElement="SequenceFlow_0dqpbny">
+        <di:waypoint x="331" y="116" />
+        <di:waypoint x="368" y="116" />
+        <di:waypoint x="368" y="116" />
+        <di:waypoint x="405" y="116" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="338" y="109.5" width="90" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
