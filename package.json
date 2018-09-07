@@ -38,7 +38,7 @@
     "@essential-projects/timing": "3.0.4",
     "@essential-projects/timing_contracts": "3.0.0",
     "@process-engine/consumer_api_contracts": "0.16.0",
-    "@process-engine/consumer_api_core": "0.22.1",
+    "@process-engine/consumer_api_core": "0.22.2",
     "@process-engine/consumer_api_http": "0.11.2",
     "@process-engine/iam": "1.2.0",
     "@process-engine/management_api_contracts": "0.8.0",
