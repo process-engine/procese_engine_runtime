@@ -105,16 +105,12 @@ pipeline {
           // When building a non master or develop branch the release will be a draft.
           release_will_be_draft = !branch_is_master && !branch_is_develop;
 
-          echo("Branch is '${branch}'")
-
-          // Build docker container
-          def first_seven_digits_of_git_hash = env.GIT_COMMIT.substring(0, 8);
-          def safe_branch_name = env.BRANCH_NAME.replace("/", "_");
-          def image_tag = "${safe_branch_name}-${first_seven_digits_of_git_hash}-b${env.BUILD_NUMBER}";
-
-          server_image   = docker.build("process_engine_runtime_test_server_image:${image_tag}", '--no-cache --file Dockerfile.tests .');
-
-          server_image_id  = server_image.id;
+          echo("Branch is '${branch}'")       
+        } 
+        nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
+          sh('node --version')
+          sh('npm install')
+          sh('npm run build')
 
         }
       }
