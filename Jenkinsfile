@@ -43,13 +43,13 @@ def slack_send_summary(testlog, test_failed) {
 
   def color_string     =  '"color":"good"';
   def markdown_string  =  '"mrkdwn_in":["text","title"]';
-  def title_string     =  "\"title\":\":white_check_mark: Process Engine Integration Tests for ${env.BRANCH_NAME} Succeeded!\"";
+  def title_string     =  "\"title\":\":white_check_mark: Process Engine Runtime Integration Tests for ${env.BRANCH_NAME} Succeeded!\"";
   def result_string    =  "\"text\":\"${passing}\\n${failing}\\n${pending}\"";
   def action_string    =  "\"actions\":[{\"name\":\"open_jenkins\",\"type\":\"button\",\"text\":\"Open this run\",\"url\":\"${RUN_DISPLAY_URL}\"}]";
 
   if (test_failed == true) {
     color_string = '"color":"danger"';
-    title_string =  "\"title\":\":boom: Process Engine Integration Tests for ${env.BRANCH_NAME} Failed!\"";
+    title_string =  "\"title\":\":boom: Process Engine Runtime Integration Tests for ${env.BRANCH_NAME} Failed!\"";
   }
 
   slackSend(attachments: "[{$color_string, $title_string, $markdown_string, $result_string, $action_string}]");
