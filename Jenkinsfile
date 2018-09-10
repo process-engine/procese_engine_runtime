@@ -105,8 +105,8 @@ pipeline {
           // When building a non master or develop branch the release will be a draft.
           release_will_be_draft = !branch_is_master && !branch_is_develop;
 
-          echo("Branch is '${branch}'")       
-        } 
+          echo("Branch is '${branch}'")
+        }
         nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
           sh('node --version')
           sh('npm install')
@@ -119,30 +119,32 @@ pipeline {
       steps {
         script {
           // image.inside mounts the current Workspace as the working directory in the container
-          def node_env = '--env NODE_ENV=test';
-          def junit_report_path = '--env JUNIT_REPORT_PATH=report.xml';
-          def config_path = '--env CONFIG_PATH=/usr/src/app/config';
+          def junit_report_path = 'JUNIT_REPORT_PATH=report.xml';
+          def config_path = 'CONFIG_PATH=/usr/src/app/config';
 
           // SQLite Config
           def db_storage_folder_path = "$WORKSPACE/process_engine_databases";
-          def db_storage_path_correlation = "--env process_engine__correlation_repository__storage=$db_storage_folder_path/processengine.sqlite";
-          def db_storage_path_process_model = "--env process_engine__process_model_repository__storage=$db_storage_folder_path/processengine.sqlite";
-          def db_storage_path_flow_node_instance = "--env process_engine__flow_node_instance_repository__storage=$db_storage_folder_path/processengine.sqlite";
-          def db_storage_path_timer = "--env process_engine__timer_repository__storage=$db_storage_folder_path/processengine.sqlite";
+          def db_storage_path_correlation = "process_engine__correlation_repository__storage=$db_storage_folder_path/processengine.sqlite";
+          def db_storage_path_process_model = "process_engine__process_model_repository__storage=$db_storage_folder_path/processengine.sqlite";
+          def db_storage_path_flow_node_instance = "process_engine__flow_node_instance_repository__storage=$db_storage_folder_path/processengine.sqlite";
+          def db_storage_path_timer = "process_engine__timer_repository__storage=$db_storage_folder_path/processengine.sqlite";
 
-          server_image.inside("${node_env} ${db_storage_path_correlation} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance} ${db_storage_path_timer} ${junit_report_path} ${config_path}") {
-            error_code = sh(script: "node /usr/src/app/node_modules/.bin/mocha --timeout 200000 /usr/src/app/test/**/*.js /usr/src/app/test/**/**/*.js --colors --reporter mocha-jenkins-reporter --exit > result.txt", returnStatus: true);
-            testresults = sh(script: "cat result.txt", returnStdout: true).trim();
+          def environment_settings = "${db_storage_path_correlation} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance} ${db_storage_path_timer}";
 
-            junit 'report.xml'
+          def npm_test_command = "cross-env NODE_ENV=test JUNIT_REPORT_PATH=report.xml CONFIG_PATH=config ${environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
 
-            test_failed = false;
-            currentBuild.result = 'SUCCESS'
-            if (error_code > 0) {
-              test_failed = true;
-              currentBuild.result = 'FAILURE'
-            }
+          error_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > result.txt", returnStatus: true);
+          testresults = sh(script: "cat result.txt", returnStdout: true).trim();
+
+          junit 'report.xml'
+
+          test_failed = false;
+          currentBuild.result = 'SUCCESS'
+          if (error_code > 0) {
+            test_failed = true;
+            currentBuild.result = 'FAILURE'
           }
+
         }
       }
     }
