@@ -14,7 +14,7 @@ module.exports = {
       } catch (error) {
         return undefined;
       }
-    }
+    };
 
     const correlationsTableInfo = await checkIfTableExists();
 
@@ -26,25 +26,35 @@ module.exports = {
     console.log('Creating Correlations table');
 
     return queryInterface.createTable('Correlations', {
-        id: {
-          type: Sequelize.UUID,
-          primaryKey: true,
-          defaultValue: Sequelize.UUIDV4,
-        },
-        correlationId: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
-        processModelHash: {
-          type: Sequelize.TEXT,
-          allowNull: false,
-        },
-      });
+      id: {
+        type: Sequelize.UUID,
+        primaryKey: true,
+        defaultValue: Sequelize.UUIDV4,
+      },
+      correlationId: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      processModelHash: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        defaultValue: new Date(),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        defaultValue: new Date(),
+      },
+    });
 
   },
   down: async (queryInterface, Sequelize) => {
 
     return queryInterface.dropTable('Correlations');
 
-  }
-}
+  },
+};

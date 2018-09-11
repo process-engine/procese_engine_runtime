@@ -10,7 +10,7 @@ module.exports = {
       } catch (error) {
         return undefined;
       }
-    }
+    };
 
     const processDefinitionTableInfo = await checkIfTableExists();
 
@@ -36,6 +36,16 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        defaultValue: new Date(),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        defaultValue: new Date(),
+      },
     });
 
   },
@@ -43,5 +53,5 @@ module.exports = {
 
     return queryInterface.dropTable('ProcessDefinitions');
 
-  }
-}
+  },
+};

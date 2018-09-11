@@ -45,7 +45,17 @@ module.exports = {
           allowNull: false,
           defaultValue: false,
         },
-        });
+        createdAt: {
+          type: Sequelize.DATE,
+          allowNull: true,
+          defaultValue: new Date(),
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          allowNull: true,
+          defaultValue: new Date(),
+        },
+      });
     }
 
     if (!processTokenTableInfo) {
@@ -76,11 +86,6 @@ module.exports = {
           type: Sequelize.TEXT,
           allowNull: false,
         },
-        createdAt: {
-          type: Sequelize.DATE,
-          allowNull: true,
-          defaultValue: new Date(),
-        },
         caller: {
           type: Sequelize.STRING,
           allowNull: true,
@@ -92,7 +97,17 @@ module.exports = {
         flowNodeInstanceForeignKey: {
           type: Sequelize.TEXT,
           allowNull: false,
-        }
+        },
+        createdAt: {
+          type: Sequelize.DATE,
+          allowNull: true,
+          defaultValue: new Date(),
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          allowNull: true,
+          defaultValue: new Date(),
+        },
       });
 
       console.log('Creating ForeignKey on table ProcessTokens');
@@ -111,5 +126,5 @@ module.exports = {
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('ProcessTokens');
     return queryInterface.dropTable('FlowNodeInstances');
-  }
-}
+  },
+};

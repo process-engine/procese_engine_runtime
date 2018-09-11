@@ -10,7 +10,7 @@ module.exports = {
       } catch (error) {
         return undefined;
       }
-    }
+    };
 
     const timersTableInfo = await checkIfTableExists();
 
@@ -47,12 +47,20 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: true,
       },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        defaultValue: new Date(),
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        defaultValue: new Date(),
+      },
     });
 
   },
   down: async (queryInterface, Sequelize) => {
-
     return queryInterface.dropTable('Timers');
-
-  }
-}
+  },
+};
