@@ -25,6 +25,7 @@ async function runMigrations(sqlitePath) {
   const env = process.env.NODE_ENV || 'sqlite'
 
   const repositories = [
+    'correlation',
     'flow_node_instance',
     'process_model',
     'timer',
@@ -72,8 +73,9 @@ function loadIocModules() {
     '@essential-projects/http_extension',
     '@essential-projects/services',
     '@essential-projects/timing',
-    '@process-engine/consumer_api_core', // Required by the process engine's UserTask handler
+    '@process-engine/consumer_api_core',
     '@process-engine/consumer_api_http',
+    '@process-engine/correlations.repository.sequelize',
     '@process-engine/flow_node_instance.repository.sequelize',
     '@process-engine/iam',
     '@process-engine/management_api_core',
@@ -151,10 +153,12 @@ function setDatabasePaths(sqlitePath) {
 
   const databaseBasePath = getSqliteStoragePath(sqlitePath);
 
+  const correlationRepositoryStoragePath = path.join(databaseBasePath, 'correlation.sqlite');
   const processModelRepositoryStoragePath = path.join(databaseBasePath, 'process_model.sqlite');
   const flowNodeRepositoryStoragePath = path.join(databaseBasePath, 'flow_node_instance.sqlite');
   const timerRepositoryStoragePath = path.join(databaseBasePath, 'timer.sqlite');
 
+  process.env.process_engine__correlation_repository__storage = correlationRepositoryStoragePath;
   process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
   process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
   process.env.process_engine__timer_repository__storage = timerRepositoryStoragePath;
