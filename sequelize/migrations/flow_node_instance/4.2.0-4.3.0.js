@@ -14,8 +14,6 @@ module.exports = {
 
     const processTokenTableInfo = await queryInterface.describeTable('ProcessTokens');
 
-    console.log(processTokenTableInfo);
-
     const migrationNotRequired = processTokenTableInfo.flowNodeInstanceForeignKey === undefined
       && processTokenTableInfo.type !== undefined;
 
