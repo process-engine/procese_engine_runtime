@@ -1,15 +1,17 @@
 #!/usr/bin/env node
+'use strict';
 
 const InvocationContainer = require('addict-ioc').InvocationContainer;
 const fs = require('fs');
 const path = require('path');
+const platformFolders = require('platform-folders');
 
 const executeMigrations = require('./migrator').migrate;
 
-process.on('unhandledRejection', err => {
-  console.log('-- An unhandled exception was caught! Error: --')
+process.on('unhandledRejection', (err) => {
+  console.log('-- An unhandled exception was caught! Error: --');
   console.log(err);
-  console.log('-- end of unhandled exception stack trace --')
+  console.log('-- end of unhandled exception stack trace --');
 });
 
 // The folder location for the skeleton-electron app was a different one,
@@ -22,7 +24,7 @@ module.exports = async (sqlitePath) => {
 
 async function runMigrations(sqlitePath) {
 
-  const env = process.env.NODE_ENV || 'sqlite'
+  const env = process.env.NODE_ENV || 'sqlite';
 
   const repositories = [
     'correlation',
@@ -112,7 +114,7 @@ function loadConfiguredEnvironmentOrDefault() {
 
   const isEnvironmentAvailable = availableEnvironments.find((environment) => {
     return configuredEnvironment === environment;
-  })
+  });
 
   if (isEnvironmentAvailable) {
     process.env.NODE_ENV = configuredEnvironment;
@@ -129,7 +131,7 @@ function initializeEnvironment(sqlitePath) {
   loadConfiguredEnvironmentOrDefault();
 
   // set current working directory
-  const userDataFolderPath = require('platform-folders').getConfigHome();
+  const userDataFolderPath = platformFolders.getConfigHome();
   const userDataProcessEngineFolderName = 'process_engine_runtime';
 
   const workingDir = path.join(userDataFolderPath, userDataProcessEngineFolderName);
@@ -170,7 +172,7 @@ function getSqliteStoragePath(sqlitePath) {
     return sqlitePath;
   }
 
-  const userDataFolderPath = require('platform-folders').getConfigHome();
+  const userDataFolderPath = platformFolders.getConfigHome();
   const userDataProcessEngineFolderName = 'process_engine_runtime';
   const processEngineDatabaseFolderName = 'databases';
 

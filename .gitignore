@@ -3,6 +3,11 @@ logs
 *.log
 npm-debug.log*
 
+correlations.sqlite
+processengine.sqlite
+flow_node_instance.sqlite
+process_model.sqlite
+timer.sqlite
 sqlite_temp.json
 
 # lock-files

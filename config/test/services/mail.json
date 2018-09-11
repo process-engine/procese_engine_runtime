@@ -1,0 +1,9 @@
+{
+  "port": 465,
+  "secure": true,
+  "ignoreTLS": true,
+  "tls": {
+    "rejectUnauthorized": false
+  },
+  "from": "test@user.com"
+}
