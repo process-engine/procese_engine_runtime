@@ -68,21 +68,24 @@ module.exports = {
       }
     );
 
+    // TODO: Due to a bug within sequelize, this doesn't work right now.
+    //
+    // This has the side effect of rendering foreign keys unusable,
+    // because most DBs won't allow for non-unique columns to serve as foreign key.
+    //
+    // This goes for the changeColumn and addConstraint functions.
     console.log('Add unique-constraint to FlowNodeInstances.flowNodeInstanceId');
-    await queryInterface.changeColumn(
-      'FlowNodeInstances',
-      'flowNodeInstanceId',
-      {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-      }
-    );
+    queryInterface.addConstraint('FlowNodeInstances', ['flowNodeInstanceId'], {
+      type: 'unique',
+      name: 'flowNodeInstanceIdUniqueConstraint',
+    });
 
     console.log('Updating existing foreign key data');
     for (const processToken of processTokens) {
-      const flowNodeInstanceIdQueryResult =
-        await queryInterface.sequelize.query(`SELECT flowNodeInstanceId FROM FlowNodeInstances WHERE id = '${processToken.flowNodeInstanceForeignKey}'`);
+
+      const selectFniIdQuery = `SELECT flowNodeInstanceId FROM FlowNodeInstances WHERE id = '${processToken.flowNodeInstanceForeignKey}'`;
+
+      const flowNodeInstanceIdQueryResult = await queryInterface.sequelize.query(selectFniIdQuery);
 
       const flowNodeInstanceId = flowNodeInstanceIdQueryResult[0][0].flowNodeInstanceId;
 
@@ -91,16 +94,17 @@ module.exports = {
       await queryInterface.sequelize.query(updateProcessTokenQuery);
     }
 
-    console.log('Adding new index');
-    await queryInterface.addConstraint('ProcessTokens', ['flowNodeInstanceId'], {
-      type: 'FOREIGN KEY',
-      name: 'FK_process_token_flow_node_instance',
-      references: {
-        table: 'FlowNodeInstances',
-        field: 'flowNodeInstanceId',
-      },
-      onDelete: 'cascade',
-    });
+    // TODO: See above, this is currently broken, due to a bug with sequelize.
+    // console.log('Adding new index');
+    // await queryInterface.addConstraint('ProcessTokens', ['flowNodeInstanceId'], {
+    //   type: 'FOREIGN KEY',
+    //   name: 'FK_process_token_flow_node_instance',
+    //   references: {
+    //     table: 'FlowNodeInstances',
+    //     field: 'flowNodeInstanceId',
+    //   },
+    //   onDelete: 'cascade',
+    // });
     console.log('Migration successful!');
   },
   down: async (queryInterface, Sequelize) => {
@@ -108,59 +112,3 @@ module.exports = {
     return Promise.resolve();
   },
 };
-
-// OLD:
-// CREATE TABLE `FlowNodeInstances` (
-//   `id`	UUID,
-//   `flowNodeInstanceId`	VARCHAR ( 255 ) NOT NULL,
-//   `flowNodeId`	VARCHAR ( 255 ) NOT NULL,
-//   `state`	INTEGER NOT NULL DEFAULT 0,
-//   `error`	VARCHAR ( 255 ),
-//   `isSuspended`	TINYINT ( 1 ) NOT NULL DEFAULT 0,
-//   `createdAt`	DATETIME NOT NULL,
-//   `updatedAt`	DATETIME NOT NULL,
-//   PRIMARY KEY(`id`)
-// );
-// CREATE TABLE `ProcessTokens` (
-//   `id`	UUID,
-//   `processInstanceId`	VARCHAR ( 255 ) NOT NULL,
-//   `processModelId`	VARCHAR ( 255 ) NOT NULL,
-//   `flowNodeInstanceId`	UUID NOT NULL,
-//   `correlationId`	VARCHAR ( 255 ) NOT NULL,
-//   `identity`	TEXT NOT NULL,
-//   `createdAt`	DATETIME DEFAULT '2018-08-31 13:14:58.517 +00:00',
-//   `caller`	VARCHAR ( 255 ),
-//   `payload`	TEXT,
-//   `updatedAt`	DATETIME NOT NULL,
-//   `flowNodeInstanceForeignKey`	UUID,
-//   FOREIGN KEY(`flowNodeInstanceForeignKey`) REFERENCES `FlowNodeInstances`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-//   PRIMARY KEY(`id`)
-// );
-
-// NEW:
-// CREATE TABLE `FlowNodeInstances` (
-//   `id`	UUID,
-//   `flowNodeInstanceId`	VARCHAR ( 255 ) NOT NULL UNIQUE,
-//   `flowNodeId`	VARCHAR ( 255 ) NOT NULL,
-//   `state`	VARCHAR ( 255 ) NOT NULL DEFAULT 0,
-//   `error`	VARCHAR ( 255 ),
-//   `isSuspended`	TINYINT ( 1 ) NOT NULL DEFAULT 0,
-//   `createdAt`	DATETIME NOT NULL,
-//   `updatedAt`	DATETIME NOT NULL,
-//   PRIMARY KEY(`id`)
-// );
-//  CREATE TABLE `ProcessTokens` (
-//    `id`	UUID,
-//    `processInstanceId`	VARCHAR ( 255 ) NOT NULL,
-//    `processModelId`	VARCHAR ( 255 ) NOT NULL,
-//    `flowNodeInstanceId`	VARCHAR ( 255 ) NOT NULL,
-//    `correlationId`	VARCHAR ( 255 ) NOT NULL,
-//    `identity`	TEXT NOT NULL,
-//    `createdAt`	DATETIME DEFAULT '2018-08-31 12:32:52.441 +00:00',
-//    `caller`	VARCHAR ( 255 ),
-//    `type`	VARCHAR ( 255 ),
-//    `payload`	TEXT,
-//    `updatedAt`	DATETIME NOT NULL,
-//    FOREIGN KEY(`flowNodeInstanceId`) REFERENCES `FlowNodeInstances`(`flowNodeInstanceId`) ON DELETE CASCADE ON UPDATE CASCADE,
-//    PRIMARY KEY(`id`)
-//  );
