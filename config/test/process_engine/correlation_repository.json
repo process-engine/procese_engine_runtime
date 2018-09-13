@@ -1,0 +1,12 @@
+{
+  "username": null,
+  "password": null,
+  "database": null,
+  "host": null,
+  "port": null,
+  "dialect": "sqlite",
+  "storage": "test/sqlite_repositories/correlations.sqlite",
+  "supportBigNumbers": true,
+  "resetPasswordRequestTimeToLive": 12,
+  "logging": false
+}

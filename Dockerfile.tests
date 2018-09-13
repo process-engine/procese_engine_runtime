@@ -1,0 +1,22 @@
+FROM node:8-alpine
+
+RUN apk add --no-cache git
+
+WORKDIR /usr/src/app
+ENV PYTHON "/usr/bin/python"
+ENV PYTHONPATH "/usr/bin/python"
+
+COPY bin ./bin
+COPY bpmn ./bpmn
+COPY config ./config
+COPY sequelize ./sequelize
+COPY src ./src
+COPY test ./test
+
+COPY gulpfile.js ./
+COPY index.js ./
+COPY package.json ./
+COPY tsconfig.json ./
+
+RUN npm install
+RUN npm run build

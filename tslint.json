@@ -1,0 +1,3 @@
+{
+  "extends": "@essential-projects/tslint-config"
+}

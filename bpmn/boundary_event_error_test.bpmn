@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definition_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
+  <bpmn:collaboration id="Collaboration_1cidyxu">
+    <bpmn:participant id="Participant_0px403d" name="boundary_event_error_test" processRef="boundary_event_error_test" />
+  </bpmn:collaboration>
+  <bpmn:process id="boundary_event_error_test" name="boundary_event_error_test" isExecutable="false">
+    <bpmn:laneSet>
+      <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
+        <bpmn:extensionElements>
+          <camunda:executionListener class="" event="" />
+
+        </bpmn:extensionElements>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_0ax00t6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_14s92ha</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ScriptTask_AfterErrorThrown</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ScriptTask_Success</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ScriptTask_ErrorRaiser</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>BoundaryEvent_14fwi4a</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_1" name="ErrorBoundaryEvent">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="" event="" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_0gshgcn</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0gshgcn" sourceRef="StartEvent_1" targetRef="ScriptTask_ErrorRaiser" />
+    <bpmn:endEvent id="EndEvent_0ax00t6" name="Successful Process End">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="" event="" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0ue80rd</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_14s92ha" name="Process Error End">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="" event="" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1dir57p</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_18lguz5" sourceRef="BoundaryEvent_14fwi4a" targetRef="ScriptTask_AfterErrorThrown" />
+    <bpmn:scriptTask id="ScriptTask_AfterErrorThrown" name="Script task after error thrown">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="" event="" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_18lguz5</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1dir57p</bpmn:outgoing>
+      <bpmn:script>console.log('Error Boundary Event triggered!');
+console.log(token.history.ScriptTask_ErrorRaiser);
+return 'test'</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0szmujr" name="" sourceRef="ScriptTask_ErrorRaiser" targetRef="ScriptTask_Success" />
+    <bpmn:sequenceFlow id="SequenceFlow_0ue80rd" sourceRef="ScriptTask_Success" targetRef="EndEvent_0ax00t6">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="mapper" value="token.history.ScriptTask_Success" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+    </bpmn:sequenceFlow>
+    <bpmn:scriptTask id="ScriptTask_Success" name="Script Task after previous task was successful">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="" event="" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0szmujr</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0ue80rd</bpmn:outgoing>
+      <bpmn:script>console.log('Continue normal execution');
+console.log(token.history.ScriptTask_ErrorRaiser);
+return 'success!';</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1dir57p" sourceRef="ScriptTask_AfterErrorThrown" targetRef="EndEvent_14s92ha">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="mapper" value="token.history.ScriptTask_ErrorRaiser" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+    </bpmn:sequenceFlow>
+    <bpmn:scriptTask id="ScriptTask_ErrorRaiser" name="Sample Script Task">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="" event="" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0gshgcn</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0szmujr</bpmn:outgoing>
+      <bpmn:script>if (token.history.StartEvent_1.raiseError === true) {
+  throw new Error('test');
+}</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:boundaryEvent id="BoundaryEvent_14fwi4a" attachedToRef="ScriptTask_ErrorRaiser">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="" event="" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_18lguz5</bpmn:outgoing>
+      <bpmn:errorEventDefinition />
+    </bpmn:boundaryEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1cidyxu">
+      <bpmndi:BPMNShape id="Participant_0px403d_di" bpmnElement="Participant_0px403d">
+        <dc:Bounds x="5" y="4" width="583" height="311" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="101" y="65" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="109" y="101" width="21" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3">
+        <dc:Bounds x="35" y="4" width="553" height="311" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0gshgcn_di" bpmnElement="SequenceFlow_0gshgcn">
+        <di:waypoint x="137" y="83" />
+        <di:waypoint x="216" y="83" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="131.5" y="61.5" width="90" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0ax00t6_di" bpmnElement="EndEvent_0ax00t6">
+        <dc:Bounds x="523" y="65" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="510" y="104" width="63" height="25" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_14s92ha_di" bpmnElement="EndEvent_14s92ha">
+        <dc:Bounds x="523" y="211" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="496" y="250" width="90" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BoundaryEvent_18g020u_di" bpmnElement="BoundaryEvent_14fwi4a">
+        <dc:Bounds x="298" y="105" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="316" y="144" width="0" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_18lguz5_di" bpmnElement="SequenceFlow_18lguz5">
+        <di:waypoint x="316" y="141" />
+        <di:waypoint x="316" y="189" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="286" y="158.5" width="90" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_0e0aifg_di" bpmnElement="ScriptTask_AfterErrorThrown">
+        <dc:Bounds x="266" y="189" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0szmujr_di" bpmnElement="SequenceFlow_0szmujr">
+        <di:waypoint x="316" y="83" />
+        <di:waypoint x="370" y="83" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="298" y="61.5" width="90" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0ue80rd_di" bpmnElement="SequenceFlow_0ue80rd">
+        <di:waypoint x="470" y="83" />
+        <di:waypoint x="523" y="83" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="496.5" y="61.5" width="0" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_0wddu5h_di" bpmnElement="ScriptTask_Success">
+        <dc:Bounds x="370" y="43" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1dir57p_di" bpmnElement="SequenceFlow_1dir57p">
+        <di:waypoint x="366" y="229" />
+        <di:waypoint x="523" y="229" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="444.5" y="207" width="0" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_14eigy9_di" bpmnElement="ScriptTask_ErrorRaiser">
+        <dc:Bounds x="216" y="43" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
