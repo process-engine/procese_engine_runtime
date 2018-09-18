@@ -10,8 +10,10 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
+    const env = process.env.NODE_ENV || 'sqlite';
+
     // Note that this bug does not seem to affect postgres.
-    if (process.env.NODE_ENV !== 'sqlite') {
+    if (env !== 'sqlite') {
       return Promise.resolve();
     }
 

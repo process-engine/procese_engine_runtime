@@ -39,7 +39,9 @@ module.exports = {
     // after isSuspended was removed.
     //
     // Note that this bug does not seem to affect postgres.
-    if (process.env.NODE_ENV === 'sqlite') {
+
+    const env = process.env.NODE_ENV || 'sqlite';
+    if (env === 'sqlite') {
       await queryInterface.changeColumn(
         'FlowNodeInstances',
         'flowNodeInstanceId',
