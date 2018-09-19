@@ -29,7 +29,13 @@ module.exports = {
       }
     );
 
-    await queryInterface.sequelize.query('INSERT INTO ProcessTokens (flowNodeInstanceId_2) SELECT flowNodeInstanceId FROM ProcessTokens');
+    const updateQuery = `UPDATE "ProcessTokens"
+                             SET "flowNodeInstanceId_2" = (
+                                SELECT "flowNodeInstanceId"
+                                FROM "ProcessTokens" AS "Backup"
+                                WHERE "Backup"."id" = "ProcessTokens"."id");`;
+
+    await queryInterface.sequelize.query(updateQuery);
     await queryInterface.removeColumn('ProcessTokens', 'flowNodeInstanceId');
     await queryInterface.renameColumn('ProcessTokens', 'flowNodeInstanceId_2', 'flowNodeInstanceId');
   },
