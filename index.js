@@ -166,10 +166,16 @@ function setDatabasePaths(sqlitePath) {
   const flowNodeRepositoryStoragePath = path.join(databaseBasePath, 'flow_node_instance.sqlite');
   const timerRepositoryStoragePath = path.join(databaseBasePath, 'timer.sqlite');
 
+  const logsStoragePath = path.join(databaseBasePath, 'logs');
+  const metricsStoragePath = path.join(databaseBasePath, 'metrics');
+
   process.env.process_engine__correlation_repository__storage = correlationRepositoryStoragePath;
   process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
   process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
   process.env.process_engine__timer_repository__storage = timerRepositoryStoragePath;
+
+  process.env.process_engine__logging_repository__log_output_path = logsStoragePath;
+  process.env.process_engine__metrics_repository__log_output_path = metricsStoragePath;
 }
 
 function getSqliteStoragePath(sqlitePath) {
