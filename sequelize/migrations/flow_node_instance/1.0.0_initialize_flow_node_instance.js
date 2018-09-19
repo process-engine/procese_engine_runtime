@@ -26,13 +26,14 @@ module.exports = {
         flowNodeInstanceId: {
           type: Sequelize.STRING,
           allowNull: false,
+          unique: true,
         },
         flowNodeId: {
           type: Sequelize.STRING,
           allowNull: false,
         },
         state: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.STRING,
           allowNull: false,
           defaultValue: 0,
         },
@@ -108,18 +109,6 @@ module.exports = {
           allowNull: true,
           defaultValue: new Date(),
         },
-      });
-
-      console.log('Creating ForeignKey on table ProcessTokens');
-
-      await queryInterface.addConstraint('ProcessTokens', ['flowNodeInstanceForeignKey'], {
-        type: 'FOREIGN KEY',
-        name: 'flowNodeInstanceForeignKey',
-        references: {
-          table: 'FlowNodeInstances',
-          field: 'id',
-        },
-        onDelete: 'cascade',
       });
     }
   },
