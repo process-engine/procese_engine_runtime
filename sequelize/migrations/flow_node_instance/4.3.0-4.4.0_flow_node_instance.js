@@ -23,6 +23,35 @@ module.exports = {
 
     console.log('Removing old isSuspended column');
     await queryInterface.removeColumn('FlowNodeInstances', 'isSuspended');
+
+    await queryInterface.changeColumn(
+      'FlowNodeInstances',
+      'state',
+      {
+        type: Sequelize.STRING,
+        allowNull: true,
+      }
+    );
+
+    // TODO:
+    // There is a weird bug in the query interface, when using sqlite, which drops all unique constraints whenever a column is removed.
+    // We removed foreignKeys, so this should not be that much of a problem, but we need to re-add the unique constraint,
+    // after isSuspended was removed.
+    //
+    // Note that this bug does not seem to affect postgres.
+
+    const env = process.env.NODE_ENV || 'sqlite';
+    if (env === 'sqlite') {
+      await queryInterface.changeColumn(
+        'FlowNodeInstances',
+        'flowNodeInstanceId',
+        {
+          type: Sequelize.STRING,
+          allowNull: false,
+          unique: true,
+        }
+      );
+    }
   },
   down: async (queryInterface, Sequelize) => {
     console.log('Running reverting migrations');
