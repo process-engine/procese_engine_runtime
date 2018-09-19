@@ -3,7 +3,7 @@
   <bpmn:collaboration id="Collaboration_1cidyxu">
     <bpmn:participant id="Participant_0px403d" name="boundary_event_error_test" processRef="boundary_event_error_test" />
   </bpmn:collaboration>
-  <bpmn:process id="boundary_event_error_test" name="boundary_event_error_test" isExecutable="false">
+  <bpmn:process id="boundary_event_error_test" name="boundary_event_error_test" isExecutable="true">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
         <bpmn:extensionElements>

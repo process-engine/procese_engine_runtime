@@ -3,7 +3,7 @@
   <bpmn:collaboration id="Collaboration_1cidyxu">
     <bpmn:participant id="Participant_0px403d" name="subprocess_test" processRef="subprocess_test" />
   </bpmn:collaboration>
-  <bpmn:process id="subprocess_test" name="subprocess_test" isExecutable="false">
+  <bpmn:process id="subprocess_test" name="subprocess_test" isExecutable="true">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>

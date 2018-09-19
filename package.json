@@ -60,6 +60,7 @@
     "@process-engine/logging_api_core": "feature~initial_implementation",
     "@process-engine/logging.repository.file_system": "feature~initial_implementation",
     "@process-engine/management_api_client": "0.8.0",
+    "@process-engine/management_api_contracts": "0.9.0",
     "@process-engine/management_api_core": "0.9.0",
     "@process-engine/management_api_http": "0.8.0",
     "@process-engine/metrics_api_core": "feature~initial_implementation",
