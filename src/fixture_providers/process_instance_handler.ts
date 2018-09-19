@@ -42,9 +42,9 @@ export class ProcessInstanceHandler {
     return result.correlationId;
   }
 
-  public async waitForProcessInstanceToReachUserTask(correlationId: string): Promise<void> {
+  public async waitForProcessInstanceToReachUserTask(correlationId: string, processModelId?: string): Promise<void> {
 
-    const maxNumberOfRetries: number = 20;
+    const maxNumberOfRetries: number = 30;
     const delayBetweenRetriesInMs: number = 500;
 
     const flowNodeInstanceService: IFlowNodeInstanceService = await this.testFixtureProvider.resolveAsync('FlowNodeInstanceService');
@@ -53,10 +53,15 @@ export class ProcessInstanceHandler {
 
       await this.wait(delayBetweenRetriesInMs);
 
-      const flowNodeInstances: Array<any> =
-        await flowNodeInstanceService.querySuspendedByCorrelation(correlationId);
+      let flowNodeInstances: Array<any> = await flowNodeInstanceService.querySuspendedByCorrelation(correlationId);
 
-      if (flowNodeInstances && flowNodeInstances.length >= 1) {
+      if (processModelId) {
+        flowNodeInstances = flowNodeInstances.filter((fni) => {
+          return fni.tokens[0].processModelId === processModelId;
+        });
+      }
+
+      if (flowNodeInstances.length >= 1) {
         return;
       }
     }
