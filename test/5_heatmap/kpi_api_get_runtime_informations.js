@@ -33,7 +33,7 @@ describe('KPI API -> Get Runtime Informations - ', () => {
     should(runtimeInfos.length).be.equal(10, `Expected 10 runtime informations, but got ${runtimeInfos.length}.`);
 
     const expectedFlowNodeIds = [
-      'StartEvent_1',
+      'StartEvent_1mox3jl',
       'ExclusiveGateway_0fi1ct7',
       'ScriptTask_1',
       'ServiceTask_1',

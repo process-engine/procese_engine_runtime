@@ -87,12 +87,12 @@ describe('Logging API Tests - ', () => {
     should(logEntries.length).be.equal(14);
 
     const expectedLogMessageTypes = [
-      /FNI Entered/i,
-      /FNI Exited/i,
+      /FlowNodeInstance Log Message/i,
+      /Another Logged Message/i,
     ];
 
     const expectedFlowNodeEntries = [
-      'StartEvent_1',
+      'StartEvent_1mox3jl',
       'ExclusiveGateway_0fi1ct7',
       'ScriptTask_1',
       'ServiceTask_1',
