@@ -6,7 +6,7 @@ const should = require('should');
 const uuid = require('uuid');
 const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
-describe.only('Metric API Tests - ', () => {
+describe('Metric API Tests - ', () => {
 
   let testFixtureProvider;
 

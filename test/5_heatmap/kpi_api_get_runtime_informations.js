@@ -3,7 +3,7 @@
 const should = require('should');
 const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
-describe.only('KPI API -> Get Runtime Informations - ', () => {
+describe('KPI API -> Get Runtime Informations - ', () => {
 
   let testFixtureProvider;
 

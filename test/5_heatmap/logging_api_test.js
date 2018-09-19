@@ -3,7 +3,7 @@
 const should = require('should');
 const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
-describe.only('Logging API Tests - ', () => {
+describe('Logging API Tests - ', () => {
 
   let testFixtureProvider;
 

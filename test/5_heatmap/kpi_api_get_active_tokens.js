@@ -5,7 +5,7 @@ const uuid = require('uuid');
 const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 const ProcessInstanceHandler = require('../../dist/commonjs').ProcessInstanceHandler;
 
-describe.only('KPI API -> Get Active Tokens - ', () => {
+describe('KPI API -> Get Active Tokens - ', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
