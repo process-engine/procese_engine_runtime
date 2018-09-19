@@ -26,13 +26,13 @@ export class ProcessInstanceHandler {
     return this._testFixtureProvider;
   }
 
-  public async startProcessInstanceAndReturnCorrelationId(processModelId: string, correlationId?: string): Promise<string> {
+  public async startProcessInstanceAndReturnCorrelationId(processModelId: string, correlationId?: string, inputValues?: any): Promise<string> {
 
     const startEventId: string = 'StartEvent_1';
     const startCallbackType: StartCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
     const payload: ProcessStartRequestPayload = {
       correlationId: correlationId || uuid.v4(),
-      inputValues: {},
+      inputValues: inputValues || {},
     };
 
     const result: ProcessStartResponsePayload = await this.testFixtureProvider
