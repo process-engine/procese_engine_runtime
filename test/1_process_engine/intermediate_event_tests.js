@@ -39,7 +39,7 @@ describe('Intermediate Events - ', () => {
     should(result.tokenPayload).be.match(expectedResult);
   });
 
-  it.skip('should throw and receive a signal', async () => {
+  it('should throw and receive a signal', async () => {
 
     const processModelId = 'intermediate_event_signal_test';
 
