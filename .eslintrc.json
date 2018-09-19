@@ -6,6 +6,7 @@
         "ignoreComments": false
       }],
       "no-continue": "off",
-      "no-use-before-define": "off"
+      "no-use-before-define": "off",
+      "no-console": "off"
     }
 }
