@@ -49,7 +49,7 @@
     "@essential-projects/timing_contracts": "3.0.0",
     "@process-engine/consumer_api_client": "0.13.2",
     "@process-engine/consumer_api_contracts": "0.16.1",
-    "@process-engine/consumer_api_core": "0.22.3",
+    "@process-engine/consumer_api_core": "0.22.4",
     "@process-engine/consumer_api_http": "0.11.2",
     "@process-engine/correlations.repository.sequelize": "1.1.1",
     "@process-engine/deployment_api_core": "0.2.2",
