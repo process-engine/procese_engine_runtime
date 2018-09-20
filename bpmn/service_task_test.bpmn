@@ -3,7 +3,7 @@
   <bpmn:collaboration id="Collaboration_1xizg2r">
     <bpmn:participant id="Participant_1wjsi6z" name="service_task_test" processRef="service_task_test" />
   </bpmn:collaboration>
-  <bpmn:process id="service_task_test" name="service_task_test" isExecutable="false">
+  <bpmn:process id="service_task_test" name="service_task_test" isExecutable="true">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_02qdley" name="Default_Test_Lane">
         <bpmn:flowNodeRef>BTTask1</bpmn:flowNodeRef>
