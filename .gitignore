@@ -10,6 +10,9 @@ process_model.sqlite
 timer.sqlite
 sqlite_temp.json
 
+metrics
+logs
+
 # lock-files
 package-lock.json
 yarn.lock

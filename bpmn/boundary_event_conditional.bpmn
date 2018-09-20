@@ -8,22 +8,11 @@
       </bpmn:extensionElements>
     </bpmn:participant>
   </bpmn:collaboration>
-  <bpmn:process id="boundary_event_conditional" name="boundary_event_conditional" isExecutable="false">
+  <bpmn:process id="boundary_event_conditional" name="boundary_event_conditional" isExecutable="true">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
         <bpmn:extensionElements>
           <camunda:executionListener class="" event="" />
-          <camunda:properties />
-          <camunda:properties />
-          <camunda:properties />
-          <camunda:properties />
-          <camunda:properties />
-          <camunda:properties />
-          <camunda:properties />
-          <camunda:properties />
-          <camunda:properties />
-          <camunda:properties />
-          <camunda:properties />
         </bpmn:extensionElements>
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_1</bpmn:flowNodeRef>
@@ -39,34 +28,12 @@
     <bpmn:startEvent id="StartEvent_1" name="boundary_event_conditional">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
       </bpmn:extensionElements>
       <bpmn:outgoing>SequenceFlow_16gvzxi</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:scriptTask id="Task_1" name="Return token">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_16gvzxi</bpmn:incoming>
       <bpmn:script>return token.current;</bpmn:script>
@@ -74,14 +41,6 @@
     <bpmn:scriptTask id="Task_2" name="Return lesser">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0a4srpj</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_17xs3lb</bpmn:outgoing>
@@ -90,15 +49,6 @@
     <bpmn:boundaryEvent id="BoundaryEvent_1r6vxhq" name="" attachedToRef="Task_1">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
       </bpmn:extensionElements>
       <bpmn:outgoing>SequenceFlow_0a4srpj</bpmn:outgoing>
       <bpmn:conditionalEventDefinition>
@@ -109,15 +59,12 @@
     <bpmn:sequenceFlow id="SequenceFlow_0a4srpj" sourceRef="BoundaryEvent_1r6vxhq" targetRef="Task_2">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
-        <camunda:properties />
       </bpmn:extensionElements>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_0q3cy8o" sourceRef="BoundaryEvent_06qbafc" targetRef="Task_0vqors1" />
     <bpmn:boundaryEvent id="BoundaryEvent_06qbafc" name="" attachedToRef="Task_1">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
-        <camunda:properties />
-        <camunda:properties />
       </bpmn:extensionElements>
       <bpmn:outgoing>SequenceFlow_0q3cy8o</bpmn:outgoing>
       <bpmn:conditionalEventDefinition>
@@ -128,7 +75,6 @@
     <bpmn:scriptTask id="Task_0vqors1" name="Return greater">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
-        <camunda:properties />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0q3cy8o</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0lzcgh7</bpmn:outgoing>
@@ -137,7 +83,6 @@
     <bpmn:sequenceFlow id="SequenceFlow_0lzcgh7" sourceRef="Task_0vqors1" targetRef="ExclusiveGateway_1t8whw7">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
-        <camunda:properties />
       </bpmn:extensionElements>
     </bpmn:sequenceFlow>
     <bpmn:exclusiveGateway id="ExclusiveGateway_1t8whw7" name="">
@@ -153,12 +98,6 @@
     <bpmn:scriptTask id="Task_1n8aty7" name="Return Object">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
-        <camunda:properties />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0wf9nk8</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0r9itca</bpmn:outgoing>

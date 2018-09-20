@@ -80,6 +80,11 @@ function loadIocModules() {
     '@process-engine/correlations.repository.sequelize',
     '@process-engine/flow_node_instance.repository.sequelize',
     '@process-engine/iam',
+    '@process-engine/kpi_api_core',
+    '@process-engine/logging_api_core',
+    '@process-engine/logging.repository.file_system',
+    '@process-engine/metrics_api_core',
+    '@process-engine/metrics.repository.file_system',
     '@process-engine/management_api_core',
     '@process-engine/management_api_http',
     '@process-engine/deployment_api_core',
@@ -87,10 +92,11 @@ function loadIocModules() {
     '@process-engine/process_engine_core',
     '@process-engine/process_model.repository.sequelize',
     '@process-engine/timers.repository.sequelize',
+    '@process-engine/token_history_api_core',
   ];
 
   const iocModules = iocModuleNames.map((moduleName) => {
-    return require(`${moduleName}/ioc_module`);
+    return require(`${moduleName}/ioc_module`); //eslint-disable-line
   });
 
   return iocModules;
@@ -160,10 +166,16 @@ function setDatabasePaths(sqlitePath) {
   const flowNodeRepositoryStoragePath = path.join(databaseBasePath, 'flow_node_instance.sqlite');
   const timerRepositoryStoragePath = path.join(databaseBasePath, 'timer.sqlite');
 
+  const logsStoragePath = path.join(databaseBasePath, 'logs');
+  const metricsStoragePath = path.join(databaseBasePath, 'metrics');
+
   process.env.process_engine__correlation_repository__storage = correlationRepositoryStoragePath;
   process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
   process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
   process.env.process_engine__timer_repository__storage = timerRepositoryStoragePath;
+
+  process.env.process_engine__logging_repository__log_output_path = logsStoragePath;
+  process.env.process_engine__metrics_repository__log_output_path = metricsStoragePath;
 }
 
 function getSqliteStoragePath(sqlitePath) {
