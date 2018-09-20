@@ -82,7 +82,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/user_tasks', ()
   it('should return a list of user tasks from a call activity, by the given correlationId through the consumer api', async () => {
 
     const correlationIdCallActivity = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdCallActivity);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationIdCallActivity);
+    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationIdCallActivity, processModelIdCallActivitySubprocess);
 
     const userTaskList = await testFixtureProvider
       .consumerApiClientService
@@ -119,7 +119,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/user_tasks', ()
 
     await testFixtureProvider
       .consumerApiClientService
-      .finishUserTask(consumerContext, processModelIdCallActivitySubprocess, correlationIdCallActivity, 'Task_13ppr5w', userTaskResult);
+      .finishUserTask(consumerContext, processModelIdCallActivitySubprocess, correlationIdCallActivity, 'UserTaskTestCallActivity_1', userTaskResult);
   });
 
   it('should return an empty user task list, if the given correlation does not have any user tasks', async () => {
