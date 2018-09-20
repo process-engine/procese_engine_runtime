@@ -29,23 +29,13 @@ describe('Logging API Tests - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should correctly read and parse all ProcessModel logs that were recorded for the correlation.', async () => {
-    const processModelLogs = await loggingApiService.readLogForCorrelation(dummyIdentity, correlationId);
-    await assertProcessModelLogs(processModelLogs);
-  });
-
   it('should correctly read and parse all ProcessModel logs that were recorded for the process model.', async () => {
-    const processModelLogs = await loggingApiService.readLogForProcessModel(dummyIdentity, correlationId, processModelId);
+    const processModelLogs = await loggingApiService.readLogForProcessModel(dummyIdentity, processModelId);
     await assertProcessModelLogs(processModelLogs);
-  });
-
-  it('should correctly read and parse all FlowNodeInstance logs that were recorded for the correlation.', async () => {
-    const processModelLogs = await loggingApiService.readLogForCorrelation(dummyIdentity, correlationId);
-    await assertFlowNodeInstanceLogs(processModelLogs);
   });
 
   it('should correctly read and parse all FlowNodeInstance logs that were recorded for the process model.', async () => {
-    const processModelLogs = await loggingApiService.readLogForProcessModel(dummyIdentity, correlationId, processModelId);
+    const processModelLogs = await loggingApiService.readLogForProcessModel(dummyIdentity, processModelId);
     await assertFlowNodeInstanceLogs(processModelLogs);
   });
 
