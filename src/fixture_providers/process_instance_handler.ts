@@ -59,7 +59,7 @@ export class ProcessInstanceHandler {
       let flowNodeInstances: Array<any> = await flowNodeInstanceService.querySuspendedByCorrelation(correlationId);
 
       if (processModelId) {
-        flowNodeInstances = flowNodeInstances.filter((fni) => {
+        flowNodeInstances = flowNodeInstances.filter((fni: any) => {
           return fni.tokens[0].processModelId === processModelId;
         });
       }

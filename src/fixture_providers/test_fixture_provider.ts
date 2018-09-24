@@ -39,7 +39,6 @@ export class TestFixtureProvider {
   private _managementApiClientService: IManagementApi;
   private _processModelService: IProcessModelService;
 
-
   private _identities: IdentityCollection;
 
   public get identities(): IdentityCollection {
@@ -111,7 +110,7 @@ export class TestFixtureProvider {
   public getBpmnDirectoryPath(): string {
 
     const bpmnDirectoryName: string = 'bpmn';
-    let rootDirPath: string = process.cwd();
+    const rootDirPath: string = process.cwd();
 
     return path.join(rootDirPath, bpmnDirectoryName);
   }

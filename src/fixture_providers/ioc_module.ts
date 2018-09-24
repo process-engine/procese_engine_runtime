@@ -1,19 +1,23 @@
 'use strict';
 
-const IamServiceMock = require('../mocks/index').IamServiceMock;
+import {IamServiceMock} from '../mocks/index';
 
-const {
+import {
   ParallelGatewayTestService,
   ServiceTaskTestService,
-} = require('../test_services/index');
+} from '../test_services/index';
 
-const ConsumerApiClientService = require('@process-engine/consumer_api_client').ConsumerApiClientService;
-const ConsumerApiInternalAccessor = require('@process-engine/consumer_api_client').InternalAccessor;
+import {
+  ConsumerApiClientService,
+  InternalAccessor as ConsumerApiInternalAccessor,
+} from '@process-engine/consumer_api_client';
 
-const ManagementApiClientService = require('@process-engine/management_api_client').ManagementApiClientService;
-const ManagementApiInternalAccessor = require('@process-engine/management_api_client').InternalAccessor;
+import {
+  ManagementApiClientService,
+  InternalAccessor as ManagementApiInternalAccessor,
+} from '@process-engine/management_api_client';
 
-export function registerInContainer(container) {
+export function registerInContainer(container: any): void {
 
   container.register('ConsumerApiInternalAccessor', ConsumerApiInternalAccessor)
     .dependencies('ConsumerApiService');
@@ -32,4 +36,4 @@ export function registerInContainer(container) {
 
   // This removes the necessity for having a running IdentityServer during testing.
   container.register('IamService', IamServiceMock);
-};
+}

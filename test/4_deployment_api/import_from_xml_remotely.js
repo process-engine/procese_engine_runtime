@@ -137,9 +137,9 @@ describe(`Deployment API -> POST ${importRoute}`, () => {
 
   async function assertThatImportWasSuccessful() {
 
-    const processModelService = await testFixtureProvider.resolveAsync('ProcessModelService');
-
-    const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
+    const existingProcessModel = await testFixtureProvider
+      .processModelService
+      .getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
     should.exist(existingProcessModel);
   }
