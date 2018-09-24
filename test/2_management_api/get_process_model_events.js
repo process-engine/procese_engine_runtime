@@ -25,7 +25,7 @@ describe('Management API:   GET  ->  /process_models/:process_model_id/events', 
 
     const processModel = await testFixtureProvider
       .managementApiClientService
-      .getEventsForProcessModel(testFixtureProvider.context.defaultUser, processModelId);
+      .getEventsForProcessModel(testFixtureProvider.identities.defaultUser, processModelId);
 
     should(processModel).have.property('events');
     should(processModel.events).be.instanceof(Array);

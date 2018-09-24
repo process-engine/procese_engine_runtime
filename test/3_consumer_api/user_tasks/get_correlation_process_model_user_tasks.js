@@ -11,7 +11,7 @@ describe(`Consumer API: ${testCase}`, () => {
   let processInstanceHandler;
   let testFixtureProvider;
 
-  let consumerContext;
+  let defaultIdentity;
   let correlationId;
 
   const processModelId = 'test_consumer_api_usertask';
@@ -20,7 +20,7 @@ describe(`Consumer API: ${testCase}`, () => {
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    consumerContext = testFixtureProvider.context.defaultUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
 
     await testFixtureProvider.importProcessFiles([processModelId, processModelIdNoUserTasks]);
 
@@ -45,14 +45,14 @@ describe(`Consumer API: ${testCase}`, () => {
 
     await testFixtureProvider
       .consumerApiClientService
-      .finishUserTask(consumerContext, processModelId, correlationId, userTaskId, userTaskResult);
+      .finishUserTask(defaultIdentity, processModelId, correlationId, userTaskId, userTaskResult);
   }
 
   it('should return a list of user tasks for a given process model in a given correlation', async () => {
 
     const userTaskList = await testFixtureProvider
       .consumerApiClientService
-      .getUserTasksForProcessModelInCorrelation(consumerContext, processModelId, correlationId);
+      .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
 
     should(userTaskList).have.property('userTasks');
 
@@ -87,7 +87,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     const userTaskList = await testFixtureProvider
       .consumerApiClientService
-      .getUserTasksForProcessModel(consumerContext, processModelIdNoUserTasks);
+      .getUserTasksForProcessModel(defaultIdentity, processModelIdNoUserTasks);
 
     should(userTaskList).have.property('userTasks');
     should(userTaskList.userTasks).be.instanceOf(Array);
@@ -101,7 +101,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const userTaskList = await testFixtureProvider
         .consumerApiClientService
-        .getUserTasksForProcessModelInCorrelation(consumerContext, invalidProcessModelId, correlationId);
+        .getUserTasksForProcessModelInCorrelation(defaultIdentity, invalidProcessModelId, correlationId);
 
       should.fail(userTaskList, undefined, 'This request should have failed!');
     } catch (error) {
@@ -119,7 +119,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const userTaskList = await testFixtureProvider
         .consumerApiClientService
-        .getUserTasksForProcessModelInCorrelation(consumerContext, processModelId, invalidCorrelationId);
+        .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, invalidCorrelationId);
 
       should.fail(userTaskList, undefined, 'This request should have failed!');
     } catch (error) {
@@ -148,12 +148,12 @@ describe(`Consumer API: ${testCase}`, () => {
 
   it('should fail to retrieve the correlation\'s user tasks, when the user forbidden to retrieve it', async () => {
 
-    const restrictedContext = testFixtureProvider.context.restrictedUser;
+    const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     try {
       const userTaskList = await testFixtureProvider
         .consumerApiClientService
-        .getUserTasksForProcessModelInCorrelation(restrictedContext, processModelId, correlationId);
+        .getUserTasksForProcessModelInCorrelation(restrictedIdentity, processModelId, correlationId);
 
       should.fail(userTaskList, undefined, 'This request should have failed!');
     } catch (error) {

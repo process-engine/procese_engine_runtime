@@ -7,7 +7,10 @@ import {
   ProcessStartResponsePayload,
   StartCallbackType,
 } from '@process-engine/consumer_api_contracts';
+
 import {IFlowNodeInstanceService} from '@process-engine/process_engine_contracts';
+
+import {TestFixtureProvider} from './test_fixture_provider';
 
 /**
  * This class handles the creation of process instances and waits for a process instance to reach a user task.
@@ -16,13 +19,13 @@ import {IFlowNodeInstanceService} from '@process-engine/process_engine_contracts
  */
 export class ProcessInstanceHandler {
 
-  private _testFixtureProvider: any;
+  private _testFixtureProvider: TestFixtureProvider;
 
-  constructor(testFixtureProvider: any) {
+  constructor(testFixtureProvider: TestFixtureProvider) {
     this._testFixtureProvider = testFixtureProvider;
   }
 
-  private get testFixtureProvider(): any {
+  private get testFixtureProvider(): TestFixtureProvider {
     return this._testFixtureProvider;
   }
 
@@ -37,7 +40,7 @@ export class ProcessInstanceHandler {
 
     const result: ProcessStartResponsePayload = await this.testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(this.testFixtureProvider.context.defaultUser, processModelId, startEventId, payload, startCallbackType);
+      .startProcessInstance(this.testFixtureProvider.identities.defaultUser, processModelId, startEventId, payload, startCallbackType);
 
     return result.correlationId;
   }

@@ -19,7 +19,7 @@ describe('Management API:   GET  ->  /correlations/active', () => {
 
     const result = await testFixtureProvider
       .managementApiClientService
-      .startProcessInstance(testFixtureProvider.context.defaultUser, processModelId, 'StartEvent_1', {});
+      .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelId, 'StartEvent_1', {});
 
     correlationId = result.correlationId;
 
@@ -39,7 +39,7 @@ describe('Management API:   GET  ->  /correlations/active', () => {
 
     const correlations = await testFixtureProvider
       .managementApiClientService
-      .getAllActiveCorrelations(testFixtureProvider.context.defaultUser);
+      .getAllActiveCorrelations(testFixtureProvider.identities.defaultUser);
 
     should(correlations).be.instanceOf(Array);
     should(correlations.length).be.greaterThan(0);

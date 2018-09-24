@@ -13,7 +13,7 @@ const testCase = 'Consumer API:   POST  ->  /process_models/:process_model_id/st
 describe(`Consumer API: ${testCase}`, () => {
 
   let testFixtureProvider;
-  let consumerContext;
+  let defaultIdentity;
 
   const processModelId = 'test_consumer_api_process_start';
   const processModelIdNonExecutable = 'test_consumer_api_non_executable_process';
@@ -21,7 +21,7 @@ describe(`Consumer API: ${testCase}`, () => {
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    consumerContext = testFixtureProvider.context.defaultUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
 
     const processModelsToImport = [
       processModelId,
@@ -49,7 +49,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(consumerContext, invalidProcessModelId, startEventId, payload, startCallbackType);
+        .startProcessInstance(defaultIdentity, invalidProcessModelId, startEventId, payload, startCallbackType);
 
       should.fail(result, undefined, 'This request should have failed!');
     } catch (error) {
@@ -73,7 +73,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(consumerContext, processModelId, startEventId, payload, startCallbackType);
+        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
 
       should.fail(result, undefined, 'This request should have failed!');
     } catch (error) {
@@ -98,7 +98,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(consumerContext, processModelId, startEventId, payload, startCallbackType, endEventId);
+        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType, endEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
     } catch (error) {
@@ -122,7 +122,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(consumerContext, processModelIdNonExecutable, startEventId, payload, startCallbackType);
+        .startProcessInstance(defaultIdentity, processModelIdNonExecutable, startEventId, payload, startCallbackType);
 
       should.fail(result, undefined, 'This request should have failed!');
     } catch (error) {
@@ -146,7 +146,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(consumerContext, processModelId, startEventId, payload, startCallbackType);
+        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
 
       should.fail(result, undefined, 'This request should have failed!');
     } catch (error) {
@@ -169,7 +169,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(consumerContext, processModelId, startEventId, payload, startCallbackType);
+        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
 
       should.fail(result, undefined, 'This request should have failed!');
     } catch (error) {
@@ -196,7 +196,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(consumerContext, processModelId, startEventId, payload, startCallbackType);
+        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
 
       should.fail(result, undefined, 'This request should have failed!');
     } catch (error) {

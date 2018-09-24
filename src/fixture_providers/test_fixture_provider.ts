@@ -7,45 +7,50 @@ import {Logger} from 'loggerhythm';
 const logger: Logger = Logger.createLogger('test:bootstrapper');
 
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
+import {IIdentity} from '@essential-projects/iam_contracts';
 
-import {IConsumerApiService} from '@process-engine/consumer_api_contracts';
-import {IDeploymentApiService} from '@process-engine/deployment_api_contracts';
-import {IManagementApiService} from '@process-engine/management_api_contracts';
+import {IConsumerApi} from '@process-engine/consumer_api_contracts';
+import {IDeploymentApi} from '@process-engine/deployment_api_contracts';
+import {IManagementApi} from '@process-engine/management_api_contracts';
 import {
-  ExecutionContext,
   IExecuteProcessService,
-  IExecutionContextFacade,
-  IExecutionContextFacadeFactory,
   IProcessModelService,
   Model,
 } from '@process-engine/process_engine_contracts';
 
 import {initializeBootstrapper} from './setup_ioc_container';
 
+export type IdentityCollection = {
+  defaultUser: IIdentity;
+  restrictedUser: IIdentity;
+  userWithAccessToSubLaneC: IIdentity;
+  userWithAccessToLaneA: IIdentity;
+  userWithNoAccessToLaneA: IIdentity;
+}
+
 export class TestFixtureProvider {
 
   private bootstrapper: AppBootstrapper;
   private container: InvocationContainer;
 
-  private _consumerApiClientService: IConsumerApiService;
-  private _deploymentApiService: IDeploymentApiService;
+  private _consumerApiClientService: IConsumerApi;
+  private _deploymentApiService: IDeploymentApi;
   private _executeProcessService: IExecuteProcessService;
-  private _executionContextFacade: IExecutionContextFacade;
-  private _managementApiClientService: IManagementApiService;
+  private _managementApiClientService: IManagementApi;
   private _processModelService: IProcessModelService;
 
 
-  private _contexts: {[name: string]: any} = {};
+  private _identities: IdentityCollection;
 
-  public get context(): {[name: string]: any} {
-    return this._contexts;
+  public get identities(): IdentityCollection {
+    return this._identities;
   }
 
-  public get consumerApiClientService(): IConsumerApiService {
+  public get consumerApiClientService(): IConsumerApi {
     return this._consumerApiClientService;
   }
 
-  public get deploymentApiService(): IDeploymentApiService {
+  public get deploymentApiService(): IDeploymentApi {
     return this._deploymentApiService;
   }
 
@@ -53,11 +58,7 @@ export class TestFixtureProvider {
     return this._executeProcessService;
   }
 
-  public get executionContextFacade(): IExecutionContextFacade {
-    return this._executionContextFacade;
-  }
-
-  public get managementApiClientService(): IManagementApiService {
+  public get managementApiClientService(): IManagementApi {
     return this._managementApiClientService;
   }
 
@@ -71,12 +72,12 @@ export class TestFixtureProvider {
 
     await this.bootstrapper.start();
 
-    await this._createUserContexts();
+    await this._createMockIdentities();
 
-    this._consumerApiClientService = await this.resolveAsync<IConsumerApiService>('ConsumerApiClientService');
-    this._deploymentApiService = await this.resolveAsync<IDeploymentApiService>('DeploymentApiService');
+    this._consumerApiClientService = await this.resolveAsync<IConsumerApi>('ConsumerApiClientService');
+    this._deploymentApiService = await this.resolveAsync<IDeploymentApi>('DeploymentApiService');
     this._executeProcessService = await this.resolveAsync<IExecuteProcessService>('ExecuteProcessService');
-    this._managementApiClientService = await this.resolveAsync<IManagementApiService>('ManagementApiClientService');
+    this._managementApiClientService = await this.resolveAsync<IManagementApi>('ManagementApiClientService');
     this._processModelService = await this.resolveAsync<IProcessModelService>('ProcessModelService');
   }
 
@@ -121,7 +122,7 @@ export class TestFixtureProvider {
 
     return this
       .executeProcessService
-      .startAndAwaitEndEvent(this.executionContextFacade, processModel, startEventKey, correlationId, initialToken);
+      .startAndAwaitEndEvent(this.identities.defaultUser, processModel, startEventKey, correlationId, initialToken);
   }
 
   private async _initializeBootstrapper(): Promise<void> {
@@ -139,38 +140,26 @@ export class TestFixtureProvider {
     }
   }
 
-  private async _createUserContexts(): Promise<void> {
+  private async _createMockIdentities(): Promise<void> {
 
-    // Contexts used by the APIs
-
-    // all access user
-    this._contexts.defaultUser = await this._createContext('defaultUser');
-    // no access user
-    this._contexts.restrictedUser = await this._createContext('restrictedUser');
-    // partially restricted users
-    this._contexts.userWithAccessToSubLaneC = await this._createContext('userWithAccessToSubLaneC');
-    this._contexts.userWithAccessToLaneA = await this._createContext('userWithAccessToLaneA');
-    this._contexts.userWithNoAccessToLaneA = await this._createContext('userWithNoAccessToLaneA');
-
-    //ExecutionContextFacade for the ProcessEngine
-    const executionContextFacadeFactory: IExecutionContextFacadeFactory =
-      await this.resolveAsync<IExecutionContextFacadeFactory>('ExecutionContextFacadeFactory');
-
-    const processEngineIdentity: any = {
-      token: 'defaultUser',
+    this._identities = {
+      // all access user
+      defaultUser: await this._createIdentity('defaultUser'),
+      // no access user
+      restrictedUser: await this._createIdentity('restrictedUser'),
+      // partially restricted users
+      userWithAccessToSubLaneC: await this._createIdentity('userWithAccessToSubLaneC'),
+      userWithAccessToLaneA: await this._createIdentity('userWithAccessToLaneA'),
+      userWithNoAccessToLaneA: await this._createIdentity('userWithNoAccessToLaneA'),
     };
-
-    const executionContext = new ExecutionContext(processEngineIdentity);
-
-    this._executionContextFacade = executionContextFacadeFactory.create(executionContext);
   }
 
-  private async _createContext(username: string): Promise<any> {
+  private async _createIdentity(username: string): Promise<IIdentity> {
 
     // Note: Since the iam facade is mocked, it doesn't matter what type of token is used here.
     // It only matters that one is present.
-    return {
-      identity: username,
+    return <IIdentity> {
+      token: username,
     };
   }
 
@@ -179,18 +168,14 @@ export class TestFixtureProvider {
     const bpmnDirectoryPath: string = this.getBpmnDirectoryPath();
     const processFilePath: string = path.join(bpmnDirectoryPath, `${processFileName}.bpmn`);
 
-    const deploymentContext: any = {
-      identity: 'defaultUser',
-    };
-
     const processName: string = path.parse(processFileName).name;
 
-    await this.deploymentApiService.importBpmnFromFile(deploymentContext, processFilePath, processName, true);
+    await this.deploymentApiService.importBpmnFromFile(this.identities.defaultUser, processFilePath, processName, true);
   }
 
   private async _getProcessById(processId: string): Promise<Model.Types.Process> {
 
-    const processModel: Model.Types.Process = await this.processModelService.getProcessModelById(this.executionContextFacade, processId);
+    const processModel: Model.Types.Process = await this.processModelService.getProcessModelById(this.identities.defaultUser, processId);
 
     return processModel;
   }

@@ -39,7 +39,7 @@ describe('Management API:   GET  ->  /correlations/:correlation_id/process_model
 
     const result = await testFixtureProvider
       .managementApiClientService
-      .startProcessInstance(testFixtureProvider.context.defaultUser, processModelId, startEventId, payload, returnOn);
+      .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelId, startEventId, payload, returnOn);
 
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);
@@ -51,7 +51,7 @@ describe('Management API:   GET  ->  /correlations/:correlation_id/process_model
 
     const processModel = await testFixtureProvider
       .managementApiClientService
-      .getProcessModelForCorrelation(testFixtureProvider.context.defaultUser, correlationId);
+      .getProcessModelForCorrelation(testFixtureProvider.identities.defaultUser, correlationId);
 
     should(processModel.id).be.equal(processModelId);
     should(processModel).have.property('xml');
@@ -61,7 +61,7 @@ describe('Management API:   GET  ->  /correlations/:correlation_id/process_model
     try {
       const processModelList = await testFixtureProvider
         .managementApiClientService
-        .getProcessModelForCorrelation(testFixtureProvider.context.defaultUser);
+        .getProcessModelForCorrelation(testFixtureProvider.identities.defaultUser);
 
       should.fail(processModelList, undefined, 'This request should have failed!');
     } catch (error) {

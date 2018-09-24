@@ -9,8 +9,8 @@ const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 describe('Deployment API -> importBpmnFromFile', () => {
 
   let testFixtureProvider;
-  let deploymentContextDefault;
-  let deploymentContextForbidden;
+  let defaultIdentity;
+  let restrictedIdentity;
 
   const processModelId = 'generic_sample';
   let processModelPath;
@@ -19,8 +19,8 @@ describe('Deployment API -> importBpmnFromFile', () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    deploymentContextDefault = testFixtureProvider.context.defaultUser;
-    deploymentContextForbidden = testFixtureProvider.context.restrictedUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
+    restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     const bpmnFolderLocation = testFixtureProvider.getBpmnDirectoryPath();
     processModelPath = path.join(bpmnFolderLocation, `${processModelId}.bpmn`);
@@ -35,7 +35,7 @@ describe('Deployment API -> importBpmnFromFile', () => {
     // This is to ensure that any existing process models will not falsify the results.
     const uniqueImportName = uuid.v4();
 
-    await testFixtureProvider.deploymentApiService.importBpmnFromFile(deploymentContextDefault, processModelPath, uniqueImportName, false);
+    await testFixtureProvider.deploymentApiService.importBpmnFromFile(defaultIdentity, processModelPath, uniqueImportName, false);
 
     await assertThatImportWasSuccessful();
   });
@@ -46,8 +46,8 @@ describe('Deployment API -> importBpmnFromFile', () => {
     const uniqueImportName = uuid.v4();
 
     // The value of overwriteExisting doesn't matter for the first import run.
-    await testFixtureProvider.deploymentApiService.importBpmnFromFile(deploymentContextDefault, processModelPath, uniqueImportName);
-    await testFixtureProvider.deploymentApiService.importBpmnFromFile(deploymentContextDefault, processModelPath, uniqueImportName, true);
+    await testFixtureProvider.deploymentApiService.importBpmnFromFile(defaultIdentity, processModelPath, uniqueImportName);
+    await testFixtureProvider.deploymentApiService.importBpmnFromFile(defaultIdentity, processModelPath, uniqueImportName, true);
 
     await assertThatImportWasSuccessful();
   });
@@ -60,8 +60,8 @@ describe('Deployment API -> importBpmnFromFile', () => {
       const uniqueImportName = uuid.v4();
 
       // The value of overwriteExisting doesn't matter for the first import run.
-      await testFixtureProvider.deploymentApiService.importBpmnFromFile(deploymentContextDefault, processModelPath, uniqueImportName);
-      await testFixtureProvider.deploymentApiService.importBpmnFromFile(deploymentContextDefault, processModelPath, uniqueImportName, false);
+      await testFixtureProvider.deploymentApiService.importBpmnFromFile(defaultIdentity, processModelPath, uniqueImportName);
+      await testFixtureProvider.deploymentApiService.importBpmnFromFile(defaultIdentity, processModelPath, uniqueImportName, false);
 
       should.fail(undefined, 'error', 'This request should have failed, because the process model already exists!');
     } catch (error) {
@@ -89,7 +89,7 @@ describe('Deployment API -> importBpmnFromFile', () => {
   it('should fail to import the process model, when the user is forbidden to see the process instance result', async () => {
 
     try {
-      await testFixtureProvider.deploymentApiService.importBpmnFromFile(deploymentContextForbidden, processModelPath);
+      await testFixtureProvider.deploymentApiService.importBpmnFromFile(restrictedIdentity, processModelPath);
       should.fail(undefined, 'error', 'This request should have failed, due to a missing claim!');
     } catch (error) {
       const expectedErrorCode = 403;
@@ -103,7 +103,7 @@ describe('Deployment API -> importBpmnFromFile', () => {
 
     const processModelService = await testFixtureProvider.resolveAsync('ProcessModelService');
 
-    const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.executionContextFacade, processModelId);
+    const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
     should.exist(existingProcessModel);
   }
