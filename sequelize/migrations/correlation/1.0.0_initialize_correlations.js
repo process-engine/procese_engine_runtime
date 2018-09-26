@@ -37,11 +37,11 @@ module.exports = {
       },
       processInstanceId: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       processModelId: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       processModelHash: {
         type: Sequelize.TEXT,
