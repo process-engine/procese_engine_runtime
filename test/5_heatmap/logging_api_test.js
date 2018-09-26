@@ -9,7 +9,7 @@ describe('Logging API Tests - ', () => {
 
   let loggingApiService;
 
-  const processModelId = 'heatmap_sample';
+  const processModelId = 'integration_test_sample_log';
   const correlationId = 'sample_correlation';
 
   const dummyIdentity = {
