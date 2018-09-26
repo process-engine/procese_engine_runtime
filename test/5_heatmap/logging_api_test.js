@@ -21,8 +21,6 @@ describe('Logging API Tests - ', () => {
     await testFixtureProvider.initializeAndStart();
 
     loggingApiService = await testFixtureProvider.resolveAsync('LoggingApiService');
-
-    await testFixtureProvider.importProcessFiles([processModelId]);
   });
 
   after(async () => {
