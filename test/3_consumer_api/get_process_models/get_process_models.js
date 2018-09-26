@@ -7,12 +7,12 @@ const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvide
 describe('Consumer API:   GET  ->  /processModels', () => {
 
   let testFixtureProvider;
-  let consumerContext;
+  let defaultIdentity;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    consumerContext = testFixtureProvider.context.defaultUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
 
     const processModelsToImport = [
       'test_consumer_api_process_start',
@@ -30,7 +30,7 @@ describe('Consumer API:   GET  ->  /processModels', () => {
 
     const processModelList = await testFixtureProvider
       .consumerApiClientService
-      .getProcessModels(consumerContext);
+      .getProcessModels(defaultIdentity);
 
     should(processModelList).have.property('processModels');
 
@@ -48,11 +48,11 @@ describe('Consumer API:   GET  ->  /processModels', () => {
 
   it('should filter out processes models that the user is not authorized to see', async () => {
 
-    const restrictedContext = testFixtureProvider.context.restrictedUser;
+    const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     const processModelList = await testFixtureProvider
       .consumerApiClientService
-      .getProcessModels(restrictedContext);
+      .getProcessModels(restrictedIdentity);
 
     should(processModelList).have.property('processModels');
 
@@ -72,7 +72,7 @@ describe('Consumer API:   GET  ->  /processModels', () => {
 
     const processModelList = await testFixtureProvider
       .consumerApiClientService
-      .getProcessModels(consumerContext);
+      .getProcessModels(defaultIdentity);
 
     should(processModelList).have.property('processModels');
 

@@ -7,12 +7,12 @@ const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvide
 describe('Consumer API: POST  ->  /process_models/:process_model_id/correlations/:correlation_id/events/:event_id/trigger', () => {
 
   let testFixtureProvider;
-  let consumerContext;
+  let defaultIdentity;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    consumerContext = testFixtureProvider.context.defaultUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
   });
 
   after(async () => {
@@ -29,7 +29,7 @@ describe('Consumer API: POST  ->  /process_models/:process_model_id/correlations
 
     await testFixtureProvider
       .consumerApiClientService
-      .triggerEvent(consumerContext, processModelId, correlationId, eventId, eventTriggerPayload);
+      .triggerEvent(defaultIdentity, processModelId, correlationId, eventId, eventTriggerPayload);
   });
 
   it('should fail trigger the event, when the user is unauthorized', async () => {
@@ -61,12 +61,12 @@ describe('Consumer API: POST  ->  /process_models/:process_model_id/correlations
     const eventId = 'test_event_to_trigger';
     const eventTriggerPayload = {};
 
-    const restrictedContext = testFixtureProvider.context.restrictedUser;
+    const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .triggerEvent(restrictedContext, processModelId, correlationId, eventId, eventTriggerPayload);
+        .triggerEvent(restrictedIdentity, processModelId, correlationId, eventId, eventTriggerPayload);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
@@ -89,7 +89,7 @@ describe('Consumer API: POST  ->  /process_models/:process_model_id/correlations
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .triggerEvent(consumerContext, processModelId, correlationId, eventId, eventTriggerPayload);
+        .triggerEvent(defaultIdentity, processModelId, correlationId, eventId, eventTriggerPayload);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
@@ -112,7 +112,7 @@ describe('Consumer API: POST  ->  /process_models/:process_model_id/correlations
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .triggerEvent(consumerContext, processModelId, correlationId, eventId, eventTriggerPayload);
+        .triggerEvent(defaultIdentity, processModelId, correlationId, eventId, eventTriggerPayload);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
@@ -135,7 +135,7 @@ describe('Consumer API: POST  ->  /process_models/:process_model_id/correlations
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .triggerEvent(consumerContext, processModelId, correlationId, invalidEventId, eventTriggerPayload);
+        .triggerEvent(defaultIdentity, processModelId, correlationId, invalidEventId, eventTriggerPayload);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
@@ -158,7 +158,7 @@ describe('Consumer API: POST  ->  /process_models/:process_model_id/correlations
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .triggerEvent(consumerContext, processModelId, correlationId, eventId, eventTriggerPayload);
+        .triggerEvent(defaultIdentity, processModelId, correlationId, eventId, eventTriggerPayload);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
@@ -182,7 +182,7 @@ describe('Consumer API: POST  ->  /process_models/:process_model_id/correlations
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .triggerEvent(consumerContext, processModelId, correlationId, eventId, eventTriggerPayload);
+        .triggerEvent(defaultIdentity, processModelId, correlationId, eventId, eventTriggerPayload);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {

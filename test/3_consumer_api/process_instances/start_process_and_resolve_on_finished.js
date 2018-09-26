@@ -12,7 +12,7 @@ const testCase = 'Consumer API:   POST  ->  /process_models/:process_model_id/st
 describe(`Consumer API: ${testCase}`, () => {
 
   let testFixtureProvider;
-  let consumerContext;
+  let defaultIdentity;
 
   const processModelId = 'test_consumer_api_process_start';
   const processModelIdSublanes = 'test_consumer_api_sublane_process';
@@ -20,7 +20,7 @@ describe(`Consumer API: ${testCase}`, () => {
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    consumerContext = testFixtureProvider.context.defaultUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
 
     const processModelsToImport = [
       processModelId,
@@ -45,7 +45,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     const result = await testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(consumerContext, processModelId, startEventId, payload, startCallbackType);
+      .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
 
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);
@@ -61,7 +61,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     const result = await testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(consumerContext, processModelId, startEventId, payload, startCallbackType);
+      .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
 
     should(result).have.property('correlationId');
   });
@@ -80,7 +80,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     const result = await testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(consumerContext, processModelIdSublanes, startEventId, payload, startCallbackType);
+      .startProcessInstance(defaultIdentity, processModelIdSublanes, startEventId, payload, startCallbackType);
 
     should(result).have.property('correlationId');
   });
@@ -95,12 +95,12 @@ describe(`Consumer API: ${testCase}`, () => {
       },
     };
 
-    const userContext = testFixtureProvider.context.defaultUser;
+    const userIdentity = testFixtureProvider.identities.defaultUser;
     const startCallbackType = StartCallbackType.CallbackOnProcessInstanceFinished;
 
     const result = await testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(userContext, processModelIdSublanes, startEventId, payload, startCallbackType);
+      .startProcessInstance(userIdentity, processModelIdSublanes, startEventId, payload, startCallbackType);
 
     should(result).have.property('correlationId');
   });

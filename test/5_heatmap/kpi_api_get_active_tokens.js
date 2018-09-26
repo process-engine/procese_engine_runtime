@@ -123,7 +123,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
 
     await testFixtureProvider
       .consumerApiClientService
-      .finishUserTask(testFixtureProvider.context.defaultUser, processModelId, correlationId, userTaskId, userTaskResult);
+      .finishUserTask(testFixtureProvider.identities.defaultUser, processModelId, correlationId, userTaskId, userTaskResult);
   }
 
   function assertActiveToken(activeToken, flowNodeId) {
