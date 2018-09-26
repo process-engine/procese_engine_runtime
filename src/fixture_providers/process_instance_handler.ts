@@ -8,7 +8,7 @@ import {
   StartCallbackType,
 } from '@process-engine/consumer_api_contracts';
 
-import {IFlowNodeInstanceService} from '@process-engine/process_engine_contracts';
+import {IFlowNodeInstanceService, Runtime} from '@process-engine/process_engine_contracts';
 
 import {TestFixtureProvider} from './test_fixture_provider';
 
@@ -56,10 +56,10 @@ export class ProcessInstanceHandler {
 
       await this.wait(delayBetweenRetriesInMs);
 
-      let flowNodeInstances: Array<any> = await flowNodeInstanceService.querySuspendedByCorrelation(correlationId);
+      let flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await flowNodeInstanceService.querySuspendedByCorrelation(correlationId);
 
       if (processModelId) {
-        flowNodeInstances = flowNodeInstances.filter((fni: any) => {
+        flowNodeInstances = flowNodeInstances.filter((fni: Runtime.Types.FlowNodeInstance) => {
           return fni.tokens[0].processModelId === processModelId;
         });
       }

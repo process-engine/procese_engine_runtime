@@ -1,6 +1,6 @@
 'use strict';
 
-import {IamServiceMock} from '../mocks/index';
+import {InvocationContainer} from 'addict-ioc';
 
 import {
   ParallelGatewayTestService,
@@ -17,7 +17,9 @@ import {
   InternalAccessor as ManagementApiInternalAccessor,
 } from '@process-engine/management_api_client';
 
-export function registerInContainer(container: any): void {
+import {IamServiceMock} from '../mocks/index';
+
+export function registerInContainer(container: InvocationContainer): void {
 
   container.register('ConsumerApiInternalAccessor', ConsumerApiInternalAccessor)
     .dependencies('ConsumerApiService');
