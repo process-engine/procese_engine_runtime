@@ -35,7 +35,7 @@ describe('Deployment API -> Sanity checks after import', () => {
 
   it('should always return the most up to date version of any process definition', async () => {
 
-    const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.executionContextFacade, processModelId);
+    const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
     should.exist(existingProcessModel);
     should(existingProcessModel.id).be.equal(processModelId);
@@ -54,7 +54,7 @@ describe('Deployment API -> Sanity checks after import', () => {
 
   it('should not contain outdated versions of any process definitions, when querying all process definitions', async () => {
 
-    const processModels = await processModelService.getProcessModels(testFixtureProvider.executionContextFacade);
+    const processModels = await processModelService.getProcessModels(testFixtureProvider.identities.defaultUser);
 
     const occurencesOfTestProcessModel = processModels.filter((item) => {
       return item.id === processModelId;
@@ -71,7 +71,7 @@ describe('Deployment API -> Sanity checks after import', () => {
       overwriteExisting: true,
     };
 
-    await testFixtureProvider.deploymentApiService.importBpmnFromXml(testFixtureProvider.context.defaultUser, importPayload);
+    await testFixtureProvider.deploymentApiService.importBpmnFromXml(testFixtureProvider.identities.defaultUser, importPayload);
   }
 
 });

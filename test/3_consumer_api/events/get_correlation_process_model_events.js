@@ -7,14 +7,14 @@ const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvide
 describe('Consumer API GET  ->  /process_models/:process_model_id/correlations/:correlation_id/events', () => {
 
   let testFixtureProvider;
-  let consumerContext;
+  let defaultIdentity;
 
   const processModelId = 'test_consumer_api_correlation_result';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    consumerContext = testFixtureProvider.context.defaultUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
   });
 
   after(async () => {
@@ -27,7 +27,7 @@ describe('Consumer API GET  ->  /process_models/:process_model_id/correlations/:
 
     const eventList = await testFixtureProvider
       .consumerApiClientService
-      .getEventsForProcessModelInCorrelation(consumerContext, processModelId, correlationId);
+      .getEventsForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
 
     should(eventList).have.property('events');
 
@@ -64,12 +64,12 @@ describe('Consumer API GET  ->  /process_models/:process_model_id/correlations/:
 
     const correlationId = 'correlationId';
 
-    const restrictedContext = testFixtureProvider.context.restrictedUser;
+    const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     try {
       const processModel = await testFixtureProvider
         .consumerApiClientService
-        .getEventsForProcessModelInCorrelation(restrictedContext, processModelId, correlationId);
+        .getEventsForProcessModelInCorrelation(restrictedIdentity, processModelId, correlationId);
 
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
     } catch (error) {
@@ -89,7 +89,7 @@ describe('Consumer API GET  ->  /process_models/:process_model_id/correlations/:
     try {
       const processModel = await testFixtureProvider
         .consumerApiClientService
-        .getEventsForProcessModelInCorrelation(consumerContext, invalidprocessModelId, correlationId);
+        .getEventsForProcessModelInCorrelation(defaultIdentity, invalidprocessModelId, correlationId);
 
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
     } catch (error) {
@@ -108,7 +108,7 @@ describe('Consumer API GET  ->  /process_models/:process_model_id/correlations/:
     try {
       const processModel = await testFixtureProvider
         .consumerApiClientService
-        .getEventsForProcessModelInCorrelation(consumerContext, processModelId, invalidCorrelationId);
+        .getEventsForProcessModelInCorrelation(defaultIdentity, processModelId, invalidCorrelationId);
 
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
     } catch (error) {

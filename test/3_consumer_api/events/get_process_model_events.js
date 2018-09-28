@@ -7,12 +7,12 @@ const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvide
 describe('Consumer API:   GET  ->  /process_models/:process_model_id/events', () => {
 
   let testFixtureProvider;
-  let consumerContext;
+  let defaultIdentity;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    consumerContext = testFixtureProvider.context.defaultUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
   });
 
   after(async () => {
@@ -25,7 +25,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/events', ()
 
     const eventList = await testFixtureProvider
       .consumerApiClientService
-      .getEventsForProcessModel(consumerContext, processModelId);
+      .getEventsForProcessModel(defaultIdentity, processModelId);
 
     should(eventList).have.property('events');
 
@@ -62,12 +62,12 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/events', ()
 
     const processModelId = 'test_get_events_for_process_model';
 
-    const restrictedContext = testFixtureProvider.context.restrictedUser;
+    const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     try {
       const eventList = await testFixtureProvider
         .consumerApiClientService
-        .getEventsForProcessModel(restrictedContext, processModelId);
+        .getEventsForProcessModel(restrictedIdentity, processModelId);
 
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
     } catch (error) {
@@ -86,7 +86,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/events', ()
     try {
       const processModel = await testFixtureProvider
         .aconsumerApiClientService
-        .getEventsForProcessModel(consumerContext, invalidprocessModelId);
+        .getEventsForProcessModel(defaultIdentity, invalidprocessModelId);
 
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
     } catch (error) {

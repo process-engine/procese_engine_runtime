@@ -38,7 +38,7 @@ describe('Management API:   POST  ->  /process_models/:process_model_id/update',
 
     await testFixtureProvider
       .managementApiClientService
-      .updateProcessDefinitionsByName(testFixtureProvider.context.defaultUser, uniqueImportName, importPayload);
+      .updateProcessDefinitionsByName(testFixtureProvider.identities.defaultUser, uniqueImportName, importPayload);
 
     await assertThatImportWasSuccessful();
   });
@@ -47,7 +47,7 @@ describe('Management API:   POST  ->  /process_models/:process_model_id/update',
 
     const processModelService = await testFixtureProvider.resolveAsync('ProcessModelService');
 
-    const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.executionContextFacade, processModelId);
+    const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
     should.exist(existingProcessModel);
   }

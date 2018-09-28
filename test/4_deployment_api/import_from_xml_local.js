@@ -8,8 +8,8 @@ const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 describe('Deployment API -> importBpmnFromXml', () => {
 
   let testFixtureProvider;
-  let deploymentContextDefault;
-  let deploymentContextForbidden;
+  let defaultIdentity;
+  let restrictedIdentity;
 
   const processModelId = 'generic_sample';
   let processModelAsXml;
@@ -18,8 +18,8 @@ describe('Deployment API -> importBpmnFromXml', () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    deploymentContextDefault = testFixtureProvider.context.defaultUser;
-    deploymentContextForbidden = testFixtureProvider.context.restrictedUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
+    restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     processModelAsXml = testFixtureProvider.readProcessModelFile(processModelId);
   });
@@ -39,7 +39,7 @@ describe('Deployment API -> importBpmnFromXml', () => {
       overwriteExisting: false,
     };
 
-    await testFixtureProvider.deploymentApiService.importBpmnFromXml(deploymentContextDefault, importPayload);
+    await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
 
     await assertThatImportWasSuccessful();
   });
@@ -56,8 +56,8 @@ describe('Deployment API -> importBpmnFromXml', () => {
     };
 
     // The value of overwriteExisting doesn't matter for the first import run.
-    await testFixtureProvider.deploymentApiService.importBpmnFromXml(deploymentContextDefault, importPayload);
-    await testFixtureProvider.deploymentApiService.importBpmnFromXml(deploymentContextDefault, importPayload);
+    await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
+    await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
 
     await assertThatImportWasSuccessful();
   });
@@ -76,8 +76,8 @@ describe('Deployment API -> importBpmnFromXml', () => {
       };
 
       // The value of overwriteExisting doesn't matter for the first import run.
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(deploymentContextDefault, importPayload);
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(deploymentContextDefault, importPayload);
+      await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
+      await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
 
       should.fail(undefined, 'error', 'This request should have failed, because the process model already exists!');
     } catch (error) {
@@ -117,7 +117,7 @@ describe('Deployment API -> importBpmnFromXml', () => {
     };
 
     try {
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(deploymentContextForbidden, importPayload);
+      await testFixtureProvider.deploymentApiService.importBpmnFromXml(restrictedIdentity, importPayload);
       should.fail(undefined, 'error', 'This request should have failed, due to a missing claim!');
     } catch (error) {
       const expectedErrorCode = 403;
@@ -129,9 +129,9 @@ describe('Deployment API -> importBpmnFromXml', () => {
 
   async function assertThatImportWasSuccessful() {
 
-    const processModelService = await testFixtureProvider.resolveAsync('ProcessModelService');
-
-    const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.executionContextFacade, processModelId);
+    const existingProcessModel = await testFixtureProvider
+      .processModelService
+      .getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
     should.exist(existingProcessModel);
   }

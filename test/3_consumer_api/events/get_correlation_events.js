@@ -7,12 +7,12 @@ const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvide
 describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => {
 
   let testFixtureProvider;
-  let consumerContext;
+  let defaultIdentity;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    consumerContext = testFixtureProvider.context.defaultUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
   });
 
   after(async () => {
@@ -24,7 +24,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
     const correlationId = 'test_get_events_for_process_model';
 
     const eventList =
-      await testFixtureProvider.consumerApiClientService.getEventsForCorrelation(consumerContext, correlationId);
+      await testFixtureProvider.consumerApiClientService.getEventsForCorrelation(defaultIdentity, correlationId);
 
     should(eventList).have.property('events');
 
@@ -60,11 +60,11 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
 
     const correlationId = 'test_get_events_for_process_model';
 
-    const restrictedContext = testFixtureProvider.context.restrictedUser;
+    const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     try {
       const eventList =
-        await testFixtureProvider.consumerApiClientService.getEventsForCorrelation(restrictedContext, correlationId);
+        await testFixtureProvider.consumerApiClientService.getEventsForCorrelation(restrictedIdentity, correlationId);
 
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
     } catch (error) {
@@ -82,7 +82,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
 
     try {
       const processModel =
-        await testFixtureProvider.consumerApiClientService.getEventsForCorrelation(consumerContext, invalidCorrelationId);
+        await testFixtureProvider.consumerApiClientService.getEventsForCorrelation(defaultIdentity, invalidCorrelationId);
 
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
     } catch (error) {

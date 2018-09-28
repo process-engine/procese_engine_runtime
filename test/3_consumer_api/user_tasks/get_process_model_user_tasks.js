@@ -10,7 +10,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
   let processInstanceHandler;
   let testFixtureProvider;
 
-  let consumerContext;
+  let defaultIdentity;
   let correlationId;
 
   const processModelId = 'test_consumer_api_usertask';
@@ -19,7 +19,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    consumerContext = testFixtureProvider.context.defaultUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
 
     const processModelsToImport = [
       processModelId,
@@ -49,14 +49,14 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
 
     await testFixtureProvider
       .consumerApiClientService
-      .finishUserTask(consumerContext, processModelId, correlationId, userTaskId, userTaskResult);
+      .finishUserTask(defaultIdentity, processModelId, correlationId, userTaskId, userTaskResult);
   }
 
   it('should return a process model\'s user tasks by its process_model_id through the consumer api', async () => {
 
     const userTaskList = await testFixtureProvider
       .consumerApiClientService
-      .getUserTasksForProcessModel(consumerContext, processModelId);
+      .getUserTasksForProcessModel(defaultIdentity, processModelId);
 
     should(userTaskList).have.property('userTasks');
 
@@ -91,7 +91,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
 
     const userTaskList = await testFixtureProvider
       .consumerApiClientService
-      .getUserTasksForProcessModel(consumerContext, processModelIdNoUserTasks);
+      .getUserTasksForProcessModel(defaultIdentity, processModelIdNoUserTasks);
 
     should(userTaskList).have.property('userTasks');
     should(userTaskList.userTasks).be.instanceOf(Array);
@@ -105,7 +105,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
     try {
       const processModel = await testFixtureProvider
         .consumerApiClientService
-        .getUserTasksForProcessModel(consumerContext, invalidprocessModelId);
+        .getUserTasksForProcessModel(defaultIdentity, invalidprocessModelId);
 
       should.fail(processModel, undefined, 'This request should have failed!');
     } catch (error) {
@@ -134,12 +134,12 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
 
   it('should fail to retrieve the process model\'s user tasks, when the user forbidden to retrieve it', async () => {
 
-    const restrictedContext = testFixtureProvider.context.restrictedUser;
+    const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     try {
       const userTaskList = await testFixtureProvider
         .consumerApiClientService
-        .getUserTasksForProcessModel(restrictedContext, processModelId);
+        .getUserTasksForProcessModel(restrictedIdentity, processModelId);
 
       should.fail(userTaskList, undefined, 'This request should have failed!');
     } catch (error) {

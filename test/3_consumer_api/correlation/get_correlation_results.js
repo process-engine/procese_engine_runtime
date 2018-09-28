@@ -10,7 +10,7 @@ const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvide
 describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/:process_model_id/results', () => {
 
   let testFixtureProvider;
-  let consumerContext;
+  let defaultIdentity;
   let correlationId;
 
   const processModelIdDefault = 'test_consumer_api_correlation_result';
@@ -19,7 +19,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    consumerContext = testFixtureProvider.context.defaultUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
 
     const processModelsToImport = [
       processModelIdDefault,
@@ -51,7 +51,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
 
     const result = await testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(consumerContext, processModelId, startEventId, payload, returnOn, endEventId);
+      .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, returnOn, endEventId);
 
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);
@@ -63,7 +63,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
 
     const correlationResults = await testFixtureProvider
       .consumerApiClientService
-      .getProcessResultForCorrelation(consumerContext, correlationId, processModelIdDefault);
+      .getProcessResultForCorrelation(defaultIdentity, correlationId, processModelIdDefault);
 
     should(correlationResults).be.instanceof(Array);
     should(correlationResults.length).be.equal(1);
@@ -90,7 +90,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
 
     const correlationResults = await testFixtureProvider
       .consumerApiClientService
-      .getProcessResultForCorrelation(consumerContext, correlationIdMultipleResults, processModelIdMultipleEndEvents);
+      .getProcessResultForCorrelation(defaultIdentity, correlationIdMultipleResults, processModelIdMultipleEndEvents);
 
     should(correlationResults).be.instanceof(Array);
     should(correlationResults.length).be.equal(2);
@@ -120,7 +120,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
     try {
       const results = await testFixtureProvider
         .consumerApiClientService
-        .getProcessResultForCorrelation(consumerContext, invalidCorrelationId, processModelIdDefault);
+        .getProcessResultForCorrelation(defaultIdentity, invalidCorrelationId, processModelIdDefault);
 
       should.fail(results, undefined, 'This request should have failed!');
     } catch (error) {
@@ -138,7 +138,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
     try {
       const results = await testFixtureProvider
         .consumerApiClientService
-        .getProcessResultForCorrelation(consumerContext, correlationId, invalidprocessModelId);
+        .getProcessResultForCorrelation(defaultIdentity, correlationId, invalidprocessModelId);
 
       should.fail(results, undefined, 'This request should have failed!');
     } catch (error) {
@@ -170,7 +170,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
     try {
       const results = await testFixtureProvider
         .consumerApiClientService
-        .getProcessResultForCorrelation(testFixtureProvider.context.restrictedUser, correlationId, processModelIdDefault);
+        .getProcessResultForCorrelation(testFixtureProvider.identities.restrictedUser, correlationId, processModelIdDefault);
 
       should.fail(results, undefined, 'This request should have failed!');
     } catch (error) {

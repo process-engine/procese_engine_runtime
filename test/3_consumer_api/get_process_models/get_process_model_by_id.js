@@ -7,7 +7,7 @@ const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvide
 describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
 
   let testFixtureProvider;
-  let consumerContext;
+  let defaultIdentity;
 
   const processModelId = 'test_consumer_api_process_start';
   const processModelIdNonExecutable = 'test_consumer_api_non_executable_process';
@@ -15,7 +15,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    consumerContext = testFixtureProvider.context.defaultUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
 
     const processModelsToImport = [
       processModelId,
@@ -33,7 +33,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
 
     const processModel = await testFixtureProvider
       .consumerApiClientService
-      .getProcessModelById(consumerContext, processModelId);
+      .getProcessModelById(defaultIdentity, processModelId);
 
     should(processModel).have.property('id');
     should(processModel).have.property('startEvents');
@@ -46,7 +46,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
 
     const processModel = await testFixtureProvider
       .consumerApiClientService
-      .getProcessModelById(consumerContext, processModelIdNonExecutable);
+      .getProcessModelById(defaultIdentity, processModelIdNonExecutable);
 
     should(processModel).have.property('id');
     should(processModel).have.property('startEvents');
@@ -73,12 +73,12 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
 
   it('should fail to retrieve the process model, when the user forbidden to retrieve it', async () => {
 
-    const restrictedContext = testFixtureProvider.context.restrictedUser;
+    const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     try {
       const processModel = await testFixtureProvider
         .consumerApiClientService
-        .getProcessModelById(restrictedContext, processModelId);
+        .getProcessModelById(restrictedIdentity, processModelId);
 
       should.fail(processModel, undefined, 'This request should have failed!');
     } catch (error) {
@@ -96,7 +96,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
     try {
       const processModel = await testFixtureProvider
         .consumerApiClientService
-        .getProcessModelById(consumerContext, invalidprocessModelId);
+        .getProcessModelById(defaultIdentity, invalidprocessModelId);
 
       should.fail(processModel, undefined, 'This request should have failed!');
     } catch (error) {

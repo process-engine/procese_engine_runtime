@@ -25,7 +25,7 @@ describe('Management API:   GET  ->  /processModels', () => {
 
     const processModelList = await testFixtureProvider
       .managementApiClientService
-      .getProcessModels(testFixtureProvider.context.defaultUser);
+      .getProcessModels(testFixtureProvider.identities.defaultUser);
 
     should(processModelList).have.property('processModels');
 
