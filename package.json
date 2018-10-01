@@ -31,6 +31,8 @@
   "devDependencies": {
     "@types/sequelize": "4.27.25",
     "@types/umzug": "2.2.0",
+    "@types/socket.io": "1.4.38",
+    "@types/socket.io-client": "1.4.32",
     "eslint": "4.19.1",
     "eslint-config-5minds": "0.2.0",
     "eslint-plugin-import": "2.11.0",
