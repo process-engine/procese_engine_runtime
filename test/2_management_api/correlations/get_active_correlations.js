@@ -2,7 +2,7 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 
 describe('Management API:   GET  ->  /correlations/active', () => {
 
@@ -30,23 +30,31 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     await testFixtureProvider.tearDown();
   });
 
-  // NOTE:
-  // Technically, this test works just as expected.
-  // However, some, as of yet undetermined, error causes this test to fail on Jenkins.
-  // This is most likely a timing issue, since this seems to only happen, when Jenkins runs under enormous strain,
-  // but it requires further investigation before any kind of fix can be tried.
   it('should return all active correlations through the management api', async () => {
 
     const correlations = await testFixtureProvider
       .managementApiClientService
-      .getAllActiveCorrelations(testFixtureProvider.identities.defaultUser);
+      .getActiveCorrelations(testFixtureProvider.identities.defaultUser);
 
     should(correlations).be.instanceOf(Array);
     should(correlations.length).be.greaterThan(0);
 
     correlations.forEach((correlation) => {
       should(correlation).have.property('id');
-      should(correlation).have.property('processModelId');
+      should(correlation).have.property('state');
+      should(correlation.state).be.equal('running');
+      should(correlation).have.property('identity');
+      should(correlation.identity).have.property('token');
+      should(correlation).have.property('createdAt');
+      should(correlation).have.property('processModels');
+
+      correlation.processModels.forEach((processModel) => {
+        should(processModel).have.property('name');
+        should(processModel).have.property('hash');
+        should(processModel).have.property('xml');
+        should(processModel).have.property('processInstanceId');
+        should(processModel).have.property('createdAt');
+      });
     });
   });
 
@@ -54,7 +62,7 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     try {
       const processModelList = await testFixtureProvider
         .managementApiClientService
-        .getAllActiveCorrelations({});
+        .getActiveCorrelations({});
 
       should.fail(processModelList, undefined, 'This request should have failed!');
     } catch (error) {

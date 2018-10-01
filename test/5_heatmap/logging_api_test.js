@@ -9,7 +9,7 @@ describe('Logging API Tests - ', () => {
 
   let loggingApiService;
 
-  const processModelId = 'heatmap_sample';
+  const processModelId = 'integration_test_sample_log';
   const correlationId = 'sample_correlation';
 
   const dummyIdentity = {
@@ -21,8 +21,6 @@ describe('Logging API Tests - ', () => {
     await testFixtureProvider.initializeAndStart();
 
     loggingApiService = await testFixtureProvider.resolveAsync('LoggingApiService');
-
-    await testFixtureProvider.importProcessFiles([processModelId]);
   });
 
   after(async () => {
