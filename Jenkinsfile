@@ -122,6 +122,7 @@ pipeline {
           // image.inside mounts the current Workspace as the working directory in the container
           def junit_report_path = 'JUNIT_REPORT_PATH=report.xml';
           def config_path = 'CONFIG_PATH=/usr/src/app/config';
+          def api_access_mode = '--env API_ACCESS_TYPE=internal ';
 
           // SQLite Config
           def db_storage_folder_path = "$WORKSPACE/process_engine_databases";
@@ -132,7 +133,7 @@ pipeline {
 
           def environment_settings = "${db_storage_path_correlation} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance} ${db_storage_path_timer}";
 
-          def npm_test_command = "cross-env NODE_ENV=test JUNIT_REPORT_PATH=report.xml CONFIG_PATH=config ${environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
+          def npm_test_command = "cross-env NODE_ENV=test JUNIT_REPORT_PATH=report.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
 
           error_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > result.txt", returnStatus: true);
           testresults = sh(script: "cat result.txt", returnStdout: true).trim();
