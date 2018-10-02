@@ -9,9 +9,9 @@ const logger: Logger = Logger.createLogger('test:bootstrapper');
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
 import {IIdentity} from '@essential-projects/iam_contracts';
 
-import {IConsumerApi} from '@process-engine/consumer_api_contracts';
+import {IConsumerApi, IConsumerApiAccessor} from '@process-engine/consumer_api_contracts';
 import {IDeploymentApi} from '@process-engine/deployment_api_contracts';
-import {IManagementApi} from '@process-engine/management_api_contracts';
+import {IManagementApi, IManagementApiAccessor} from '@process-engine/management_api_contracts';
 import {
   IExecuteProcessService,
   IProcessModelService,
@@ -74,9 +74,17 @@ export class TestFixtureProvider {
     await this._createMockIdentities();
 
     this._consumerApiClientService = await this.resolveAsync<IConsumerApi>('ConsumerApiClientService');
+    this._managementApiClientService = await this.resolveAsync<IManagementApi>('ManagementApiClientService');
+
+    const accessApisExternally: boolean = process.env.API_ACCESS_TYPE === 'external';
+
+    if (accessApisExternally) {
+      (this._consumerApiClientService as any).consumerApiAccessor.initializeSocket(this.identities.defaultUser);
+      (this._managementApiClientService as any).managementApiAccessor.initializeSocket(this.identities.defaultUser);
+    }
+
     this._deploymentApiService = await this.resolveAsync<IDeploymentApi>('DeploymentApiService');
     this._executeProcessService = await this.resolveAsync<IExecuteProcessService>('ExecuteProcessService');
-    this._managementApiClientService = await this.resolveAsync<IManagementApi>('ManagementApiClientService');
     this._processModelService = await this.resolveAsync<IProcessModelService>('ProcessModelService');
   }
 
