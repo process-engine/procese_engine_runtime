@@ -77,7 +77,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
     }
   });
 
-  it('should fail to retrieve a list of correlations, when the user is unauthorized', async () => {
+  it('should fail to retrieve the token history, when the user is unauthorized', async () => {
     try {
       const processModelList = await testFixtureProvider
         .managementApiClientService
