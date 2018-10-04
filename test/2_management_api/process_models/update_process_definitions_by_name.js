@@ -3,7 +3,7 @@
 const should = require('should');
 const uuid = require('uuid');
 
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 
 // NOTE:
 // The deployment api alrady contains extensive testing for this, so there is no need to cover everything here.

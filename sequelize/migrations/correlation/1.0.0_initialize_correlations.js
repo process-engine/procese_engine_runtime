@@ -35,9 +35,21 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      processInstanceId: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      processModelId: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       processModelHash: {
         type: Sequelize.TEXT,
         allowNull: false,
+      },
+      identity: {
+        type: Sequelize.TEXT,
+        allowNull: true,
       },
       createdAt: {
         type: Sequelize.DATE,

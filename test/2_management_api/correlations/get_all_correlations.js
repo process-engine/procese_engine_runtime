@@ -5,13 +5,12 @@ const uuid = require('uuid');
 
 const StartCallbackType = require('@process-engine/management_api_contracts').ProcessModelExecution.StartCallbackType; //eslint-disable-line
 
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 
-describe('Management API:   GET  ->  /correlations/:correlation_id/process_model', () => {
+describe('Management API:   GET  ->  /correlations/all', () => {
 
   let testFixtureProvider;
 
-  let correlationId;
   const processModelId = 'test_consumer_api_correlation_result';
 
   before(async () => {
@@ -20,14 +19,14 @@ describe('Management API:   GET  ->  /correlations/:correlation_id/process_model
 
     await testFixtureProvider.importProcessFiles([processModelId]);
 
-    correlationId = await createFinishedProcessInstanceAndReturnCorrelationId();
+    await createFinishedProcessInstance();
   });
 
   after(async () => {
     await testFixtureProvider.tearDown();
   });
 
-  async function createFinishedProcessInstanceAndReturnCorrelationId() {
+  async function createFinishedProcessInstance() {
 
     const startEventId = 'StartEvent_1';
     const payload = {
@@ -47,36 +46,38 @@ describe('Management API:   GET  ->  /correlations/:correlation_id/process_model
     return result.correlationId;
   }
 
-  it('should return a Correlations ProcessModel through the management api', async () => {
+  it('should return all correlations through the management api', async () => {
 
-    const processModel = await testFixtureProvider
+    const correlations = await testFixtureProvider
       .managementApiClientService
-      .getProcessModelForCorrelation(testFixtureProvider.identities.defaultUser, correlationId);
+      .getAllCorrelations(testFixtureProvider.identities.defaultUser);
 
-    should(processModel.id).be.equal(processModelId);
-    should(processModel).have.property('xml');
+    should(correlations).be.instanceOf(Array);
+    should(correlations.length).be.greaterThan(0);
+
+    correlations.forEach((correlation) => {
+      should(correlation).have.property('id');
+      should(correlation).have.property('state');
+      should(correlation).have.property('createdAt');
+      should(correlation).have.property('identity');
+      should(correlation.identity).have.property('token');
+      should(correlation).have.property('processModels');
+
+      correlation.processModels.forEach((processModel) => {
+        should(processModel).have.property('name');
+        should(processModel).have.property('hash');
+        should(processModel).have.property('xml');
+        should(processModel).have.property('processInstanceId');
+        should(processModel).have.property('createdAt');
+      });
+    });
   });
 
-  it('should fail to retrieve the ProcessModel, if the given Correlation does not exist', async () => {
+  it('should fail to retrieve a list of correlations, when the user is unauthorized', async () => {
     try {
       const processModelList = await testFixtureProvider
         .managementApiClientService
-        .getProcessModelForCorrelation(testFixtureProvider.identities.defaultUser);
-
-      should.fail(processModelList, undefined, 'This request should have failed!');
-    } catch (error) {
-      const expectedErrorCode = 404;
-      const expectedErrorMessage = /not found/i;
-      should(error.code).be.match(expectedErrorCode);
-      should(error.message).be.match(expectedErrorMessage);
-    }
-  });
-
-  it('should fail to retrieve the ProcessModel, if the user is unauthorized', async () => {
-    try {
-      const processModelList = await testFixtureProvider
-        .managementApiClientService
-        .getProcessModelForCorrelation({}, correlationId);
+        .getAllCorrelations({});
 
       should.fail(processModelList, undefined, 'This request should have failed!');
     } catch (error) {
