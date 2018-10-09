@@ -5,7 +5,7 @@
   "main": "publish-github-release.js",
   "scripts": {},
   "dependencies": {
-    "@octokit/rest": "^15.2.6",
-    "mime-types": "^2.1.18"
+    "@octokit/rest": "15.12.1",
+    "mime-types": "2.1.20"
   }
 }

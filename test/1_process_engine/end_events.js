@@ -38,8 +38,8 @@ describe('EndEvents - ', () => {
       const evaluationCallback = (message) => {
         const expectedResult = /message sent/i;
 
-        should(message).have.property('tokenPayload');
-        should(message.tokenPayload).be.match(expectedResult);
+        should(message).have.property('currentToken');
+        should(message.currentToken).be.match(expectedResult);
         resolve();
       };
 
@@ -59,8 +59,8 @@ describe('EndEvents - ', () => {
 
     const expectedResult = /message sent/i;
 
-    should(result).have.property('tokenPayload');
-    should(result.tokenPayload).be.match(expectedResult);
+    should(result).have.property('currentToken');
+    should(result.currentToken).be.match(expectedResult);
   });
 
   it('should send a signal when reaching a SignalEndEvent', async () => {
@@ -76,8 +76,8 @@ describe('EndEvents - ', () => {
       const evaluationCallback = (message) => {
         const expectedResult = /signal sent/i;
 
-        should(message).have.property('tokenPayload');
-        should(message.tokenPayload).be.match(expectedResult);
+        should(message).have.property('currentToken');
+        should(message.currentToken).be.match(expectedResult);
         resolve();
       };
 
@@ -97,8 +97,8 @@ describe('EndEvents - ', () => {
 
     const expectedResult = /signal sent/i;
 
-    should(result).have.property('tokenPayload');
-    should(result.tokenPayload).be.match(expectedResult);
+    should(result).have.property('currentToken');
+    should(result.currentToken).be.match(expectedResult);
   });
 
   it('should successfully terminate a process upon reaching a TerminateEndEvent.', async () => {

@@ -45,11 +45,13 @@ describe('Start Events - ', () => {
 
     return new Promise((resolve) => {
 
-      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/process/${processModelId}/node/${endEventToWaitFor}`;
+      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelId}/ended`;
       const evaluationCallback = (message) => {
-        should(message).have.property('tokenPayload');
-        should(message.tokenPayload).be.match(expectedResult);
-        resolve();
+        if (message.flowNodeId === endEventToWaitFor) {
+          should(message).have.property('currentToken');
+          should(message.currentToken).be.match(expectedResult);
+          resolve();
+        }
       };
 
       // Subscribe for the EndEvent
@@ -76,11 +78,13 @@ describe('Start Events - ', () => {
 
     return new Promise((resolve) => {
 
-      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/process/${processModelId}/node/${endEventToWaitFor}`;
+      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelId}/ended`;
       const evaluationCallback = (message) => {
-        should(message).have.property('tokenPayload');
-        should(message.tokenPayload).be.match(expectedResult);
-        resolve();
+        if (message.flowNodeId === endEventToWaitFor) {
+          should(message).have.property('currentToken');
+          should(message.currentToken).be.match(expectedResult);
+          resolve();
+        }
       };
 
       // Subscribe for the EndEvent
@@ -112,8 +116,8 @@ describe('Start Events - ', () => {
     const expectedResult = /success/i;
     const expectedTimerRuntime = 5;
 
-    should(result).have.property('tokenPayload');
-    should(result.tokenPayload).be.match(expectedResult);
+    should(result).have.property('currentToken');
+    should(result.currentToken).be.match(expectedResult);
     should(duration).be.greaterThan(expectedTimerRuntime);
   });
 

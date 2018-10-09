@@ -33,8 +33,8 @@ describe('Error Boundary Event - ', () => {
 
     const expectedTaskResult = /success/i;
 
-    should(result).have.property('tokenPayload');
-    should(result.tokenPayload).be.match(expectedTaskResult);
+    should(result).have.property('currentToken');
+    should(result.currentToken).be.match(expectedTaskResult);
   });
 
   it('should successfully catch the error, alter the execution path and write the result to the token history.', async () => {
@@ -50,6 +50,6 @@ describe('Error Boundary Event - ', () => {
     const expectedTaskResult = /test/i;
 
     should.exist(result);
-    should(result.tokenPayload).be.match(expectedTaskResult);
+    should(result.currentToken).be.match(expectedTaskResult);
   });
 });
