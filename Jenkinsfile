@@ -134,15 +134,7 @@ pipeline {
 
           def db_environment_settings = "${db_storage_path_correlation} ${db_storage_path_external_task} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance} ${db_storage_path_timer}";
 
-          // FileSystem Repositories
-          def logging_folder_path = "$WORKSPACE/logs";
-          def metrics_folder_path = "$WORKSPACE/metrics";
-          def db_storage_path_logging = "process_engine__logging_repository__output_path=$logging_folder_path";
-          def db_storage_path_metrics = "process_engine__metrics_repository__output_path=$metrics_folder_path";
-
-          def fs_environment_settings = "${db_storage_path_logging} ${db_storage_path_metrics}"
-
-          def npm_test_command = "cross-env NODE_ENV=test JUNIT_REPORT_PATH=report.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} ${fs_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
+          def npm_test_command = "cross-env NODE_ENV=test JUNIT_REPORT_PATH=report.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
 
           error_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > result.txt", returnStatus: true);
           testresults = sh(script: "cat result.txt", returnStdout: true).trim();
