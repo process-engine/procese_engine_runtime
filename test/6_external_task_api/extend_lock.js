@@ -21,8 +21,8 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
   const workerId = 'extend_lock_sample_worker';
   const topicName = 'external_task_sample_topic';
 
-  const baseLockDuration = 10000;
-  const additionalLockTimeInMinutes = 300000;
+  const baseLockDurationInMs = 10000;
+  const additionalLockTimeInMs = 300000;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -51,9 +51,9 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     await testFixtureProvider
       .externalTaskApiClientService
-      .extendLock(defaultIdentity, workerId, externalTaskId, additionalLockTimeInMinutes);
+      .extendLock(defaultIdentity, workerId, externalTaskId, additionalLockTimeInMs);
 
-    await assertThatExtensionWasSuccessful(externalTaskId, additionalLockTimeInMinutes);
+    await assertThatExtensionWasSuccessful(externalTaskId, additionalLockTimeInMs);
   });
 
   it('should fail to extend the lock, if the given ExternalTaskId does not exist', async () => {
@@ -64,7 +64,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     try {
       await testFixtureProvider
         .externalTaskApiClientService
-        .extendLock(defaultIdentity, workerId, invalidExternalTaskId, additionalLockTimeInMinutes);
+        .extendLock(defaultIdentity, workerId, invalidExternalTaskId, additionalLockTimeInMs);
 
       should.fail(invalidExternalTaskId, undefined, 'This request should have failed!');
     } catch (error) {
@@ -82,7 +82,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     try {
       await testFixtureProvider
         .externalTaskApiClientService
-        .extendLock(defaultIdentity, invalidworkerId, externalTaskId, additionalLockTimeInMinutes);
+        .extendLock(defaultIdentity, invalidworkerId, externalTaskId, additionalLockTimeInMs);
 
       should.fail(externalTaskId, undefined, 'This request should have failed!');
     } catch (error) {
@@ -98,7 +98,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     try {
       await testFixtureProvider
         .externalTaskApiClientService
-        .extendLock({}, workerId, externalTaskId, additionalLockTimeInMinutes);
+        .extendLock({}, workerId, externalTaskId, additionalLockTimeInMs);
 
       should.fail(externalTaskId, undefined, 'This request should have failed!');
     } catch (error) {
@@ -114,7 +114,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     try {
       await testFixtureProvider
         .externalTaskApiClientService
-        .extendLock(restrictedIdentity, workerId, externalTaskId, additionalLockTimeInMinutes);
+        .extendLock(restrictedIdentity, workerId, externalTaskId, additionalLockTimeInMs);
 
       should.fail(externalTaskId, undefined, 'This request should have failed!');
     } catch (error) {
@@ -135,7 +135,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     const availableExternalTasks = await testFixtureProvider
       .externalTaskApiClientService
-      .fetchAndLockExternalTasks(defaultIdentity, workerId, topicName, 1, 0, baseLockDuration);
+      .fetchAndLockExternalTasks(defaultIdentity, workerId, topicName, 1, 0, baseLockDurationInMs);
 
     should(availableExternalTasks).be.an.Array();
     should(availableExternalTasks.length).be.equal(1);
@@ -173,7 +173,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     const diff = lockExpirationTime.diff(now);
     const duration = moment.duration(diff).asMilliseconds(); //eslint-disable-line
 
-    const lockExpirationTimeIsLongerThanBefore = duration > baseLockDuration;
+    const lockExpirationTimeIsLongerThanBefore = duration > baseLockDurationInMs;
 
     should(lockExpirationTimeIsLongerThanBefore).be.true();
   }
