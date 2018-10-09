@@ -1,21 +1,22 @@
 'use strict';
 
 const path = require('path');
+const platformFolders = require('platform-folders');
 const Umzug = require('umzug');
-const sequelizeConnectionManager = require('@essential-projects/sequelize_connection_manager');
+const sequelizeConnectionManager = require('@essential-projects/sequelize_connection_manager'); //eslint-disable-line
 
 // Based on: https://github.com/abelnation/sequelize-migration-hello/blob/master/migrate.js
 module.exports.migrate = async (env, database, sqlitePath) => {
 
-  sqlitePath = getFullSqliteStoragePath(sqlitePath);
+  sqlitePath = getFullSqliteStoragePath(sqlitePath); //eslint-disable-line
 
-  const sequelizeInstance = env === `sqlite`
+  const sequelizeInstance = env === 'sqlite'
     ? await createSqLiteConnection(sqlitePath, database)
     : await createPostgresConnection(database);
 
   const umzugInstance = await createUmzugInstance(sequelizeInstance, database);
   await umzugInstance.up();
-}
+};
 
 async function createSqLiteConnection(sqlitePath, store) {
   const databaseFullPath = path.resolve(sqlitePath, store);
@@ -30,7 +31,7 @@ async function createSqLiteConnection(sqlitePath, store) {
     storage: `${databaseFullPath}.sqlite`,
     supportBigNumbers: true,
     resetPasswordRequestTimeToLive: 12,
-    logging: false
+    logging: false,
   };
 
   return sequelizeConnectionManager.getConnection(sqliteConfig);
@@ -47,7 +48,7 @@ async function createPostgresConnection(database) {
     dialect: 'postgres',
     supportBigNumbers: true,
     resetPasswordRequestTimeToLive: 12,
-    logging: false
+    logging: false,
   };
 
   return sequelizeConnectionManager.getConnection(postgresConfig);
@@ -62,7 +63,7 @@ async function createUmzugInstance(sequelize, database) {
     dirNameNormalized = dirNameNormalized.replace(appAsarPathPart, '');
   }
 
-  let migrationsPath = path.join(dirNameNormalized, 'sequelize', 'migrations', database);
+  const migrationsPath = path.join(dirNameNormalized, 'sequelize', 'migrations', database);
 
   const umzug = new Umzug({
     storage: 'sequelize',
@@ -76,10 +77,10 @@ async function createUmzugInstance(sequelize, database) {
         sequelize.constructor,
         function () {
           throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.');
-        }
+        },
       ],
       path: migrationsPath,
-      pattern: /\.js$/
+      pattern: /\.js$/,
     },
     logging: (args) => {
       console.log(args);
@@ -95,7 +96,7 @@ function getFullSqliteStoragePath(sqlitePath) {
     return sqlitePath;
   }
 
-  const userDataFolderPath = require('platform-folders').getConfigHome();
+  const userDataFolderPath = platformFolders.getConfigHome();
   const userDataProcessEngineFolderName = 'process_engine_runtime';
   const processEngineDatabaseFolderName = 'databases';
 
