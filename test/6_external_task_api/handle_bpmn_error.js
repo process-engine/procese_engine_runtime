@@ -14,6 +14,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
   let defaultIdentity;
   let restrictedIdentity;
 
+  let externalTaskIdHappyPathTest;
   let externalTaskIdBadPathTests;
 
   const processModelId = 'external_task_sample';
@@ -32,6 +33,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
+    externalTaskIdHappyPathTest = await createWaitingExternalTask();
     externalTaskIdBadPathTests = await createWaitingExternalTask();
   });
 
@@ -45,13 +47,27 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
   it('should successfully abort the given ExternalTask with a BPMN Error', async () => {
 
-    const externalTaskIdHappyPathTest = await createWaitingExternalTask();
-
     await testFixtureProvider
       .externalTaskApiClientService
       .handleBpmnError(defaultIdentity, workerId, externalTaskIdHappyPathTest, errorCode);
 
     await assertThatErrorHandlingWasSuccessful(externalTaskIdHappyPathTest, errorCode);
+  });
+
+  it('should fail to abort the given ExternalTask, if the ExernalTask is already aborted', async () => {
+
+    try {
+      await testFixtureProvider
+        .externalTaskApiClientService
+        .handleBpmnError(defaultIdentity, workerId, externalTaskIdHappyPathTest, errorCode);
+
+      should.fail(externalTaskIdHappyPathTest, undefined, 'This request should have failed!');
+    } catch (error) {
+      const expectedErrorCode = 410;
+      const expectedErrorMessage = /no longer accessible/i;
+      should(error.code).be.match(expectedErrorCode);
+      should(error.message).be.match(expectedErrorMessage);
+    }
   });
 
   it('should fail to abort the given ExternalTask, if the given ExternalTaskId does not exist', async () => {
