@@ -89,7 +89,7 @@ module.exports = {
   },
   down: async (queryInterface, Sequelize) => {
 
-    return queryInterface.dropTable('Correlations');
+    return queryInterface.dropTable('ExternalTasks');
 
   },
 };
