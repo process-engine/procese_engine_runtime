@@ -5,7 +5,7 @@ module.exports = {
 
     const checkIfTableExists = async () => {
       // Note
-      // Unfortunately, at migration level, is no such thing as "checkIfTableExits".
+      // Unfortunately, at migration level, there is no such thing as "checkIfTableExits".
       // We can only query for the table and see if that query causes an exception.
       try {
 
