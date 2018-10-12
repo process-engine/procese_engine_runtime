@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0t9x9qf" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
+  <bpmn:collaboration id="Collaboration_1mhjr91">
+    <bpmn:participant id="Participant_0x6mua5" name="service_task_external_test" processRef="service_task_external_test" />
+  </bpmn:collaboration>
+  <bpmn:process id="service_task_external_test" name="service_task_external_test" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_1sl9d0x">
+      <bpmn:lane id="Default_Test_Lane" name="Default_Test_Lane">
+        <bpmn:flowNodeRef>ExternalServiceTask_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_0yrh56c</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_0b8lvl7</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ServiceTask_Misconfigured</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ServiceTask_1bvov1a</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:sequenceFlow id="SequenceFlow_17bud3g" sourceRef="StartEvent_1" targetRef="ExclusiveGateway_0yrh56c" />
+    <bpmn:sequenceFlow id="SequenceFlow_1ewtmwi" sourceRef="ExternalServiceTask_1" targetRef="ExclusiveGateway_0b8lvl7" />
+    <bpmn:sequenceFlow id="SequenceFlow_0ialu44" name="normal" sourceRef="ExclusiveGateway_0yrh56c" targetRef="ExternalServiceTask_1">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">token.current.test_type === 'normal'</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1nuyt4j" sourceRef="ExclusiveGateway_0b8lvl7" targetRef="EndEvent_1" />
+    <bpmn:sequenceFlow id="SequenceFlow_1gf38k0" name="misconfigured external" sourceRef="ExclusiveGateway_0yrh56c" targetRef="ServiceTask_Misconfigured">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">token.current.test_type === 'misconfigured_external'</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_13vh5qz" sourceRef="ServiceTask_Misconfigured" targetRef="ExclusiveGateway_0b8lvl7" />
+    <bpmn:serviceTask id="ExternalServiceTask_1" name="Do external stuff" camunda:type="external" camunda:topic="service_task_external_test_topic">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="url" value="http://localhost:46465/api/consumer/v1/process_models" />
+          <camunda:property name="method" value="get" />
+          <camunda:property name="headers" value="{&#34;Authorization&#34;: &#34;Bearer defaultUser&#34;}" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0ialu44</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1ewtmwi</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0yrh56c">
+      <bpmn:incoming>SequenceFlow_17bud3g</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0ialu44</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_1gf38k0</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_14lm7ix</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0b8lvl7">
+      <bpmn:incoming>SequenceFlow_1ewtmwi</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_13vh5qz</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1o05can</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1nuyt4j</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="EndEvent_1">
+      <bpmn:incoming>SequenceFlow_1nuyt4j</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="ServiceTask_Misconfigured" name="Misconfigured external task" camunda:type="external" camunda:topic="service_task_external_test_topic">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="module" value="ServiceTaskTestService" />
+          <camunda:property name="method" value="echoParameter" />
+          <camunda:property name="params" value="[token.current]" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1gf38k0</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_13vh5qz</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="ServiceTask_1bvov1a" name="Misconfigured internal task">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="url" value="http://localhost:46465/api/consumer/v1/process_models" />
+          <camunda:property name="method" value="get" />
+          <camunda:property name="headers" value="{&#34;Authorization&#34;: &#34;Bearer defaultUser&#34;}" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_14lm7ix</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1o05can</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:startEvent id="StartEvent_1" name="order received">
+      <bpmn:outgoing>SequenceFlow_17bud3g</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_14lm7ix" name="misconfigured internal" sourceRef="ExclusiveGateway_0yrh56c" targetRef="ServiceTask_1bvov1a">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">token.current.test_type === 'misconfigured_internal'</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1o05can" sourceRef="ServiceTask_1bvov1a" targetRef="ExclusiveGateway_0b8lvl7" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1mhjr91">
+      <bpmndi:BPMNShape id="ServiceTask_0ptfphj_di" bpmnElement="ExternalServiceTask_1">
+        <dc:Bounds x="798" y="262" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_0x6mua5_di" bpmnElement="Participant_0x6mua5">
+        <dc:Bounds x="450" y="191" width="688" height="409" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_00asnpf_di" bpmnElement="EndEvent_1">
+        <dc:Bounds x="1049" y="388" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1015" y="303" width="0" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Default_Test_Lane_di" bpmnElement="Default_Test_Lane">
+        <dc:Bounds x="480" y="191" width="658" height="409" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1qjlwrk_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="567" y="388" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="550" y="424" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_17bud3g_di" bpmnElement="SequenceFlow_17bud3g">
+        <di:waypoint x="603" y="406" />
+        <di:waypoint x="670" y="406" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ewtmwi_di" bpmnElement="SequenceFlow_1ewtmwi">
+        <di:waypoint x="898" y="302" />
+        <di:waypoint x="989" y="302" />
+        <di:waypoint x="989" y="381" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0yrh56c_di" bpmnElement="ExclusiveGateway_0yrh56c" isMarkerVisible="true">
+        <dc:Bounds x="670" y="381" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0ialu44_di" bpmnElement="SequenceFlow_0ialu44">
+        <di:waypoint x="695" y="381" />
+        <di:waypoint x="695" y="302" />
+        <di:waypoint x="798" y="302" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="678" y="282" width="34" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0b8lvl7_di" bpmnElement="ExclusiveGateway_0b8lvl7" isMarkerVisible="true">
+        <dc:Bounds x="964" y="381" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1nuyt4j_di" bpmnElement="SequenceFlow_1nuyt4j">
+        <di:waypoint x="1014" y="406" />
+        <di:waypoint x="1049" y="406" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1gf38k0_di" bpmnElement="SequenceFlow_1gf38k0">
+        <di:waypoint x="695" y="431" />
+        <di:waypoint x="695" y="514" />
+        <di:waypoint x="798" y="514" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="660" y="523" width="69" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_0cxiaao_di" bpmnElement="ServiceTask_Misconfigured">
+        <dc:Bounds x="798" y="474" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_13vh5qz_di" bpmnElement="SequenceFlow_13vh5qz">
+        <di:waypoint x="898" y="514" />
+        <di:waypoint x="989" y="514" />
+        <di:waypoint x="989" y="431" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1bvov1a_di" bpmnElement="ServiceTask_1bvov1a">
+        <dc:Bounds x="798" y="366" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_14lm7ix_di" bpmnElement="SequenceFlow_14lm7ix">
+        <di:waypoint x="720" y="406" />
+        <di:waypoint x="798" y="406" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="719" y="417" width="69" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1o05can_di" bpmnElement="SequenceFlow_1o05can">
+        <di:waypoint x="898" y="406" />
+        <di:waypoint x="964" y="406" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

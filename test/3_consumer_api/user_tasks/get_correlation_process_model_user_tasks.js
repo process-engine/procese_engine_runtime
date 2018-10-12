@@ -27,7 +27,7 @@ describe(`Consumer API: ${testCase}`, () => {
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
     correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
   });
 
   after(async () => {

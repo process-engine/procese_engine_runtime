@@ -31,7 +31,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
     correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
   });
 
   after(async () => {

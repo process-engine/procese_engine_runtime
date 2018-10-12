@@ -28,7 +28,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/user_tasks', ()
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
     correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
   });
 
   after(async () => {
@@ -82,7 +82,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/user_tasks', ()
   it('should return a list of user tasks from a call activity, by the given correlationId through the consumer api', async () => {
 
     const correlationIdCallActivity = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdCallActivity);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationIdCallActivity, processModelIdCallActivitySubprocess);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationIdCallActivity, processModelIdCallActivitySubprocess);
 
     const userTaskList = await testFixtureProvider
       .consumerApiClientService

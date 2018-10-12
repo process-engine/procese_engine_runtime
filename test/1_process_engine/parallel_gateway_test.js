@@ -32,17 +32,17 @@ describe('Parallel Gateway execution', () => {
     const expectedHistoryEntryForTokenTestTask = 'st_currentTokenTestPart2';
     const expectedHistoryEntryForSequence3 = 'st_SequenceTestTask3';
 
-    should(result).have.property('tokenPayload');
-    should(result.tokenPayload).have.keys(
+    should(result).have.property('currentToken');
+    should(result.currentToken).have.keys(
       expectedHistoryEntryForTask1,
       expectedHistoryEntryForTask2,
       expectedHistoryEntryForTask3,
       expectedHistoryEntryForTokenTestTask,
       expectedHistoryEntryForSequence3);
-    should(result.tokenPayload[expectedHistoryEntryForTask1]).be.equal('longRunningFunction has finished');
-    should(result.tokenPayload[expectedHistoryEntryForTask2]).be.equal('veryLongRunningFunction has finished');
-    should(result.tokenPayload[expectedHistoryEntryForTask3]).be.equal('secondVeryLongRunningFunction has finished');
-    should(result.tokenPayload[expectedHistoryEntryForTokenTestTask]).be.equal('current token test value');
-    should(result.tokenPayload[expectedHistoryEntryForSequence3]).be.equal('UPDATED Script Task result for sequence test');
+    should(result.currentToken[expectedHistoryEntryForTask1]).be.equal('longRunningFunction has finished');
+    should(result.currentToken[expectedHistoryEntryForTask2]).be.equal('veryLongRunningFunction has finished');
+    should(result.currentToken[expectedHistoryEntryForTask3]).be.equal('secondVeryLongRunningFunction has finished');
+    should(result.currentToken[expectedHistoryEntryForTokenTestTask]).be.equal('current token test value');
+    should(result.currentToken[expectedHistoryEntryForSequence3]).be.equal('UPDATED Script Task result for sequence test');
   });
 });

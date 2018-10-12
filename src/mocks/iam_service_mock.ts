@@ -8,6 +8,7 @@ export class IamServiceMock implements IIAMService {
       defaultUser: [
         'can_read_process_model',
         'can_write_process_model',
+        'can_access_external_tasks',
         'Default_Test_Lane',
         'LaneA',
         'LaneB',

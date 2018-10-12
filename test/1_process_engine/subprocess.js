@@ -28,8 +28,8 @@ describe('SubProcess', () => {
       secondTest: '123456',
     };
 
-    should(result).have.property('tokenPayload');
-    should(result.tokenPayload).be.eql(expectedResult);
+    should(result).have.property('currentToken');
+    should(result.currentToken).be.eql(expectedResult);
   });
 
 });
