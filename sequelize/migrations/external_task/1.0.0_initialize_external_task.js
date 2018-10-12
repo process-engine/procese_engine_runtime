@@ -56,7 +56,7 @@ module.exports = {
         allowNull: true,
       },
       payload: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: true,
       },
       state: {
