@@ -16,8 +16,8 @@
         <bpmn:flowNodeRef>EndEvent_0n9pcff</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_16f2iuc</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_0iirk4c</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_03hy036</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_0f8bohm</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_0xtjivb</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_054pw2r</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:sequenceFlow id="SequenceFlow_1q7fxbb" name="Basic test" sourceRef="XORSplit1" targetRef="BTTask1">
@@ -84,13 +84,13 @@
       <bpmn:outgoing>SequenceFlow_1q7fxbb</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_0nnddts</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_0xbwu3b</bpmn:outgoing>
-      <bpmn:outgoing>SequenceFlow_08axrh5</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0btcj5u</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:exclusiveGateway id="XORJoin1">
       <bpmn:incoming>SequenceFlow_0sphvwx</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_0734txl</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_0ci6m6b</bpmn:incoming>
-      <bpmn:incoming>SequenceFlow_09qqtqe</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1uyc04w</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0vbem7h</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:endEvent id="EndEvent_0n9pcff" name="End">
@@ -110,19 +110,24 @@
       <bpmn:outgoing>SequenceFlow_0ci6m6b</bpmn:outgoing>
       <bpmn:script>return 'Empty ServiceTask successfully run!';</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:sequenceFlow id="SequenceFlow_08axrh5" name="Perform WebService invocation" sourceRef="XORSplit1" targetRef="Task_03hy036">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">token.current.test_type === 'webservice_invocation'</bpmn:conditionExpression>
+    <bpmn:sequenceFlow id="SequenceFlow_0btcj5u" name="Unsupported Invocation Type" sourceRef="XORSplit1" targetRef="Task_0xtjivb">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">token.current.test_type === 'unsupported_invocation'</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_0dpdzy3" sourceRef="Task_03hy036" targetRef="Task_0f8bohm" />
-    <bpmn:serviceTask id="Task_03hy036" name="Perform WebService invocation">
-      <bpmn:incoming>SequenceFlow_08axrh5</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0dpdzy3</bpmn:outgoing>
+    <bpmn:sequenceFlow id="SequenceFlow_1je7p7h" sourceRef="Task_0xtjivb" targetRef="Task_054pw2r" />
+    <bpmn:sequenceFlow id="SequenceFlow_1uyc04w" sourceRef="Task_054pw2r" targetRef="XORJoin1" />
+    <bpmn:serviceTask id="Task_0xtjivb" name="Service Task with unsupported invocation">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="unsupportedProperty" value="hello" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0btcj5u</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1je7p7h</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="SequenceFlow_09qqtqe" sourceRef="Task_0f8bohm" targetRef="XORJoin1" />
-    <bpmn:scriptTask id="Task_0f8bohm" name="TODO: Remove when WebService invocation is supported">
-      <bpmn:incoming>SequenceFlow_0dpdzy3</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_09qqtqe</bpmn:outgoing>
-      <bpmn:script>return 'success';</bpmn:script>
+    <bpmn:scriptTask id="Task_054pw2r" name="Provide a result to evaluate">
+      <bpmn:incoming>SequenceFlow_1je7p7h</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1uyc04w</bpmn:outgoing>
+      <bpmn:script>return 'ServiceTask with unsupported properties successfully run!';</bpmn:script>
     </bpmn:scriptTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
@@ -250,28 +255,28 @@
       <bpmndi:BPMNShape id="ScriptTask_0qmj6mk_di" bpmnElement="Task_0iirk4c">
         <dc:Bounds x="781" y="436" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_08axrh5_di" bpmnElement="SequenceFlow_08axrh5">
-        <di:waypoint x="385" y="330" />
-        <di:waypoint x="385" y="583" />
-        <di:waypoint x="540" y="583" />
+      <bpmndi:BPMNEdge id="SequenceFlow_0btcj5u_di" bpmnElement="SequenceFlow_0btcj5u">
+        <di:waypoint x="385" y="355" />
+        <di:waypoint x="385" y="589" />
+        <di:waypoint x="540" y="589" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="372" y="592" width="60" height="40" />
+          <dc:Bounds x="379" y="604" width="78" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_122rup3_di" bpmnElement="Task_03hy036">
-        <dc:Bounds x="540" y="543" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_0dpdzy3_di" bpmnElement="SequenceFlow_0dpdzy3">
-        <di:waypoint x="640" y="583" />
-        <di:waypoint x="781" y="583" />
+      <bpmndi:BPMNEdge id="SequenceFlow_1je7p7h_di" bpmnElement="SequenceFlow_1je7p7h">
+        <di:waypoint x="640" y="589" />
+        <di:waypoint x="781" y="589" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_09qqtqe_di" bpmnElement="SequenceFlow_09qqtqe">
-        <di:waypoint x="881" y="583" />
-        <di:waypoint x="990" y="583" />
+      <bpmndi:BPMNEdge id="SequenceFlow_1uyc04w_di" bpmnElement="SequenceFlow_1uyc04w">
+        <di:waypoint x="881" y="589" />
+        <di:waypoint x="990" y="589" />
         <di:waypoint x="990" y="355" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ScriptTask_0qb3rtj_di" bpmnElement="Task_0f8bohm">
-        <dc:Bounds x="781" y="543" width="100" height="80" />
+      <bpmndi:BPMNShape id="ServiceTask_14mh0rg_di" bpmnElement="Task_0xtjivb">
+        <dc:Bounds x="540" y="549" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ScriptTask_0o9kpvo_di" bpmnElement="Task_054pw2r">
+        <dc:Bounds x="781" y="549" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

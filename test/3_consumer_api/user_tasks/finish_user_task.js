@@ -31,7 +31,7 @@ describe(`Consumer API: ${testCase}`, () => {
   it('should successfully finish the given user task.', async () => {
 
     const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {
@@ -48,7 +48,7 @@ describe(`Consumer API: ${testCase}`, () => {
   it('should successfully finish the user task, if no result is provided', async () => {
 
     const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {};
@@ -61,7 +61,7 @@ describe(`Consumer API: ${testCase}`, () => {
   it('should fail to finish the user task, if the given process_model_id does not exist', async () => {
 
     const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {
@@ -89,7 +89,7 @@ describe(`Consumer API: ${testCase}`, () => {
   it('should fail to finish the user task, if the given correlation_id does not exist', async () => {
 
     const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     const invalidCorrelationId = 'invalidCorrelationId';
 
@@ -117,7 +117,7 @@ describe(`Consumer API: ${testCase}`, () => {
   it('should fail to finish the user task, if the given user_task_id does not exist', async () => {
 
     const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     const invalidUserTaskId = 'invalidUserTaskId';
     const userTaskResult = {
@@ -143,7 +143,7 @@ describe(`Consumer API: ${testCase}`, () => {
   it('should fail to finish an already finished user task.', async () => {
 
     const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {
@@ -173,7 +173,7 @@ describe(`Consumer API: ${testCase}`, () => {
   it('should fail to finish the user task, if the provided result is not an object, but a String', async () => {
 
     const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {
@@ -197,7 +197,7 @@ describe(`Consumer API: ${testCase}`, () => {
   it('should fail to finish the user task, if the provided result is not an object, but an Array', async () => {
 
     const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {
@@ -221,7 +221,7 @@ describe(`Consumer API: ${testCase}`, () => {
   it('should fail to finish the user task, when the user is unauthorized', async () => {
 
     const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {
@@ -247,7 +247,7 @@ describe(`Consumer API: ${testCase}`, () => {
   it('should fail to finish the user task, when the user is forbidden to retrieve it', async () => {
 
     const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {

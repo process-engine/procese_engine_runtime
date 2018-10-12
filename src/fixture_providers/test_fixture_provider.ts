@@ -9,9 +9,10 @@ const logger: Logger = Logger.createLogger('test:bootstrapper');
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
 import {IIdentity} from '@essential-projects/iam_contracts';
 
-import {IConsumerApi, IConsumerApiAccessor} from '@process-engine/consumer_api_contracts';
+import {IConsumerApi} from '@process-engine/consumer_api_contracts';
 import {IDeploymentApi} from '@process-engine/deployment_api_contracts';
-import {IManagementApi, IManagementApiAccessor} from '@process-engine/management_api_contracts';
+import {IExternalTaskApi} from '@process-engine/external_task_api_contracts';
+import {IManagementApi} from '@process-engine/management_api_contracts';
 import {
   IExecuteProcessService,
   IProcessModelService,
@@ -36,6 +37,7 @@ export class TestFixtureProvider {
   private _consumerApiClientService: IConsumerApi;
   private _deploymentApiService: IDeploymentApi;
   private _executeProcessService: IExecuteProcessService;
+  private _externalTaskApiClientService: IExternalTaskApi;
   private _managementApiClientService: IManagementApi;
   private _processModelService: IProcessModelService;
 
@@ -55,6 +57,10 @@ export class TestFixtureProvider {
 
   public get executeProcessService(): IExecuteProcessService {
     return this._executeProcessService;
+  }
+
+  public get externalTaskApiClientService(): IExternalTaskApi {
+    return this._externalTaskApiClientService;
   }
 
   public get managementApiClientService(): IManagementApi {
@@ -85,6 +91,7 @@ export class TestFixtureProvider {
 
     this._deploymentApiService = await this.resolveAsync<IDeploymentApi>('DeploymentApiService');
     this._executeProcessService = await this.resolveAsync<IExecuteProcessService>('ExecuteProcessService');
+    this._externalTaskApiClientService = await this.resolveAsync<IExecuteProcessService>('ExternalTaskApiClientService');
     this._processModelService = await this.resolveAsync<IProcessModelService>('ProcessModelService');
   }
 
@@ -123,13 +130,13 @@ export class TestFixtureProvider {
     return path.join(rootDirPath, bpmnDirectoryName);
   }
 
-  public async executeProcess(processKey: string, startEventKey: string, correlationId: string, initialToken: any = {}): Promise<any> {
+  public async executeProcess(processModelId: string, startEventId: string, correlationId: string, initialToken: any = {}): Promise<any> {
 
-    const processModel: Model.Types.Process = await this._getProcessById(processKey);
+    const processModel: Model.Types.Process = await this._getProcessById(processModelId);
 
     return this
       .executeProcessService
-      .startAndAwaitEndEvent(this.identities.defaultUser, processModel, startEventKey, correlationId, initialToken);
+      .startAndAwaitEndEvent(this.identities.defaultUser, processModel, startEventId, correlationId, initialToken);
   }
 
   private async _initializeBootstrapper(): Promise<void> {

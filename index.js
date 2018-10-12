@@ -28,6 +28,7 @@ async function runMigrations(sqlitePath) {
 
   const repositories = [
     'correlation',
+    'external_task',
     'flow_node_instance',
     'process_model',
     'timer',
@@ -78,6 +79,9 @@ function loadIocModules() {
     '@process-engine/consumer_api_core',
     '@process-engine/consumer_api_http',
     '@process-engine/correlations.repository.sequelize',
+    '@process-engine/external_task_api_core',
+    '@process-engine/external_task_api_http',
+    '@process-engine/external_task.repository.sequelize',
     '@process-engine/flow_node_instance.repository.sequelize',
     '@process-engine/iam',
     '@process-engine/kpi_api_core',
@@ -162,6 +166,7 @@ function setDatabasePaths(sqlitePath) {
   const databaseBasePath = getSqliteStoragePath(sqlitePath);
 
   const correlationRepositoryStoragePath = path.join(databaseBasePath, 'correlation.sqlite');
+  const externalTaskRepositoryStoragePath = path.join(databaseBasePath, 'external_task.sqlite');
   const processModelRepositoryStoragePath = path.join(databaseBasePath, 'process_model.sqlite');
   const flowNodeRepositoryStoragePath = path.join(databaseBasePath, 'flow_node_instance.sqlite');
   const timerRepositoryStoragePath = path.join(databaseBasePath, 'timer.sqlite');
@@ -170,6 +175,7 @@ function setDatabasePaths(sqlitePath) {
   const metricsStoragePath = path.join(databaseBasePath, 'metrics');
 
   process.env.process_engine__correlation_repository__storage = correlationRepositoryStoragePath;
+  process.env.process_engine__external_task_repository__storage = externalTaskRepositoryStoragePath;
   process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
   process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
   process.env.process_engine__timer_repository__storage = timerRepositoryStoragePath;

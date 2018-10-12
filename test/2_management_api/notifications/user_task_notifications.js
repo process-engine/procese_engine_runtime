@@ -103,7 +103,7 @@ describe('Management API:   Receive User Task Notifications', () => {
       testFixtureProvider.managementApiClientService.onUserTaskFinished(messageReceivedCallback);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
-      await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+      await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
       finishWaitingUserTask(correlationId);
     });
   });

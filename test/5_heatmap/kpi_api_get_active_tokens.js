@@ -114,7 +114,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
     };
 
     await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, initialToken);
-    await processInstanceHandler.waitForProcessInstanceToReachUserTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
   }
 
   async function finishUserTask(userTaskId) {

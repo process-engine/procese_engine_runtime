@@ -14,6 +14,12 @@ import {
 } from '@process-engine/consumer_api_client';
 
 import {
+  ExternalTaskApiClientService,
+  ExternalTaskApiExternalAccessor,
+  ExternalTaskApiInternalAccessor,
+} from '@process-engine/external_task_api_client';
+
+import {
   ManagementApiClientService,
   ExternalAccessor as ManagementApiExternalAccessor,
   InternalAccessor as ManagementApiInternalAccessor,
@@ -46,6 +52,12 @@ function registerApisWithInternalAccessors(container: InvocationContainer): void
   container.register('ConsumerApiClientService', ConsumerApiClientService)
     .dependencies('ConsumerApiInternalAccessor');
 
+  container.register('ExternalTaskApiInternalAccessor', ExternalTaskApiInternalAccessor)
+    .dependencies('ExternalTaskApiService');
+
+  container.register('ExternalTaskApiClientService', ExternalTaskApiClientService)
+    .dependencies('ExternalTaskApiInternalAccessor');
+
   container.register('ManagementApiInternalAccessor', ManagementApiInternalAccessor)
     .dependencies('ManagementApiService');
 
@@ -61,6 +73,12 @@ function registerWithExternalAccessors(container: InvocationContainer): void {
 
   container.register('ConsumerApiClientService', ConsumerApiClientService)
     .dependencies('ConsumerApiExternalAccessor');
+
+  container.register('ExternalTaskApiExternalAccessor', ExternalTaskApiExternalAccessor)
+    .dependencies('HttpService');
+
+  container.register('ExternalTaskApiClientService', ExternalTaskApiClientService)
+    .dependencies('ExternalTaskApiExternalAccessor');
 
   container.register('ManagementApiExternalAccessor', ManagementApiExternalAccessor)
     .dependencies('HttpService')

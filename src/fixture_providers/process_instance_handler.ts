@@ -45,7 +45,7 @@ export class ProcessInstanceHandler {
     return result.correlationId;
   }
 
-  public async waitForProcessInstanceToReachUserTask(correlationId: string, processModelId?: string): Promise<void> {
+  public async waitForProcessInstanceToReachSuspendedTask(correlationId: string, processModelId?: string): Promise<void> {
 
     const maxNumberOfRetries: number = 30;
     const delayBetweenRetriesInMs: number = 500;

@@ -37,7 +37,7 @@ describe('User Tasks - ', () => {
     };
 
     const correlationId = await startProcessAndReturnCorrelationId(processModelId, initialToken);
-    await waitForProcessInstanceToReachUserTask(correlationId);
+    await waitForProcessInstanceToReachSuspendedTask(correlationId);
     const waitingUserTasks = await getWaitingUserTasksForCorrelationId(correlationId);
 
     const expectedNumberOfWaitingUserTasks = 1;
@@ -92,7 +92,7 @@ describe('User Tasks - ', () => {
     };
 
     await finishUserTaskInCorrelation(correlationId, processModelId, 'User_Task_1', userTaskInput);
-    await waitForProcessInstanceToReachUserTask(correlationId);
+    await waitForProcessInstanceToReachSuspendedTask(correlationId);
     await finishUserTaskInCorrelation(correlationId, processModelId, 'User_Task_2', userTaskInput);
   });
 
@@ -219,7 +219,7 @@ describe('User Tasks - ', () => {
       .consumerApiClientService
       .startProcessInstance(defaultIdentity, processModelId, 'StartEvent_1', initialToken, callbackType);
 
-    await waitForProcessInstanceToReachUserTask(result.correlationId);
+    await waitForProcessInstanceToReachSuspendedTask(result.correlationId);
 
     return result.correlationId;
   }
@@ -241,7 +241,7 @@ describe('User Tasks - ', () => {
    *
    * @param {string} correlationId The id of the correlation to wait for.
    */
-  async function waitForProcessInstanceToReachUserTask(correlationId) {
+  async function waitForProcessInstanceToReachSuspendedTask(correlationId) {
 
     const maxNumberOfRetries = 20;
     const delayBetweenRetriesInMs = 500;
