@@ -1,6 +1,6 @@
 {
   "name": "@process-engine/process_engine_runtime",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "",
   "bin": {
     "process-engine": "./bin/index.js"
