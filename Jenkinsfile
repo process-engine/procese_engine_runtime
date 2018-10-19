@@ -134,9 +134,12 @@ pipeline {
 
           def db_environment_settings = "${db_storage_path_correlation} ${db_storage_path_external_task} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance} ${db_storage_path_timer}";
 
-          def npm_test_command = "cross-env NODE_ENV=test JUNIT_REPORT_PATH=report.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
+          def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test JUNIT_REPORT_PATH=report.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
 
-          error_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > result.txt", returnStatus: true);
+          docker.image('node:8').inside("--env PATH=$PATH:/$WORKSPACE/node_modules/.bin") {
+            error_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > result.txt", returnStatus: true);
+          };
+
           testresults = sh(script: "cat result.txt", returnStdout: true).trim();
 
           junit 'report.xml'
