@@ -6,7 +6,7 @@ const uuid = require('uuid');
 const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 
 // NOTE:
-// The deployment api alrady contains extensive testing for this, so there is no need to cover everything here.
+// The deployment api already contains extensive testing for this, so there is no need to cover everything here.
 // We just need to ensure that all commands get passed correctly to the deployment api and leave the rest up to it.
 describe('Management API:   POST  ->  /process_models/:process_model_id/update', () => {
 
@@ -52,5 +52,4 @@ describe('Management API:   POST  ->  /process_models/:process_model_id/update',
 
     should.exist(existingProcessModel);
   }
-
 });

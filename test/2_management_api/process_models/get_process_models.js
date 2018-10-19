@@ -34,6 +34,7 @@ describe('Management API:   GET  ->  /processModels', () => {
 
     processModelList.processModels.forEach((processModel) => {
       should(processModel).have.property('id');
+      should(processModel).have.property('name');
       should(processModel).have.property('xml');
       should(processModel).have.property('startEvents');
       should(processModel).have.property('endEvents');

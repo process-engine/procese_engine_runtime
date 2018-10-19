@@ -36,6 +36,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
       .getProcessModelById(defaultIdentity, processModelId);
 
     should(processModel).have.property('id');
+    should(processModel).have.property('name');
     should(processModel).have.property('startEvents');
     should(processModel).have.property('endEvents');
     should(processModel.startEvents.length).be.greaterThan(0);
@@ -49,6 +50,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
       .getProcessModelById(defaultIdentity, processModelIdNonExecutable);
 
     should(processModel).have.property('id');
+    should(processModel).have.property('name');
     should(processModel).have.property('startEvents');
     should(processModel).have.property('endEvents');
     should(processModel.startEvents.length).be.equal(0);

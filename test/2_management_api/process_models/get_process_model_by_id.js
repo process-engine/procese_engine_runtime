@@ -28,6 +28,7 @@ describe('Management API:   GET  ->  /process_models/:process_model_id', () => {
       .getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
     should(processModel).have.property('id');
+    should(processModel).have.property('name');
     should(processModel).have.property('xml');
     should(processModel).have.property('startEvents');
     should(processModel).have.property('endEvents');
