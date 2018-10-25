@@ -53,7 +53,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
 
   it('should successfully get a list of ExternalTasks, if there is at least one ExternalTask available', async () => {
 
-    await createWaitingExternalTask();
+    await createWaitingExternalTask('without_payload');
 
     const availableExternalTasks = await testFixtureProvider
       .externalTaskApiClientService
@@ -83,6 +83,25 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
     should(externalTask).have.property('processInstanceId');
     should(externalTask).have.property('payload');
     should(externalTask).have.property('createdAt');
+  });
+
+  it('should successfully get external task with payload', async () => {
+
+    await createWaitingExternalTask('with_payload');
+
+    const availableExternalTasks = await testFixtureProvider
+      .externalTaskApiClientService
+      .fetchAndLockExternalTasks(defaultIdentity, workerId, topicName, 1, 0, 10000);
+
+    should(availableExternalTasks).be.an.Array();
+    should(availableExternalTasks.length).be.equal(1);
+
+    const externalTask = availableExternalTasks[0];
+
+    externalTaskIdToCleanupAfterTest = externalTask.id;
+
+    should(externalTask.payload.currentToken.test_type).be.equal('with_payload');
+    should(externalTask.payload.testProperty).be.equal('Test');
   });
 
   it('should fail to fetch and lock, when the user is unauthorized', async () => {
@@ -117,11 +136,11 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
     }
   });
 
-  async function createWaitingExternalTask() {
+  async function createWaitingExternalTask(test_type) {
 
     const correlationId = uuid.v4();
 
-    testFixtureProvider.executeProcess(processModelId, 'StartEvent_1', correlationId, {});
+    testFixtureProvider.executeProcess(processModelId, 'StartEvent_1', correlationId, { test_type: test_type });
 
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
   }
