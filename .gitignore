@@ -14,10 +14,6 @@ sqlite_temp.json
 metrics
 logs
 
-# lock-files
-package-lock.json
-yarn.lock
-
 # build directories
 dist
 
