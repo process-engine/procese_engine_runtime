@@ -144,7 +144,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     const correlationId = uuid.v4();
 
-    testFixtureProvider.executeProcess(processModelId, 'StartEvent_1', correlationId, {});
+    testFixtureProvider.executeProcess(processModelId, 'StartEvent_1', correlationId, { test_type: 'without_payload' });
 
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
