@@ -4,18 +4,17 @@
 // https://sequelize.readthedocs.io/en/latest/docs/migrations/#functions
 
 // CHANGE NOTES:
-// Added the "identity" column.
+// Added the "version" column.
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
     // New Column for ExternalTasks
     await queryInterface.addColumn(
       'ExternalTasks',
-      'identity',
+      'version',
       {
-        type: Sequelize.TEXT,
-        allowNull: false,
-        defaultValue: ''
+        type: Sequelize.INTEGER,
+        allowNull: true,
       }
     );
   },
