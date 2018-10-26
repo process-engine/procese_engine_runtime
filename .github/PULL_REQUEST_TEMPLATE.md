@@ -100,7 +100,7 @@ Ref: https://gitmoji.carloscuesta.me/
 | Description              | Glyphe               | Emoji  |
 |--------------------------|----------------------|--------|
 | Bugfix                   | `:bug:`              | 🐛     |
-| Fixing Security Issues   | `:warning:`          | ⚠️      |
+| Fixing Security Issues   | `:lock:`             | 🔒     |
 | Configuration releated   | `:wrench:`           | 🔧     |
 | Cosmetic                 | `:lipstick:`         | 💄     |
 | Dependencies Downgrade   | `:arrow_down:`       | ⬇️     |
