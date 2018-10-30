@@ -8,7 +8,7 @@ const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvide
 // NOTE:
 // The deployment api alrady contains extensive testing for this, so there is no need to cover everything here.
 // We just need to ensure that all commands get passed correctly to the deployment api and leave the rest up to it.
-describe('Management API:   POST  ->  /process_models/:process_model_id/update', () => {
+describe.only('Management API:   POST  ->  /process_models/:process_model_id/update', () => {
 
   let testFixtureProvider;
 
@@ -43,11 +43,30 @@ describe('Management API:   POST  ->  /process_models/:process_model_id/update',
     await assertThatImportWasSuccessful();
   });
 
-  async function assertThatImportWasSuccessful() {
+  it('should successfully import a ProcessModel which contains an empty lane', async () => {
+    const uniqueImportName = uuid.v4();
+    const emptyLaneModelId = 'test_management_api_import_empty_lane';
+    const xmlToImport = testFixtureProvider.readProcessModelFile(emptyLaneModelId);
+
+    const importPayload = {
+      xml: xmlToImport,
+      overwriteExisting: true,
+    };
+
+    await testFixtureProvider
+      .managementApiClientService
+      .updateProcessDefinitionsByName(testFixtureProvider.identities.defaultUser, uniqueImportName, importPayload);
+
+    await assertThatImportWasSuccessful(emptyLaneModelId);
+
+  });
+
+  async function assertThatImportWasSuccessful(customProcessModelId) {
 
     const processModelService = await testFixtureProvider.resolveAsync('ProcessModelService');
 
-    const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
+    const existingProcessModel = await processModelService
+      .getProcessModelById(testFixtureProvider.identities.defaultUser, customProcessModelId || processModelId);
 
     should.exist(existingProcessModel);
   }
