@@ -12,5 +12,17 @@
       "refreshOnInvalidToken": true
     }
   },
-  "disableCors": false
+  "cors": {
+    "enabled": true,
+    "options": {
+      "allowedHeaders": [
+        "Content-Type",
+        "Authorization"
+      ],
+      "credentials": true,
+      "methods": "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
+      "origin": "*",
+      "preflightContinue": false
+    }
+  }
 }
