@@ -14,7 +14,6 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
 
   let defaultIdentity;
   let restrictedIdentity;
-  let externalTaskIdToCleanupAfterTest;
 
   const processModelId = 'external_task_sample';
   const workerId = 'fetch_and_lock_sample_worker';
@@ -33,11 +32,6 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
   });
 
   after(async () => {
-
-    await testFixtureProvider
-      .externalTaskApiClientService
-      .finishExternalTask(defaultIdentity, workerId, externalTaskIdToCleanupAfterTest, {});
-
     await testFixtureProvider.tearDown();
   });
 
@@ -64,7 +58,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
 
     const externalTask = availableExternalTasks[0];
 
-    externalTaskIdToCleanupAfterTest = externalTask.id;
+    await finishExternalTask(externalTask.id);
 
     should(externalTask.workerId).be.equal(workerId);
     should(externalTask.topic).be.equal(topicName);
@@ -85,7 +79,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
     should(externalTask).have.property('createdAt');
   });
 
-  it('should successfully get external task with payload', async () => {
+  it('should successfully get a waiting ExternalTask with a defined payload', async () => {
 
     await createWaitingExternalTask('with_payload');
 
@@ -98,7 +92,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
 
     const externalTask = availableExternalTasks[0];
 
-    externalTaskIdToCleanupAfterTest = externalTask.id;
+    await finishExternalTask(externalTask.id);
 
     should(externalTask.payload.currentToken.test_type).be.equal('with_payload');
     should(externalTask.payload.testProperty).be.equal('Test');
@@ -111,7 +105,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
         .externalTaskApiClientService
         .fetchAndLockExternalTasks({}, workerId, topicName, 1, 0, 10000);
 
-      should.fail(externalTaskIdToCleanupAfterTest, undefined, 'This request should have failed!');
+      should.fail('externalTask', undefined, 'This request should have failed, because no token was supplied!');
     } catch (error) {
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
@@ -127,7 +121,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
         .externalTaskApiClientService
         .fetchAndLockExternalTasks(restrictedIdentity, workerId, topicName, 1, 0, 10000);
 
-      should.fail(externalTaskIdToCleanupAfterTest, undefined, 'This request should have failed!');
+      should.fail('externalTask', undefined, 'This request should have failed, because the user has no right to see ExternalTasks!');
     } catch (error) {
       const expectedErrorCode = 403;
       const expectedErrorMessage = /access denied/i;
@@ -136,13 +130,19 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
     }
   });
 
-  async function createWaitingExternalTask(test_type) {
+  async function createWaitingExternalTask(testType) {
 
     const correlationId = uuid.v4();
 
-    testFixtureProvider.executeProcess(processModelId, 'StartEvent_1', correlationId, { test_type: test_type });
+    testFixtureProvider.executeProcess(processModelId, 'StartEvent_1', correlationId, {test_type: testType});
 
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+  }
+
+  async function finishExternalTask(externalTaskId) {
+    await testFixtureProvider
+      .externalTaskApiClientService
+      .finishExternalTask(defaultIdentity, workerId, externalTaskId, {});
   }
 
 });
