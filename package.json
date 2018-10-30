@@ -47,7 +47,7 @@
     "@essential-projects/bootstrapper": "3.1.0",
     "@essential-projects/bootstrapper_node": "3.1.0",
     "@essential-projects/event_aggregator": "3.0.1",
-    "@essential-projects/http_extension": "feature~allow_cors_configuration",
+    "@essential-projects/http_extension": "6.0.0",
     "@essential-projects/services": "2.0.3",
     "@essential-projects/timing": "3.0.5",
     "@essential-projects/timing_contracts": "3.0.1",
