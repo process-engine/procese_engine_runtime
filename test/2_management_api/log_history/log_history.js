@@ -22,14 +22,14 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
     defaultIdentity = testFixtureProvider.identities.defaultUser;
 
     await testFixtureProvider.importProcessFiles([processModelId]);
-    await executeSampleProcess();
+    await executeSampleProcess(correlationId);
   });
 
   after(async () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should sucessfully get an array which contains all logs', async () => {
+  it('should sucessfully get an array which contains all logs for a given correlation', async () => {
     const logs = await testFixtureProvider
       .managementApiClientService
       .getProcessModelLog(defaultIdentity, processModelId, correlationId);
@@ -45,6 +45,31 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
 
     should(logs).be.an.Array();
     should(logs).have.length(8);
+
+    for (const currentLogEntry of logs) {
+      should(currentLogEntry).have.properties(...expectedProperties);
+    }
+  });
+
+  it('should sucessfully get an array which contains all logs', async () => {
+    const customCorrelationId = uuid.v4();
+    executeSampleProcess(customCorrelationId);
+
+    const logs = await testFixtureProvider
+      .managementApiClientService
+      .getProcessModelLog(defaultIdentity, processModelId);
+
+    const expectedProperties = [
+      'timeStamp',
+      'correlationId',
+      'processModelId',
+      'processInstanceId',
+      'logLevel',
+      'message',
+    ];
+
+    should(logs).be.an.Array();
+    should(logs.length).be.greaterThan(8);
 
     for (const currentLogEntry of logs) {
       should(currentLogEntry).have.properties(...expectedProperties);
@@ -87,10 +112,10 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
     should(logs).be.empty();
   });
 
-  async function executeSampleProcess() {
+  async function executeSampleProcess(usedCorrelationId) {
 
     const payload = {
-      correlationId: correlationId,
+      correlationId: usedCorrelationId,
       inputValues: {
         user_task: false,
       },
