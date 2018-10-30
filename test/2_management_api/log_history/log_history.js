@@ -53,7 +53,7 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
 
   it('should sucessfully get an array which contains all logs', async () => {
     const customCorrelationId = uuid.v4();
-    executeSampleProcess(customCorrelationId);
+    await executeSampleProcess(customCorrelationId);
 
     const logs = await testFixtureProvider
       .managementApiClientService
