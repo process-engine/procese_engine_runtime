@@ -8,7 +8,7 @@ const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvide
 // NOTE:
 // The deployment api alrady contains extensive testing for this, so there is no need to cover everything here.
 // We just need to ensure that all commands get passed correctly to the deployment api and leave the rest up to it.
-describe.only('Management API:   POST  ->  /process_models/:process_model_id/update', () => {
+describe('Management API:   POST  ->  /process_models/:process_model_id/update', () => {
 
   let testFixtureProvider;
 
