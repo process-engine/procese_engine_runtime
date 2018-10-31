@@ -43,30 +43,12 @@ describe('Management API:   POST  ->  /process_models/:process_model_id/update',
     await assertThatImportWasSuccessful();
   });
 
-  it('should successfully import a ProcessModel which contains an empty lane', async () => {
-    const uniqueImportName = uuid.v4();
-    const emptyLaneModelId = 'test_management_api_import_empty_lane';
-    const xmlToImport = testFixtureProvider.readProcessModelFile(emptyLaneModelId);
-
-    const importPayload = {
-      xml: xmlToImport,
-      overwriteExisting: true,
-    };
-
-    await testFixtureProvider
-      .managementApiClientService
-      .updateProcessDefinitionsByName(testFixtureProvider.identities.defaultUser, uniqueImportName, importPayload);
-
-    await assertThatImportWasSuccessful(emptyLaneModelId);
-
-  });
-
-  async function assertThatImportWasSuccessful(customProcessModelId) {
+  async function assertThatImportWasSuccessful() {
 
     const processModelService = await testFixtureProvider.resolveAsync('ProcessModelService');
 
     const existingProcessModel = await processModelService
-      .getProcessModelById(testFixtureProvider.identities.defaultUser, customProcessModelId || processModelId);
+      .getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
     should.exist(existingProcessModel);
   }
