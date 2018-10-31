@@ -157,29 +157,6 @@ describe(`Consumer API: ${testCase}`, () => {
     }
   });
 
-  // TODO: Bad Path not implemented yet
-  // TODO: What exactly constitutes a valid payload anyway?
-  it.skip('should fail to start the process, if the given payload is invalid', async () => {
-
-    const startEventId = 'StartEvent_1';
-    const payload = 'i am missing vital properties';
-
-    const startCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
-
-    try {
-      const result = await testFixtureProvider
-        .consumerApiClientService
-        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
-
-      should.fail(result, undefined, 'This request should have failed!');
-    } catch (error) {
-      const expectedErrorCode = 400;
-      const expectedErrorMessage = /invalid payload/i;
-      should(error.code).be.match(expectedErrorCode);
-      should(error.message).be.match(expectedErrorMessage);
-    }
-  });
-
   it('should fail, if the request was aborted before the desired return_on event was reached', async () => {
 
     const startEventId = 'StartEvent_1';

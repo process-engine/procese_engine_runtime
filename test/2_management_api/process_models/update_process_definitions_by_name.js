@@ -47,7 +47,8 @@ describe('Management API:   POST  ->  /process_models/:process_model_id/update',
 
     const processModelService = await testFixtureProvider.resolveAsync('ProcessModelService');
 
-    const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
+    const existingProcessModel = await processModelService
+      .getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
     should.exist(existingProcessModel);
   }
