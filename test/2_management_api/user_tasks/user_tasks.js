@@ -85,9 +85,13 @@ describe(`Management API: ${testCase}`, () => {
     const userTask = userTaskList.userTasks[0];
 
     should(userTask).have.property('id');
+    should(userTask).have.property('name');
     should(userTask).have.property('correlationId');
     should(userTask).have.property('processModelId');
     should(userTask).have.property('data');
+
+    const userTaskSampleName = 'Sample UserTask';
+    should(userTask.name).be.eql(userTaskSampleName);
 
     should(userTask.data).have.property('formFields');
     should(userTask.data.formFields).be.instanceOf(Array);
