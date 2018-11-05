@@ -79,7 +79,7 @@
     "@process-engine/management_api_http": "0.11.1",
     "@process-engine/metrics_api_core": "0.1.1",
     "@process-engine/metrics.repository.file_system": "0.1.3",
-    "@process-engine/process_engine_core": "5.4.1",
+    "@process-engine/process_engine_core": "feature~use_name_of_signals_and_messages",
     "@process-engine/process_model.repository.sequelize": "3.2.0",
     "@process-engine/timers.repository.sequelize": "2.1.3",
     "@process-engine/token_history_api_http": "0.1.1",
