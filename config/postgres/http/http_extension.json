@@ -15,10 +15,7 @@
   "cors": {
     "enabled": true,
     "options": {
-      "allowedHeaders": [
-        "Content-Type",
-        "Authorization"
-      ],
+      "allowedHeaders": "*",
       "credentials": true,
       "methods": "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
       "origin": "*",
