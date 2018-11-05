@@ -58,7 +58,7 @@ describe('Start Events - ', () => {
       eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
 
       // Now publish the message and let the process run its course.
-      const messageName = 'Message_18zwda3';
+      const messageName = 'Message_Test';
       eventAggregator.publish(`/processengine/process/message/${messageName}`);
     });
   });
@@ -91,7 +91,7 @@ describe('Start Events - ', () => {
       eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
 
       // Now publish the signal and let the process run its course.
-      const signalName = 'Signal_1gmrdgn';
+      const signalName = 'Signal_Test';
       eventAggregator.publish(`/processengine/process/signal/${signalName}`);
     });
   });
