@@ -66,9 +66,13 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
     const userTask = userTaskList.userTasks[0];
 
     should(userTask).have.property('id');
+    should(userTask).have.property('name');
     should(userTask).have.property('correlationId');
     should(userTask).have.property('processModelId');
     should(userTask).have.property('data');
+
+    const sampleUserTaskName = 'Sample UserTask';
+    should(userTask.name).be.eql(sampleUserTaskName);
 
     should(userTask.data).have.property('formFields');
     should(userTask.data.formFields).be.instanceOf(Array);
