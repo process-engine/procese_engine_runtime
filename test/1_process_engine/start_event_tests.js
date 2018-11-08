@@ -6,7 +6,7 @@ const uuid = require('uuid');
 const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 const ProcessInstanceHandler = require('../../dist/commonjs/fixture_providers/process_instance_handler').ProcessInstanceHandler;
 
-describe.only('Start Events - ', () => {
+describe('Start Events - ', () => {
 
   let testFixtureProvider;
   let processInstanceHandler;
