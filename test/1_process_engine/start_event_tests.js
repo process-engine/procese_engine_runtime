@@ -5,7 +5,7 @@ const should = require('should');
 const uuid = require('uuid');
 const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
-describe('Start Events - ', () => {
+describe.only('Start Events - ', () => {
 
   let testFixtureProvider;
 
@@ -14,8 +14,6 @@ describe('Start Events - ', () => {
   const messageStartEventId = 'MessageStartEvent_1';
   const signalStartEventId = 'SignalStartEvent_1';
   const timerStartEventId = 'TimerStartEvent_1';
-
-  const messageTestDelay = 750;
 
   let eventAggregator;
 
@@ -43,7 +41,7 @@ describe('Start Events - ', () => {
     // As a result we must subscribe to the event that gets send when the test is done.
     testFixtureProvider.executeProcess(processModelId, messageStartEventId, correlationId);
 
-    await wait(messageTestDelay);
+    await waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     return new Promise((resolve) => {
 
@@ -76,7 +74,7 @@ describe('Start Events - ', () => {
     // As a result we must subscribe to the event that gets send when the test is done.
     testFixtureProvider.executeProcess(processModelId, signalStartEventId, correlationId);
 
-    await wait(messageTestDelay);
+    await waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     return new Promise((resolve) => {
 
@@ -122,6 +120,32 @@ describe('Start Events - ', () => {
     should(result.currentToken).be.match(expectedResult);
     should(duration).be.greaterThan(expectedTimerRuntime);
   });
+
+  async function waitForProcessInstanceToReachSuspendedTask(correlationId) {
+    const maxNumberOfRetries = 10;
+    const retryDelay = 500;
+
+    const flowNodeInstanceService = await testFixtureProvider.resolveAsync('FlowNodeInstanceService');
+
+    for (let currentTry = 0; currentTry < maxNumberOfRetries; currentTry += 1) {
+      await wait(retryDelay);
+
+      let flowNodeInstances = await flowNodeInstanceService.querySuspendedByCorrelation(correlationId);
+
+      if (processModelId) {
+        flowNodeInstances = flowNodeInstances.filter((fni) => {
+          return fni.tokens[0].processModelId === processModelId;
+        });
+      }
+
+      if (flowNodeInstances.length >= 1) {
+        console.log(flowNodeInstances);
+        break;
+      } else {
+        throw new Error(`No process instance within correlation '${correlationId}' found! The process instance may failed to start!`);
+      }
+    }
+  }
 
   async function wait(miliseconds) {
     await new Promise((resolve) => {
