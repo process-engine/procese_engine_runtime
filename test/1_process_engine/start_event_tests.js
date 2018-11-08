@@ -4,10 +4,12 @@ const moment = require('moment');
 const should = require('should');
 const uuid = require('uuid');
 const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+const ProcessInstanceHandler = require('../../dist/commonjs/fixture_providers/process_instance_handler').ProcessInstanceHandler;
 
 describe.only('Start Events - ', () => {
 
   let testFixtureProvider;
+  let processInstanceHandler;
 
   const processModelId = 'start_event_tests';
 
@@ -24,6 +26,7 @@ describe.only('Start Events - ', () => {
     await testFixtureProvider.importProcessFiles([processModelId]);
 
     eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
+    processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
   });
 
   after(async () => {
@@ -41,7 +44,7 @@ describe.only('Start Events - ', () => {
     // As a result we must subscribe to the event that gets send when the test is done.
     testFixtureProvider.executeProcess(processModelId, messageStartEventId, correlationId);
 
-    await waitForProcessInstanceToReachSuspendedTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
 
     return new Promise((resolve) => {
 
@@ -74,7 +77,7 @@ describe.only('Start Events - ', () => {
     // As a result we must subscribe to the event that gets send when the test is done.
     testFixtureProvider.executeProcess(processModelId, signalStartEventId, correlationId);
 
-    await waitForProcessInstanceToReachSuspendedTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
 
     return new Promise((resolve) => {
 
@@ -120,31 +123,6 @@ describe.only('Start Events - ', () => {
     should(result.currentToken).be.match(expectedResult);
     should(duration).be.greaterThan(expectedTimerRuntime);
   });
-
-  async function waitForProcessInstanceToReachSuspendedTask(correlationId) {
-    const maxNumberOfRetries = 10;
-    const retryDelay = 500;
-
-    const flowNodeInstanceService = await testFixtureProvider.resolveAsync('FlowNodeInstanceService');
-
-    for (let currentTry = 0; currentTry < maxNumberOfRetries; currentTry += 1) {
-      await wait(retryDelay);
-
-      let flowNodeInstances = await flowNodeInstanceService.querySuspendedByCorrelation(correlationId);
-
-      if (processModelId) {
-        flowNodeInstances = flowNodeInstances.filter((fni) => {
-          return fni.tokens[0].processModelId === processModelId;
-        });
-      }
-
-      if (flowNodeInstances.length >= 1) {
-        break;
-      } else {
-        throw new Error(`No process instance within correlation '${correlationId}' found! The process instance may failed to start!`);
-      }
-    }
-  }
 
   async function wait(miliseconds) {
     await new Promise((resolve) => {
