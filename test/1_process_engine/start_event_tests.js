@@ -139,7 +139,6 @@ describe.only('Start Events - ', () => {
       }
 
       if (flowNodeInstances.length >= 1) {
-        console.log(flowNodeInstances);
         break;
       } else {
         throw new Error(`No process instance within correlation '${correlationId}' found! The process instance may failed to start!`);
