@@ -15,6 +15,8 @@ describe('Start Events - ', () => {
   const signalStartEventId = 'SignalStartEvent_1';
   const timerStartEventId = 'TimerStartEvent_1';
 
+  const messageTestDelay = 750;
+
   let eventAggregator;
 
   before(async () => {
@@ -41,7 +43,7 @@ describe('Start Events - ', () => {
     // As a result we must subscribe to the event that gets send when the test is done.
     testFixtureProvider.executeProcess(processModelId, messageStartEventId, correlationId);
 
-    await wait(500);
+    await wait(messageTestDelay);
 
     return new Promise((resolve) => {
 
@@ -74,7 +76,7 @@ describe('Start Events - ', () => {
     // As a result we must subscribe to the event that gets send when the test is done.
     testFixtureProvider.executeProcess(processModelId, signalStartEventId, correlationId);
 
-    await wait(500);
+    await wait(messageTestDelay);
 
     return new Promise((resolve) => {
 
