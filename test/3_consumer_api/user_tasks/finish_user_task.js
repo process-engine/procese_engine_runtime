@@ -80,7 +80,7 @@ describe(`Consumer API: ${testCase}`, () => {
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 404;
-      const expectedErrorMessage = /no process instance.*?found/i;
+      const expectedErrorMessage = /process model.*?invalidprocessModelId.*?does not have a user task.*?Task_1vdwmn1.*?/i;
       should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
@@ -108,7 +108,7 @@ describe(`Consumer API: ${testCase}`, () => {
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 404;
-      const expectedErrorMessage = /no correlation.*?found/i;
+      const expectedErrorMessage = /correlation.*?invalidCorrelationId.*?does not have a user task.*?Task_1vdwmn1.*?/i;
       should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }

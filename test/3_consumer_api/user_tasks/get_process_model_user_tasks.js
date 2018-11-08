@@ -66,13 +66,9 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
     const userTask = userTaskList.userTasks[0];
 
     should(userTask).have.property('id');
-    should(userTask).have.property('name');
     should(userTask).have.property('correlationId');
     should(userTask).have.property('processModelId');
     should(userTask).have.property('data');
-
-    const sampleUserTaskName = 'Sample UserTask';
-    should(userTask.name).be.eql(sampleUserTaskName);
 
     should(userTask.data).have.property('formFields');
     should(userTask.data.formFields).be.instanceOf(Array);
@@ -87,7 +83,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
     should(formField).have.property('defaultValue');
   });
 
-  it('should return an empty user task list, if the given process model does not have any user tasks', async () => {
+  it('should return an empty Array, if the given process model does not have any user tasks', async () => {
 
     await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdNoUserTasks);
 
@@ -102,22 +98,17 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
     should(userTaskList.userTasks.length).be.equal(0);
   });
 
-  it('should fail to retrieve the process model\'s user tasks, if the process_model_id does not exist', async () => {
+  it('should return an empty Array, if the process_model_id does not exist', async () => {
 
     const invalidprocessModelId = 'invalidprocessModelId';
 
-    try {
-      const processModel = await testFixtureProvider
-        .consumerApiClientService
-        .getUserTasksForProcessModel(defaultIdentity, invalidprocessModelId);
+    const userTaskList = await testFixtureProvider
+      .consumerApiClientService
+      .getUserTasksForProcessModel(defaultIdentity, invalidprocessModelId);
 
-      should.fail(processModel, undefined, 'This request should have failed!');
-    } catch (error) {
-      const expectedErrorCode = 404;
-      const expectedErrorMessage = /no process instance.*?found/i;
-      should(error.code).be.match(expectedErrorCode);
-      should(error.message).be.match(expectedErrorMessage);
-    }
+    should(userTaskList).have.property('userTasks');
+    should(userTaskList.userTasks).be.instanceOf(Array);
+    should(userTaskList.userTasks.length).be.equal(0);
   });
 
   it('should fail to retrieve the process model\'s user tasks, when the user is unauthorized', async () => {
