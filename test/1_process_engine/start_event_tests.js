@@ -4,10 +4,12 @@ const moment = require('moment');
 const should = require('should');
 const uuid = require('uuid');
 const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+const ProcessInstanceHandler = require('../../dist/commonjs/fixture_providers/process_instance_handler').ProcessInstanceHandler;
 
 describe('Start Events - ', () => {
 
   let testFixtureProvider;
+  let processInstanceHandler;
 
   const processModelId = 'start_event_tests';
 
@@ -24,6 +26,7 @@ describe('Start Events - ', () => {
     await testFixtureProvider.importProcessFiles([processModelId]);
 
     eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
+    processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
   });
 
   after(async () => {
@@ -41,7 +44,7 @@ describe('Start Events - ', () => {
     // As a result we must subscribe to the event that gets send when the test is done.
     testFixtureProvider.executeProcess(processModelId, messageStartEventId, correlationId);
 
-    await wait(500);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
 
     return new Promise((resolve) => {
 
@@ -58,7 +61,7 @@ describe('Start Events - ', () => {
       eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
 
       // Now publish the message and let the process run its course.
-      const messageName = 'Message_18zwda3';
+      const messageName = 'Message_Test';
       eventAggregator.publish(`/processengine/process/message/${messageName}`);
     });
   });
@@ -74,7 +77,7 @@ describe('Start Events - ', () => {
     // As a result we must subscribe to the event that gets send when the test is done.
     testFixtureProvider.executeProcess(processModelId, signalStartEventId, correlationId);
 
-    await wait(500);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
 
     return new Promise((resolve) => {
 
@@ -91,7 +94,7 @@ describe('Start Events - ', () => {
       eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
 
       // Now publish the signal and let the process run its course.
-      const signalName = 'Signal_1gmrdgn';
+      const signalName = 'Signal_Test';
       eventAggregator.publish(`/processengine/process/signal/${signalName}`);
     });
   });
