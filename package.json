@@ -68,7 +68,7 @@
     "@process-engine/external_task_api_http": "0.3.0",
     "@process-engine/external_task.repository.sequelize": "0.4.0",
     "@process-engine/flow_node_instance.repository.sequelize": "4.4.0",
-    "@process-engine/iam": "feature~fix_lane_claim_check",
+    "@process-engine/iam": "1.3.0",
     "@process-engine/kpi_api_http": "0.2.0",
     "@process-engine/kpi_api_core": "0.2.0",
     "@process-engine/logging_api_http": "0.3.0",
