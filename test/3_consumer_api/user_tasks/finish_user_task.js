@@ -14,6 +14,8 @@ describe(`Consumer API: ${testCase}`, () => {
 
   const processModelId = 'test_consumer_api_usertask';
 
+  let userTaskForBadPathTests;
+
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
@@ -22,18 +24,32 @@ describe(`Consumer API: ${testCase}`, () => {
     await testFixtureProvider.importProcessFiles([processModelId]);
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
+
+    userTaskForBadPathTests = await createWaitingUserTask();
   });
 
   after(async () => {
+    await finishWaitingUserTasksAfterTests();
     await testFixtureProvider.tearDown();
   });
 
-  it('should successfully finish the given user task.', async () => {
+  async function createWaitingUserTask() {
 
     const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
-    const userTaskId = 'Task_1vdwmn1';
+    const userTaskList = await testFixtureProvider
+      .consumerApiClientService
+      .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
+
+    return userTaskList.userTasks[0];
+  }
+
+  async function finishWaitingUserTasksAfterTests() {
+
+    const correlationId = userTaskForBadPathTests.correlationId;
+    const processInstanceId = userTaskForBadPathTests.processInstanceId;
+    const userTaskId = userTaskForBadPathTests.flowNodeInstanceId;
     const userTaskResult = {
       formFields: {
         Form_XGSVBgio: true,
@@ -42,82 +58,118 @@ describe(`Consumer API: ${testCase}`, () => {
 
     await testFixtureProvider
       .consumerApiClientService
-      .finishUserTask(defaultIdentity, processModelId, correlationId, userTaskId, userTaskResult);
+      .finishUserTask(defaultIdentity, processInstanceId, correlationId, userTaskId, userTaskResult);
+  }
+
+  it('should successfully finish the given UserTask.', async () => {
+
+    const userTask = await createWaitingUserTask();
+
+    const userTaskResult = {
+      formFields: {
+        Form_XGSVBgio: true,
+      },
+    };
+
+    await testFixtureProvider
+      .consumerApiClientService
+      .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskResult);
   });
 
-  it('should successfully finish the user task, if no result is provided', async () => {
+  it('should successfully finish the UserTask, if no result is provided', async () => {
 
-    const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+    const userTask = await createWaitingUserTask();
 
-    const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {};
 
     await testFixtureProvider
       .consumerApiClientService
-      .finishUserTask(defaultIdentity, processModelId, correlationId, userTaskId, userTaskResult);
+      .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskResult);
   });
 
-  it('should fail to finish the user task, if the given process_model_id does not exist', async () => {
+  it('should fail to finish an already finished UserTask.', async () => {
 
-    const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+    const userTask = await createWaitingUserTask();
 
-    const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {
       formFields: {
         Form_XGSVBgio: true,
       },
     };
 
-    const invalidprocessModelId = 'invalidprocessModelId';
+    await testFixtureProvider
+      .consumerApiClientService
+      .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskResult);
 
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .finishUserTask(defaultIdentity, invalidprocessModelId, correlationId, userTaskId, userTaskResult);
+        .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 404;
-      const expectedErrorMessage = /process model.*?invalidprocessModelId.*?does not have a user task.*?Task_1vdwmn1.*?/i;
+      const expectedErrorMessage = /processinstance.*?in correlation.*?does not have.*?UserTask/i;
       should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
 
-  it('should fail to finish the user task, if the given correlation_id does not exist', async () => {
+  it('should fail to finish the UserTask, if the given processInstanceId does not exist', async () => {
 
-    const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+    const userTaskResult = {
+      formFields: {
+        Form_XGSVBgio: true,
+      },
+    };
+
+    const invalidprocessInstanceId = 'invalidprocessModelId';
+
+    const correlationId = userTaskForBadPathTests.correlationId;
+    const userTaskInstanceId = userTaskForBadPathTests.flowNodeInstanceId;
+
+    try {
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishUserTask(defaultIdentity, invalidprocessInstanceId, correlationId, userTaskInstanceId, userTaskResult);
+
+      should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
+    } catch (error) {
+      const expectedErrorCode = 404;
+      const expectedErrorMessage = /processinstance.*?invalidprocessModelId.*?does not have a usertask/i;
+      should(error.code).be.match(expectedErrorCode);
+      should(error.message).be.match(expectedErrorMessage);
+    }
+  });
+
+  it('should fail to finish the UserTask, if the given CorrelationId does not exist', async () => {
 
     const invalidCorrelationId = 'invalidCorrelationId';
 
-    const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {
       formFields: {
         Form_XGSVBgio: true,
       },
     };
 
+    const processInstanceId = userTaskForBadPathTests.processInstanceId;
+    const userTaskInstanceId = userTaskForBadPathTests.flowNodeInstanceId;
+
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .finishUserTask(defaultIdentity, processModelId, invalidCorrelationId, userTaskId, userTaskResult);
+        .finishUserTask(defaultIdentity, processInstanceId, invalidCorrelationId, userTaskInstanceId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 404;
-      const expectedErrorMessage = /correlation.*?invalidCorrelationId.*?does not have a user task.*?Task_1vdwmn1.*?/i;
+      const expectedErrorMessage = /correlation.*?invalidCorrelationId.*?does not have a usertask/i;
       should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
 
-  it('should fail to finish the user task, if the given user_task_id does not exist', async () => {
-
-    const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+  it('should fail to finish the UserTask, if the given UserTaskInstanceId does not exist', async () => {
 
     const invalidUserTaskId = 'invalidUserTaskId';
     const userTaskResult = {
@@ -126,64 +178,37 @@ describe(`Consumer API: ${testCase}`, () => {
       },
     };
 
+    const processInstanceId = userTaskForBadPathTests.processInstanceId;
+    const correlationId = userTaskForBadPathTests.correlationId;
+
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .finishUserTask(defaultIdentity, processModelId, correlationId, invalidUserTaskId, userTaskResult);
+        .finishUserTask(defaultIdentity, processInstanceId, correlationId, invalidUserTaskId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 404;
-      const expectedErrorMessage = /process model.*?in correlation.*?does not have.*?user task/i;
+      const expectedErrorMessage = /processinstance.*?in correlation.*?does not have.*?usertask/i;
       should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
 
-  it('should fail to finish an already finished user task.', async () => {
+  it('should fail to finish the UserTask, if the provided result is not an object, but a String', async () => {
 
-    const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
-
-    const userTaskId = 'Task_1vdwmn1';
-    const userTaskResult = {
-      formFields: {
-        Form_XGSVBgio: true,
-      },
-    };
-
-    await testFixtureProvider
-      .consumerApiClientService
-      .finishUserTask(defaultIdentity, processModelId, correlationId, userTaskId, userTaskResult);
-
-    try {
-      await testFixtureProvider
-        .consumerApiClientService
-        .finishUserTask(defaultIdentity, processModelId, correlationId, userTaskId, userTaskResult);
-
-      should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
-    } catch (error) {
-      const expectedErrorCode = 404;
-      const expectedErrorMessage = /process model.*?in correlation.*?does not have.*?user task/i;
-      should(error.code).be.match(expectedErrorCode);
-      should(error.message).be.match(expectedErrorMessage);
-    }
-  });
-
-  it('should fail to finish the user task, if the provided result is not an object, but a String', async () => {
-
-    const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
-
-    const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {
       formFields: 'i am invalid',
     };
 
+    const processInstanceId = userTaskForBadPathTests.processInstanceId;
+    const correlationId = userTaskForBadPathTests.correlationId;
+    const userTaskInstanceId = userTaskForBadPathTests.flowNodeInstanceId;
+
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .finishUserTask(defaultIdentity, processModelId, correlationId, userTaskId, userTaskResult);
+        .finishUserTask(defaultIdentity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
@@ -194,20 +219,20 @@ describe(`Consumer API: ${testCase}`, () => {
     }
   });
 
-  it('should fail to finish the user task, if the provided result is not an object, but an Array', async () => {
+  it('should fail to finish the UserTask, if the provided result is not an object, but an Array', async () => {
 
-    const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
-
-    const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {
       formFields: ['i am invalid'],
     };
 
+    const processInstanceId = userTaskForBadPathTests.processInstanceId;
+    const correlationId = userTaskForBadPathTests.correlationId;
+    const userTaskInstanceId = userTaskForBadPathTests.flowNodeInstanceId;
+
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .finishUserTask(defaultIdentity, processModelId, correlationId, userTaskId, userTaskResult);
+        .finishUserTask(defaultIdentity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
@@ -218,22 +243,22 @@ describe(`Consumer API: ${testCase}`, () => {
     }
   });
 
-  it('should fail to finish the user task, when the user is unauthorized', async () => {
+  it('should fail to finish the UserTask, when the user is unauthorized', async () => {
 
-    const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
-
-    const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {
       formFields: {
         Form_XGSVBgio: true,
       },
     };
 
+    const processInstanceId = userTaskForBadPathTests.processInstanceId;
+    const correlationId = userTaskForBadPathTests.correlationId;
+    const userTaskInstanceId = userTaskForBadPathTests.flowNodeInstanceId;
+
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .finishUserTask({}, processModelId, correlationId, userTaskId, userTaskResult);
+        .finishUserTask({}, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
@@ -244,24 +269,24 @@ describe(`Consumer API: ${testCase}`, () => {
     }
   });
 
-  it('should fail to finish the user task, when the user is forbidden to retrieve it', async () => {
+  it('should fail to finish the UserTask, when the user is forbidden to retrieve it', async () => {
 
-    const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
-
-    const userTaskId = 'Task_1vdwmn1';
     const userTaskResult = {
       formFields: {
         Form_XGSVBgio: true,
       },
     };
 
+    const processInstanceId = userTaskForBadPathTests.processInstanceId;
+    const correlationId = userTaskForBadPathTests.correlationId;
+    const userTaskInstanceId = userTaskForBadPathTests.flowNodeInstanceId;
+
     const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .finishUserTask(restrictedIdentity, processModelId, correlationId, userTaskId, userTaskResult);
+        .finishUserTask(restrictedIdentity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {

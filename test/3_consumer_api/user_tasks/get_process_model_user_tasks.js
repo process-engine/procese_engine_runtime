@@ -1,6 +1,7 @@
 'use strict';
 
 const should = require('should');
+const uuid = require('uuid');
 
 const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
@@ -11,10 +12,13 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
   let testFixtureProvider;
 
   let defaultIdentity;
-  let correlationId;
 
   const processModelId = 'test_consumer_api_usertask';
   const processModelIdNoUserTasks = 'test_consumer_api_usertask_empty';
+
+  let userTaskToFinishAfterTest;
+
+  const correlationId = uuid.v4();
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -30,7 +34,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
-    correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
+    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
   });
 
@@ -40,7 +44,9 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
   });
 
   async function finishWaitingUserTasksAfterTests() {
-    const userTaskId = 'Task_1vdwmn1';
+
+    const processInstanceId = userTaskToFinishAfterTest.processInstanceId;
+    const userTaskId = userTaskToFinishAfterTest.flowNodeInstanceId;
     const userTaskResult = {
       formFields: {
         Form_XGSVBgio: true,
@@ -49,10 +55,10 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
 
     await testFixtureProvider
       .consumerApiClientService
-      .finishUserTask(defaultIdentity, processModelId, correlationId, userTaskId, userTaskResult);
+      .finishUserTask(defaultIdentity, processInstanceId, userTaskToFinishAfterTest.correlationId, userTaskId, userTaskResult);
   }
 
-  it('should return a process model\'s user tasks by its process_model_id through the consumer api', async () => {
+  it('should return a ProcessModel\'s UserTasks by its ProcessModelId through the consumer api', async () => {
 
     const userTaskList = await testFixtureProvider
       .consumerApiClientService
@@ -65,9 +71,16 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
 
     const userTask = userTaskList.userTasks[0];
 
+    userTaskToFinishAfterTest = userTaskList.userTasks.find((entry) => {
+      return entry.correlationId === correlationId;
+    });
+
     should(userTask).have.property('id');
+    should(userTask).have.property('flowNodeInstanceId');
+    should(userTask).have.property('name');
     should(userTask).have.property('correlationId');
     should(userTask).have.property('processModelId');
+    should(userTask).have.property('processInstanceId');
     should(userTask).have.property('data');
 
     should(userTask.data).have.property('formFields');
@@ -83,7 +96,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
     should(formField).have.property('defaultValue');
   });
 
-  it('should return an empty Array, if the given process model does not have any user tasks', async () => {
+  it('should return an empty Array, if the given ProcessModel does not have any UserTasks', async () => {
 
     await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdNoUserTasks);
 
@@ -111,7 +124,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
     should(userTaskList.userTasks.length).be.equal(0);
   });
 
-  it('should fail to retrieve the process model\'s user tasks, when the user is unauthorized', async () => {
+  it('should fail to retrieve the ProcessModel\'s UserTasks, when the user is unauthorized', async () => {
 
     try {
       const userTaskList = await testFixtureProvider
@@ -127,7 +140,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
     }
   });
 
-  it('should fail to retrieve the process model\'s user tasks, when the user forbidden to retrieve it', async () => {
+  it('should fail to retrieve the ProcessModel\'s UserTasks, when the user forbidden to retrieve it', async () => {
 
     const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 

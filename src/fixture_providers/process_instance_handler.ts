@@ -97,19 +97,19 @@ export class ProcessInstanceHandler {
    * Finishes a UserTask and returns its result.
    *
    * @async
-   * @param   identity       The identity with which to finish the UserTask.
-   * @param   correlationId  The ID of the Correlation for which to finish
-   *                         the UserTask.
-   * @param   processModelId The ID of the ProcessModel for which to finish
-   *                         the UserTask.
-   * @param   userTaskId     The ID of the UserTask to finish.
-   * @param   userTaskInput  The input data with which to finish the UserTask.
-   * @returns                The result of the finishing operation.
+   * @param   identity           The identity with which to finish the UserTask.
+   * @param   correlationId      The ID of the Correlation for which to finish
+   *                             the UserTask.
+   * @param   processInstanceId  The ID of the ProcessModel for which to finish
+   *                             the UserTask.
+   * @param   userTaskInstanceId The ID of the UserTask to finish.
+   * @param   userTaskInput      The input data with which to finish the UserTask.
+   * @returns                    The result of the finishing operation.
    */
   public async finishUserTaskInCorrelation(identity: IIdentity,
                                            correlationId: string,
-                                           processModelId: string,
-                                           userTaskId: string,
+                                           processInstanceId: string,
+                                           userTaskInstanceId: string,
                                            userTaskInput: any): Promise<any> {
 
     const waitingUserTasks: UserTaskList = await this.getWaitingUserTasksForCorrelationId(identity, correlationId);
@@ -119,12 +119,12 @@ export class ProcessInstanceHandler {
 
     const waitingUserTask: UserTask = waitingUserTasks.userTasks[0];
 
-    should(waitingUserTask.id).be.equal(userTaskId);
+    should(waitingUserTask.flowNodeInstanceId).be.equal(userTaskInstanceId);
 
     const userTaskResult: any =
       await this.testFixtureProvider
         .consumerApiClientService
-        .finishUserTask(identity, processModelId, correlationId, waitingUserTask.id, userTaskInput);
+        .finishUserTask(identity, processInstanceId, correlationId, userTaskInstanceId, userTaskInput);
 
     return userTaskResult;
   }
