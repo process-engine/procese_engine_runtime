@@ -27,7 +27,7 @@ module.exports = {
       'flowNodeType',
       {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       }
     );
   },
