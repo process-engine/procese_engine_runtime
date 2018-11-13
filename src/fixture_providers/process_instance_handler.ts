@@ -1,21 +1,25 @@
 'use strict';
 
+import * as should from 'should';
 import * as uuid from 'uuid';
 
+import {IIdentity} from '@essential-projects/iam_contracts';
 import {
   ProcessStartRequestPayload,
   ProcessStartResponsePayload,
   StartCallbackType,
+  UserTask,
+  UserTaskList,
 } from '@process-engine/consumer_api_contracts';
-
 import {IFlowNodeInstanceService, Runtime} from '@process-engine/process_engine_contracts';
 
 import {TestFixtureProvider} from './test_fixture_provider';
 
 /**
- * This class handles the creation of process instances and waits for a process instance to reach a user task.
+ * This class handles the creation of ProcessInstances and allows a test to
+ * wait until a process has reached a suspended FlowNodeInstance.
  *
- * Only to be used in conjunction with the user task tests.
+ * It can also be used to retrieve or finish UserTasks.
  */
 export class ProcessInstanceHandler {
 
@@ -70,6 +74,57 @@ export class ProcessInstanceHandler {
     }
 
     throw new Error(`No process instance within correlation '${correlationId}' found! The process instance like failed to start!`);
+  }
+
+  /**
+   * Returns all user tasks that are running with the given correlation id.
+   *
+   * @async
+   * @param   identity      The identity with which to get the UserTask.
+   * @param   correlationId The ID of the Correlation for which to get the UserTasks.
+   * @returns               A list of waiting UserTasks.
+   */
+  public async getWaitingUserTasksForCorrelationId(identity: IIdentity, correlationId: string): Promise<UserTaskList> {
+
+    return this.testFixtureProvider
+      .consumerApiClientService
+      .getUserTasksForCorrelation(identity, correlationId);
+  }
+
+  /**
+   * Finishes a UserTask and returns its result.
+   *
+   * @async
+   * @param   identity           The identity with which to finish the UserTask.
+   * @param   correlationId      The ID of the Correlation for which to finish
+   *                             the UserTask.
+   * @param   processInstanceId  The ID of the ProcessModel for which to finish
+   *                             the UserTask.
+   * @param   userTaskInstanceId The ID of the UserTask to finish.
+   * @param   userTaskInput      The input data with which to finish the UserTask.
+   * @returns                    The result of the finishing operation.
+   */
+  public async finishUserTaskInCorrelation(identity: IIdentity,
+                                           correlationId: string,
+                                           processInstanceId: string,
+                                           userTaskInstanceId: string,
+                                           userTaskInput: any): Promise<any> {
+
+    const waitingUserTasks: UserTaskList = await this.getWaitingUserTasksForCorrelationId(identity, correlationId);
+
+    should(waitingUserTasks).have.property('userTasks');
+    should(waitingUserTasks.userTasks.length).be.equal(1, 'The process should have one waiting user task');
+
+    const waitingUserTask: UserTask = waitingUserTasks.userTasks[0];
+
+    should(waitingUserTask.flowNodeInstanceId).be.equal(userTaskInstanceId);
+
+    const userTaskResult: any =
+      await this.testFixtureProvider
+        .consumerApiClientService
+        .finishUserTask(identity, processInstanceId, correlationId, userTaskInstanceId, userTaskInput);
+
+    return userTaskResult;
   }
 
   public async wait(delayTimeInMs: number): Promise<void> {

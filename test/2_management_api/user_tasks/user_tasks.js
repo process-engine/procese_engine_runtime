@@ -16,6 +16,8 @@ describe(`Management API: ${testCase}`, () => {
 
   let correlationId;
 
+  let userTaskToFinish;
+
   const processModelId = 'test_management_api_usertask';
 
   before(async () => {
@@ -58,12 +60,16 @@ describe(`Management API: ${testCase}`, () => {
       .managementApiClientService
       .getUserTasksForProcessModelInCorrelation(testFixtureProvider.identities.defaultUser, processModelId, correlationId);
 
+    userTaskToFinish = userTaskList.userTasks[0];
+
     assertUserTaskList(userTaskList);
   });
 
   it('should successfully finish the given user task.', async () => {
 
-    const userTaskId = 'Task_1vdwmn1';
+    const processInstanceId = userTaskToFinish.processInstanceId;
+    const flowNodeInstanceId = userTaskToFinish.flowNodeInstanceId;
+
     const userTaskResult = {
       formFields: {
         Form_XGSVBgio: true,
@@ -72,7 +78,7 @@ describe(`Management API: ${testCase}`, () => {
 
     await testFixtureProvider
       .managementApiClientService
-      .finishUserTask(testFixtureProvider.identities.defaultUser, processModelId, correlationId, userTaskId, userTaskResult);
+      .finishUserTask(testFixtureProvider.identities.defaultUser, processInstanceId, correlationId, flowNodeInstanceId, userTaskResult);
   });
 
   function assertUserTaskList(userTaskList) {
@@ -85,13 +91,9 @@ describe(`Management API: ${testCase}`, () => {
     const userTask = userTaskList.userTasks[0];
 
     should(userTask).have.property('id');
-    should(userTask).have.property('name');
     should(userTask).have.property('correlationId');
     should(userTask).have.property('processModelId');
     should(userTask).have.property('data');
-
-    const userTaskSampleName = 'Sample UserTask';
-    should(userTask.name).be.eql(userTaskSampleName);
 
     should(userTask.data).have.property('formFields');
     should(userTask.data.formFields).be.instanceOf(Array);

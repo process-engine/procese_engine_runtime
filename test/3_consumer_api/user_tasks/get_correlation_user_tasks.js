@@ -5,25 +5,33 @@ const should = require('should');
 const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
 
-describe('Consumer API:   GET  ->  /correlations/:correlation_id/user_tasks', () => {
+describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
 
   let defaultIdentity;
-  let correlationId;
 
   const processModelId = 'test_consumer_api_usertask';
   const processModelIdNoUserTasks = 'test_consumer_api_usertask_empty';
   const processModelIdCallActivity = 'test_consumer_api_usertask_call_acvtivity';
   const processModelIdCallActivitySubprocess = 'test_consumer_api_usertask_call_acvtivity_subprocess';
 
+  let correlationId;
+
+  const userTasksToFinishAfterTest = [];
+
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
     defaultIdentity = testFixtureProvider.identities.defaultUser;
 
-    await testFixtureProvider.importProcessFiles([processModelId, processModelIdNoUserTasks, processModelIdCallActivity, processModelIdCallActivitySubprocess]);
+    await testFixtureProvider.importProcessFiles([
+      processModelId,
+      processModelIdNoUserTasks,
+      processModelIdCallActivity,
+      processModelIdCallActivitySubprocess,
+    ]);
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
@@ -37,18 +45,24 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/user_tasks', ()
   });
 
   async function finishWaitingUserTasksAfterTests() {
-    const userTaskResult = {
-      formFields: {
-        Form_XGSVBgio: true,
-      },
-    };
 
-    await testFixtureProvider
-      .consumerApiClientService
-      .finishUserTask(defaultIdentity, processModelId, correlationId, 'Task_1vdwmn1', userTaskResult);
+    for (const userTask of userTasksToFinishAfterTest) {
+
+      const processInstanceId = userTask.processInstanceId;
+      const userTaskId = userTask.flowNodeInstanceId;
+      const userTaskResult = {
+        formFields: {
+          Form_XGSVBgio: true,
+        },
+      };
+
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishUserTask(defaultIdentity, processInstanceId, userTask.correlationId, userTaskId, userTaskResult);
+    }
   }
 
-  it('should return a correlation\'s user tasks by its correlationId through the consumer api', async () => {
+  it('should return a Correlation\'s UserTasks by its CorrelationId through the ConsumerAPI', async () => {
 
     const userTaskList = await testFixtureProvider
       .consumerApiClientService
@@ -61,14 +75,15 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/user_tasks', ()
 
     const userTask = userTaskList.userTasks[0];
 
+    userTasksToFinishAfterTest.push(userTask);
+
     should(userTask).have.property('id');
+    should(userTask).have.property('flowNodeInstanceId');
     should(userTask).have.property('name');
     should(userTask).have.property('correlationId');
     should(userTask).have.property('processModelId');
+    should(userTask).have.property('processInstanceId');
     should(userTask).have.property('data');
-
-    const sampleUserTaskName = 'Sample UserTask';
-    should(userTask.name).be.eql(sampleUserTaskName);
 
     should(userTask.data).have.property('formFields');
     should(userTask.data.formFields).be.instanceOf(Array);
@@ -83,7 +98,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/user_tasks', ()
     should(formField).have.property('defaultValue');
   });
 
-  it('should return a list of user tasks from a call activity, by the given correlationId through the consumer api', async () => {
+  it('should return a list of UserTasks from a call activity, by the given correlationId through the ConsumerAPI', async () => {
 
     const correlationIdCallActivity = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdCallActivity);
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationIdCallActivity, processModelIdCallActivitySubprocess);
@@ -99,14 +114,12 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/user_tasks', ()
 
     const userTask = userTaskList.userTasks[0];
 
+    userTasksToFinishAfterTest.push(userTask);
+
     should(userTask).have.property('id');
-    should(userTask).have.property('name');
     should(userTask).have.property('correlationId');
     should(userTask).have.property('processModelId');
     should(userTask).have.property('data');
-
-    const sampleUserTaskName = 'Sample UserTask';
-    should(userTask.name).be.eql(sampleUserTaskName);
 
     should(userTask.data).have.property('formFields');
     should(userTask.data.formFields).be.instanceOf(Array);
@@ -118,19 +131,9 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/user_tasks', ()
     should(formField).have.property('type');
     should(formField).have.property('label');
     should(formField).have.property('defaultValue');
-
-    const userTaskResult = {
-      formFields: {
-        FormField_01comr3: 'result',
-      },
-    };
-
-    await testFixtureProvider
-      .consumerApiClientService
-      .finishUserTask(defaultIdentity, processModelIdCallActivitySubprocess, correlationIdCallActivity, 'UserTaskTestCallActivity_1', userTaskResult);
   });
 
-  it('should return an empty user task list, if the given correlation does not have any user tasks', async () => {
+  it('should return an empty Array, if the given correlation does not have any UserTasks', async () => {
 
     await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdNoUserTasks);
 
@@ -145,25 +148,20 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/user_tasks', ()
     should(userTaskList.userTasks.length).be.equal(0);
   });
 
-  it('should fail to retrieve the correlation\'s user tasks, if the correlationId does not exist', async () => {
+  it('should return an empty Array, if the correlationId does not exist', async () => {
 
     const invalidCorrelationId = 'invalidCorrelationId';
 
-    try {
-      const processModel = await testFixtureProvider
-        .consumerApiClientService
-        .getUserTasksForCorrelation(defaultIdentity, invalidCorrelationId);
+    const userTaskList = await testFixtureProvider
+      .consumerApiClientService
+      .getUserTasksForCorrelation(defaultIdentity, invalidCorrelationId);
 
-      should.fail(processModel, undefined, 'This request should have failed!');
-    } catch (error) {
-      const expectedErrorCode = 404;
-      const expectedErrorMessage = /no correlation.*?found/i;
-      should(error.code).be.match(expectedErrorCode);
-      should(error.message).be.match(expectedErrorMessage);
-    }
+    should(userTaskList).have.property('userTasks');
+    should(userTaskList.userTasks).be.instanceOf(Array);
+    should(userTaskList.userTasks.length).be.equal(0);
   });
 
-  it('should fail to retrieve the correlation\'s user tasks, when the user is unauthorized', async () => {
+  it('should fail to retrieve the Correlation\'s UserTasks, when the user is unauthorized', async () => {
 
     try {
       const userTaskList = await testFixtureProvider
@@ -179,7 +177,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/user_tasks', ()
     }
   });
 
-  it('should fail to retrieve the correlation\'s user tasks, when the user forbidden to retrieve it', async () => {
+  it('should fail to retrieve the Correlation\'s UserTasks, when the user forbidden to retrieve it', async () => {
 
     const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
