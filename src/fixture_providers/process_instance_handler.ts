@@ -4,7 +4,6 @@ import * as should from 'should';
 import * as uuid from 'uuid';
 
 import {IIdentity} from '@essential-projects/iam_contracts';
-
 import {
   ProcessStartRequestPayload,
   ProcessStartResponsePayload,
@@ -12,7 +11,6 @@ import {
   UserTask,
   UserTaskList,
 } from '@process-engine/consumer_api_contracts';
-
 import {IFlowNodeInstanceService, Runtime} from '@process-engine/process_engine_contracts';
 
 import {TestFixtureProvider} from './test_fixture_provider';
