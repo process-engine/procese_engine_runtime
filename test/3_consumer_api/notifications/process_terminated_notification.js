@@ -10,14 +10,14 @@ const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvide
 describe('Consumer API:   Receive Process Terminated Notification', () => {
 
   let testFixtureProvider;
-  let consumerContext;
+  let defaultIdentity;
 
   const processModelId = 'test_consumer_api_process_terminate';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    consumerContext = testFixtureProvider.identities.defaultUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
 
     const processModelsToImport = [
       processModelId,
@@ -38,7 +38,7 @@ describe('Consumer API:   Receive Process Terminated Notification', () => {
     });
   }
 
-  it('should send a notification via socket when process is terminated', async () => {
+  it('should send a notification when a process is terminated', async () => {
 
     return new Promise((resolve, reject) => {
 
@@ -65,7 +65,7 @@ describe('Consumer API:   Receive Process Terminated Notification', () => {
 
       testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(consumerContext, processModelId, startEventId, payload, startCallbackType);
+        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
     });
   });
 
