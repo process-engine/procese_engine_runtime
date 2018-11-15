@@ -4,25 +4,14 @@
 // https://sequelize.readthedocs.io/en/latest/docs/migrations/#functions
 
 // CHANGE NOTES:
-// Changes between 4.4.0 and 5.0.0:
-// - The column flowNodeType was added to store an FNIs BPMN type
+// Added the "processModelId" column.
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
-    console.log('Running updating migrations');
-
-    console.log('Adding new flowNodeType column');
+    // New Column for ExternalTasks
     await queryInterface.addColumn(
-      'FlowNodeInstances',
-      'flowNodeType',
-      {
-        type: Sequelize.STRING,
-        allowNull: true,
-      }
-    );
-    await queryInterface.addColumn(
-      'FlowNodeInstances',
-      'eventType',
+      'ExternalTasks',
+      'processModelId',
       {
         type: Sequelize.STRING,
         allowNull: true,
