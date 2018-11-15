@@ -93,7 +93,7 @@ describe('Inter-process communication - ', () => {
     });
   });
 
-  it.only('should execute two processes with a send- and a receive task.', async () => {
+  it('should execute two processes with a send- and a receive task.', async () => {
     const correlationId = uuid.v4();
     const endEventToWaitFor = 'EndEvent_1';
     testFixtureProvider.executeProcess(processModelReceiveTask, 'StartEvent_1', correlationId);
