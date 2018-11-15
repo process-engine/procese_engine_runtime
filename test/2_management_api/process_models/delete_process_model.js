@@ -21,6 +21,13 @@ describe('Management API:   GET  ->  /process_models/:process_model_id/delete', 
     await testFixtureProvider.tearDown();
   });
 
+  it('should delete the process model by its process_model_id through the management api', async () => {
+
+    await testFixtureProvider
+      .managementApiClientService
+      .deleteProcessDefinitionsByProcessModelId(testFixtureProvider.identities.defaultUser, processModelId);
+  });
+
   it('should fail to delete the process model, when the user is unauthorized', async () => {
 
     try {
@@ -35,13 +42,6 @@ describe('Management API:   GET  ->  /process_models/:process_model_id/delete', 
       should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
-  });
-
-  it('should delete the process model by its process_model_id through the management api', async () => {
-
-    await testFixtureProvider
-      .managementApiClientService
-      .deleteProcessDefinitionsByProcessModelId(testFixtureProvider.identities.defaultUser, processModelId);
   });
 
   it('should fail to retrieve the process model, after its been deleted', async () => {
