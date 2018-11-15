@@ -11,7 +11,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
   let processInstanceHandler;
   let testFixtureProvider;
 
-  let consumerContext;
+  let defaultIdentity;
 
   const processModelId = 'test_consumer_api_usertask';
   const processModelIdNoUserTasks = 'test_consumer_api_usertask_empty';
@@ -21,7 +21,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    consumerContext = testFixtureProvider.identities.defaultUser;
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
 
     const processModelsToImport = [
       processModelId,
@@ -50,7 +50,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
 
     await testFixtureProvider
       .consumerApiClientService
-      .finishUserTask(consumerContext, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
+      .finishUserTask(defaultIdentity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
   }
 
   it('should send a notification via socket when user task is suspended', async () => {
@@ -66,7 +66,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
 
         const userTaskList = await testFixtureProvider
           .consumerApiClientService
-          .getUserTasksForProcessModel(consumerContext, processModelId);
+          .getUserTasksForProcessModel(defaultIdentity, processModelId);
 
         const listContainsUserTaskIdFromMessage = userTaskList.userTasks.some((userTask) => {
           return userTask.id === userTaskWaitingMessage.flowNodeId;
@@ -93,7 +93,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
 
         const userTaskListAfterFinish = await testFixtureProvider
           .consumerApiClientService
-          .getUserTasksForProcessModel(consumerContext, processModelId);
+          .getUserTasksForProcessModel(defaultIdentity, processModelId);
 
         should(userTaskFinishedMessage).not.be.undefined();
 

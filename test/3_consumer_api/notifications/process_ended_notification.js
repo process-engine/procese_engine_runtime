@@ -44,8 +44,6 @@ describe('Consumer API:   Receive Process Ended Notification', () => {
 
       const onProcessEndCallback = (processEndedMessage) => {
 
-        // Since this notification channel will receive ALL processEnded messages,
-        // we need to make sure that we intercepted the one we anticipated.
         if (processEndedMessage.correlationId !== payload.correlationId) {
           return;
         }
