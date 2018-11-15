@@ -10,14 +10,14 @@ const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvide
 describe('Consumer API:   Receive Process Terminated Notification', () => {
 
   let testFixtureProvider;
-  let defaultIdentity;
+  let consumerContext;
 
   const processModelId = 'test_consumer_api_process_terminate';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    defaultIdentity = testFixtureProvider.identities.defaultUser;
+    consumerContext = testFixtureProvider.identities.defaultUser;
 
     const processModelsToImport = [
       processModelId,
@@ -38,7 +38,7 @@ describe('Consumer API:   Receive Process Terminated Notification', () => {
     });
   }
 
-  it('should send a notification when a process is terminated', async () => {
+  it('should send a notification via socket when process is terminated', async () => {
 
     return new Promise((resolve, reject) => {
 
@@ -51,12 +51,6 @@ describe('Consumer API:   Receive Process Terminated Notification', () => {
       const startCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
 
       const messageReceivedCallback = (processTerminatedMessage) => {
-
-        // Since this notification channel will receive ALL processTerminatedMessage messages,
-        // we need to make sure that we intercepted the one we anticipated.
-        if (processTerminatedMessage.correlationId !== payload.correlationId) {
-          return;
-        }
 
         should(processTerminatedMessage).not.be.undefined();
         should(processTerminatedMessage).have.property('correlationId');
@@ -71,7 +65,7 @@ describe('Consumer API:   Receive Process Terminated Notification', () => {
 
       testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
+        .startProcessInstance(consumerContext, processModelId, startEventId, payload, startCallbackType);
     });
   });
 

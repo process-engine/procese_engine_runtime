@@ -10,14 +10,14 @@ const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvide
 describe('Consumer API:   Receive Process Ended Notification', () => {
 
   let testFixtureProvider;
-  let defaultIdentity;
+  let consumerContext;
 
   const processModelId = 'test_consumer_api_process_start';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-    defaultIdentity = testFixtureProvider.identities.defaultUser;
+    consumerContext = testFixtureProvider.identities.defaultUser;
 
     const processModelsToImport = [
       processModelId,
@@ -30,7 +30,7 @@ describe('Consumer API:   Receive Process Ended Notification', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should send a notification when a process is finished', async () => {
+  it('should send a notification via socket when process ends', async () => {
 
     return new Promise((resolve, reject) => {
 
@@ -44,8 +44,6 @@ describe('Consumer API:   Receive Process Ended Notification', () => {
 
       const onProcessEndCallback = (processEndedMessage) => {
 
-        // Since this notification channel will receive ALL processEnded messages,
-        // we need to make sure that we intercepted the one we anticipated.
         if (processEndedMessage.correlationId !== payload.correlationId) {
           return;
         }
@@ -63,7 +61,7 @@ describe('Consumer API:   Receive Process Ended Notification', () => {
 
       testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType, endEventId);
+        .startProcessInstance(consumerContext, processModelId, startEventId, payload, startCallbackType, endEventId);
 
     });
   });
