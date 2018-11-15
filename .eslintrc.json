@@ -5,6 +5,7 @@
         "ignoreUrls": true,
         "ignoreComments": false
       }],
+      "import/no-extraneous-dependencies": 0,
       "no-continue": "off",
       "no-use-before-define": "off",
       "no-console": "off"

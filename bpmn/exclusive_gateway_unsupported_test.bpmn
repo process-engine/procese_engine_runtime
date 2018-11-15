@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definition_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
   <bpmn:collaboration id="Collaboration_1cidyxu">
-    <bpmn:participant id="Participant_0px403d" name="exclusive_gateway_test" processRef="exclusive_gateway_test" />
+    <bpmn:participant id="Participant_0px403d" name="exclusive_gateway_unsupported_test" processRef="exclusive_gateway_unsupported_test" />
   </bpmn:collaboration>
-  <bpmn:process id="exclusive_gateway_test" name="exclusive_gateway_test" isExecutable="true">
+  <bpmn:process id="exclusive_gateway_unsupported_test" name="exclusive_gateway_unsupported_test" isExecutable="true">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
         <bpmn:extensionElements>
           <camunda:executionListener class="" event="" />
           <camunda:properties />
         </bpmn:extensionElements>
-        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>XORSplit1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task2</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task3</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>XORJoin1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>XORSplit1</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:startEvent id="StartEvent_1" name="Start Event 1">
-      <bpmn:outgoing>SequenceFlow_0bisayz</bpmn:outgoing>
-    </bpmn:startEvent>
     <bpmn:sequenceFlow id="SequenceFlow_1jk304s" name="initial token is &#39;left&#39;" sourceRef="XORSplit1" targetRef="Task2">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">token.current === 'left';</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -30,9 +28,10 @@
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_0ahh1sp" sourceRef="Task3" targetRef="XORJoin1" />
     <bpmn:sequenceFlow id="SequenceFlow_1og5g43" sourceRef="XORJoin1" targetRef="EndEvent_1" />
-    <bpmn:sequenceFlow id="SequenceFlow_0bisayz" sourceRef="StartEvent_1" targetRef="XORSplit1" />
-    <bpmn:exclusiveGateway id="XORSplit1" name="">
+    <bpmn:sequenceFlow id="SequenceFlow_0bisayz" sourceRef="StartEvent_2" targetRef="XORSplit1" />
+    <bpmn:exclusiveGateway id="XORSplit1" name="Not supported">
       <bpmn:incoming>SequenceFlow_0bisayz</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1ygtqa2</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1jk304s</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_04ktyvx</bpmn:outgoing>
     </bpmn:exclusiveGateway>
@@ -54,25 +53,32 @@
       <bpmn:incoming>SequenceFlow_0ahh1sp</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1og5g43</bpmn:outgoing>
     </bpmn:exclusiveGateway>
+    <bpmn:startEvent id="StartEvent_2" name="Start Event 2">
+      <bpmn:outgoing>SequenceFlow_0bisayz</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:startEvent id="StartEvent_1" name="Start Event 1">
+      <bpmn:outgoing>SequenceFlow_1ygtqa2</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1ygtqa2" sourceRef="StartEvent_1" targetRef="XORSplit1" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1cidyxu">
       <bpmndi:BPMNShape id="Participant_0px403d_di" bpmnElement="Participant_0px403d">
-        <dc:Bounds x="5" y="-63" width="777" height="323" />
+        <dc:Bounds x="5" y="-63" width="778" height="658" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-        <dc:Bounds x="101" y="65" width="36" height="36" />
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_2">
+        <dc:Bounds x="98" y="156" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="89" y="101" width="64" height="14" />
+          <dc:Bounds x="86" y="192" width="64" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3">
-        <dc:Bounds x="35" y="-63" width="747" height="323" />
+        <dc:Bounds x="35" y="-63" width="748" height="658" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ExclusiveGateway_0fl743q_di" bpmnElement="XORSplit1" isMarkerVisible="true">
         <dc:Bounds x="240" y="58" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="439" y="75" width="90" height="13" />
+          <dc:Bounds x="304" y="76" width="70" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1jk304s_di" bpmnElement="SequenceFlow_1jk304s">
@@ -133,11 +139,23 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0bisayz_di" bpmnElement="SequenceFlow_0bisayz">
-        <di:waypoint x="137" y="83" />
-        <di:waypoint x="240" y="83" />
+        <di:waypoint x="134" y="174" />
+        <di:waypoint x="180" y="174" />
+        <di:waypoint x="253" y="96" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="162" y="61.5" width="0" height="13" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="StartEvent_07sdy3h_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="98" y="-21" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="86" y="15" width="64" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ygtqa2_di" bpmnElement="SequenceFlow_1ygtqa2">
+        <di:waypoint x="134" y="-3" />
+        <di:waypoint x="180" y="-3" />
+        <di:waypoint x="252" y="70" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

@@ -13,7 +13,7 @@ describe('Parallel Gateway execution', () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    const processDefFileList = ['parallel_gateway_test'];
+    const processDefFileList = ['parallel_gateway_test', 'parallel_gateway_unsupported_test'];
     await testFixtureProvider.importProcessFiles(processDefFileList);
   });
 
@@ -21,7 +21,7 @@ describe('Parallel Gateway execution', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should successfully run two parallel tasks and contain the result of each task in the token history.', async () => {
+  it('should successfully run multiple parallel running branchs and return each result with the token.', async () => {
 
     const processModelId = 'parallel_gateway_test';
     const result = await testFixtureProvider.executeProcess(processModelId, startEventId);
@@ -44,5 +44,19 @@ describe('Parallel Gateway execution', () => {
     should(result.currentToken[expectedHistoryEntryForTask3]).be.equal('secondVeryLongRunningFunction has finished');
     should(result.currentToken[expectedHistoryEntryForTokenTestTask]).be.equal('current token test value');
     should(result.currentToken[expectedHistoryEntryForSequence3]).be.equal('UPDATED Script Task result for sequence test');
+  });
+
+  it('should fail to execute a gateway with mixed Split- and Join- purpose', async () => {
+
+    try {
+      const processModelId = 'parallel_gateway_unsupported_test';
+      const result = await testFixtureProvider.executeProcess(processModelId, startEventId);
+      should.fail('error', result, 'This should have failed, because mixed gateways are not supported!');
+    } catch (error) {
+      const expectedErrorMessage = /not supported/i;
+      const expectedErrorCode = 422;
+      should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.equal(expectedErrorCode);
+    }
   });
 });

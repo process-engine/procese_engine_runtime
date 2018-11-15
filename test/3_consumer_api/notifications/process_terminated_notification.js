@@ -52,12 +52,6 @@ describe('Consumer API:   Receive Process Terminated Notification', () => {
 
       const messageReceivedCallback = (processTerminatedMessage) => {
 
-        // Since this notification channel will receive ALL processTerminatedMessage messages,
-        // we need to make sure that we intercepted the one we anticipated.
-        if (processTerminatedMessage.correlationId !== payload.correlationId) {
-          return;
-        }
-
         should(processTerminatedMessage).not.be.undefined();
         should(processTerminatedMessage).have.property('correlationId');
         should(processTerminatedMessage.correlationId).be.equal(payload.correlationId);

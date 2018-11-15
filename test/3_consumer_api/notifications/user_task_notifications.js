@@ -16,6 +16,8 @@ describe('Consumer API:   Receive User Task Notifications', () => {
   const processModelId = 'test_consumer_api_usertask';
   const processModelIdNoUserTasks = 'test_consumer_api_usertask_empty';
 
+  let userTaskToFinish;
+
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
@@ -35,20 +37,23 @@ describe('Consumer API:   Receive User Task Notifications', () => {
     await testFixtureProvider.tearDown();
   });
 
-  async function finishWaitingUserTask(correlationId) {
-    const userTaskId = 'Task_1vdwmn1';
+  async function finishWaitingUserTask() {
     const userTaskResult = {
       formFields: {
         Form_XGSVBgio: true,
       },
     };
 
+    const correlationId = userTaskToFinish.correlationId;
+    const processInstanceId = userTaskToFinish.processInstanceId;
+    const userTaskInstanceId = userTaskToFinish.flowNodeInstanceId;
+
     await testFixtureProvider
       .consumerApiClientService
-      .finishUserTask(defaultIdentity, processModelId, correlationId, userTaskId, userTaskResult);
+      .finishUserTask(defaultIdentity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
   }
 
-  it('should send a notification when a UserTask is suspended', async () => {
+  it('should send a notification via socket when user task is suspended', async () => {
 
     const correlationId = uuid.v4();
 
@@ -57,6 +62,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
       const messageReceivedCallback = async (userTaskWaitingMessage) => {
 
         should.exist(userTaskWaitingMessage);
+        userTaskToFinish = userTaskWaitingMessage;
 
         const userTaskList = await testFixtureProvider
           .consumerApiClientService
@@ -77,7 +83,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
     });
   });
 
-  it('should send a notification when a UserTask is finished', async () => {
+  it('should send a notification via socket when user task is finished', async () => {
 
     const correlationId = uuid.v4();
 
@@ -91,11 +97,11 @@ describe('Consumer API:   Receive User Task Notifications', () => {
 
         should(userTaskFinishedMessage).not.be.undefined();
 
-        const finishedMessageReceivedForUserTaskThatWasWaiting = userTaskListAfterFinish.userTasks.some((userTask) => {
+        const messageBelongsToWaitingUserTask = userTaskListAfterFinish.userTasks.some((userTask) => {
           return userTask.id === userTaskFinishedMessage.flowNodeId;
         });
 
-        should(finishedMessageReceivedForUserTaskThatWasWaiting).be.true();
+        should(messageBelongsToWaitingUserTask).be.true();
 
         resolve();
       };
@@ -104,7 +110,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
-      finishWaitingUserTask(correlationId);
+      finishWaitingUserTask();
     });
   });
 
