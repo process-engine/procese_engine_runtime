@@ -5,7 +5,7 @@
   </bpmn:collaboration>
   <bpmn:process id="send_receive_task_test" name="send_receive_task_test" isExecutable="true">
     <bpmn:laneSet>
-      <bpmn:lane id="Lane_1xzf0d3" name="Lane">
+      <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>split</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_0eie6q6</bpmn:flowNodeRef>
