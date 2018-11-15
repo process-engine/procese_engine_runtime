@@ -11,20 +11,18 @@ module.exports = {
 
     console.log('Running updating migrations');
 
-    const flowNodeInstanceTableInfo = await queryInterface.describeTable('FlowNodeInstances');
-
-    const migrationNotRequired = flowNodeInstanceTableInfo.flowNodeType !== undefined;
-
-    if (migrationNotRequired) {
-      console.log('The database is already up to date. Nothing to do here.');
-
-      return Promise.resolve();
-    }
-
     console.log('Adding new flowNodeType column');
     await queryInterface.addColumn(
       'FlowNodeInstances',
       'flowNodeType',
+      {
+        type: Sequelize.STRING,
+        allowNull: true,
+      }
+    );
+    await queryInterface.addColumn(
+      'FlowNodeInstances',
+      'eventType',
       {
         type: Sequelize.STRING,
         allowNull: true,

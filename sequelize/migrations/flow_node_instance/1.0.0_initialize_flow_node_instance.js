@@ -32,10 +32,6 @@ module.exports = {
           type: Sequelize.STRING,
           allowNull: false,
         },
-        flowNodeType: {
-          type: Sequelize.STRING,
-          allowNull: true,
-        },
         state: {
           type: Sequelize.STRING,
           allowNull: false,
