@@ -20,7 +20,12 @@ describe('Inter-process communication - ', () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    await testFixtureProvider.importProcessFiles([processModelSendEvents, processModelReceiveEvents]);
+    await testFixtureProvider.importProcessFiles([
+      processModelSendEvents,
+      processModelReceiveEvents,
+      processModelSendTask,
+      processModelReceiveTask,
+    ]);
 
     eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
   });
