@@ -10,6 +10,7 @@ export class IamServiceMock implements IIAMService {
         'can_delete_process_model',
         'can_write_process_model',
         'can_access_external_tasks',
+        'can_subscribe_events',
         'can_trigger_messages',
         'can_trigger_signals',
         'Default_Test_Lane',
