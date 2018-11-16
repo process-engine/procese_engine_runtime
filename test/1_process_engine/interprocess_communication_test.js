@@ -11,13 +11,21 @@ describe('Inter-process communication - ', () => {
   const processModelSendEvents = 'end_event_tests';
   const processModelReceiveEvents = 'start_event_tests';
 
+  const processModelSendTask = 'send_task_throw_test';
+  const processModelReceiveTask = 'receive_task_wait_test';
+
   let eventAggregator;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    await testFixtureProvider.importProcessFiles([processModelSendEvents, processModelReceiveEvents]);
+    await testFixtureProvider.importProcessFiles([
+      processModelSendEvents,
+      processModelReceiveEvents,
+      processModelSendTask,
+      processModelReceiveTask,
+    ]);
 
     eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
   });
@@ -87,6 +95,32 @@ describe('Inter-process communication - ', () => {
 
       // Run the process that is supposed to publish the signal.
       testFixtureProvider.executeProcess(processModelSendEvents, 'StartEvent_SignalTest', correlationId);
+    });
+  });
+
+  it('should execute two processes with a send- and a receive task.', async () => {
+    const correlationId = uuid.v4();
+    const endEventToWaitFor = 'EndEvent_1';
+    testFixtureProvider.executeProcess(processModelReceiveTask, 'StartEvent_1', correlationId);
+
+    await wait(500);
+
+    return new Promise((resolve) => {
+
+      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelReceiveTask}/ended`;
+      const evaluationCallback = (message) => {
+        if (message.flowNodeId === endEventToWaitFor) {
+          should(message).have.property('currentToken');
+          should(message.currentToken).be.eql('Message Received');
+          resolve();
+        }
+      };
+
+      // Subscribe for the EndEvent
+      eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
+
+      // Run the process that is supposed to publish the signal.
+      testFixtureProvider.executeProcess(processModelSendTask, 'StartEvent_1', correlationId);
     });
   });
 
