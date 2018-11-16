@@ -112,8 +112,9 @@ pipeline {
           sh('npm install -g mocha cross-env')
           sh('npm install')
           sh('npm run build')
-
         }
+
+        archiveArtifacts('package-lock.json')
       }
     }
     stage('Process Engine Runtime Tests') {
