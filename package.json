@@ -56,7 +56,7 @@
     "@essential-projects/services": "2.1.0",
     "@essential-projects/timing": "3.1.0",
     "@essential-projects/timing_contracts": "3.1.0",
-    "@process-engine/consumer_api_client": "1.0.0",
+    "@process-engine/consumer_api_client": "feature~add_identity_to_events",
     "@process-engine/consumer_api_contracts": "feature~add_identity_to_events",
     "@process-engine/consumer_api_core": "feature~add_identity_to_events",
     "@process-engine/consumer_api_http": "1.0.0",
