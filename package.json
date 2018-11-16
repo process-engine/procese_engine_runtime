@@ -59,7 +59,7 @@
     "@process-engine/consumer_api_client": "feature~add_identity_to_events",
     "@process-engine/consumer_api_contracts": "feature~add_identity_to_events",
     "@process-engine/consumer_api_core": "feature~add_identity_to_events",
-    "@process-engine/consumer_api_http": "1.0.0",
+    "@process-engine/consumer_api_http": "feature~add_identity_to_events",
     "@process-engine/correlations.repository.sequelize": "1.4.1",
     "@process-engine/deployment_api_core": "0.4.0",
     "@process-engine/deployment_api_http": "0.4.0",
