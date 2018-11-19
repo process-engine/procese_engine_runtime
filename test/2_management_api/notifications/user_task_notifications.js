@@ -73,7 +73,7 @@ describe('Management API:   Receive User Task Notifications', () => {
         resolve();
       };
 
-      testFixtureProvider.managementApiClientService.onUserTaskWaiting(messageReceivedCallback);
+      testFixtureProvider.managementApiClientService.onUserTaskWaiting(defaultIdentity, messageReceivedCallback);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
