@@ -61,7 +61,7 @@ describe('Consumer API:   Receive Process Terminated Notification', () => {
         resolve();
       };
 
-      testFixtureProvider.consumerApiClientService.onProcessTerminated(messageReceivedCallback);
+      testFixtureProvider.consumerApiClientService.onProcessTerminated(defaultIdentity, messageReceivedCallback);
 
       testFixtureProvider
         .consumerApiClientService

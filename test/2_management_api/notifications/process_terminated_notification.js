@@ -59,7 +59,7 @@ describe('Management API:   Receive Process Terminated Notification', () => {
         resolve();
       };
 
-      testFixtureProvider.managementApiClientService.onProcessTerminated(messageReceivedCallback);
+      testFixtureProvider.managementApiClientService.onProcessTerminated(defaultIdentity, messageReceivedCallback);
 
       testFixtureProvider
         .managementApiClientService
