@@ -59,7 +59,7 @@ describe('Management API:   Receive Process Ended Notification', () => {
         resolve();
       };
 
-      testFixtureProvider.managementApiClientService.onProcessEnded(onProcessEndCallback);
+      testFixtureProvider.managementApiClientService.onProcessEnded(defaultIdentity, onProcessEndCallback);
 
       testFixtureProvider
         .managementApiClientService
