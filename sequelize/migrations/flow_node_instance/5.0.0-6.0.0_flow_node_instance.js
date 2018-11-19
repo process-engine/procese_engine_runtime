@@ -13,8 +13,8 @@ module.exports = {
 
     console.log('Adding new previousFlowNodeInstanceId column');
     await queryInterface.addColumn(
+      'FlowNodeInstances',
       'previousFlowNodeInstanceId',
-      'flowNodeType',
       {
         type: Sequelize.STRING,
         allowNull: true,
