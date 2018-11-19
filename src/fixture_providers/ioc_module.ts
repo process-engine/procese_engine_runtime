@@ -20,9 +20,9 @@ import {
 } from '@process-engine/external_task_api_client';
 
 import {
-  ManagementApiClientService,
   ExternalAccessor as ManagementApiExternalAccessor,
   InternalAccessor as ManagementApiInternalAccessor,
+  ManagementApiClientService,
 } from '@process-engine/management_api_client';
 
 import {IamServiceMock} from '../mocks/index';
