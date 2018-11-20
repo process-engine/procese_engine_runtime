@@ -21,7 +21,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
   const correlationId = uuid.v4();
 
-  before(async() => {
+  before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
     defaultIdentity = testFixtureProvider.identities.defaultUser;
@@ -34,7 +34,7 @@ describe(`Consumer API: ${testCase}`, () => {
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
   });
 
-  after(async() => {
+  after(async () => {
     await finishWaitingManualTasksAfterTests();
     await testFixtureProvider.tearDown();
   });
@@ -47,7 +47,7 @@ describe(`Consumer API: ${testCase}`, () => {
       .finishManualTask(defaultIdentity, processInstanceId, correlationId, flowNodeInstanceId);
   }
 
-  it('should return a list of ManualTasks for a given process model in a given correlation', async() => {
+  it('should return a list of ManualTasks for a given process model in a given correlation', async () => {
 
     const manualTaskList = await testFixtureProvider
       .consumerApiClientService
@@ -71,7 +71,7 @@ describe(`Consumer API: ${testCase}`, () => {
     should(manualTask).have.property('tokenPayload');
   });
 
-  it('should return an empty Array, if the given correlation does not have any ManualTasks', async() => {
+  it('should return an empty Array, if the given correlation does not have any ManualTasks', async () => {
 
     await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdNoManualTasks);
 
@@ -86,7 +86,7 @@ describe(`Consumer API: ${testCase}`, () => {
     should(manualTaskList.manualTasks.length).be.equal(0);
   });
 
-  it('should return an empty Array, if the processModelId does not exist', async() => {
+  it('should return an empty Array, if the processModelId does not exist', async () => {
 
     const invalidProcessModelId = 'invalidProcessModelId';
 
@@ -99,7 +99,7 @@ describe(`Consumer API: ${testCase}`, () => {
     should(manualTaskList.manualTasks.length).be.equal(0);
   });
 
-  it('should return an empty Array, if the correlationId does not exist', async() => {
+  it('should return an empty Array, if the correlationId does not exist', async () => {
 
     const invalidCorrelationId = 'invalidCorrelationId';
 
@@ -112,7 +112,7 @@ describe(`Consumer API: ${testCase}`, () => {
     should(manualTaskList.manualTasks.length).be.equal(0);
   });
 
-  it('should fail to retrieve the correlation\'s ManualTasks, when the user is unauthorized', async() => {
+  it('should fail to retrieve the correlation\'s ManualTasks, when the user is unauthorized', async () => {
 
     try {
       const manualTaskList = await testFixtureProvider
@@ -128,7 +128,7 @@ describe(`Consumer API: ${testCase}`, () => {
     }
   });
 
-  it('should fail to retrieve the correlation\'s ManualTasks, when the user forbidden to retrieve it', async() => {
+  it('should fail to retrieve the correlation\'s ManualTasks, when the user forbidden to retrieve it', async () => {
 
     const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
