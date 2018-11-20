@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definition_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="BPMN Studio" exporterVersion="1">
+  <bpmn:collaboration id="Collaboration_1cidyxu" name="">
+    <bpmn:participant id="Participant_0px403d" name="manual_task_expression_test" processRef="manual_task_expression_test" />
+  </bpmn:collaboration>
+  <bpmn:process id="manual_task_expression_test" name="manual_task_expression_test" isExecutable="true">
+    <bpmn:laneSet>
+      <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>st_ProvideResults</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>st_ProvideMoreResults</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_0eie6q6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>mt_manualTask</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_1" name="Start Event">
+      <bpmn:outgoing>SequenceFlow_0eh3qz1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0eh3qz1" sourceRef="StartEvent_1" targetRef="st_ProvideResults" />
+    <bpmn:scriptTask id="st_ProvideResults" name="Add Token Data">
+      <bpmn:incoming>SequenceFlow_0eh3qz1</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0r3hdp9</bpmn:outgoing>
+      <bpmn:script>return {"one": 1, "two": 2};</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0r3hdp9" sourceRef="st_ProvideResults" targetRef="st_ProvideMoreResults" />
+    <bpmn:scriptTask id="st_ProvideMoreResults" name="Add More Token Data">
+      <bpmn:incoming>SequenceFlow_0r3hdp9</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_04xlhxs</bpmn:outgoing>
+      <bpmn:script>return {"three": 3, "four": 4};</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="EndEvent_0eie6q6" name="End Event">
+      <bpmn:incoming>SequenceFlow_1kb538g</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_04xlhxs" sourceRef="st_ProvideMoreResults" targetRef="mt_manualTask" />
+    <bpmn:manualTask id="mt_manualTask" name="ManualTask">
+      <bpmn:incoming>SequenceFlow_04xlhxs</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1kb538g</bpmn:outgoing>
+    </bpmn:manualTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1kb538g" sourceRef="mt_manualTask" targetRef="EndEvent_0eie6q6" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1cidyxu">
+      <bpmndi:BPMNShape id="Participant_0px403d_di" bpmnElement="Participant_0px403d">
+        <dc:Bounds x="5" y="4" width="694" height="169" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3">
+        <dc:Bounds x="35" y="4" width="664" height="169" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1mox3jl_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="83" y="69" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="74" y="105" width="55" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0eie6q6_di" bpmnElement="EndEvent_0eie6q6">
+        <dc:Bounds x="617" y="69" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="610" y="105" width="51" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0eh3qz1_di" bpmnElement="SequenceFlow_0eh3qz1">
+        <di:waypoint x="119" y="87" />
+        <di:waypoint x="169" y="87" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_01h4g50_di" bpmnElement="st_ProvideResults">
+        <dc:Bounds x="169" y="47" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0r3hdp9_di" bpmnElement="SequenceFlow_0r3hdp9">
+        <di:waypoint x="269" y="87" />
+        <di:waypoint x="319" y="87" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_15y44a5_di" bpmnElement="st_ProvideMoreResults">
+        <dc:Bounds x="319" y="47" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_04xlhxs_di" bpmnElement="SequenceFlow_04xlhxs">
+        <di:waypoint x="419" y="87" />
+        <di:waypoint x="469" y="87" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ManualTask_0sfzr8a_di" bpmnElement="mt_manualTask">
+        <dc:Bounds x="469" y="47" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1kb538g_di" bpmnElement="SequenceFlow_1kb538g">
+        <di:waypoint x="569" y="87" />
+        <di:waypoint x="617" y="87" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -27,7 +27,7 @@ export type IdentityCollection = {
   userWithAccessToSubLaneC: IIdentity;
   userWithAccessToLaneA: IIdentity;
   userWithNoAccessToLaneA: IIdentity;
-}
+};
 
 export class TestFixtureProvider {
 

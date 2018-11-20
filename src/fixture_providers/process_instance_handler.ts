@@ -5,6 +5,7 @@ import * as uuid from 'uuid';
 
 import {IIdentity} from '@essential-projects/iam_contracts';
 import {
+  ManualTaskList,
   ProcessStartRequestPayload,
   ProcessStartResponsePayload,
   StartCallbackType,
@@ -89,6 +90,44 @@ export class ProcessInstanceHandler {
     return this.testFixtureProvider
       .consumerApiClientService
       .getUserTasksForCorrelation(identity, correlationId);
+  }
+
+  /**
+   * Returns all ManualTasks that are running with the given correlation id.
+   *
+   * @async
+   * @param   identity      The identity with which to get the ManualTask.
+   * @param   correlationId The ID of the Correlation for which to get the ManualTasks.
+   * @returns               A list of waiting ManualTasks.
+   */
+  public async getWaitingManualTasksForCorrelationId(identity: IIdentity, correlationId: string): Promise<ManualTaskList> {
+
+    return this.testFixtureProvider
+      .consumerApiClientService
+      .getManualTasksForCorrelation(identity, correlationId);
+  }
+
+  /**
+   * Finishes a ManualTask.
+   *
+   * @async
+   * @param   identity           The identity with which to finish the ManualTask.
+   * @param   correlationId      The ID of the Correlation for which to finish
+   *                             the ManualTask.
+   * @param   processInstanceId  The ID of the ProcessModel for which to finish
+   *                             the ManualTask.
+   * @param   manualTaskInstanceId The ID of the ManualTask to finish.
+   * @param   manualTaskInput      The input data with which to finish the ManualTask.
+   * @returns                    The result of the finishing operation.
+   */
+  public async finishManualTaskInCorrelation(identity: IIdentity,
+                                             processInstanceId: string,
+                                             correlationId: string,
+                                             manualTaskInstanceId: string): Promise<void> {
+
+    await this.testFixtureProvider
+       .consumerApiClientService
+       .finishManualTask(identity, processInstanceId, correlationId, manualTaskInstanceId);
   }
 
   /**
