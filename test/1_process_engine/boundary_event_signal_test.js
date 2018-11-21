@@ -27,6 +27,6 @@ describe('Signal Boundary Event - ', () => {
 
     const result = await testFixtureProvider.executeProcess(processModelId, startEventId);
 
-    should(result.currentToken).be.match(expectedResult);
+    should(result.currentToken.XORJoin1).be.match(expectedResult);
   });
 });
