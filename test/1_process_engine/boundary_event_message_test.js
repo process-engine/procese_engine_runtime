@@ -27,6 +27,6 @@ describe('Message Boundary Event - ', () => {
 
     const result = await testFixtureProvider.executeProcess(processModelId, startEventId);
 
-    should(result.currentToken).be.match(expectedResult);
+    should(result.currentToken.Task4).be.match(expectedResult);
   });
 });

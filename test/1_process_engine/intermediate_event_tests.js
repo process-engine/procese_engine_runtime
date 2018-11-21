@@ -36,7 +36,7 @@ describe('Intermediate Events - ', () => {
     const result = await testFixtureProvider.executeProcess(processModelId, startEventId);
 
     should(result).have.property('currentToken');
-    should(result.currentToken).be.match(expectedResult);
+    should(result.currentToken.Task_03eg9bt).be.match(expectedResult);
   });
 
   it('should throw and receive a signal', async () => {
@@ -48,7 +48,7 @@ describe('Intermediate Events - ', () => {
     const result = await testFixtureProvider.executeProcess(processModelId, startEventId);
 
     should(result).have.property('currentToken');
-    should(result.currentToken).be.match(expectedResult);
+    should(result.currentToken.Task_14i79hx).be.match(expectedResult);
   });
 
   it('Should pause execution for 5 seconds by use of a timer catch event and then resume the process.', async () => {
