@@ -5,24 +5,16 @@
 
 // CHANGE NOTES:
 // Changes between 4.4.0 and 5.0.0:
-// - The column flowNodeType was added to store an FNIs BPMN type
+// - The column previousFlowNodeInstanceId was added to store an FNIs BPMN type
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
     console.log('Running updating migrations');
 
-    console.log('Adding new flowNodeType column');
+    console.log('Adding new previousFlowNodeInstanceId column');
     await queryInterface.addColumn(
       'FlowNodeInstances',
-      'flowNodeType',
-      {
-        type: Sequelize.STRING,
-        allowNull: true,
-      }
-    );
-    await queryInterface.addColumn(
-      'FlowNodeInstances',
-      'eventType',
+      'previousFlowNodeInstanceId',
       {
         type: Sequelize.STRING,
         allowNull: true,

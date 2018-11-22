@@ -22,7 +22,6 @@
         <bpmn:flowNodeRef>st_SequenceTestTask3</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>st_SequenceTestTask1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_1v6v31b</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_0mf06w0</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="StartEvent_1" name="parallel_gateway_test">
@@ -33,7 +32,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_0gc55a8" sourceRef="pg_StartParallelExecution" targetRef="st_veryLongTask" />
     <bpmn:sequenceFlow id="SequenceFlow_0gf9ntr" sourceRef="st_veryLongTask" targetRef="pg_JoinAfterTasksFinished" />
     <bpmn:sequenceFlow id="SequenceFlow_0taqmhl" sourceRef="st_longTask" targetRef="pg_JoinAfterTasksFinished" />
-    <bpmn:sequenceFlow id="SequenceFlow_10bs6hx" name="" sourceRef="pg_JoinAfterTasksFinished" targetRef="Task_0mf06w0">
+    <bpmn:sequenceFlow id="SequenceFlow_10bs6hx" name="" sourceRef="pg_JoinAfterTasksFinished" targetRef="EndEvent_1v6v31b">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
       </bpmn:extensionElements>
@@ -167,22 +166,12 @@
       <bpmn:outgoing>SequenceFlow_05lpb9h</bpmn:outgoing>
       <bpmn:script>console.log('running script task 1');</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:sequenceFlow id="SequenceFlow_1qotyv2" sourceRef="Task_0mf06w0" targetRef="EndEvent_1v6v31b" />
     <bpmn:endEvent id="EndEvent_1v6v31b" name="">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
       </bpmn:extensionElements>
-      <bpmn:incoming>SequenceFlow_1qotyv2</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:scriptTask id="Task_0mf06w0" name="Aggregate history" scriptFormat="">
-      <bpmn:extensionElements>
-        <camunda:executionListener class="" event="" />
-      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_10bs6hx</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1qotyv2</bpmn:outgoing>
-      <bpmn:script>return JSON.parse(JSON.stringify(token.history, (key, value) =&gt;
-                     {if (value === undefined) { return null; } return value}))</bpmn:script>
-    </bpmn:scriptTask>
+    </bpmn:endEvent>
     <bpmn:association id="Association_1ktjqvm" sourceRef="IntermediateThrowEvent_0etgzl7" targetRef="TextAnnotation_16klgqo" />
     <bpmn:textAnnotation id="TextAnnotation_16klgqo">
       <bpmn:text>Waits 2 seconds</bpmn:text>
@@ -275,7 +264,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_10bs6hx_di" bpmnElement="SequenceFlow_10bs6hx">
         <di:waypoint x="788" y="156" />
-        <di:waypoint x="818" y="156" />
+        <di:waypoint x="954" y="156" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="758" y="134.5" width="90" height="13" />
         </bpmndi:BPMNLabel>
@@ -467,16 +456,6 @@
         <di:waypoint x="660" y="532" />
         <di:waypoint x="660" y="563" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_1qotyv2_di" bpmnElement="SequenceFlow_1qotyv2">
-        <di:waypoint x="918" y="156" />
-        <di:waypoint x="954" y="156" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="936" y="134.5" width="0" height="13" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ScriptTask_1u92b4c_di" bpmnElement="Task_0mf06w0">
-        <dc:Bounds x="818" y="116" width="100" height="80" />
-      </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

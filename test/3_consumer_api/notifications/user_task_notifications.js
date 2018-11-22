@@ -77,7 +77,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
         resolve();
       };
 
-      testFixtureProvider.consumerApiClientService.onUserTaskWaiting(messageReceivedCallback);
+      testFixtureProvider.consumerApiClientService.onUserTaskWaiting(defaultIdentity, messageReceivedCallback);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
@@ -106,7 +106,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
         resolve();
       };
 
-      testFixtureProvider.consumerApiClientService.onUserTaskFinished(messageReceivedCallback);
+      testFixtureProvider.consumerApiClientService.onUserTaskFinished(defaultIdentity, messageReceivedCallback);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
