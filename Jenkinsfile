@@ -219,19 +219,26 @@ pipeline {
     }
     stage('publish github release') {
       when {
-        expression { branch_is_master || branch_is_develop }
+        expression {
+          branch_is_master ||
+          branch_is_develop
+        }
       }
       steps {
-        nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
-          dir('.ci-tools') {
-            sh('npm install')
-          }
-          withCredentials([
-            string(credentialsId: 'process-engine-ci_token', variable: 'RELEASE_GH_TOKEN')
-          ]) {
-            script {
-              sh("node .ci-tools/publish-github-release.js ${full_release_version_string} ${full_release_version_string} ${branch} ${release_will_be_draft} ${!branch_is_master}");
-            }
+        withCredentials([
+          string(credentialsId: 'process-engine-ci_token', variable: 'RELEASE_GH_TOKEN')
+        ]) {
+          script {
+
+            def create_github_release_command = 'create-github-release ';
+            create_github_release_command += 'process-engine ';
+            create_github_release_command += 'process_engine_runtime ';
+            create_github_release_command += "${full_release_version_string} ";
+            create_github_release_command += "${branch} ";
+            create_github_release_command += "${release_will_be_draft} ";
+            create_github_release_command += "${!branch_is_master}";
+
+            sh(create_github_release_command);
           }
         }
       }
