@@ -49,7 +49,8 @@ describe('Inter-process communication - ', () => {
     // As a result we must subscribe to the event that gets send when the test is done.
     testFixtureProvider.executeProcess(processModelReceiveEvents, 'MessageStartEvent_1', correlationId);
 
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelReceiveEvents);
+    await processInstanceHandler
+      .waitForProcessInstanceToReachSuspendedTask(correlationId, processModelReceiveEvents);
 
     return new Promise((resolve) => {
 
@@ -81,7 +82,8 @@ describe('Inter-process communication - ', () => {
     // As a result we must subscribe to the event that gets send when the test is done.
     testFixtureProvider.executeProcess(processModelReceiveEvents, 'SignalStartEvent_1', correlationId);
 
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelReceiveEvents);
+    await processInstanceHandler
+      .waitForProcessInstanceToReachSuspendedTask(correlationId, processModelReceiveEvents);
 
     return new Promise((resolve) => {
 
@@ -107,7 +109,8 @@ describe('Inter-process communication - ', () => {
     const endEventToWaitFor = 'EndEvent_1';
     testFixtureProvider.executeProcess(processModelReceiveTask, 'StartEvent_1', correlationId);
 
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelReceiveTask);
+    await processInstanceHandler
+      .waitForProcessInstanceToReachSuspendedTask(correlationId, processModelReceiveTask);
 
     return new Promise((resolve) => {
 
