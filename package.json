@@ -80,7 +80,7 @@
     "@process-engine/management_api_http": "1.2.0",
     "@process-engine/metrics_api_core": "0.2.0",
     "@process-engine/metrics.repository.file_system": "0.2.1",
-    "@process-engine/process_engine_core": "7.2.0",
+    "@process-engine/process_engine_core": "7.2.1",
     "@process-engine/process_model.repository.sequelize": "3.4.1",
     "@process-engine/timers.repository.sequelize": "2.2.1",
     "@process-engine/token_history_api_http": "0.2.0",
