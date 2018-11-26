@@ -2,51 +2,35 @@
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
   <bpmn:collaboration id="ProcessResult_001">
     <bpmn:participant id="DemoProcess.TerminateEndEvent" name="Terminate End Event Sample" processRef="terminate_end_event_sample" />
-    <bpmn:textAnnotation id="TextAnnotation_0ocsfer">
-      <bpmn:text>TODO: Replace Service tasks with Intermediate Timers as soon as they become available</bpmn:text>
-    </bpmn:textAnnotation>
   </bpmn:collaboration>
   <bpmn:process id="terminate_end_event_sample" name="terminate_end_event_sample" isExecutable="true">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_0iq41av" name="Default_Test_Lane">
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>UnreachableScriptTask_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>TerminateEndEvent_JoinGateway</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>RegularEndEvent</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>UnreachableScriptTask_2</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>TerminateEndEvent_SplitGateway</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UnreachableScriptTask_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>IntermediateThrowEvent_1eqvyfn</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SampleScriptTask1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>BoundaryEvent_141aa5r</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>TerminateEndEvent_1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_10hdote</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_1gn2g16</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="StartEvent_1" name="Start">
       <bpmn:outgoing>ProcessInput</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:scriptTask id="UnreachableScriptTask_1" name="Script Task should not be called">
-      <bpmn:incoming>SequenceFlow_1f5bqwi</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0vuigj4</bpmn:outgoing>
-      <bpmn:script>console.error("ERROR: DELAYED SCRIPT TASK REACHED!");</bpmn:script>
-    </bpmn:scriptTask>
     <bpmn:parallelGateway id="TerminateEndEvent_JoinGateway">
       <bpmn:incoming>SequenceFlow_0vuigj4</bpmn:incoming>
-      <bpmn:incoming>SequenceFlow_1jjj0c2</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1bnj4ce</bpmn:incoming>
       <bpmn:outgoing>StoreInput</bpmn:outgoing>
     </bpmn:parallelGateway>
     <bpmn:endEvent id="RegularEndEvent" name="Finished">
       <bpmn:incoming>StoreInput</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:scriptTask id="UnreachableScriptTask_2" name="Script Task should not be called either">
-      <bpmn:incoming>SequenceFlow_1cbjtxb</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1jjj0c2</bpmn:outgoing>
-      <bpmn:script>console.error("ERROR: EDGE CASE SCRIPT TASK REACHED!");</bpmn:script>
-    </bpmn:scriptTask>
     <bpmn:sequenceFlow id="ProcessInput" sourceRef="StartEvent_1" targetRef="TerminateEndEvent_SplitGateway" />
-    <bpmn:sequenceFlow id="EncryptInput" sourceRef="TerminateEndEvent_SplitGateway" targetRef="Task_10hdote" />
     <bpmn:sequenceFlow id="SequenceFlow_19imvxa" sourceRef="TerminateEndEvent_SplitGateway" targetRef="SampleScriptTask1" />
-    <bpmn:sequenceFlow id="SequenceFlow_0urlq2s" sourceRef="TerminateEndEvent_SplitGateway" targetRef="Task_1gn2g16" />
-    <bpmn:sequenceFlow id="SequenceFlow_0w50vbx" sourceRef="SampleScriptTask1" targetRef="TerminateEndEvent_1">
+    <bpmn:sequenceFlow id="SequenceFlow_0w50vbx" sourceRef="BoundaryEvent_141aa5r" targetRef="TerminateEndEvent_1">
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="mapper" value="&#39;Terminated ending&#39;" />
@@ -54,7 +38,6 @@
       </bpmn:extensionElements>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_0vuigj4" sourceRef="UnreachableScriptTask_1" targetRef="TerminateEndEvent_JoinGateway" />
-    <bpmn:sequenceFlow id="SequenceFlow_1jjj0c2" sourceRef="UnreachableScriptTask_2" targetRef="TerminateEndEvent_JoinGateway" />
     <bpmn:sequenceFlow id="StoreInput" sourceRef="TerminateEndEvent_JoinGateway" targetRef="RegularEndEvent">
       <bpmn:extensionElements>
         <camunda:properties>
@@ -64,45 +47,37 @@
     </bpmn:sequenceFlow>
     <bpmn:parallelGateway id="TerminateEndEvent_SplitGateway" name="">
       <bpmn:incoming>ProcessInput</bpmn:incoming>
-      <bpmn:outgoing>EncryptInput</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_19imvxa</bpmn:outgoing>
-      <bpmn:outgoing>SequenceFlow_0urlq2s</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_058cjt0</bpmn:outgoing>
     </bpmn:parallelGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_1cbjtxb" sourceRef="Task_1gn2g16" targetRef="UnreachableScriptTask_2" />
-    <bpmn:sequenceFlow id="SequenceFlow_1f5bqwi" sourceRef="Task_10hdote" targetRef="UnreachableScriptTask_1" />
+    <bpmn:sequenceFlow id="SequenceFlow_1bnj4ce" sourceRef="SampleScriptTask1" targetRef="TerminateEndEvent_JoinGateway" />
+    <bpmn:sequenceFlow id="SequenceFlow_058cjt0" sourceRef="TerminateEndEvent_SplitGateway" targetRef="IntermediateThrowEvent_1eqvyfn" />
+    <bpmn:sequenceFlow id="SequenceFlow_1w2702e" sourceRef="IntermediateThrowEvent_1eqvyfn" targetRef="UnreachableScriptTask_1" />
+    <bpmn:scriptTask id="UnreachableScriptTask_1" name="Script Task should not be called">
+      <bpmn:incoming>SequenceFlow_1w2702e</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0vuigj4</bpmn:outgoing>
+      <bpmn:script>console.error("ERROR: DELAYED SCRIPT TASK REACHED!");</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_1eqvyfn" name="2s Delay">
+      <bpmn:incoming>SequenceFlow_058cjt0</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1w2702e</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P0Y0M0DT0H0M2S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
     <bpmn:scriptTask id="SampleScriptTask1" name="Script Task should be called">
       <bpmn:incoming>SequenceFlow_19imvxa</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0w50vbx</bpmn:outgoing>
-      <bpmn:script>console.log("Sample script");</bpmn:script>
+      <bpmn:outgoing>SequenceFlow_1bnj4ce</bpmn:outgoing>
+      <bpmn:script>throw new Error("Critical error that causes termination!");</bpmn:script>
     </bpmn:scriptTask>
+    <bpmn:boundaryEvent id="BoundaryEvent_141aa5r" attachedToRef="SampleScriptTask1">
+      <bpmn:outgoing>SequenceFlow_0w50vbx</bpmn:outgoing>
+      <bpmn:errorEventDefinition />
+    </bpmn:boundaryEvent>
     <bpmn:endEvent id="TerminateEndEvent_1" name="Terminate everything">
       <bpmn:incoming>SequenceFlow_0w50vbx</bpmn:incoming>
       <bpmn:terminateEventDefinition />
     </bpmn:endEvent>
-    <bpmn:serviceTask id="Task_10hdote" name="10s delay">
-      <bpmn:extensionElements>
-        <camunda:properties>
-          <camunda:property name="module" value="ServiceTaskTestService" />
-          <camunda:property name="method" value="delay" />
-          <camunda:property name="params" value="[10,&#39;test&#39;]" />
-        </camunda:properties>
-      </bpmn:extensionElements>
-      <bpmn:incoming>EncryptInput</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1f5bqwi</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:serviceTask id="Task_1gn2g16" name="1s delay">
-      <bpmn:extensionElements>
-        <camunda:properties>
-          <camunda:property name="module" value="ServiceTaskTestService" />
-          <camunda:property name="method" value="delay" />
-          <camunda:property name="params" value="[1,&#39;test&#39;]" />
-        </camunda:properties>
-      </bpmn:extensionElements>
-      <bpmn:incoming>SequenceFlow_0urlq2s</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1cbjtxb</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:association id="Association_0kbei8z" sourceRef="Task_1gn2g16" targetRef="TextAnnotation_0ocsfer" />
-    <bpmn:association id="Association_1xaxlb6" sourceRef="Task_10hdote" targetRef="TextAnnotation_0ocsfer" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ProcessResult_001">
@@ -135,13 +110,6 @@
           <dc:Bounds x="692" y="206" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0a7d1mn_di" bpmnElement="EncryptInput">
-        <di:waypoint x="244" y="227" />
-        <di:waypoint x="296" y="227" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="220" y="210" width="90" height="13" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ParallelGateway_1cqews9_di" bpmnElement="TerminateEndEvent_SplitGateway">
         <dc:Bounds x="194" y="202" width="50" height="50" />
         <bpmndi:BPMNLabel>
@@ -156,84 +124,64 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_19imvxa_di" bpmnElement="SequenceFlow_19imvxa">
         <di:waypoint x="219" y="202" />
-        <di:waypoint x="219" y="101" />
-        <di:waypoint x="296" y="102" />
+        <di:waypoint x="219" y="147" />
+        <di:waypoint x="296" y="147" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="208" y="146" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0urlq2s_di" bpmnElement="SequenceFlow_0urlq2s">
-        <di:waypoint x="219" y="252" />
-        <di:waypoint x="219" y="335" />
-        <di:waypoint x="296" y="334" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="208" y="287" width="90" height="13" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0vuigj4_di" bpmnElement="SequenceFlow_0vuigj4">
-        <di:waypoint x="579" y="227" />
-        <di:waypoint x="657" y="227" />
+        <di:waypoint x="579" y="303" />
+        <di:waypoint x="682" y="303" />
+        <di:waypoint x="682" y="252" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="573" y="206" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0w50vbx_di" bpmnElement="SequenceFlow_0w50vbx">
-        <di:waypoint x="396" y="100" />
-        <di:waypoint x="511" y="100" />
+        <di:waypoint x="414" y="106" />
+        <di:waypoint x="511" y="106" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="431" y="81" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="EndEvent_0j75qho_di" bpmnElement="TerminateEndEvent_1">
-        <dc:Bounds x="511" y="82" width="36" height="36" />
+        <dc:Bounds x="511" y="88" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="504" y="121" width="51" height="27" />
+          <dc:Bounds x="556" y="92" width="51" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ScriptTask_0ua10uk_di" bpmnElement="SampleScriptTask1">
-        <dc:Bounds x="296" y="62" width="100" height="80" />
+        <dc:Bounds x="296" y="106" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ScriptTask_1r27pwy_di" bpmnElement="UnreachableScriptTask_1">
-        <dc:Bounds x="479" y="187" width="100" height="80" />
+        <dc:Bounds x="479" y="263" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ScriptTask_15ux8cx_di" bpmnElement="UnreachableScriptTask_2">
-        <dc:Bounds x="479" y="295" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_1jjj0c2_di" bpmnElement="SequenceFlow_1jjj0c2">
-        <di:waypoint x="579" y="334" />
-        <di:waypoint x="682" y="334" />
-        <di:waypoint x="682" y="252" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="586" y="313" width="90" height="13" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Lane_0iq41av_di" bpmnElement="Lane_0iq41av">
         <dc:Bounds x="47" y="27" width="788" height="374" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_1cbjtxb_di" bpmnElement="SequenceFlow_1cbjtxb">
-        <di:waypoint x="396" y="334" />
-        <di:waypoint x="479" y="335" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_1f5bqwi_di" bpmnElement="SequenceFlow_1f5bqwi">
-        <di:waypoint x="396" y="227" />
-        <di:waypoint x="479" y="227" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="TextAnnotation_0ocsfer_di" bpmnElement="TextAnnotation_0ocsfer">
-        <dc:Bounds x="78" y="416" width="184" height="56" />
+      <bpmndi:BPMNShape id="BoundaryEvent_0hi1j9z_di" bpmnElement="BoundaryEvent_141aa5r">
+        <dc:Bounds x="378" y="88" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Association_0kbei8z_di" bpmnElement="Association_0kbei8z">
-        <di:waypoint x="296" y="365" />
-        <di:waypoint x="215" y="416" />
+      <bpmndi:BPMNEdge id="SequenceFlow_1bnj4ce_di" bpmnElement="SequenceFlow_1bnj4ce">
+        <di:waypoint x="396" y="146" />
+        <di:waypoint x="682" y="146" />
+        <di:waypoint x="682" y="202" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_1xaxlb6_di" bpmnElement="Association_1xaxlb6">
-        <di:waypoint x="314" y="267" />
-        <di:waypoint x="193" y="416" />
+      <bpmndi:BPMNEdge id="SequenceFlow_058cjt0_di" bpmnElement="SequenceFlow_058cjt0">
+        <di:waypoint x="219" y="252" />
+        <di:waypoint x="219" y="303" />
+        <di:waypoint x="328" y="303" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ServiceTask_0yvhz4r_di" bpmnElement="Task_10hdote">
-        <dc:Bounds x="296" y="187" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_0uf1lju_di" bpmnElement="Task_1gn2g16">
-        <dc:Bounds x="296" y="294" width="100" height="80" />
+      <bpmndi:BPMNEdge id="SequenceFlow_1w2702e_di" bpmnElement="SequenceFlow_1w2702e">
+        <di:waypoint x="364" y="303" />
+        <di:waypoint x="479" y="303" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_1597v4y_di" bpmnElement="IntermediateThrowEvent_1eqvyfn">
+        <dc:Bounds x="328" y="285" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="325" y="328" width="43" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
