@@ -7,7 +7,7 @@ const StartCallbackType = require('@process-engine/management_api_contracts').Pr
 
 const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 
-describe('Management API:   GET  ->  /correlations/all', () => {
+describe.only('Management API:   GET  ->  /correlations/all', () => {
 
   let testFixtureProvider;
 
@@ -47,7 +47,6 @@ describe('Management API:   GET  ->  /correlations/all', () => {
   }
 
   it('should return all correlations through the management api', async () => {
-
     const correlations = await testFixtureProvider
       .managementApiClientService
       .getAllCorrelations(testFixtureProvider.identities.defaultUser);
