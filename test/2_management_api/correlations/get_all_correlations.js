@@ -7,7 +7,7 @@ const StartCallbackType = require('@process-engine/management_api_contracts').Pr
 
 const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 
-describe.only('Management API:   GET  ->  /correlations/all', () => {
+describe('Management API:   GET  ->  /correlations/all', () => {
 
   let testFixtureProvider;
 
