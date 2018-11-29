@@ -94,7 +94,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
 
     await finishExternalTask(externalTask.id);
 
-    should(externalTask.payload.currentToken.test_type).be.equal('with_payload');
+    should(externalTask.payload).have.property('testProperty');
     should(externalTask.payload.testProperty).be.equal('Test');
   });
 

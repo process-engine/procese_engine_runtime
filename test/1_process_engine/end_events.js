@@ -112,8 +112,6 @@ describe('EndEvents - ', () => {
     } catch (error) {
       const expectedError = /process was terminated.*?TerminateEndEvent_1/i;
 
-      // TODO: This only shows the Blackbox Result of the test. To verify that the process- and all corresponding nodes
-      // were actually terminated, we need to query the database.
       should(error.message).be.match(expectedError);
     }
   });
