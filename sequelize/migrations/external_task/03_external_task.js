@@ -8,6 +8,17 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
+    console.log('Running updating migrations');
+
+    const externalTaskTableInfo = await queryInterface.describeTable('ExternalTasks');
+
+    const migrationNotRequired = externalTaskTableInfo.processModelId !== undefined;
+
+    if (migrationNotRequired) {
+      console.log('The database is already up to date. Nothing to do here.');
+      return;
+    }
+
     // New Column for ExternalTasks
     await queryInterface.addColumn(
       'ExternalTasks',
@@ -17,6 +28,8 @@ module.exports = {
         allowNull: true,
       }
     );
+
+    console.log('Migration successful.');
   },
   down: async (queryInterface, Sequelize) => {
     console.log('Running reverting migrations');

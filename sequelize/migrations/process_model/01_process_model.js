@@ -14,24 +14,20 @@ module.exports = {
 
     const processDefinitionTableInfo = await queryInterface.describeTable('ProcessDefinitions');
 
-    const migrationNotRequired = processDefinitionTableInfo.hash !== undefined;
+    const hasNoHashColumn = processDefinitionTableInfo.hash === undefined;
 
-    if (migrationNotRequired) {
-      console.log('The database is already up to date. Nothing to do here.');
-
-      return Promise.resolve();
+    if (hasNoHashColumn) {
+      // New Column for ProcessDefinitions
+      await queryInterface.addColumn(
+        'ProcessDefinitions',
+        'hash',
+        {
+          type: Sequelize.TEXT,
+          allowNull: false,
+          defaultValue: '',
+        }
+      );
     }
-
-    // New Column for ProcessDefinitions
-    await queryInterface.addColumn(
-      'ProcessDefinitions',
-      'hash',
-      {
-        type: Sequelize.TEXT,
-        allowNull: false,
-        defaultValue: '',
-      }
-    );
 
     // Remove unique constraint from name
     await queryInterface.changeColumn(
