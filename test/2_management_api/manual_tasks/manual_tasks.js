@@ -73,6 +73,13 @@ describe(`Management API: ${testCase}`, () => {
     await testFixtureProvider
       .managementApiClientService
       .finishManualTask(testFixtureProvider.identities.defaultUser, processInstanceId, correlationId, flowNodeInstanceId);
+
+    // TODO: There is a gap between the finishing of the ManualTask and the end of the ProcessInstance.
+    // Mocha resolves and disassembles the backend BEFORE the process was finished, thus leading to inconsistent database entries.
+    // This gives the backend some time to finish the process, but we need a more permanent solution for this.
+    return new Promise((resolve, reject) => {
+      setTimeout(resolve, 3000);
+    });
   });
 
   function assertmanualTaskList(manualTaskList) {

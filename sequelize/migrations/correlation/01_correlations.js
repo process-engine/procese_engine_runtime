@@ -11,11 +11,11 @@ module.exports = {
 
     console.log('Running updating migrations');
 
-    const processTokenTableInfo = await queryInterface.describeTable('Correlations');
+    const correlationTableInfo = await queryInterface.describeTable('Correlations');
 
-    const tableHasIdentityColumn = processTokenTableInfo.identity !== undefined;
-    const tableHasProcessModelIdColumn = processTokenTableInfo.processModelId !== undefined;
-    const tableHasProcessInstanceIdColumn = processTokenTableInfo.processInstanceId !== undefined;
+    const tableHasIdentityColumn = correlationTableInfo.identity !== undefined;
+    const tableHasProcessModelIdColumn = correlationTableInfo.processModelId !== undefined;
+    const tableHasProcessInstanceIdColumn = correlationTableInfo.processInstanceId !== undefined;
 
     const migrationNotRequired = tableHasIdentityColumn
       && tableHasProcessModelIdColumn
