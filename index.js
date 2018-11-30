@@ -75,6 +75,7 @@ function loadIocModules() {
     '@essential-projects/event_aggregator',
     '@essential-projects/http_extension',
     '@essential-projects/services',
+    '@essential-projects/sequelize_connection_manager',
     '@essential-projects/timing',
     '@process-engine/consumer_api_core',
     '@process-engine/consumer_api_http',
