@@ -64,7 +64,7 @@
     "@process-engine/management_api_http": "feature~add_functions_for_live-execution-tracker",
     "@process-engine/metrics_api_core": "1.0.0",
     "@process-engine/metrics.repository.file_system": "1.0.0",
-    "@process-engine/process_engine_core": "feature~add_functions_for_live-execution-tracker",
+    "@process-engine/process_engine_core": "7.4.1",
     "@process-engine/process_model.repository.sequelize": "4.0.0",
     "@process-engine/timers.repository.sequelize": "3.0.1",
     "@process-engine/token_history_api_http": "feature~add_functions_for_live-execution-tracker",
