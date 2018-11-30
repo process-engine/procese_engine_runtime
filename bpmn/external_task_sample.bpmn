@@ -43,7 +43,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_1fdrw3e" sourceRef="ExclusiveGateway_1s2pvun" targetRef="Task_1ujckyr">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">token.current.test_type=='with_payload'</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:serviceTask id="Task_1ujckyr" name="External Task With Payload" camunda:type="external" camunda:topic="external_task_sample_topic">
+    <bpmn:serviceTask id="Task_1ujckyr" name="External Task With Payload" camunda:type="external" camunda:topic="external_task_sample_topic_with_payload">
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="payload" value="{ currentToken: token.current, testProperty: &#39;Test&#39; }" />
