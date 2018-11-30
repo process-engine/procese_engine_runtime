@@ -11,9 +11,9 @@ module.exports = {
 
     console.log('Running updating migrations');
 
-    const processTokenTableInfo = await queryInterface.describeTable('Correlations');
+    const correlationTableInfo = await queryInterface.describeTable('Correlations');
 
-    const tableHasMatchingColumn = processTokenTableInfo.parentProcessInstanceId !== undefined;
+    const tableHasMatchingColumn = correlationTableInfo.parentProcessInstanceId !== undefined;
 
     if (tableHasMatchingColumn) {
       console.log('The database is already up to date. Nothing to do here.');
