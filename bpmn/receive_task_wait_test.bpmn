@@ -3,7 +3,7 @@
   <bpmn:collaboration id="Collaboration_1cidyxu" name="">
     <bpmn:participant id="Participant_0px403d" name="receive_task_wait_test" processRef="receive_task_wait_test" />
   </bpmn:collaboration>
-  <bpmn:process id="receive_task_wait_test" name="receive_task_wait_test" isExecutable="false">
+  <bpmn:process id="receive_task_wait_test" name="receive_task_wait_test" isExecutable="true">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
