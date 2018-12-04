@@ -73,6 +73,7 @@
     "addict-ioc": "~2.5.3",
     "bluebird": "3.5.3",
     "cross-env": "5.2.0",
+    "loggerhythm": "3.0.3",
     "moment": "2.22.2",
     "platform-folders": "0.2.7",
     "sequelize": "~4.41.2",
