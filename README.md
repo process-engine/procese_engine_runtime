@@ -92,7 +92,7 @@ find the scripts at:
 Use:
 
 ```bash
-bash scripts/start_runtime_after_system_boot.sh
+bash autostart/start_runtime_after_system_boot.sh
 ```
 
 This will use pm2 to setup the ProcessEngine as automatically started service.
