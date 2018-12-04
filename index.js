@@ -3,15 +3,24 @@
 
 const InvocationContainer = require('addict-ioc').InvocationContainer;
 const fs = require('fs');
+const Logger = require('loggerhythm').Logger;
 const path = require('path');
 const platformFolders = require('platform-folders');
 
 const executeMigrations = require('./migrator').migrate;
 
+const logger = Logger.createLogger('processengine:runtime:startup');
+
 process.on('unhandledRejection', (err) => {
-  console.log('-- An unhandled exception was caught! Error: --');
-  console.log(err);
-  console.log('-- end of unhandled exception stack trace --');
+  logger.error('-- An unhandled exception was caught! Error: --');
+  logger.error(err);
+  logger.error('-- end of unhandled exception stack trace --');
+});
+
+const container = new InvocationContainer({
+  defaults: {
+    conventionCalls: ['initialize'],
+  },
 });
 
 // The folder location for the skeleton-electron app was a different one,
@@ -19,7 +28,8 @@ process.on('unhandledRejection', (err) => {
 // a path to the databases, so that the backend can access them.
 module.exports = async (sqlitePath) => {
   await runMigrations(sqlitePath);
-  startProcessEngine(sqlitePath);
+  await startProcessEngine(sqlitePath);
+  await resumeProcessInstances();
 };
 
 async function runMigrations(sqlitePath) {
@@ -44,12 +54,6 @@ async function startProcessEngine(sqlitePath) {
 
   initializeEnvironment(sqlitePath);
 
-  const container = new InvocationContainer({
-    defaults: {
-      conventionCalls: ['initialize'],
-    },
-  });
-
   for (const iocModule of iocModules) {
     iocModule.registerInContainer(container);
   }
@@ -60,9 +64,9 @@ async function startProcessEngine(sqlitePath) {
     const bootstrapper = await container.resolveAsync('AppBootstrapper');
     await bootstrapper.start();
 
-    console.log('Bootstrapper started successfully.');
+    logger.info('Bootstrapper started successfully.');
   } catch (error) {
-    console.error('Bootstrapper failed to start.', error);
+    logger.error('Bootstrapper failed to start.', error);
   }
 }
 
@@ -130,8 +134,8 @@ function loadConfiguredEnvironmentOrDefault() {
     return;
   }
 
-  console.log(`Configuration for environment "${configuredEnvironment}" is not available.
-Please make sure the configuration files are available at: ${__dirname}/config/${configuredEnvironment}`);
+  logger.info(`Configuration for environment "${configuredEnvironment}" is not available.`);
+  logger.info(`Please make sure the configuration files are available at: ${__dirname}/config/${configuredEnvironment}`);
   process.exit(1);
 }
 
@@ -196,4 +200,11 @@ function getSqliteStoragePath(sqlitePath) {
   const databaseBasePath = path.resolve(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
 
   return databaseBasePath;
+}
+
+async function resumeProcessInstances() {
+  logger.info('Resuming previously interrupted ProcessInstances...');
+  const resumeProcessService = await container.resolveAsync('ResumeProcessService');
+  await resumeProcessService.findAndResumeInterruptedProcessInstances();
+  logger.info('Done.');
 }
