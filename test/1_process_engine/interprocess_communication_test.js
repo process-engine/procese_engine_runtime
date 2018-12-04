@@ -10,9 +10,10 @@ describe('Inter-process communication - ', () => {
   let processInstanceHandler;
   let testFixtureProvider;
 
-  const processModelSendEvents = 'end_event_tests';
-  const processModelReceiveEvents = 'start_event_tests';
-
+  const processModelEndEventTests = 'end_event_tests';
+  const processModelStartEventTests = 'start_event_tests';
+  const processModelIntermediateCatchEventTests = 'intermediate_event_receive_tests';
+  const processModelIntermediateThrowEventTests = 'intermediate_event_send_tests';
   const processModelSendTask = 'send_task_throw_test';
   const processModelReceiveTask = 'receive_task_wait_test';
 
@@ -23,8 +24,10 @@ describe('Inter-process communication - ', () => {
     await testFixtureProvider.initializeAndStart();
 
     await testFixtureProvider.importProcessFiles([
-      processModelSendEvents,
-      processModelReceiveEvents,
+      processModelEndEventTests,
+      processModelStartEventTests,
+      processModelIntermediateCatchEventTests,
+      processModelIntermediateThrowEventTests,
       processModelSendTask,
       processModelReceiveTask,
     ]);
@@ -38,7 +41,7 @@ describe('Inter-process communication - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should only start process B, after process A finished with a message.', async () => {
+  it('should start process B with MessageStartEvent, after process A finished with a MessageEndEvent', async () => {
 
     const correlationId = uuid.v4();
     const endEventToWaitFor = 'EndEvent_MessageTest';
@@ -47,14 +50,13 @@ describe('Inter-process communication - ', () => {
 
     // We can't await the process execution here, because that would prevent us from starting the second process.
     // As a result we must subscribe to the event that gets send when the test is done.
-    testFixtureProvider.executeProcess(processModelReceiveEvents, 'MessageStartEvent_1', correlationId);
+    testFixtureProvider.executeProcess(processModelStartEventTests, 'MessageStartEvent_1', correlationId);
 
-    await processInstanceHandler
-      .waitForProcessInstanceToReachSuspendedTask(correlationId, processModelReceiveEvents);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelStartEventTests);
 
     return new Promise((resolve) => {
 
-      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelReceiveEvents}/ended`;
+      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelStartEventTests}/ended`;
       const evaluationCallback = (message) => {
         if (message.flowNodeId === endEventToWaitFor) {
           should(message).have.property('currentToken');
@@ -67,11 +69,11 @@ describe('Inter-process communication - ', () => {
       eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
 
       // Run the process that is supposed to publish the message.
-      testFixtureProvider.executeProcess(processModelSendEvents, 'StartEvent_MessageTest', correlationId);
+      testFixtureProvider.executeProcess(processModelEndEventTests, 'StartEvent_MessageTest', correlationId);
     });
   });
 
-  it('should only start process B, after process A finished with a signal', async () => {
+  it('should start process B with SignalStartEvent, after process A finished with a SignalEndEvent', async () => {
 
     const correlationId = uuid.v4();
     const endEventToWaitFor = 'EndEvent_SignalTest';
@@ -80,14 +82,13 @@ describe('Inter-process communication - ', () => {
 
     // We can't await the process execution here, because that would prevent us from starting the second process.
     // As a result we must subscribe to the event that gets send when the test is done.
-    testFixtureProvider.executeProcess(processModelReceiveEvents, 'SignalStartEvent_1', correlationId);
+    testFixtureProvider.executeProcess(processModelStartEventTests, 'SignalStartEvent_1', correlationId);
 
-    await processInstanceHandler
-      .waitForProcessInstanceToReachSuspendedTask(correlationId, processModelReceiveEvents);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelStartEventTests);
 
     return new Promise((resolve) => {
 
-      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelReceiveEvents}/ended`;
+      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelStartEventTests}/ended`;
       const evaluationCallback = (message) => {
         if (message.flowNodeId === endEventToWaitFor) {
           should(message).have.property('currentToken');
@@ -100,17 +101,80 @@ describe('Inter-process communication - ', () => {
       eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
 
       // Run the process that is supposed to publish the signal.
-      testFixtureProvider.executeProcess(processModelSendEvents, 'StartEvent_SignalTest', correlationId);
+      testFixtureProvider.executeProcess(processModelEndEventTests, 'StartEvent_SignalTest', correlationId);
     });
   });
 
-  it('should execute two processes with a send- and a receive task.', async () => {
+  it('should continue process B with MessageCatchEvent, after process A passed a corresponding MessageThrowEvent', async () => {
+
+    const correlationId = uuid.v4();
+    const endEventToWaitFor = 'EndEvent_MessageReceived';
+
+    const expectedResult = /message received/i;
+
+    // We can't await the process execution here, because that would prevent us from starting the second process.
+    // As a result we must subscribe to the event that gets send when the test is done.
+    testFixtureProvider.executeProcess(processModelIntermediateCatchEventTests, 'StartEvent_MessageTest', correlationId);
+
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelIntermediateCatchEventTests);
+
+    return new Promise((resolve) => {
+
+      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelIntermediateCatchEventTests}/ended`;
+      const evaluationCallback = (message) => {
+        if (message.flowNodeId === endEventToWaitFor) {
+          should(message).have.property('currentToken');
+          should(message.currentToken).be.match(expectedResult);
+          resolve();
+        }
+      };
+
+      // Subscribe for the EndEvent
+      eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
+
+      // Run the process that is supposed to publish the message.
+      testFixtureProvider.executeProcess(processModelIntermediateThrowEventTests, 'StartEvent_SendMessage', correlationId);
+    });
+  });
+
+  it('should continue process B with SignalCatchEvent, after process A passed a corresponding SignalThrowEvent', async () => {
+
+    const correlationId = uuid.v4();
+    const endEventToWaitFor = 'EndEvent_SignalReceived';
+
+    const expectedResult = /signal received/i;
+
+    // We can't await the process execution here, because that would prevent us from starting the second process.
+    // As a result we must subscribe to the event that gets send when the test is done.
+    testFixtureProvider.executeProcess(processModelIntermediateCatchEventTests, 'StartEvent_SignalTest', correlationId);
+
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelIntermediateCatchEventTests);
+
+    return new Promise((resolve) => {
+
+      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelIntermediateCatchEventTests}/ended`;
+      const evaluationCallback = (message) => {
+        if (message.flowNodeId === endEventToWaitFor) {
+          should(message).have.property('currentToken');
+          should(message.currentToken).be.match(expectedResult);
+          resolve();
+        }
+      };
+
+      // Subscribe for the EndEvent
+      eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
+
+      // Run the process that is supposed to publish the signal.
+      testFixtureProvider.executeProcess(processModelIntermediateThrowEventTests, 'StartEvent_SendSignal', correlationId);
+    });
+  });
+
+  it('Should continue Process B with a ReceiveTask, after Process A passed a corresponding SendTask.', async () => {
     const correlationId = uuid.v4();
     const endEventToWaitFor = 'EndEvent_1';
     testFixtureProvider.executeProcess(processModelReceiveTask, 'StartEvent_1', correlationId);
 
-    await processInstanceHandler
-      .waitForProcessInstanceToReachSuspendedTask(correlationId, processModelReceiveTask);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelReceiveTask);
 
     return new Promise((resolve) => {
 
