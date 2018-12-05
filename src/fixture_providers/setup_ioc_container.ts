@@ -1,4 +1,4 @@
-import {InvocationContainer} from "addict-ioc";
+import {InvocationContainer} from 'addict-ioc';
 
 const iocModuleNames: Array<string> = [
   '@essential-projects/bootstrapper',
@@ -27,7 +27,6 @@ const iocModuleNames: Array<string> = [
   '@process-engine/deployment_api_http',
   '@process-engine/process_engine_core',
   '@process-engine/process_model.repository.sequelize',
-  '@process-engine/timers.repository.sequelize',
   '@process-engine/token_history_api_core',
   '.',
 ];
@@ -38,7 +37,7 @@ const iocModules: Array<any> = iocModuleNames.map((moduleName: string): any => {
 
 export async function initializeBootstrapper(): Promise<InvocationContainer> {
 
-  const container = new InvocationContainer({
+  const container: InvocationContainer = new InvocationContainer({
     defaults: {
       conventionCalls: ['initialize'],
     },
