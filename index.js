@@ -31,7 +31,6 @@ async function runMigrations(sqlitePath) {
     'external_task',
     'flow_node_instance',
     'process_model',
-    'timer',
   ];
 
   for (const repository of repositories) {
