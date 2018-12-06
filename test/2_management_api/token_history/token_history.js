@@ -127,7 +127,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
       .managementApiClientService
       .getTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId);
 
-    for(const expectedFlowNodeName of expectedFlowNodeNames) {
+    for (const expectedFlowNodeName of expectedFlowNodeNames) {
       const tokenHistory = tokenHistories.get(expectedFlowNodeName);
 
       should(tokenHistory).be.an.Array();
