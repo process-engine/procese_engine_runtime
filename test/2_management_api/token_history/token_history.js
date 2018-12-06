@@ -107,6 +107,69 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
     }
   });
 
+  it('should successfully read the token history for each FlowNode of a specific process model of the executed correlation', async () => {
+
+    const expectedTokenTypes = [
+      'onEnter',
+      'onExit',
+    ];
+
+    const expectedFlowNodeNames = [
+      'StartEvent_1',
+      'ExclusiveGateway_0fi1ct7',
+      'ScriptTask_1',
+      'ServiceTask_1',
+      'ExclusiveGateway_134ybqm',
+      'EndEvent_0eie6q6',
+    ];
+
+    const tokenHistories = await testFixtureProvider
+      .managementApiClientService
+      .getTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId);
+
+    for(const expectedFlowNodeName of expectedFlowNodeNames) {
+      const tokenHistory = tokenHistories.get(expectedFlowNodeName);
+
+      should(tokenHistory).be.an.Array();
+      should(tokenHistory.length).be.equal(2, `Not all state changes were persisted for FlowNode ${expectedFlowNodeName}!`);
+
+      for (const tokenType of expectedTokenTypes) {
+
+        const matchingTokenHistoryEntry = tokenHistory.find((entry) => {
+          return entry.tokenEventType === tokenType;
+        });
+
+        should.exist(matchingTokenHistoryEntry, `No '${tokenType}' token was persisted for FlowNode ${expectedFlowNodeName}!`);
+
+        should(matchingTokenHistoryEntry.flowNodeId).be.equal(expectedFlowNodeName, 'No FlowNodeId was assigned to the TokenHistory entry!');
+        should(matchingTokenHistoryEntry.correlationId).be.equal(correlationId, 'No CorrelationId was assigned to the TokenHistory entry!');
+        should(matchingTokenHistoryEntry.processModelId).be.equal(processModelId, 'No ProcessModelId was assigned to the TokenHistory entry!');
+
+        should(matchingTokenHistoryEntry).have.property('flowNodeInstanceId');
+        should(matchingTokenHistoryEntry).have.property('processInstanceId');
+        should(matchingTokenHistoryEntry).have.property('identity');
+        should(matchingTokenHistoryEntry).have.property('createdAt');
+        should(matchingTokenHistoryEntry).have.property('caller');
+        should(matchingTokenHistoryEntry).have.property('payload');
+      }
+    }
+  });
+
+  it('should fail to retrieve the token history, when the user is unauthorized', async () => {
+    try {
+      const processModelList = await testFixtureProvider
+        .managementApiClientService
+        .getTokensForCorrelationAndProcessModel({}, correlationId, processModelId);
+
+      should.fail(processModelList, undefined, 'This request should have failed!');
+    } catch (error) {
+      const expectedErrorCode = 401;
+      const expectedErrorMessage = /no auth token provided/i;
+      should(error.code).be.match(expectedErrorCode);
+      should(error.message).be.match(expectedErrorMessage);
+    }
+  });
+
   async function executeSampleProcess() {
 
     const payload = {
