@@ -157,14 +157,10 @@
       <bpmn:outgoing>SequenceFlow_0xnuwzv</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:scriptTask id="st_SequenceTestTask1" name="Sequence Test 1">
-      <bpmn:extensionElements>
-        <camunda:properties>
-          <camunda:property name="mapper" value="&#39;Script Task result for sequence test&#39;" />
-        </camunda:properties>
-      </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1sjfe1q</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_05lpb9h</bpmn:outgoing>
-      <bpmn:script>console.log('running script task 1');</bpmn:script>
+      <bpmn:script>console.log('running script task 1');
+return 'Script Task result for sequence test';</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:endEvent id="EndEvent_1v6v31b" name="">
       <bpmn:extensionElements>
