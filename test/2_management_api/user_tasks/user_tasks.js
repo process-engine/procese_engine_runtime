@@ -67,24 +67,33 @@ describe(`Management API: ${testCase}`, () => {
 
   it('should successfully finish the given user task.', async () => {
 
-    const processInstanceId = userTaskToFinish.processInstanceId;
-    const flowNodeInstanceId = userTaskToFinish.flowNodeInstanceId;
-
-    const userTaskResult = {
-      formFields: {
-        Form_XGSVBgio: true,
-      },
-    };
-
-    await testFixtureProvider
-      .managementApiClientService
-      .finishUserTask(testFixtureProvider.identities.defaultUser, processInstanceId, correlationId, flowNodeInstanceId, userTaskResult);
-
-    // TODO: There is a gap between the finishing of the UserTask and the end of the ProcessInstance.
+    // NOTE: There is a gap between the finishing of the UserTask and the end of the ProcessInstance.
     // Mocha resolves and disassembles the backend BEFORE the process was finished, thus leading to inconsistent database entries.
-    // This gives the backend some time to finish the process, but we need a more permanent solution for this.
-    return new Promise((resolve, reject) => {
-      setTimeout(resolve, 3000);
+    // To avoid a messed up database that could break other tests, we must wait here for the process to finish, before finishing the test.
+    return new Promise(async (resolve) => {
+
+      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelId}/ended`;
+      const evaluationCallback = () => {
+        resolve();
+      };
+
+      // Subscribe for end of the process
+      const eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
+      eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
+
+      const processInstanceId = userTaskToFinish.processInstanceId;
+      const flowNodeInstanceId = userTaskToFinish.flowNodeInstanceId;
+
+      const userTaskResult = {
+        formFields: {
+          Form_XGSVBgio: true,
+        },
+      };
+
+      // Now finish the UserTask.
+      await testFixtureProvider
+        .managementApiClientService
+        .finishUserTask(testFixtureProvider.identities.defaultUser, processInstanceId, correlationId, flowNodeInstanceId, userTaskResult);
     });
   });
 
