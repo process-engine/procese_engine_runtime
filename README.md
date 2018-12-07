@@ -79,27 +79,27 @@ If you installed Node.js as a standalone application, you can find the scripts
 at:
 
 ```
-/usr/local/lib/node_modules/@process-engine/process_engine_runtime/scripts
+/usr/local/lib/node_modules/@process-engine/process_engine_runtime/scripts/autostart
 ```
 
 If you installed Node.js via [nvm](https://github.com/creationix/nvm), you can
 find the scripts at:
 
 ```
-/Users/{{YOUR_USERNAME}}/.nvm/versions/node/{{YOUR_NODE_VERSION}}/lib/node_modules/@process-engine/process_engine_runtime/scripts
+/Users/{{YOUR_USERNAME}}/.nvm/versions/node/{{YOUR_NODE_VERSION}}/lib/node_modules/@process-engine/process_engine_runtime/scripts/autostart
 ```
 
 Use:
 
 ```bash
-bash scripts/start_runtime_after_system_boot.sh
+bash autostart/start_runtime_after_system_boot.sh
 ```
 
 This will use pm2 to setup the ProcessEngine as automatically started service.
 
-__Note:__ Currently the `do_not_start_runtime_after_system_boot.sh`-script 
+__Note:__ Currently the `do_not_start_runtime_after_system_boot.sh`-script
 doesn't work under macOS due to a bug in a third party package. As soon as the
-bug is fixed, we will update the script and release a fix. 
+bug is fixed, we will update the script and release a fix.
 
 **Windows**
 
@@ -113,7 +113,7 @@ There are two scripts:
 You can find the scripts at:
 
 ```
-C:\Users\{{YOUR_USERNAME}}\AppData\Roaming\npm\node_modules\@process-engine\process_engine_runtime\scripts
+C:\Users\{{YOUR_USERNAME}}\AppData\Roaming\npm\node_modules\@process-engine\process_engine_runtime\scripts\autostart
 ```
 
 Please make sure to execute the scripts as __Administrator__.
@@ -124,7 +124,7 @@ start the `process_engine_runtime`, you will be asked several questions.
 Please use the default values on every question by:
 1. Typing `Y` and confirm your choice by pressing the `Enter`-key if it is a
   yes/no question.
-1. Just pressing the `Enter`-key on all other questions. 
+1. Just pressing the `Enter`-key on all other questions.
 
 
 **Other Platforms**

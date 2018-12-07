@@ -8,17 +8,14 @@ describe('Intermediate Events - ', () => {
 
   let testFixtureProvider;
 
+  const processModelId = 'intermediate_event_timer_test';
   const startEventId = 'StartEvent_1';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    const processDefFileList = [
-      'intermediate_event_message_test',
-      'intermediate_event_signal_test',
-      'intermediate_event_timer_test',
-    ];
+    const processDefFileList = [processModelId];
 
     await testFixtureProvider.importProcessFiles(processDefFileList);
   });
@@ -27,38 +24,10 @@ describe('Intermediate Events - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should throw and receive a message', async () => {
-
-    const processModelId = 'intermediate_event_message_test';
-
-    const expectedResult = /message received/i;
-
-    const result = await testFixtureProvider.executeProcess(processModelId, startEventId);
-
-    should(result).have.property('currentToken');
-    should(result.currentToken.Task_03eg9bt).be.match(expectedResult);
-  });
-
-  it('should throw and receive a signal', async () => {
-
-    const processModelId = 'intermediate_event_signal_test';
-
-    const expectedResult = /signal received/i;
-
-    const result = await testFixtureProvider.executeProcess(processModelId, startEventId);
-
-    should(result).have.property('currentToken');
-    should(result.currentToken.Task_14i79hx).be.match(expectedResult);
-  });
-
   it('Should pause execution for 5 seconds by use of a timer catch event and then resume the process.', async () => {
 
-    const processModelId = 'intermediate_event_timer_test';
-
     const timeStampBeforeStart = moment();
-
     const result = await testFixtureProvider.executeProcess(processModelId, startEventId);
-
     const timeStampAfterFinish = moment();
 
     // Note that this is not exact,

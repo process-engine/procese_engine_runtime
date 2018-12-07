@@ -4,26 +4,26 @@
 // https://sequelize.readthedocs.io/en/latest/docs/migrations/#functions
 
 // CHANGE NOTES:
-// Changes between 5.0.0 and 5.1.0:
-// - The column eventType was added to store an FNIs BPMN EvntType (Message, Signal, etc.)
+// Changes between 4.4.1 and 5.0.0:
+// - The column flowNodeType was added to store an FNIs BPMN type (ScriptTask, UserTask, etc)
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
     console.log('Running updating migrations');
 
-    const processTokenTableInfo = await queryInterface.describeTable('FlowNodeInstances');
+    const flowNodeInstanceTableInfo = await queryInterface.describeTable('FlowNodeInstances');
 
-    const migrationNotRequired = processTokenTableInfo.eventType !== undefined;
+    const migrationNotRequired = flowNodeInstanceTableInfo.flowNodeType !== undefined;
 
     if (migrationNotRequired) {
       console.log('The database is already up to date. Nothing to do here.');
       return;
     }
 
-    console.log('Adding new eventType column');
+    console.log('Adding new flowNodeType column');
     await queryInterface.addColumn(
       'FlowNodeInstances',
-      'eventType',
+      'flowNodeType',
       {
         type: Sequelize.STRING,
         allowNull: true,

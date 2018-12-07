@@ -3,7 +3,10 @@
 const path = require('path');
 const platformFolders = require('platform-folders');
 const Umzug = require('umzug');
-const sequelizeConnectionManager = require('@essential-projects/sequelize_connection_manager'); //eslint-disable-line
+
+const {SequelizeConnectionManager} = require('@essential-projects/sequelize_connection_manager');
+
+const sequelizeConnectionManager = new SequelizeConnectionManager();
 
 // Based on: https://github.com/abelnation/sequelize-migration-hello/blob/master/migrate.js
 module.exports.migrate = async (env, database, sqlitePath) => {

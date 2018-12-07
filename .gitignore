@@ -3,6 +3,7 @@ logs
 *.log
 npm-debug.log*
 
+correlation.sqlite
 correlations.sqlite
 external_task.sqlite
 processengine.sqlite

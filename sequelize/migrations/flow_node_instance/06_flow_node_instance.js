@@ -4,26 +4,26 @@
 // https://sequelize.readthedocs.io/en/latest/docs/migrations/#functions
 
 // CHANGE NOTES:
-// Changes between 4.4.1 and 5.0.0:
-// - The column flowNodeType was added to store an FNIs BPMN type (ScriptTask, UserTask, etc)
+// Changes between 5.0.0 and 6.0.0:
+// - The column previousFlowNodeInstanceId was added to store an FNIs BPMN type
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
     console.log('Running updating migrations');
 
-    const processTokenTableInfo = await queryInterface.describeTable('FlowNodeInstances');
+    const flowNodeInstanceTableInfo = await queryInterface.describeTable('FlowNodeInstances');
 
-    const migrationNotRequired = processTokenTableInfo.flowNodeType !== undefined;
+    const migrationNotRequired = flowNodeInstanceTableInfo.previousFlowNodeInstanceId !== undefined;
 
     if (migrationNotRequired) {
       console.log('The database is already up to date. Nothing to do here.');
       return;
     }
 
-    console.log('Adding new flowNodeType column');
+    console.log('Adding new previousFlowNodeInstanceId column');
     await queryInterface.addColumn(
       'FlowNodeInstances',
-      'flowNodeType',
+      'previousFlowNodeInstanceId',
       {
         type: Sequelize.STRING,
         allowNull: true,

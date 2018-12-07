@@ -47,7 +47,6 @@ describe('Management API:   GET  ->  /correlations/all', () => {
   }
 
   it('should return all correlations through the management api', async () => {
-
     const correlations = await testFixtureProvider
       .managementApiClientService
       .getAllCorrelations(testFixtureProvider.identities.defaultUser);
