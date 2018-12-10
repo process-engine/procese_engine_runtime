@@ -105,11 +105,11 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
 
   async function cleanup() {
     return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelIdSignalEvent, resolve);
+
       await testFixtureProvider
         .consumerApiClientService
         .triggerSignalEvent(defaultIdentity, eventNameToTriggerAfterTest, {});
-
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelIdSignalEvent, resolve);
     });
   }
 });
