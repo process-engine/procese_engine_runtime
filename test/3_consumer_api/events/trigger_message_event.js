@@ -28,7 +28,7 @@ describe('Consumer API: POST  ->  /messages/:message_name/trigger', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should fail trigger the event, when the user is unauthorized', async () => {
+  it('should fail to trigger the event, when the user is unauthorized', async () => {
 
     const messageEventName = 'test_message_event';
     const payload = {};
@@ -47,7 +47,7 @@ describe('Consumer API: POST  ->  /messages/:message_name/trigger', () => {
     }
   });
 
-  it('should fail trigger the event, when the user forbidden to retrieve it', async () => {
+  it('should fail to trigger the event, when the user forbidden to retrieve it', async () => {
 
     const messageEventName = 'test_message_event';
     const payload = {};

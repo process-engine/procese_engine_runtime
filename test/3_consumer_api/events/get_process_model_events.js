@@ -2,8 +2,7 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
-const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
 describe('Consumer API:   GET  ->  /process_models/:process_model_id/events', () => {
 
@@ -31,16 +30,9 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/events', ()
   });
 
   after(async () => {
-    await triggerWaitingEventAfterTest();
+    await cleanup();
     await testFixtureProvider.tearDown();
   });
-
-  async function triggerWaitingEventAfterTest() {
-
-    await testFixtureProvider
-      .consumerApiClientService
-      .triggerSignalEvent(defaultIdentity, eventNameToTriggerAfterTest, {});
-  }
 
   it('should return a process models events by its process_model_id through the consumer api', async () => {
 
@@ -115,5 +107,15 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/events', ()
       should(error.message).be.match(expectedErrorMessage);
     }
   });
+
+  async function cleanup() {
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelIdSignalEvent, resolve);
+
+      await testFixtureProvider
+        .consumerApiClientService
+        .triggerSignalEvent(defaultIdentity, eventNameToTriggerAfterTest, {});
+    });
+  }
 
 });

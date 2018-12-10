@@ -14,8 +14,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
   let defaultIdentity;
 
   const processModelId = 'test_consumer_api_usertask';
-  const processModelIdNoUserTasks = 'test_consumer_api_usertask_empty';
-
+  let correlationId = uuid.v4();
   let userTaskToFinish;
 
   before(async () => {
@@ -23,10 +22,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
     await testFixtureProvider.initializeAndStart();
     defaultIdentity = testFixtureProvider.identities.defaultUser;
 
-    const processModelsToImport = [
-      processModelId,
-      processModelIdNoUserTasks,
-    ];
+    const processModelsToImport = [processModelId];
 
     await testFixtureProvider.importProcessFiles(processModelsToImport);
 
@@ -37,31 +33,16 @@ describe('Consumer API:   Receive User Task Notifications', () => {
     await testFixtureProvider.tearDown();
   });
 
-  async function finishWaitingUserTask() {
-    const userTaskResult = {
-      formFields: {
-        Form_XGSVBgio: true,
-      },
-    };
+  it('should send a notification when user task is suspended', async () => {
 
-    const correlationId = userTaskToFinish.correlationId;
-    const processInstanceId = userTaskToFinish.processInstanceId;
-    const userTaskInstanceId = userTaskToFinish.flowNodeInstanceId;
-
-    await testFixtureProvider
-      .consumerApiClientService
-      .finishUserTask(defaultIdentity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
-  }
-
-  it('should send a notification via socket when user task is suspended', async () => {
-
-    const correlationId = uuid.v4();
+    correlationId = uuid.v4();
 
     return new Promise(async (resolve, reject) => {
 
-      const messageReceivedCallback = async (userTaskWaitingMessage) => {
+      const notificationReceivedCallback = async (userTaskWaitingMessage) => {
 
         should.exist(userTaskWaitingMessage);
+        // Store this for use in the second test, where we wait for the manualTaskFinished notification.
         userTaskToFinish = userTaskWaitingMessage;
 
         const userTaskList = await testFixtureProvider
@@ -77,41 +58,52 @@ describe('Consumer API:   Receive User Task Notifications', () => {
         resolve();
       };
 
-      testFixtureProvider.consumerApiClientService.onUserTaskWaiting(defaultIdentity, messageReceivedCallback);
+      testFixtureProvider.consumerApiClientService.onUserTaskWaiting(defaultIdentity, notificationReceivedCallback);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
   });
 
-  it('should send a notification via socket when user task is finished', async () => {
-
-    const correlationId = uuid.v4();
+  it('should send a notification when user task is finished', async () => {
 
     return new Promise(async (resolve, reject) => {
 
-      const messageReceivedCallback = async (userTaskFinishedMessage) => {
+      let notificationReceived = false;
 
-        const userTaskListAfterFinish = await testFixtureProvider
-          .consumerApiClientService
-          .getUserTasksForProcessModel(defaultIdentity, processModelId);
-
+      const notificationReceivedCallback = async (userTaskFinishedMessage) => {
         should(userTaskFinishedMessage).not.be.undefined();
-
-        const messageBelongsToWaitingUserTask = userTaskListAfterFinish.userTasks.some((userTask) => {
-          return userTask.id === userTaskFinishedMessage.flowNodeId;
-        });
-
-        should(messageBelongsToWaitingUserTask).be.true();
-
-        resolve();
+        should(userTaskFinishedMessage.flowNodeId).be.equal(userTaskToFinish.flowNodeId);
+        should(userTaskFinishedMessage.processModelId).be.equal(userTaskToFinish.processModelId);
+        should(userTaskFinishedMessage.correlationId).be.equal(userTaskToFinish.correlationId);
+        notificationReceived = true;
       };
 
-      testFixtureProvider.consumerApiClientService.onUserTaskFinished(defaultIdentity, messageReceivedCallback);
+      testFixtureProvider.consumerApiClientService.onUserTaskFinished(defaultIdentity, notificationReceivedCallback);
 
-      await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
-      await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+      const processFinishedCallback = () => {
+        if (!notificationReceived) {
+          throw new Error('Did not receive the expected notification about the finished ManualTask!');
+        }
+        resolve();
+      };
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, processFinishedCallback);
       finishWaitingUserTask();
     });
   });
+
+  async function finishWaitingUserTask() {
+    const userTaskResult = {
+      formFields: {
+        Form_XGSVBgio: true,
+      },
+    };
+
+    const processInstanceId = userTaskToFinish.processInstanceId;
+    const userTaskInstanceId = userTaskToFinish.flowNodeInstanceId;
+
+    await testFixtureProvider
+      .consumerApiClientService
+      .finishUserTask(defaultIdentity, processInstanceId, userTaskToFinish.correlationId, userTaskInstanceId, userTaskResult);
+  }
 
 });

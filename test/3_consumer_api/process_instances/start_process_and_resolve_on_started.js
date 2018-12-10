@@ -5,12 +5,12 @@ const uuid = require('uuid');
 
 const StartCallbackType = require('@process-engine/consumer_api_contracts').StartCallbackType; //eslint-disable-line
 
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
-// eslint-disable-next-line
 const testCase = 'Consumer API:   POST  ->  /process_models/:process_model_id/start_events/:start_event_id/start?start_callback_type=1';
 describe(`Consumer API: ${testCase}`, () => {
 
+  let processInstanceHandler;
   let testFixtureProvider;
   let defaultIdentity;
 
@@ -28,6 +28,8 @@ describe(`Consumer API: ${testCase}`, () => {
     ];
 
     await testFixtureProvider.importProcessFiles(processModelsToImport);
+
+    processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
   });
 
   after(async () => {
@@ -43,12 +45,16 @@ describe(`Consumer API: ${testCase}`, () => {
     };
     const startCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
 
-    const result = await testFixtureProvider
-      .consumerApiClientService
-      .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(payload.correlationId, processModelId, resolve);
 
-    should(result).have.property('correlationId');
-    should(result.correlationId).be.equal(payload.correlationId);
+      const result = await testFixtureProvider
+        .consumerApiClientService
+        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
+
+      should(result).have.property('correlationId');
+      should(result.correlationId).be.equal(payload.correlationId);
+    });
   });
 
   it('should start the process and return a generated correlation ID, when none is provided', async () => {
@@ -59,26 +65,35 @@ describe(`Consumer API: ${testCase}`, () => {
     };
     const startCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
 
-    const result = await testFixtureProvider
-      .consumerApiClientService
-      .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
+    return new Promise(async (resolve, reject) => {
+      const result = await testFixtureProvider
+        .consumerApiClientService
+        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
 
-    should(result).have.property('correlationId');
+      should(result).have.property('correlationId');
+
+      processInstanceHandler.waitForProcessInstanceToEnd(result.correlationId, processModelId, resolve);
+    });
   });
 
   it('should start the process with using \'on_process_instance_started\' as a default value for return_on', async () => {
 
     const startEventId = 'StartEvent_1';
     const payload = {
+      correlationId: uuid.v4(),
       inputValues: {},
     };
 
-    const result = await testFixtureProvider
-      .consumerApiClientService
-      .startProcessInstance(defaultIdentity, processModelId, startEventId, payload);
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(payload.correlationId, processModelId, resolve);
 
-    should(result).have.property('correlationId');
-    should(result.correlationId).be.a.String();
+      const result = await testFixtureProvider
+        .consumerApiClientService
+        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload);
+
+      should(result).have.property('correlationId');
+      should(result.correlationId).be.equal(payload.correlationId);
+    });
   });
 
   it('should sucessfully execute a process with two different sublanes', async () => {
@@ -86,6 +101,7 @@ describe(`Consumer API: ${testCase}`, () => {
     const startEventId = 'StartEvent_1';
 
     const payload = {
+      correlationId: uuid.v4(),
       inputValues: {
         test_config: 'different_lane',
       },
@@ -93,11 +109,16 @@ describe(`Consumer API: ${testCase}`, () => {
 
     const startCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
 
-    const result = await testFixtureProvider
-      .consumerApiClientService
-      .startProcessInstance(defaultIdentity, processModelIdSublanes, startEventId, payload, startCallbackType);
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(payload.correlationId, processModelIdSublanes, resolve);
 
-    should(result).have.property('correlationId');
+      const result = await testFixtureProvider
+        .consumerApiClientService
+        .startProcessInstance(defaultIdentity, processModelIdSublanes, startEventId, payload, startCallbackType);
+
+      should(result).have.property('correlationId');
+      should(result.correlationId).be.equal(payload.correlationId);
+    });
   });
 
   it('should successfully execute a process with an end event that is on a different sublane', async () => {
@@ -105,6 +126,7 @@ describe(`Consumer API: ${testCase}`, () => {
     const startEventId = 'StartEvent_1';
 
     const payload = {
+      correlationId: uuid.v4(),
       inputValues: {
         test_config: 'different_lane',
       },
@@ -113,10 +135,15 @@ describe(`Consumer API: ${testCase}`, () => {
     const userIdentity = testFixtureProvider.identities.userWithAccessToSubLaneC;
     const startCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
 
-    const result = await testFixtureProvider
-      .consumerApiClientService
-      .startProcessInstance(userIdentity, processModelIdSublanes, startEventId, payload, startCallbackType);
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(payload.correlationId, processModelIdSublanes, resolve);
 
-    should(result).have.property('correlationId');
+      const result = await testFixtureProvider
+        .consumerApiClientService
+        .startProcessInstance(userIdentity, processModelIdSublanes, startEventId, payload, startCallbackType);
+
+      should(result).have.property('correlationId');
+      should(result.correlationId).be.equal(payload.correlationId);
+    });
   });
 });
