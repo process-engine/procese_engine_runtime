@@ -1,6 +1,10 @@
 {
   "name": "@process-engine/process_engine_runtime",
+<<<<<<< HEAD
   "version": "4.1.0",
+=======
+  "version": "4.0.2",
+>>>>>>> hotfix/4.0.2
   "description": "",
   "bin": {
     "process-engine": "./bin/index.js"
@@ -64,7 +68,11 @@
     "@process-engine/management_api_http": "1.5.0",
     "@process-engine/metrics_api_core": "1.0.0",
     "@process-engine/metrics.repository.file_system": "1.1.0",
+<<<<<<< HEAD
     "@process-engine/process_engine_core": "8.0.1",
+=======
+    "@process-engine/process_engine_core": "8.0.2",
+>>>>>>> hotfix/4.0.2
     "@process-engine/process_model.repository.sequelize": "4.0.1",
     "@process-engine/token_history_api_http": "1.2.0",
     "@process-engine/token_history_api_core": "1.2.0",
