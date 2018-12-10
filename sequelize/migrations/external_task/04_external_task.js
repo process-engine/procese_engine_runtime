@@ -87,6 +87,10 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true,
       },
+      version: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: true,
@@ -100,10 +104,10 @@ module.exports = {
     const updateQuery = `INSERT INTO ExternalTasks_New
                            (externalTaskId, workerId, topic, flowNodeInstanceId, correlationId, processModelId,
                             processInstanceId, lockExpirationTime, identity, payload, state, finishedAt,
-                            result, error, createdAt, updatedAt)
+                            result, error, version, createdAt, updatedAt)
                           SELECT id, workerId, topic, flowNodeInstanceId, correlationId, processModelId,
                             processInstanceId, lockExpirationTime, identity, payload, state, finishedAt,
-                            result, error, createdAt, updatedAt
+                            result, error, version, createdAt, updatedAt
                           FROM ExternalTasks;`;
 
     await queryInterface.sequelize.query(updateQuery);
