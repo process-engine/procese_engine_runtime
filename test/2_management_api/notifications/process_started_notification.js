@@ -8,13 +8,13 @@ const StartCallbackType = require('@process-engine/management_api_contracts').Pr
 const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
 
-describe('Management API:   Receive Process Ended Notification', () => {
+describe('Management API:   Receive Process Started Notification', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
   let defaultIdentity;
 
-  const processModelId = 'generic_sample';
+  const processModelId = 'test_consumer_api_process_start';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();

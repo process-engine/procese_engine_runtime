@@ -13,7 +13,7 @@ describe('Management API:   Receive User Task Notifications', () => {
 
   let defaultIdentity;
 
-  const processModelId = 'usertask_sample';
+  const processModelId = 'test_consumer_api_usertask';
   let correlationId = uuid.v4();
   let userTaskToFinish;
 
