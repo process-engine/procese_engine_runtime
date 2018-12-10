@@ -91,7 +91,7 @@ export class TestFixtureProvider {
 
     this._deploymentApiService = await this.resolveAsync<IDeploymentApi>('DeploymentApiService');
     this._executeProcessService = await this.resolveAsync<IExecuteProcessService>('ExecuteProcessService');
-    this._externalTaskApiClientService = await this.resolveAsync<IExecuteProcessService>('ExternalTaskApiClientService');
+    this._externalTaskApiClientService = await this.resolveAsync<IExternalTaskApi>('ExternalTaskApiClientService');
     this._processModelService = await this.resolveAsync<IProcessModelService>('ProcessModelService');
   }
 
@@ -101,7 +101,11 @@ export class TestFixtureProvider {
     await this.bootstrapper.stop();
   }
 
-  public async resolveAsync<T>(moduleName: string, args?: any): Promise<any> {
+  public resolve<T>(moduleName: string, args?: any): T {
+    return this.container.resolve<T>(moduleName, args);
+  }
+
+  public async resolveAsync<T>(moduleName: string, args?: any): Promise<T> {
     return this.container.resolveAsync<T>(moduleName, args);
   }
 
