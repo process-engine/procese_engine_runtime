@@ -19,7 +19,7 @@ describe('Manual Tasks - ', () => {
     identity = testFixtureProvider.identities.defaultUser;
 
     const processDefinitionFiles = [
-      'manual_task_expression_test',
+      'manual_task_test',
       'manual_task_sequential_test',
       'manual_task_parallel_test',
     ];
@@ -61,8 +61,11 @@ describe('Manual Tasks - ', () => {
 
     const manualTask2 = waitingManualTasks.manualTasks[0];
 
-    await processInstanceHandler
-      .finishManualTaskInCorrelation(identity, manualTask2.processInstanceId, manualTask2.correlationId, manualTask2.flowNodeInstanceId);
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      await processInstanceHandler
+        .finishManualTaskInCorrelation(identity, manualTask2.processInstanceId, manualTask2.correlationId, manualTask2.flowNodeInstanceId);
+    });
   });
 
   it('should finish two parallel running manual tasks', async () => {
@@ -83,46 +86,30 @@ describe('Manual Tasks - ', () => {
 
     const waitingManualsTasks = currentRunningManualTasks.manualTasks;
 
-    for (const currentWaitingManualTask of waitingManualsTasks) {
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
 
-      await testFixtureProvider
-        .consumerApiClientService
-        .finishManualTask(identity, currentWaitingManualTask.processInstanceId, correlationId, currentWaitingManualTask.flowNodeInstanceId);
-    }
+      for (const manualTask of waitingManualsTasks) {
+        await testFixtureProvider
+          .consumerApiClientService
+          .finishManualTask(identity, manualTask.processInstanceId, correlationId, manualTask.flowNodeInstanceId);
+      }
+    });
   });
 
-  it('should fail to finish a manual task which is not in a waiting state', async () => {
+  it('should fail to finish a non existing ManualTask', async () => {
 
-    const processModelId = 'manual_task_sequential_test';
     const correlationId = uuid.v4();
-    const initialToken = {
-      inputValues: {},
-    };
-
-    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, initialToken);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
-
-    const waitingManualTasks = await processInstanceHandler.getWaitingManualTasksForCorrelationId(identity, correlationId);
-    const manualTask = waitingManualTasks.manualTasks[0];
-
-    const errorObjectProperties = [
-      'name',
-      'code',
-      'message',
-    ];
 
     const errorName = /.*not.*found/i;
-    const errorMessage = /.*Manual_Task_2.*/i;
+    const errorMessage = /.*Manual_Task_1.*/i;
     const errorCode = 404;
 
     try {
-      // Try to finish the manual task which is currently not waiting
       await testFixtureProvider
         .consumerApiClientService
-        .finishManualTask(identity, manualTask.processInstanceId, correlationId, 'Manual_Task_2');
+        .finishManualTask(identity, 'processInstanceId', correlationId, 'Manual_Task_1');
     } catch (error) {
-      should(error).have.properties(...errorObjectProperties);
-
       should(error.name).be.match(errorName);
       should(error.code).be.equal(errorCode);
       should(error.message).be.match(errorMessage);
@@ -131,7 +118,7 @@ describe('Manual Tasks - ', () => {
 
   it('should refuse to finish a manual task twice', async () => {
 
-    const processModelId = 'manual_task_sequential_test';
+    const processModelId = 'manual_task_test';
     const correlationId = uuid.v4();
     const initialToken = {
       inputValues: {},
@@ -147,26 +134,21 @@ describe('Manual Tasks - ', () => {
 
     const manualTask = waitingManualTasks.manualTasks[0];
 
-    const errorObjectProperties = [
-      'name',
-      'code',
-      'message',
-    ];
+    await new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishManualTask(identity, manualTask.processInstanceId, correlationId, manualTask.flowNodeInstanceId);
+    });
 
     const errorMessage = /does not have a ManualTask/i;
     const errorCode = 404;
-
-    await testFixtureProvider
-      .consumerApiClientService
-      .finishManualTask(identity, manualTask.processInstanceId, correlationId, manualTask.flowNodeInstanceId);
 
     try {
       await testFixtureProvider
         .consumerApiClientService
         .finishManualTask(identity, manualTask.processInstanceId, correlationId, manualTask.flowNodeInstanceId);
     } catch (error) {
-      should(error).have.properties(...errorObjectProperties);
-
       should(error.code).be.equal(errorCode);
       should(error.message).be.match(errorMessage);
     }
