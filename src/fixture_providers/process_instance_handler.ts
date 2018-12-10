@@ -26,8 +26,8 @@ import {TestFixtureProvider} from './test_fixture_provider';
  */
 export class ProcessInstanceHandler {
 
-  private _testFixtureProvider: TestFixtureProvider;
   private _eventAggregator: IEventAggregator;
+  private _testFixtureProvider: TestFixtureProvider;
 
   constructor(testFixtureProvider: TestFixtureProvider) {
     this._testFixtureProvider = testFixtureProvider;

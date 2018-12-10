@@ -33,16 +33,9 @@ describe('Management API:   Get waiting Events', () => {
   });
 
   after(async () => {
-    await triggerWaitingEventAfterTest();
+    await cleanup();
     await testFixtureProvider.tearDown();
   });
-
-  async function triggerWaitingEventAfterTest() {
-
-    await testFixtureProvider
-      .managementApiClientService
-      .triggerSignalEvent(defaultIdentity, eventNameToTriggerAfterTest, {});
-  }
 
   it('should return a correlation\'s events by its correlation_id through the consumer api', async () => {
 
@@ -113,4 +106,13 @@ describe('Management API:   Get waiting Events', () => {
     });
   });
 
+  async function cleanup() {
+    return new Promise(async (resolve) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelIdSignalEvent, resolve);
+
+      await testFixtureProvider
+        .managementApiClientService
+        .triggerSignalEvent(defaultIdentity, eventNameToTriggerAfterTest, {});
+    });
+  }
 });
