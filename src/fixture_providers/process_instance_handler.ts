@@ -199,12 +199,14 @@ export class ProcessInstanceHandler {
   }
 
   /**
-   * There is a gap between the finishing of ManualTasks/UserTasks and the end
-   * of the ProcessInstance.
-   * Mocha resolves and disassembles the backend BEFORE the process was finished,
-   * which leads to inconsistent database entries.
-   * To avoid a messed up database that could break other tests, we must wait for
-   * each ProcessInstance to finishe before progressing.
+   * Creates a subscription on the EventAggregator, which will resolve, when
+   * a ProcessInstance with a specific ProcessModelId within a Correlation is
+   * finished.
+   *
+   * This was necessary, because of time gaps between resuming/finishing a suspended
+   * FlowNodeInstance and the end of the ProcessInstance.
+   * That gap could lead to a test finishing before the associated ProcessInstance
+   * was actually finished, which in turn lead to messed up database entries.
    *
    * @param correlationId  The correlation in which the process runs.
    * @param processModelId The id of the process model to wait for.
