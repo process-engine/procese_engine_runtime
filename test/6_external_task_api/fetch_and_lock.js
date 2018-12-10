@@ -92,6 +92,8 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
     should(availableExternalTasks.length).be.equal(1);
 
     const externalTask = availableExternalTasks[0];
+    console.log(externalTask);
+    should(externalTask.payload.currentToken).have.property('test_type');
 
     await finishExternalTask(externalTask.id);
 
@@ -135,7 +137,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
 
     const correlationId = uuid.v4();
 
-    testFixtureProvider.executeProcess(processModelId, 'StartEvent_1', correlationId, {test_type: testType});
+    testFixtureProvider.executeProcess(processModelId, 'StartEvent_1', correlationId, { test_type: testType });
 
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
     await processInstanceHandler.waitForExternalTaskToBeCreated(targetTopicName);
