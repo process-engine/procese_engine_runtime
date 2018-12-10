@@ -12,7 +12,7 @@ describe('Management API:   Receive Process Ended Notification', () => {
   let testFixtureProvider;
   let defaultIdentity;
 
-  const processModelId = 'test_consumer_api_process_start';
+  const processModelId = 'generic_sample';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
