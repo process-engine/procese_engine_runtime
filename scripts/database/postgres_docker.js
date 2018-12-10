@@ -1,26 +1,28 @@
+'use strict';
+
 const exec = require('child_process').exec;
 const path = require('path');
 const os = require('os');
 
-const command = process.argv[2]
+const command = process.argv[2];
 
-const db_user_name = 'admin';
-const db_user_password = 'admin';
-const db_name = 'processengine';
-const db_port = 5432;
+const dbUserName = 'admin';
+const dbUserPassword = 'admin';
+const dbName = 'processengine';
+const dbPort = 5432;
 
-const db_docker_image_name = 'process_engine_postrgres';
-const db_container_name = 'process_engine_postrgres_container';
-const db_volume_name = 'process_engine_postgres_volume';
+const dbDockerImageName = 'process_engine_postrgres';
+const dbContainerName = 'process_engine_postrgres_container';
+const dbVolumeName = 'process_engine_postgres_volume';
 
-let log_path = '/dev/null';
+let logPath = '/dev/null';
 if (os.platform() === 'win32') {
-  log_path = 'NUL';
+  logPath = 'NUL';
 }
 
-function runCommand(command) {
+function runCommand(commandToRun) {
   return new Promise((resolve, reject) => {
-    exec(command, {maxBuffer: 2097152}, (error, stdout, stderr) => {
+    exec(commandToRun, {maxBuffer: 2097152}, (error, stdout, stderr) => {
       if (error !== null) {
         return reject(error);
       }
@@ -30,86 +32,86 @@ function runCommand(command) {
   });
 }
 
-async function create_db_container() {
-  let dockerfile = 'Dockerfile.skeleton';
+async function createDbContainer() {
+  const dockerfile = 'Dockerfile.skeleton';
 
   await runCommand(`\
     docker build \
       --file ${path.join(__dirname, dockerfile)} \
-      --tag ${db_docker_image_name} \
-      ${__dirname} > ${log_path} \
+      --tag ${dbDockerImageName} \
+      ${__dirname} > ${logPath} \
     `);
 
   return runCommand(`\
     docker run \
       --detach \
-      --env POSTGRES_USER=${db_user_name} \
-      --env POSTGRES_PASSWORD=${db_user_password} \
-      --env POSTGRES_DB=${db_name} \
-      --publish ${db_port}:5432 \
-      --name ${db_container_name} \
-      --mount source=${db_volume_name},target=/dbdata \
-      ${db_docker_image_name} > ${log_path} \
-    `)
+      --env POSTGRES_USER=${dbUserName} \
+      --env POSTGRES_PASSWORD=${dbUserPassword} \
+      --env POSTGRES_DB=${dbName} \
+      --publish ${dbPort}:5432 \
+      --name ${dbContainerName} \
+      --mount source=${dbVolumeName},target=/dbdata \
+      ${dbDockerImageName} > ${logPath} \
+    `);
 }
 
-function existing_volume_id() {
-  return runCommand(`docker volume ls --quiet --filter name=${db_volume_name}`);
+function existingVolumeId() {
+  return runCommand(`docker volume ls --quiet --filter name=${dbVolumeName}`);
 }
 
-function existing_db_container_id() {
-  return runCommand(`docker ps --all --quiet --filter name=${db_container_name}`);
+function existingDbContainerId() {
+  return runCommand(`docker ps --all --quiet --filter name=${dbContainerName}`);
 }
 
-function running_db_container_id() {
-  return runCommand(`docker ps --quiet --filter name=${db_container_name}`);
+function runningDbContainerId() {
+  return runCommand(`docker ps --quiet --filter name=${dbContainerName}`);
 }
 
 async function start() {
   // If the container is already running, abort
-  if (await running_db_container_id() !== '') {
+  if (await runningDbContainerId() !== '') {
     console.log('Container is already running');
     return;
   }
 
-  if (await existing_db_container_id() !== '') {
+  if (await existingDbContainerId() !== '') {
     console.log('starting DB-Container');
-    return runCommand(`docker start ${db_container_name} > ${log_path}`);
+    return runCommand(`docker start ${dbContainerName} > ${logPath}`);
   }
 
   console.log('creating DB-Container');
-  return create_db_container();
+  return createDbContainer();
 }
 
 async function stop() {
-  if (await running_db_container_id() === '') {
+  if (await runningDbContainerId() === '') {
     console.log('DB-Container is already stopped');
     return;
   }
 
   console.log('stopping DB-Container');
-  return runCommand(`docker stop ${db_container_name} > ${log_path}`);
+  return runCommand(`docker stop ${dbContainerName} > ${logPath}`);
 }
 
 async function clear() {
   await stop();
 
   // Remove the DB-Container
-  if (await existing_db_container_id() != '') {
+  if (await existingDbContainerId() != '') {
     console.log('removing DB-Container');
-    await runCommand(`docker rm ${db_container_name} > ${log_path}`)
+    await runCommand(`docker rm ${dbContainerName} > ${logPath}`)
   } else {
     console.log('DB-Container already removed');
   }
 
   // Remove volume
-  if (await existing_volume_id() === '') {
+  if (await existingVolumeId() === '') {
     console.log('Volume already removed');
     return;
   }
 
   console.log('removing Volume');
-  return runCommand(`docker volume rm ${db_volume_name} > ${log_path}`);
+  return runCommand(`docker volume rm ${dbVolumeName} > ${logPath}`);
 }
 
 async function reset() {
@@ -122,12 +124,12 @@ async function run() {
     await start();
   } else if (command === 'stop') {
     await stop();
-  } else if (command === "restart") {
+  } else if (command === 'restart') {
     await stop();
     await start();
   } else if (command === 'reset') {
     await reset();
-  } else if (command === undefined || command === null || command.length === 0) {
+  } else if (command === undefined || command === null || command.length === 0) {
     console.log(`Usage:
 
 node postgres_docker.js start [scenario]   # create and start the volume and db container
