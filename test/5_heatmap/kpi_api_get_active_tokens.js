@@ -2,8 +2,8 @@
 
 const should = require('should');
 const uuid = require('uuid');
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
-const ProcessInstanceHandler = require('../../dist/commonjs').ProcessInstanceHandler;
+
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../dist/commonjs');
 
 describe('KPI API -> Get Active Tokens - ', () => {
 
@@ -16,7 +16,6 @@ describe('KPI API -> Get Active Tokens - ', () => {
   const correlationId = uuid.v4();
 
   const userTask1Id = 'UserTask_1';
-  const userTask2Id = 'UserTask_2';
 
   const dummyIdentity = {
     token: 'defaultUser',
@@ -36,7 +35,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
   });
 
   after(async () => {
-    await finishUserTasks();
+    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -116,23 +115,6 @@ describe('KPI API -> Get Active Tokens - ', () => {
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
   }
 
-  async function finishUserTasks() {
-
-    const userTaskList = await testFixtureProvider
-      .consumerApiClientService
-      .getUserTasksForProcessModelInCorrelation(testFixtureProvider.identities.defaultUser, processModelId, correlationId);
-
-    for (const userTask of userTaskList.userTasks) {
-      const processInstanceId = userTask.processInstanceId;
-      const userTaskInstanceId = userTask.flowNodeInstanceId;
-      const userTaskResult = {};
-
-      await testFixtureProvider
-        .consumerApiClientService
-        .finishUserTask(testFixtureProvider.identities.defaultUser, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
-    }
-  }
-
   function assertActiveToken(activeToken, flowNodeId) {
 
     const expectedPayload = {
@@ -148,5 +130,26 @@ describe('KPI API -> Get Active Tokens - ', () => {
     should(activeToken).have.property('processInstanceId');
     should(activeToken).have.property('flowNodeInstanceId');
     should(activeToken).have.property('createdAt');
+  }
+
+  async function cleanup() {
+    return new Promise(async (resolve, reject) => {
+
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+
+      const userTaskList = await testFixtureProvider
+        .consumerApiClientService
+        .getUserTasksForProcessModelInCorrelation(testFixtureProvider.identities.defaultUser, processModelId, correlationId);
+
+      for (const userTask of userTaskList.userTasks) {
+        const processInstanceId = userTask.processInstanceId;
+        const userTaskInstanceId = userTask.flowNodeInstanceId;
+        const userTaskResult = {};
+
+        await testFixtureProvider
+          .consumerApiClientService
+          .finishUserTask(testFixtureProvider.identities.defaultUser, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
+      }
+    });
   }
 });

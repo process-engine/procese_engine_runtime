@@ -43,9 +43,11 @@ async function runMigrations(sqlitePath) {
     'process_model',
   ];
 
+  logger.info('Running migrations...');
   for (const repository of repositories) {
     await executeMigrations(env, repository, sqlitePath);
   }
+  logger.info('Migrations successfully executed.');
 }
 
 async function startProcessEngine(sqlitePath) {

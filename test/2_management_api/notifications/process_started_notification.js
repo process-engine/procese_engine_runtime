@@ -6,9 +6,11 @@ const uuid = require('uuid');
 const StartCallbackType = require('@process-engine/management_api_contracts').ProcessModelExecution.StartCallbackType;
 
 const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
+const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
 
-describe('Management API:   Receive Process Ended Notification', () => {
+describe('Management API:   Receive Process Started Notification', () => {
 
+  let processInstanceHandler;
   let testFixtureProvider;
   let defaultIdentity;
 
@@ -24,6 +26,8 @@ describe('Management API:   Receive Process Ended Notification', () => {
     ];
 
     await testFixtureProvider.importProcessFiles(processModelsToImport);
+
+    processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
   });
 
   after(async () => {
@@ -34,18 +38,21 @@ describe('Management API:   Receive Process Ended Notification', () => {
 
     return new Promise((resolve, reject) => {
 
+      const correlationId = uuid.v4();
+      let notificationReceived = false;
+
       const startEventId = 'StartEvent_1';
       const payload = {
-        correlationId: uuid.v4(),
+        correlationId: correlationId,
         inputValues: {},
       };
       const startCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
 
-      const onProcessStartedCallback = (processStartedMessage) => {
+      const notificationReceivedCallback = (processStartedMessage) => {
         should.exist(processStartedMessage);
         should(processStartedMessage).have.property('correlationId');
 
-        // Since this notification channel will receive ALL processEnded messages,
+        // Since this notification channel will receive ALL processStarted messages,
         // we need to make sure that we intercepted the one we anticipated.
         const messageWasNotFromSpecifiedCorrelation = processStartedMessage.correlationId !== payload.correlationId;
         if (messageWasNotFromSpecifiedCorrelation) {
@@ -55,11 +62,19 @@ describe('Management API:   Receive Process Ended Notification', () => {
         should(processStartedMessage.correlationId).be.equal(payload.correlationId);
         should(processStartedMessage).have.property('flowNodeId');
         should(processStartedMessage.flowNodeId).be.equal(startEventId);
-
-        resolve();
+        notificationReceived = true;
       };
 
-      testFixtureProvider.managementApiClientService.onProcessStarted(defaultIdentity, onProcessStartedCallback);
+      testFixtureProvider.managementApiClientService.onProcessStarted(defaultIdentity, notificationReceivedCallback);
+
+      // We must await the end of the ProcessInstance to avoid messed up entries in the database.
+      const processFinishedCallback = () => {
+        if (!notificationReceived) {
+          throw new Error('Did not receive the expected notification about the started ProcessInstance!');
+        }
+        resolve();
+      };
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, processFinishedCallback);
 
       testFixtureProvider
         .managementApiClientService
@@ -68,17 +83,21 @@ describe('Management API:   Receive Process Ended Notification', () => {
   });
 
   it('should send a notification when a process with a given ProcessModelId was started', async () => {
+
     return new Promise((resolve, reject) => {
+
+      const correlationId = uuid.v4();
+      let notificationReceived = false;
 
       const startEventId = 'StartEvent_1';
       const payload = {
-        correlationId: uuid.v4(),
+        correlationId: correlationId,
         inputValues: {},
       };
 
       const startCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
 
-      const onProcessStartedCallback = (processStartedMessage) => {
+      const notificationReceivedCallback = (processStartedMessage) => {
         should.exist(processStartedMessage);
         should(processStartedMessage).have.property('correlationId');
 
@@ -90,11 +109,21 @@ describe('Management API:   Receive Process Ended Notification', () => {
         should(processStartedMessage.correlationId).be.equal(payload.correlationId);
         should(processStartedMessage).have.property('flowNodeId');
         should(processStartedMessage.flowNodeId).be.equal(startEventId);
-
-        resolve();
+        notificationReceived = true;
       };
 
-      testFixtureProvider.managementApiClientService.onProcessWithProcessModelIdStarted(defaultIdentity, onProcessStartedCallback, processModelId);
+      testFixtureProvider
+        .managementApiClientService
+        .onProcessWithProcessModelIdStarted(defaultIdentity, notificationReceivedCallback, processModelId);
+
+      // We must await the end of the ProcessInstance to avoid messed up entries in the database.
+      const processFinishedCallback = () => {
+        if (!notificationReceived) {
+          throw new Error('Did not receive the expected notification about the started ProcessInstance!');
+        }
+        resolve();
+      };
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, processFinishedCallback);
 
       testFixtureProvider
         .managementApiClientService

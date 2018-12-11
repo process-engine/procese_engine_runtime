@@ -9,7 +9,6 @@ describe('Consumer API: POST  ->  /signals/:signal_name/trigger', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
-  let eventAggregator;
 
   let defaultIdentity;
 
@@ -22,7 +21,6 @@ describe('Consumer API: POST  ->  /signals/:signal_name/trigger', () => {
 
     await testFixtureProvider.importProcessFiles([processModelIdSignalEvent]);
 
-    eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
   });
 
@@ -30,7 +28,7 @@ describe('Consumer API: POST  ->  /signals/:signal_name/trigger', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should fail trigger the event, when the user is unauthorized', async () => {
+  it('should fail to trigger the event, when the user is unauthorized', async () => {
 
     const signalEventName = 'test_signal_event';
     const payload = {};
@@ -49,7 +47,7 @@ describe('Consumer API: POST  ->  /signals/:signal_name/trigger', () => {
     }
   });
 
-  it('should fail trigger the event, when the user forbidden to retrieve it', async () => {
+  it('should fail to trigger the event, when the user forbidden to retrieve it', async () => {
 
     const signalEventName = 'test_signal_event';
     const payload = {};
@@ -91,14 +89,7 @@ describe('Consumer API: POST  ->  /signals/:signal_name/trigger', () => {
     // To ensure that all works as expected, we must intercept the EndEvent notification that gets send by the Process instance.
     // Otherwise, there is no way to know for sure that the process has actually received the event we triggered.
     return new Promise((resolve) => {
-
-      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelIdSignalEvent}/ended`;
-      const evaluationCallback = (message) => {
-        resolve();
-      };
-
-      // Subscribe for the EndEvent
-      eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelIdSignalEvent, resolve);
 
       testFixtureProvider
         .consumerApiClientService

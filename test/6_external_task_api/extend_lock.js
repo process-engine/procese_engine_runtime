@@ -15,7 +15,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
   let defaultIdentity;
   let restrictedIdentity;
 
-  let externalTaskId;
+  let externalTask;
 
   const processModelId = 'external_task_sample';
   const workerId = 'extend_lock_sample_worker';
@@ -35,15 +35,11 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
-    externalTaskId = await createWaitingExternalTask();
+    externalTask = await createWaitingExternalTask();
   });
 
   after(async () => {
-
-    await testFixtureProvider
-      .externalTaskApiClientService
-      .finishExternalTask(defaultIdentity, workerId, externalTaskId, {});
-
+    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -51,9 +47,9 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     await testFixtureProvider
       .externalTaskApiClientService
-      .extendLock(defaultIdentity, workerId, externalTaskId, additionalLockTimeInMs);
+      .extendLock(defaultIdentity, workerId, externalTask.id, additionalLockTimeInMs);
 
-    await assertThatExtensionWasSuccessful(externalTaskId, additionalLockTimeInMs);
+    await assertThatExtensionWasSuccessful(externalTask.id, additionalLockTimeInMs);
   });
 
   it('should fail to extend the lock, if the given ExternalTaskId does not exist', async () => {
@@ -82,9 +78,9 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     try {
       await testFixtureProvider
         .externalTaskApiClientService
-        .extendLock(defaultIdentity, invalidworkerId, externalTaskId, additionalLockTimeInMs);
+        .extendLock(defaultIdentity, invalidworkerId, externalTask.id, additionalLockTimeInMs);
 
-      should.fail(externalTaskId, undefined, 'This request should have failed!');
+      should.fail(externalTask.id, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 423;
       const expectedErrorMessage = /locked by another worker/i;
@@ -98,9 +94,9 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     try {
       await testFixtureProvider
         .externalTaskApiClientService
-        .extendLock({}, workerId, externalTaskId, additionalLockTimeInMs);
+        .extendLock({}, workerId, externalTask.id, additionalLockTimeInMs);
 
-      should.fail(externalTaskId, undefined, 'This request should have failed!');
+      should.fail(externalTask.id, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
@@ -114,9 +110,9 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     try {
       await testFixtureProvider
         .externalTaskApiClientService
-        .extendLock(restrictedIdentity, workerId, externalTaskId, additionalLockTimeInMs);
+        .extendLock(restrictedIdentity, workerId, externalTask.id, additionalLockTimeInMs);
 
-      should.fail(externalTaskId, undefined, 'This request should have failed!');
+      should.fail(externalTask.id, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 403;
       const expectedErrorMessage = /access denied/i;
@@ -131,7 +127,6 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     testFixtureProvider.executeProcess(processModelId, 'StartEvent_1', correlationId, {test_type: 'without_payload'});
 
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
     await processInstanceHandler.waitForExternalTaskToBeCreated(topicName);
 
     const availableExternalTasks = await testFixtureProvider
@@ -141,32 +136,32 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     should(availableExternalTasks).be.an.Array();
     should(availableExternalTasks.length).be.equal(1);
 
-    return availableExternalTasks[0].id;
+    return availableExternalTasks[0];
   }
 
   async function assertThatExtensionWasSuccessful(externalTaskIdToAssert) {
 
     const externalTaskRepository = await testFixtureProvider.resolveAsync('ExternalTaskRepository');
 
-    const externalTask = await externalTaskRepository.getById(externalTaskIdToAssert);
+    const externalTaskToAssert = await externalTaskRepository.getById(externalTaskIdToAssert);
 
-    should.exist(externalTask);
+    should.exist(externalTaskToAssert);
 
-    should(externalTask.workerId).be.equal(workerId);
-    should(externalTask.topic).be.equal(topicName);
-    should(externalTask.state).be.equal('pending');
+    should(externalTaskToAssert.workerId).be.equal(workerId);
+    should(externalTaskToAssert.topic).be.equal(topicName);
+    should(externalTaskToAssert.state).be.equal('pending');
 
-    should(externalTask).have.property('flowNodeInstanceId');
-    should(externalTask).have.property('correlationId');
-    should(externalTask).have.property('processInstanceId');
-    should(externalTask).have.property('payload');
-    should(externalTask).have.property('createdAt');
+    should(externalTaskToAssert).have.property('flowNodeInstanceId');
+    should(externalTaskToAssert).have.property('correlationId');
+    should(externalTaskToAssert).have.property('processInstanceId');
+    should(externalTaskToAssert).have.property('payload');
+    should(externalTaskToAssert).have.property('createdAt');
 
     // We can't do an exact match here, because of the time it takes to update the
     // lockExpirationTime and then fetch the ExternalTask through the repository.
     // We can only assert that the lockExpirationTime was pushed past its original setting.
     const now = moment();
-    const lockExpirationTime = moment(externalTask.lockExpirationTime);
+    const lockExpirationTime = moment(externalTaskToAssert.lockExpirationTime);
 
     const lockExpirationTimeIsFutureDateTime = now.isBefore(lockExpirationTime);
     should(lockExpirationTimeIsFutureDateTime).be.true();
@@ -177,6 +172,16 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     const lockExpirationTimeIsLongerThanBefore = duration > baseLockDurationInMs;
 
     should(lockExpirationTimeIsLongerThanBefore).be.true();
+  }
+
+  async function cleanup() {
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(externalTask.correlationId, processModelId, resolve);
+
+      await testFixtureProvider
+        .externalTaskApiClientService
+        .finishExternalTask(defaultIdentity, workerId, externalTask.id, {});
+    });
   }
 
 });

@@ -6,9 +6,11 @@ const uuid = require('uuid');
 const StartCallbackType = require('@process-engine/consumer_api_contracts').StartCallbackType;
 
 const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
+const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
 
 describe('Consumer API:   Receive Process Started Notification', () => {
 
+  let processInstanceHandler;
   let testFixtureProvider;
   let defaultIdentity;
 
@@ -24,39 +26,55 @@ describe('Consumer API:   Receive Process Started Notification', () => {
     ];
 
     await testFixtureProvider.importProcessFiles(processModelsToImport);
+
+    processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
   });
 
   after(async () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should send a notification when a process was started', async () => {
+  it('should send a notification when the ProcessInstance was started', async () => {
 
     return new Promise((resolve, reject) => {
 
+      const correlationId = uuid.v4();
+      let notificationReceived = false;
+
       const startEventId = 'StartEvent_1';
       const payload = {
-        correlationId: uuid.v4(),
+        correlationId: correlationId,
         inputValues: {},
       };
-      const startCallbackType = StartCallbackType.CallbackOnProcessInstanceFinished;
+      const startCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
 
-      const onProcessStartedCallback = (processStartedEvent) => {
-        should.exist(processStartedEvent);
-        should(processStartedEvent).have.property('correlationId');
+      const notificationReceivedCallback = (processStartedMessage) => {
+        should.exist(processStartedMessage);
+        should(processStartedMessage).have.property('correlationId');
 
-        if (processStartedEvent.correlationId !== payload.correlationId) {
+        // Since this notification channel will receive ALL processStarted messages,
+        // we need to make sure that we intercepted the one we anticipated.
+        const messageWasNotFromSpecifiedCorrelation = processStartedMessage.correlationId !== payload.correlationId;
+        if (messageWasNotFromSpecifiedCorrelation) {
           return;
         }
 
-        should(processStartedEvent.correlationId).be.equal(payload.correlationId);
-        should(processStartedEvent).have.property('flowNodeId');
-        should(processStartedEvent.flowNodeId).be.equal(startEventId);
-
-        resolve();
+        should(processStartedMessage.correlationId).be.equal(payload.correlationId);
+        should(processStartedMessage).have.property('flowNodeId');
+        should(processStartedMessage.flowNodeId).be.equal(startEventId);
+        notificationReceived = true;
       };
 
-      testFixtureProvider.consumerApiClientService.onProcessStarted(defaultIdentity, onProcessStartedCallback);
+      testFixtureProvider.consumerApiClientService.onProcessStarted(defaultIdentity, notificationReceivedCallback);
+
+      // We must await the end of the ProcessInstance to avoid messed up entries in the database.
+      const processFinishedCallback = () => {
+        if (!notificationReceived) {
+          throw new Error('Did not receive the expected notification about the started ProcessInstance!');
+        }
+        resolve();
+      };
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, processFinishedCallback);
 
       testFixtureProvider
         .consumerApiClientService
@@ -65,31 +83,47 @@ describe('Consumer API:   Receive Process Started Notification', () => {
   });
 
   it('should send a notification when a process with a given ProcessModelId was started', async () => {
+
     return new Promise((resolve, reject) => {
+
+      const correlationId = uuid.v4();
+      let notificationReceived = false;
 
       const startEventId = 'StartEvent_1';
       const payload = {
-        correlationId: uuid.v4(),
+        correlationId: correlationId,
         inputValues: {},
       };
-      const startCallbackType = StartCallbackType.CallbackOnProcessInstanceFinished;
 
-      const onProcessStartedCallback = (processStartedEvent) => {
-        should.exist(processStartedEvent);
-        should(processStartedEvent).have.property('correlationId');
+      const startCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
 
-        if (processStartedEvent.correlationId !== payload.correlationId) {
+      const notificationReceivedCallback = (processStartedMessage) => {
+        should.exist(processStartedMessage);
+        should(processStartedMessage).have.property('correlationId');
+
+        const messageWasNotFromSpecifiedCorrelation = processStartedMessage.correlationId !== payload.correlationId;
+        if (messageWasNotFromSpecifiedCorrelation) {
           return;
         }
 
-        should(processStartedEvent.correlationId).be.equal(payload.correlationId);
-        should(processStartedEvent).have.property('flowNodeId');
-        should(processStartedEvent.flowNodeId).be.equal(startEventId);
-
-        resolve();
+        should(processStartedMessage.correlationId).be.equal(payload.correlationId);
+        should(processStartedMessage).have.property('flowNodeId');
+        should(processStartedMessage.flowNodeId).be.equal(startEventId);
+        notificationReceived = true;
       };
 
-      testFixtureProvider.consumerApiClientService.onProcessWithProcessModelIdStarted(defaultIdentity, onProcessStartedCallback, processModelId);
+      testFixtureProvider
+        .consumerApiClientService
+        .onProcessWithProcessModelIdStarted(defaultIdentity, notificationReceivedCallback, processModelId);
+
+      // We must await the end of the ProcessInstance to avoid messed up entries in the database.
+      const processFinishedCallback = () => {
+        if (!notificationReceived) {
+          throw new Error('Did not receive the expected notification about the started ProcessInstance!');
+        }
+        resolve();
+      };
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, processFinishedCallback);
 
       testFixtureProvider
         .consumerApiClientService

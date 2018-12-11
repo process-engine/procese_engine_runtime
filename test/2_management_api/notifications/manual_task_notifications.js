@@ -14,7 +14,7 @@ describe('Management API:   Receive Manual Task Notifications', () => {
   let defaultIdentity;
 
   const processModelId = 'test_management_api_manualtask';
-
+  let correlationId;
   let manualTaskToFinish;
 
   before(async () => {
@@ -33,26 +33,16 @@ describe('Management API:   Receive Manual Task Notifications', () => {
     await testFixtureProvider.tearDown();
   });
 
-  async function finishWaitingManualTask() {
-
-    const correlationId = manualTaskToFinish.correlationId;
-    const processInstanceId = manualTaskToFinish.processInstanceId;
-    const manualTaskInstanceId = manualTaskToFinish.flowNodeInstanceId;
-
-    await testFixtureProvider
-      .managementApiClientService
-      .finishManualTask(defaultIdentity, processInstanceId, correlationId, manualTaskInstanceId);
-  }
-
   it('should send a notification via socket when ManualTask is suspended', async () => {
 
-    const correlationId = uuid.v4();
+    correlationId = uuid.v4();
 
     return new Promise(async (resolve, reject) => {
 
-      const messageReceivedCallback = async (manualTaskWaitingMessage) => {
+      const notificationReceivedCallback = async (manualTaskWaitingMessage) => {
 
         should.exist(manualTaskWaitingMessage);
+        // Store this for use in the second test, where we wait for the manualTaskFinished notification.
         manualTaskToFinish = manualTaskWaitingMessage;
 
         const manualTaskList = await testFixtureProvider
@@ -68,7 +58,7 @@ describe('Management API:   Receive Manual Task Notifications', () => {
         resolve();
       };
 
-      testFixtureProvider.managementApiClientService.onManualTaskWaiting(defaultIdentity, messageReceivedCallback);
+      testFixtureProvider.managementApiClientService.onManualTaskWaiting(defaultIdentity, notificationReceivedCallback);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
@@ -76,33 +66,39 @@ describe('Management API:   Receive Manual Task Notifications', () => {
 
   it('should send a notification via socket when ManualTask is finished', async () => {
 
-    const correlationId = uuid.v4();
-
     return new Promise(async (resolve, reject) => {
 
-      const messageReceivedCallback = async (manualTaskFinishedMessage) => {
+      let notificationReceived = false;
 
-        const manualTaskListAfterFinish = await testFixtureProvider
-          .managementApiClientService
-          .getManualTasksForProcessModel(defaultIdentity, processModelId);
-
+      const notificationReceivedCallback = async (manualTaskFinishedMessage) => {
         should(manualTaskFinishedMessage).not.be.undefined();
-
-        const messageBelongsToWaitingManualTask = manualTaskListAfterFinish.manualTasks.some((manualTask) => {
-          return manualTask.id === manualTaskFinishedMessage.flowNodeId;
-        });
-
-        should(messageBelongsToWaitingManualTask).be.true();
-
-        resolve();
+        should(manualTaskFinishedMessage.flowNodeId).be.equal(manualTaskToFinish.flowNodeId);
+        should(manualTaskFinishedMessage.processModelId).be.equal(manualTaskToFinish.processModelId);
+        should(manualTaskFinishedMessage.correlationId).be.equal(manualTaskToFinish.correlationId);
+        notificationReceived = true;
       };
 
-      testFixtureProvider.managementApiClientService.onManualTaskFinished(defaultIdentity, messageReceivedCallback);
+      testFixtureProvider.managementApiClientService.onManualTaskFinished(defaultIdentity, notificationReceivedCallback);
 
-      await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
-      await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+      const processFinishedCallback = () => {
+        if (!notificationReceived) {
+          throw new Error('Did not receive the expected notification about the finished ManualTask!');
+        }
+        resolve();
+      };
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, processFinishedCallback);
       finishWaitingManualTask();
     });
   });
+
+  async function finishWaitingManualTask() {
+
+    const processInstanceId = manualTaskToFinish.processInstanceId;
+    const manualTaskInstanceId = manualTaskToFinish.flowNodeInstanceId;
+
+    await testFixtureProvider
+      .managementApiClientService
+      .finishManualTask(defaultIdentity, processInstanceId, manualTaskToFinish.correlationId, manualTaskInstanceId);
+  }
 
 });

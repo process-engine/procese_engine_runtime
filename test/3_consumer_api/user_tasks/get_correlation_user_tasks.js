@@ -2,8 +2,7 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
-const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
 describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () => {
 
@@ -18,8 +17,6 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
   const processModelIdCallActivitySubprocess = 'test_consumer_api_usertask_call_acvtivity_subprocess';
 
   let correlationId;
-
-  const userTasksToFinishAfterTest = [];
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -40,27 +37,42 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
   });
 
   after(async () => {
-    await finishWaitingUserTasksAfterTests();
     await testFixtureProvider.tearDown();
   });
 
-  async function finishWaitingUserTasksAfterTests() {
+  it('should fail to retrieve the Correlation\'s UserTasks, when the user is unauthorized', async () => {
 
-    for (const userTask of userTasksToFinishAfterTest) {
-
-      const processInstanceId = userTask.processInstanceId;
-      const userTaskId = userTask.flowNodeInstanceId;
-      const userTaskResult = {
-        formFields: {
-          Form_XGSVBgio: true,
-        },
-      };
-
-      await testFixtureProvider
+    try {
+      const userTaskList = await testFixtureProvider
         .consumerApiClientService
-        .finishUserTask(defaultIdentity, processInstanceId, userTask.correlationId, userTaskId, userTaskResult);
+        .getUserTasksForCorrelation({}, correlationId);
+
+      should.fail(userTaskList, undefined, 'This request should have failed!');
+    } catch (error) {
+      const expectedErrorMessage = /no auth token provided/i;
+      const expectedErrorCode = 401;
+      should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
     }
-  }
+  });
+
+  it('should fail to retrieve the Correlation\'s UserTasks, when the user is forbidden to retrieve it', async () => {
+
+    const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+
+    try {
+      const userTaskList = await testFixtureProvider
+        .consumerApiClientService
+        .getUserTasksForCorrelation(restrictedIdentity, correlationId);
+
+      should.fail(userTaskList, undefined, 'This request should have failed!');
+    } catch (error) {
+      const expectedErrorMessage = /access denied/i;
+      const expectedErrorCode = 403;
+      should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
+    }
+  });
 
   it('should return a Correlation\'s UserTasks by its CorrelationId through the ConsumerAPI', async () => {
 
@@ -74,8 +86,6 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
     should(userTaskList.userTasks.length).be.greaterThan(0);
 
     const userTask = userTaskList.userTasks[0];
-
-    userTasksToFinishAfterTest.push(userTask);
 
     should(userTask).have.property('id');
     should(userTask).have.property('flowNodeInstanceId');
@@ -96,6 +106,8 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
     should(formField).have.property('enumValues');
     should(formField).have.property('label');
     should(formField).have.property('defaultValue');
+
+    await cleanup(userTask);
   });
 
   it('should return a list of UserTasks from a call activity, by the given correlationId through the ConsumerAPI', async () => {
@@ -114,8 +126,6 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
 
     const userTask = userTaskList.userTasks[0];
 
-    userTasksToFinishAfterTest.push(userTask);
-
     should(userTask).have.property('id');
     should(userTask).have.property('correlationId');
     should(userTask).have.property('processModelId');
@@ -131,6 +141,8 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
     should(formField).have.property('type');
     should(formField).have.property('label');
     should(formField).have.property('defaultValue');
+
+    await cleanup(userTask);
   });
 
   it('should return an empty Array, if the given correlation does not have any UserTasks', async () => {
@@ -161,38 +173,24 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
     should(userTaskList.userTasks.length).be.equal(0);
   });
 
-  it('should fail to retrieve the Correlation\'s UserTasks, when the user is unauthorized', async () => {
+  async function cleanup(userTaskToFinishAfterTest) {
 
-    try {
-      const userTaskList = await testFixtureProvider
+    return new Promise(async (resolve, reject) => {
+      const userTaskCorrelation = userTaskToFinishAfterTest.correlationId;
+      const userTaskProcessModel = userTaskToFinishAfterTest.processModelId;
+      const processInstanceId = userTaskToFinishAfterTest.processInstanceId;
+      const userTaskId = userTaskToFinishAfterTest.flowNodeInstanceId;
+      const userTaskResult = {
+        formFields: {
+          Form_XGSVBgio: true,
+        },
+      };
+
+      processInstanceHandler.waitForProcessInstanceToEnd(userTaskCorrelation, userTaskProcessModel, resolve);
+
+      await testFixtureProvider
         .consumerApiClientService
-        .getUserTasksForCorrelation({}, correlationId);
-
-      should.fail(userTaskList, undefined, 'This request should have failed!');
-    } catch (error) {
-      const expectedErrorCode = 401;
-      const expectedErrorMessage = /no auth token provided/i;
-      should(error.code).be.match(expectedErrorCode);
-      should(error.message).be.match(expectedErrorMessage);
-    }
-  });
-
-  it('should fail to retrieve the Correlation\'s UserTasks, when the user forbidden to retrieve it', async () => {
-
-    const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
-
-    try {
-      const userTaskList = await testFixtureProvider
-        .consumerApiClientService
-        .getUserTasksForCorrelation(restrictedIdentity, correlationId);
-
-      should.fail(userTaskList, undefined, 'This request should have failed!');
-    } catch (error) {
-      const expectedErrorCode = 403;
-      const expectedErrorMessage = /access denied/i;
-      should(error.code).be.match(expectedErrorCode);
-      should(error.message).be.match(expectedErrorMessage);
-    }
-  });
-
+        .finishUserTask(defaultIdentity, processInstanceId, userTaskToFinishAfterTest.correlationId, userTaskId, userTaskResult);
+    });
+  }
 });

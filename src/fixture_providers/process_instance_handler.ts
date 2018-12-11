@@ -3,6 +3,7 @@
 import * as should from 'should';
 import * as uuid from 'uuid';
 
+import {IEventAggregator} from '@essential-projects/event_aggregator_contracts';
 import {IIdentity} from '@essential-projects/iam_contracts';
 import {
   ManualTaskList,
@@ -12,10 +13,10 @@ import {
   UserTask,
   UserTaskList,
 } from '@process-engine/consumer_api_contracts';
+import {ExternalTask, IExternalTaskRepository} from '@process-engine/external_task_api_contracts';
 import {IFlowNodeInstanceService, Runtime} from '@process-engine/process_engine_contracts';
 
 import {TestFixtureProvider} from './test_fixture_provider';
-import { IExternalTaskRepository, ExternalTask } from '@process-engine/external_task_api_contracts';
 
 /**
  * This class handles the creation of ProcessInstances and allows a test to
@@ -25,10 +26,19 @@ import { IExternalTaskRepository, ExternalTask } from '@process-engine/external_
  */
 export class ProcessInstanceHandler {
 
+  private _eventAggregator: IEventAggregator;
   private _testFixtureProvider: TestFixtureProvider;
 
   constructor(testFixtureProvider: TestFixtureProvider) {
     this._testFixtureProvider = testFixtureProvider;
+  }
+
+  private get eventAggregator(): IEventAggregator {
+    if (!this._eventAggregator) {
+      this._eventAggregator = this.testFixtureProvider.resolve<IEventAggregator>('EventAggregator');
+    }
+
+    return this._eventAggregator;
   }
 
   private get testFixtureProvider(): TestFixtureProvider {
@@ -56,7 +66,7 @@ export class ProcessInstanceHandler {
     const maxNumberOfRetries: number = 30;
     const delayBetweenRetriesInMs: number = 500;
 
-    const flowNodeInstanceService: IFlowNodeInstanceService = await this.testFixtureProvider.resolveAsync('FlowNodeInstanceService');
+    const flowNodeInstanceService: IFlowNodeInstanceService = this.testFixtureProvider.resolve<IFlowNodeInstanceService>('FlowNodeInstanceService');
 
     for (let i: number = 0; i < maxNumberOfRetries; i++) {
 
@@ -83,7 +93,7 @@ export class ProcessInstanceHandler {
     const maxNumberOfRetries: number = 30;
     const delayBetweenRetriesInMs: number = 500;
 
-    const externalTaskRepository: IExternalTaskRepository = await this.testFixtureProvider.resolveAsync('ExternalTaskRepository');
+    const externalTaskRepository: IExternalTaskRepository = this.testFixtureProvider.resolve<IExternalTaskRepository>('ExternalTaskRepository');
 
     for (let i: number = 0; i < maxNumberOfRetries; i++) {
 
@@ -186,6 +196,25 @@ export class ProcessInstanceHandler {
         .finishUserTask(identity, processInstanceId, correlationId, userTaskInstanceId, userTaskInput);
 
     return userTaskResult;
+  }
+
+  /**
+   * Creates a subscription on the EventAggregator, which will resolve, when
+   * a ProcessInstance with a specific ProcessModelId within a Correlation is
+   * finished.
+   *
+   * This was necessary, because of time gaps between resuming/finishing a suspended
+   * FlowNodeInstance and the end of the ProcessInstance.
+   * That gap could lead to a test finishing before the associated ProcessInstance
+   * was actually finished, which in turn lead to messed up database entries.
+   *
+   * @param correlationId  The correlation in which the process runs.
+   * @param processModelId The id of the process model to wait for.
+   * @param resolveFunc    The function to call when the process was finished.
+   */
+  public waitForProcessInstanceToEnd(correlationId: string, processModelId: string, resolveFunc: Function): void {
+    const endMessageToWaitFor: string = `/processengine/correlation/${correlationId}/processmodel/${processModelId}/ended`;
+    this.eventAggregator.subscribeOnce(endMessageToWaitFor, resolveFunc);
   }
 
   public async wait(delayTimeInMs: number): Promise<void> {
