@@ -46,8 +46,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
     return result.correlationId;
   }
 
-  // TODO: Temporarily disabled, pending the refactoring of the FlowNodeInstance and ProcessToken data models.
-  it.skip('should return a correlation by its id through the Management API', async () => {
+  it('should return a correlation by its id through the Management API', async () => {
 
     const correlations = await testFixtureProvider
       .managementApiClientService
