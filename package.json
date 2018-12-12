@@ -64,7 +64,7 @@
     "@process-engine/management_api_http": "1.5.0",
     "@process-engine/metrics_api_core": "1.0.0",
     "@process-engine/metrics.repository.file_system": "1.1.0",
-    "@process-engine/process_engine_core": "8.0.2",
+    "@process-engine/process_engine_core": "feature~fix_boundary_event_interruption",
     "@process-engine/process_model.repository.sequelize": "4.1.0",
     "@process-engine/token_history_api_http": "1.2.0",
     "@process-engine/token_history_api_core": "1.2.0",
