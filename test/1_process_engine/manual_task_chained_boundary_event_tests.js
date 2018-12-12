@@ -10,6 +10,7 @@ describe('ManualTask BoundaryEvent Chaining Tests - ', () => {
   let eventAggregator;
   let processInstanceHandler;
   let testFixtureProvider;
+  let defaultIdentity;
 
   const processModelId = 'manual_task_chained_boundary_events_test';
   const startEventId = 'StartEvent_1';
@@ -23,6 +24,7 @@ describe('ManualTask BoundaryEvent Chaining Tests - ', () => {
 
     eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
   });
 
   after(async () => {
@@ -99,10 +101,83 @@ describe('ManualTask BoundaryEvent Chaining Tests - ', () => {
     should(results.manualTaskWasFinished).be.equal(false, 'The ManualTask was still able to finish after interruption!');
   });
 
+  it('Should successfully abort the ManualTask after a MessageBoundaryEvent was triggered.', async () => {
+
+    testFixtureProvider.executeProcess(processModelId, startEventId, correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
+
+    const manualTask = await getWaitingManualTask();
+
+    should.exist(manualTask, 'ManualTask was not started!');
+
+    // Finish the task and wait for the ProcessInstance to finish to get a clean database structure.
+    await new Promise((resolve) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      const triggerMessageEventName = '/processengine/process/message/TestMessage1234';
+      eventAggregator.publish(triggerMessageEventName, {});
+    });
+
+    // Now see if the ManualTask is still listed as active.
+    const waitingManualTasks = await testFixtureProvider
+      .consumerApiClientService
+      .getManualTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
+
+    should(waitingManualTasks.manualTasks).be.instanceOf(Array);
+    should(waitingManualTasks.manualTasks.length).be.equal(0);
+  });
+
+  it('Should successfully abort the ManualTask after a SignalBoundaryEvent was triggered.', async () => {
+
+    testFixtureProvider.executeProcess(processModelId, startEventId, correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
+
+    const manualTask = await getWaitingManualTask();
+
+    should.exist(manualTask, 'ManualTask was not started!');
+
+    // Finish the task and wait for the ProcessInstance to finish to get a clean database structure.
+    await new Promise((resolve) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      const triggerSignalEventName = '/processengine/process/signal/TestSignal1234';
+      eventAggregator.publish(triggerSignalEventName, {});
+    });
+
+    // Now see if the ManualTask is still listed as active.
+    const waitingManualTasks = await testFixtureProvider
+      .consumerApiClientService
+      .getManualTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
+
+    should(waitingManualTasks.manualTasks).be.instanceOf(Array);
+    should(waitingManualTasks.manualTasks.length).be.equal(0);
+  });
+
+  it('Should successfully abort the ManualTask after a TimerBoundaryEvent was triggered.', async () => {
+
+    testFixtureProvider.executeProcess(processModelId, startEventId, correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
+
+    const manualTask = await getWaitingManualTask();
+
+    should.exist(manualTask, 'ManualTask was not started!');
+
+    // Wait until the TimerBoundaryEvent gets triggered and finishes the ProcessInstance.
+    await new Promise((resolve) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+    });
+
+    // Now see if the ManualTask is still listed as active.
+    const waitingManualTasks = await testFixtureProvider
+      .consumerApiClientService
+      .getManualTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
+
+    should(waitingManualTasks.manualTasks).be.instanceOf(Array);
+    should(waitingManualTasks.manualTasks.length).be.equal(0);
+  });
+
   async function getWaitingManualTask() {
 
     const waitingManualTasks =
-      await processInstanceHandler.getWaitingManualTasksForCorrelationId(testFixtureProvider.identities.defaultUser, correlationId);
+      await processInstanceHandler.getWaitingManualTasksForCorrelationId(defaultIdentity, correlationId);
 
     should(waitingManualTasks.manualTasks).be.instanceOf(Array);
     should(waitingManualTasks.manualTasks.length).be.greaterThan(0);

@@ -10,6 +10,7 @@ describe('UserTask BoundaryEvent Chaining Tests - ', () => {
   let eventAggregator;
   let processInstanceHandler;
   let testFixtureProvider;
+  let defaultIdentity;
 
   const processModelId = 'user_task_chained_boundary_events_test';
   const startEventId = 'StartEvent_1';
@@ -23,6 +24,7 @@ describe('UserTask BoundaryEvent Chaining Tests - ', () => {
 
     eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
   });
 
   after(async () => {
@@ -99,10 +101,83 @@ describe('UserTask BoundaryEvent Chaining Tests - ', () => {
     should(results.userTaskWasFinished).be.equal(false, 'The UserTask was still able to finish after interruption!');
   });
 
+  it('Should successfully abort the UserTask after a MessageBoundaryEvent was triggered.', async () => {
+
+    testFixtureProvider.executeProcess(processModelId, startEventId, correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
+
+    const userTask = await getWaitingUserTask();
+
+    should.exist(userTask, 'UserTask was not started!');
+
+    // Finish the task and wait for the ProcessInstance to finish to get a clean database structure.
+    await new Promise((resolve) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      const triggerMessageEventName = '/processengine/process/message/TestMessage1234';
+      eventAggregator.publish(triggerMessageEventName, {});
+    });
+
+    // Now see if the UserTask is still listed as active.
+    const waitingUserTasks = await testFixtureProvider
+      .consumerApiClientService
+      .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
+
+    should(waitingUserTasks.userTasks).be.instanceOf(Array);
+    should(waitingUserTasks.userTasks.length).be.equal(0);
+  });
+
+  it('Should successfully abort the UserTask after a SignalBoundaryEvent was triggered.', async () => {
+
+    testFixtureProvider.executeProcess(processModelId, startEventId, correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
+
+    const userTask = await getWaitingUserTask();
+
+    should.exist(userTask, 'UserTask was not started!');
+
+    // Finish the task and wait for the ProcessInstance to finish to get a clean database structure.
+    await new Promise((resolve) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      const triggerSignalEventName = '/processengine/process/signal/TestSignal1234';
+      eventAggregator.publish(triggerSignalEventName, {});
+    });
+
+    // Now see if the UserTask is still listed as active.
+    const waitingUserTasks = await testFixtureProvider
+      .consumerApiClientService
+      .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
+
+    should(waitingUserTasks.userTasks).be.instanceOf(Array);
+    should(waitingUserTasks.userTasks.length).be.equal(0);
+  });
+
+  it('Should successfully abort the UserTask after a TimerBoundaryEvent was triggered.', async () => {
+
+    testFixtureProvider.executeProcess(processModelId, startEventId, correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
+
+    const userTask = await getWaitingUserTask();
+
+    should.exist(userTask, 'UserTask was not started!');
+
+    // Wait until the TimerBoundaryEvent gets triggered and finishes the ProcessInstance.
+    await new Promise((resolve) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+    });
+
+    // Now see if the UserTask is still listed as active.
+    const waitingUserTasks = await testFixtureProvider
+      .consumerApiClientService
+      .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
+
+    should(waitingUserTasks.userTasks).be.instanceOf(Array);
+    should(waitingUserTasks.userTasks.length).be.equal(0);
+  });
+
   async function getWaitingUserTask() {
 
     const waitingUserTasks =
-      await processInstanceHandler.getWaitingUserTasksForCorrelationId(testFixtureProvider.identities.defaultUser, correlationId);
+      await processInstanceHandler.getWaitingUserTasksForCorrelationId(defaultIdentity, correlationId);
 
     should(waitingUserTasks.userTasks).be.instanceOf(Array);
     should(waitingUserTasks.userTasks.length).be.greaterThan(0);
