@@ -102,7 +102,7 @@ describe('BoundaryEvent Chaining Tests - ', () => {
   async function getWaitingManualTask() {
 
     const waitingManualTasks =
-      await processInstanceHandler.getWaitingManualTasksForCorrelationId(testFixtureProvider.identities.defaultIdentity, correlationId);
+      await processInstanceHandler.getWaitingManualTasksForCorrelationId(testFixtureProvider.identities.defaultUser, correlationId);
 
     should(waitingManualTasks.manualTasks).be.instanceOf(Array);
     should(waitingManualTasks.manualTasks.length).be.greaterThan(0);
