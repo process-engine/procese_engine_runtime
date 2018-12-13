@@ -189,7 +189,6 @@ describe('ManualTask BoundaryEvent Chaining Tests - ', () => {
 
   async function finishManualTask(manualTask) {
     return new Promise((resolve) => {
-
       // eslint-disable-next-line
       const finishedManualTaskMsg = `/processengine/correlation/${correlationId}/processinstance/${manualTask.processInstanceId}/manualtask/${manualTask.flowNodeInstanceId}/finished`;
       const subscription = eventAggregator.subscribeOnce(finishedManualTaskMsg, (message) => {
@@ -207,7 +206,6 @@ describe('ManualTask BoundaryEvent Chaining Tests - ', () => {
   async function triggerEventsInSequence(manualTask, eventToTriggerFirst, eventPayload) {
 
     return new Promise(async (resolve) => {
-
       let manualTaskWasFinished = false;
       let messageReceived = false;
       let signalReceived = false;
@@ -216,31 +214,27 @@ describe('ManualTask BoundaryEvent Chaining Tests - ', () => {
       // Subscribe to each event that will notify us about a triggered BoundaryEvent, or the finished ManualTask.
       const manualTaskConfirmationMessage = '/processengine/process/message/AcknowledgeManualTaskFinished';
       const manualTaskSubscription = eventAggregator.subscribeOnce(manualTaskConfirmationMessage, () => {
-        console.log('MANUAL TASK FINISHED');
         manualTaskWasFinished = true;
       });
 
       const messageConfirmationMessage = '/processengine/process/message/AcknowledgeMessageReceived';
       const messageReceivedSubscription = eventAggregator.subscribeOnce(messageConfirmationMessage, () => {
-        console.log('MESSAGE RECEIVED');
         messageReceived = true;
       });
 
       const signalConfirmationMessage = '/processengine/process/message/AcknowledgeSignalReceived';
       const signalReceivedSubscription = eventAggregator.subscribeOnce(signalConfirmationMessage, () => {
-        console.log('SIGNAL RECEIVED');
         signalReceived = true;
       });
 
       const timeoutConfirmationMessage = '/processengine/process/message/AcknowledgeTimoutExpired';
       const timeoutExpiredSubscription = eventAggregator.subscribeOnce(timeoutConfirmationMessage, () => {
-        console.log('TIMER EXPIRED');
         timeoutExpired = true;
       });
 
       if (eventToTriggerFirst === 'timeout') {
         await new Promise((cb) => {
-          setTimeout(cb, 3000);
+          eventAggregator.subscribeOnce(timeoutConfirmationMessage, cb);
         });
       } else if (eventToTriggerFirst !== undefined) {
         eventAggregator.publish(eventToTriggerFirst, eventPayload || {});
@@ -259,8 +253,9 @@ describe('ManualTask BoundaryEvent Chaining Tests - ', () => {
       eventAggregator.publish(triggerMessageEventName, {});
       eventAggregator.publish(triggerSignalEventName, {});
 
-      // This leaves enough time for the TimerBoundaryEvent to be triggered.
       if (eventToTriggerFirst !== 'timeout') {
+        // Wait until the TimerBoundaryEvent is supposed to be triggered.
+        // Don't await the actual notification, because it is not actually supposed to happen!
         await new Promise((cb) => {
           setTimeout(cb, 3000);
         });
