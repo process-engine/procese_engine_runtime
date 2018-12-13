@@ -24,7 +24,7 @@ describe('Intermediate Events - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('Should pause execution for 5 seconds by use of a timer catch event and then resume the process.', async () => {
+  it('Should pause execution for 2 seconds by use of a timer catch event and then resume the process.', async () => {
 
     const timeStampBeforeStart = moment();
     const result = await testFixtureProvider.executeProcess(processModelId, startEventId);
@@ -40,7 +40,7 @@ describe('Intermediate Events - ', () => {
       .asSeconds();
 
     const expectedResult = /timer event.*?lapsed/i;
-    const expectedTimerRuntime = 5;
+    const expectedTimerRuntime = 2;
 
     should(result).have.property('currentToken');
     should(result.currentToken).be.match(expectedResult);

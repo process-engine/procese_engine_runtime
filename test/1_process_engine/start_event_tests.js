@@ -3,7 +3,8 @@
 const moment = require('moment');
 const should = require('should');
 const uuid = require('uuid');
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs');
+const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+const ProcessInstanceHandler = require('../../dist/commonjs').ProcessInstanceHandler;
 
 describe('Start Events - ', () => {
 
@@ -99,7 +100,7 @@ describe('Start Events - ', () => {
     });
   });
 
-  it('Should start the process after a delay of five seconds.', async () => {
+  it('Should start the process after a delay of two seconds.', async () => {
 
     const timeStampBeforeStart = moment();
 
@@ -117,7 +118,7 @@ describe('Start Events - ', () => {
       .asSeconds();
 
     const expectedResult = /success/i;
-    const expectedTimerRuntime = 5;
+    const expectedTimerRuntime = 2;
 
     should(result).have.property('currentToken');
     should(result.currentToken).be.match(expectedResult);

@@ -257,7 +257,7 @@ describe('UserTask BoundaryEvent Chaining Tests - ', () => {
         // Wait until the TimerBoundaryEvent is supposed to be triggered.
         // Don't await the actual notification, because it is not actually supposed to happen!
         await new Promise((cb) => {
-          setTimeout(cb, 3000);
+          setTimeout(cb, 2000);
         });
       }
 

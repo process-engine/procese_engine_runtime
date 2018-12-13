@@ -31,14 +31,14 @@
       <bpmn:incoming>SequenceFlow_1du0cwu</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1rttya5</bpmn:outgoing>
       <bpmn:timerEventDefinition>
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P0Y0M0DT0H0M5S</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P0Y0M0DT0H0M2S</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
     <bpmn:sequenceFlow id="SequenceFlow_1du0cwu" sourceRef="Task_1mx3i7e" targetRef="TimerEvent1" />
     <bpmn:scriptTask id="Task_1mx3i7e" name="Inform User about pause">
       <bpmn:incoming>SequenceFlow_0x9ie3k</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1du0cwu</bpmn:outgoing>
-      <bpmn:script>console.log('Pausing execution for 5 seconds via timer');</bpmn:script>
+      <bpmn:script>console.log('Pausing execution for 2 seconds via timer');</bpmn:script>
     </bpmn:scriptTask>
   </bpmn:process>
   <bpmn:message id="Message_1emkdwq" name="1234" />
