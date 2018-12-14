@@ -253,7 +253,8 @@ describe('UserTask BoundaryEvent Chaining Tests - ', () => {
       eventAggregator.publish(triggerMessageEventName, {});
       eventAggregator.publish(triggerSignalEventName, {});
 
-      if (eventToTriggerFirst !== 'timeout') {
+      const finishWithTimerBoundaryEvent = eventToTriggerFirst !== 'timeout';
+      if (finishWithTimerBoundaryEvent) {
         // Wait until the TimerBoundaryEvent is supposed to be triggered.
         // Don't await the actual notification, because it is not actually supposed to happen!
         await new Promise((cb) => {
