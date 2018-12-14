@@ -62,23 +62,28 @@ module.exports = {
         "processInstanceId" = (
           SELECT "processInstanceId"
           FROM "ProcessTokens"
-          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId"),
+          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId"
+          LIMIT 1),
         "processModelId" = (
           SELECT "processModelId"
           FROM "ProcessTokens"
-          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId"),
+          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId"
+          LIMIT 1),
         "correlationId" = (
           SELECT "correlationId"
           FROM "ProcessTokens"
-          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId"),
+          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId"
+          LIMIT 1),
         "identity" = (
           SELECT "identity"
           FROM "ProcessTokens"
-          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId"),
+          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId"
+          LIMIT 1),
         "parentProcessInstanceId" = (
           SELECT "caller"
           FROM "ProcessTokens"
-          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId");`;
+          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId"
+          LIMIT 1);`;
 
     await queryInterface.sequelize.query(updateFlowNodeInstancesquery);
 
