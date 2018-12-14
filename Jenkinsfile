@@ -1,7 +1,5 @@
 #!/usr/bin/env groovy
 
-def new_commit = env.GIT_PREVIOUS_COMMIT != env.GIT_COMMIT;
-
 def cleanup_workspace() {
   cleanWs()
   dir("${env.WORKSPACE}@tmp") {
@@ -111,7 +109,7 @@ pipeline {
         }
         nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
           sh('node --version')
-          sh('npm install -g mocha cross-env gulp@4.0.0')
+          sh('npm install -g mocha cross-env')
           sh('npm install')
           sh('npm run build')
         }
@@ -174,6 +172,8 @@ pipeline {
     stage('publish') {
       steps {
         script {
+          def new_commit = env.GIT_PREVIOUS_COMMIT != env.GIT_COMMIT;
+
           if (branch_is_master) {
             if (new_commit) {
               script {
@@ -219,7 +219,8 @@ pipeline {
     stage('publish github release') {
       when {
         expression {
-          new_commit && (branch_is_master || branch_is_develop)
+          branch_is_master ||
+          branch_is_develop
         }
       }
       steps {
