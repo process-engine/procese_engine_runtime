@@ -63,8 +63,8 @@ export class ProcessInstanceHandler {
 
   public async waitForProcessInstanceToReachSuspendedTask(correlationId: string, processModelId?: string): Promise<void> {
 
-    const maxNumberOfRetries: number = 30;
-    const delayBetweenRetriesInMs: number = 500;
+    const maxNumberOfRetries: number = 60;
+    const delayBetweenRetriesInMs: number = 200;
 
     const flowNodeInstanceService: IFlowNodeInstanceService = this.testFixtureProvider.resolve<IFlowNodeInstanceService>('FlowNodeInstanceService');
 
@@ -90,8 +90,8 @@ export class ProcessInstanceHandler {
 
   public async waitForExternalTaskToBeCreated(topicName: string, maxTask: number = 100): Promise<void> {
 
-    const maxNumberOfRetries: number = 30;
-    const delayBetweenRetriesInMs: number = 500;
+    const maxNumberOfRetries: number = 60;
+    const delayBetweenRetriesInMs: number = 200;
 
     const externalTaskRepository: IExternalTaskRepository = this.testFixtureProvider.resolve<IExternalTaskRepository>('ExternalTaskRepository');
 
