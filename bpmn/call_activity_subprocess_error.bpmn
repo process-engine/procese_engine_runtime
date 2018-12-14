@@ -33,7 +33,7 @@
     <bpmn:scriptTask id="Task3" name="Throw Exception">
       <bpmn:incoming>SequenceFlow_11vrf78</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_18chndf</bpmn:outgoing>
-      <bpmn:script>throw new Error("This exeption should be handeled with a boundary event");</bpmn:script>
+      <bpmn:script>throw new Error("This exception should be handled with a boundary event");</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:boundaryEvent id="BoundaryEvent_16reh1s" attachedToRef="Task3">
       <bpmn:outgoing>SequenceFlow_0rl0oni</bpmn:outgoing>

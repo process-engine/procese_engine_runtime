@@ -3,8 +3,7 @@
 const uuid = require('uuid');
 const should = require('should');
 
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
-const ProcessInstanceHandler = require('../../dist/commonjs').ProcessInstanceHandler;
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs');
 
 describe('UserTasks - ', () => {
 

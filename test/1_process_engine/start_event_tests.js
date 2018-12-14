@@ -4,10 +4,11 @@ const moment = require('moment');
 const should = require('should');
 const uuid = require('uuid');
 const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
-const ProcessInstanceHandler = require('../../dist/commonjs/fixture_providers/process_instance_handler').ProcessInstanceHandler;
+const ProcessInstanceHandler = require('../../dist/commonjs').ProcessInstanceHandler;
 
 describe('Start Events - ', () => {
 
+  let eventAggregator;
   let testFixtureProvider;
   let processInstanceHandler;
 
@@ -16,8 +17,6 @@ describe('Start Events - ', () => {
   const messageStartEventId = 'MessageStartEvent_1';
   const signalStartEventId = 'SignalStartEvent_1';
   const timerStartEventId = 'TimerStartEvent_1';
-
-  let eventAggregator;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -43,12 +42,9 @@ describe('Start Events - ', () => {
     // We can't await the process execution here, because that would prevent us from sending the signal.
     // As a result we must subscribe to the event that gets send when the test is done.
     testFixtureProvider.executeProcess(processModelId, messageStartEventId, correlationId);
-
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
 
     return new Promise((resolve) => {
-
-      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelId}/ended`;
       const evaluationCallback = (message) => {
         if (message.flowNodeId === endEventToWaitFor) {
           should(message).have.property('currentToken');
@@ -58,11 +54,15 @@ describe('Start Events - ', () => {
       };
 
       // Subscribe for the EndEvent
-      eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, evaluationCallback);
+
+      const samplePayload = {
+        currentToken: 'sampleToken',
+      };
 
       // Now publish the message and let the process run its course.
       const messageName = 'Message_Test';
-      eventAggregator.publish(`/processengine/process/message/${messageName}`);
+      eventAggregator.publish(`/processengine/process/message/${messageName}`, samplePayload);
     });
   });
 
@@ -76,12 +76,9 @@ describe('Start Events - ', () => {
     // We can't await the process execution here, because that would prevent us from sending the signal.
     // As a result we must subscribe to the event that gets send when the test is done.
     testFixtureProvider.executeProcess(processModelId, signalStartEventId, correlationId);
-
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
 
     return new Promise((resolve) => {
-
-      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelId}/ended`;
       const evaluationCallback = (message) => {
         if (message.flowNodeId === endEventToWaitFor) {
           should(message).have.property('currentToken');
@@ -91,15 +88,19 @@ describe('Start Events - ', () => {
       };
 
       // Subscribe for the EndEvent
-      eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, evaluationCallback);
+
+      const samplePayload = {
+        currentToken: 'sampleToken',
+      };
 
       // Now publish the signal and let the process run its course.
       const signalName = 'Signal_Test';
-      eventAggregator.publish(`/processengine/process/signal/${signalName}`);
+      eventAggregator.publish(`/processengine/process/signal/${signalName}`, samplePayload);
     });
   });
 
-  it('Should start the process after a delay of five seconds.', async () => {
+  it('Should start the process after a delay of two seconds.', async () => {
 
     const timeStampBeforeStart = moment();
 
@@ -117,7 +118,7 @@ describe('Start Events - ', () => {
       .asSeconds();
 
     const expectedResult = /success/i;
-    const expectedTimerRuntime = 5;
+    const expectedTimerRuntime = 2;
 
     should(result).have.property('currentToken');
     should(result.currentToken).be.match(expectedResult);

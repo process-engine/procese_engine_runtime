@@ -2,10 +2,17 @@
 'use strict';
 
 const InvocationContainer = require('addict-ioc').InvocationContainer;
+const Bluebird = require('bluebird');
 const fs = require('fs');
 const Logger = require('loggerhythm').Logger;
 const path = require('path');
 const platformFolders = require('platform-folders');
+
+Bluebird.config({
+  cancellation: true,
+});
+
+global.Promise = Bluebird;
 
 const executeMigrations = require('./migrator').migrate;
 

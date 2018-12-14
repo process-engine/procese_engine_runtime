@@ -29,7 +29,7 @@ return 'Success';</bpmn:script>
     <bpmn:startEvent id="TimerStartEvent_1" name="Start">
       <bpmn:outgoing>SequenceFlow_0x9ie3k</bpmn:outgoing>
       <bpmn:timerEventDefinition>
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P0Y0M0DT0H0M5S</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P0Y0M0DT0H0M2S</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:startEvent>
     <bpmn:scriptTask id="ScriptTaskMessageEvent_1" name="Return sample result">

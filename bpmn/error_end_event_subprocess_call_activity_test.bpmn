@@ -61,17 +61,17 @@
     <bpmn:scriptTask id="Task_016sevi" name="Throw Exception">
       <bpmn:incoming>SequenceFlow_0iugoe6</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0fswrtj</bpmn:outgoing>
-      <bpmn:script>throw new Error('an anonymous error was caugh');</bpmn:script>
+      <bpmn:script>throw new Error('an anonymous error was caught');</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:scriptTask id="Task_1axrbj1" name="Throw Exception">
       <bpmn:incoming>SequenceFlow_1rjiaq1</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0pevlzj</bpmn:outgoing>
-      <bpmn:script>throw new Error('An unrelated error was caugh');</bpmn:script>
+      <bpmn:script>throw new Error('An unrelated error was caught');</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:scriptTask id="CAError" name="Throw Exception">
       <bpmn:incoming>SequenceFlow_16gzhk9</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0x7jprp</bpmn:outgoing>
-      <bpmn:script>throw new Error('The Error was not catched by the Error boundary event');</bpmn:script>
+      <bpmn:script>throw new Error('The Error was not caught by the Error boundary event');</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:scriptTask id="CATask1" name="Return a message">
       <bpmn:incoming>SequenceFlow_1mzsh0y</bpmn:incoming>
@@ -88,7 +88,7 @@
     <bpmn:scriptTask id="SPError" name="Throw Exception">
       <bpmn:incoming>SequenceFlow_0sukh82</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1t5b74b</bpmn:outgoing>
-      <bpmn:script>throw new Error('The Error was not catched by the Error boundary event');</bpmn:script>
+      <bpmn:script>throw new Error('The Error was not caught by the Error boundary event');</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:exclusiveGateway id="CAXorJoin1">
       <bpmn:incoming>SequenceFlow_11h43wx</bpmn:incoming>
@@ -145,7 +145,7 @@
     <bpmn:scriptTask id="Task_0kclw06" name="Throw Exception">
       <bpmn:incoming>SequenceFlow_0fnywzx</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_12phdy7</bpmn:outgoing>
-      <bpmn:script>throw new Error('an unrelated error was caugh');</bpmn:script>
+      <bpmn:script>throw new Error('an unrelated error was caught');</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:scriptTask id="SPTask1" name="Return a message">
       <bpmn:incoming>SequenceFlow_0n2tkwp</bpmn:incoming>
