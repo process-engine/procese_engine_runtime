@@ -49,10 +49,13 @@ describe('Management API:   GET  ->  /correlations/active', () => {
       should(correlation).have.property('processModels');
 
       correlation.processModels.forEach((processModel) => {
-        should(processModel).have.property('name');
+        should(processModel).have.property('processDefinitionName');
+        should(processModel).have.property('processModelId');
+        should(processModel).have.property('processInstanceId');
         should(processModel).have.property('hash');
         should(processModel).have.property('xml');
-        should(processModel).have.property('processInstanceId');
+        should(processModel).have.property('state');
+        should(processModel.state).be.equal('running');
         should(processModel).have.property('createdAt');
       });
     });
