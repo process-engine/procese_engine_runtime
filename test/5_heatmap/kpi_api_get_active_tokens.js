@@ -51,6 +51,18 @@ describe('KPI API -> Get Active Tokens - ', () => {
     }
   });
 
+  it('should successfully get the active tokens for a running ProcessModel within a correlation', async () => {
+
+    const activeTokens = await kpiApiService.getActiveTokensForCorrelationAndProcessModel(dummyIdentity, correlationId, processModelId);
+
+    should(activeTokens).be.an.Array();
+    should(activeTokens.length).be.equal(2); // 2 UserTasks running in parallel executed branches
+
+    for (const activeToken of activeTokens) {
+      assertActiveToken(activeToken, activeToken.flowNodeId);
+    }
+  });
+
   it('should successfully get the active tokens for a running FlowNodeInstance', async () => {
 
     const activeTokens = await kpiApiService.getActiveTokensForFlowNode(dummyIdentity, userTask1Id);
