@@ -14,8 +14,8 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
   let defaultIdentity;
   let restrictedIdentity;
 
-  let externalTaskIdHappyPathTest;
-  let externalTaskIdBadPathTests;
+  let externalTaskHappyPathTest;
+  let externalTaskBadPathTests;
 
   const processModelId = 'external_task_sample';
   const workerId = 'handle_bpmn_error_sample_worker';
@@ -33,15 +33,12 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
-    externalTaskIdHappyPathTest = await createWaitingExternalTask();
-    externalTaskIdBadPathTests = await createWaitingExternalTask();
+    externalTaskHappyPathTest = await createWaitingExternalTask();
+    externalTaskBadPathTests = await createWaitingExternalTask();
   });
 
   after(async () => {
-    await testFixtureProvider
-      .externalTaskApiClientService
-      .handleBpmnError(defaultIdentity, workerId, externalTaskIdBadPathTests, errorCode);
-
+    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -49,9 +46,9 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     await testFixtureProvider
       .externalTaskApiClientService
-      .handleBpmnError(defaultIdentity, workerId, externalTaskIdHappyPathTest, errorCode);
+      .handleBpmnError(defaultIdentity, workerId, externalTaskHappyPathTest.id, errorCode);
 
-    await assertThatErrorHandlingWasSuccessful(externalTaskIdHappyPathTest, errorCode);
+    await assertThatErrorHandlingWasSuccessful(externalTaskHappyPathTest.id, errorCode);
   });
 
   it('should fail to abort the given ExternalTask, if the ExernalTask is already aborted', async () => {
@@ -59,9 +56,9 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     try {
       await testFixtureProvider
         .externalTaskApiClientService
-        .handleBpmnError(defaultIdentity, workerId, externalTaskIdHappyPathTest, errorCode);
+        .handleBpmnError(defaultIdentity, workerId, externalTaskHappyPathTest.id, errorCode);
 
-      should.fail(externalTaskIdHappyPathTest, undefined, 'This request should have failed!');
+      should.fail(externalTaskHappyPathTest.id, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 410;
       const expectedErrorMessage = /no longer accessible/i;
@@ -96,9 +93,9 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     try {
       await testFixtureProvider
         .externalTaskApiClientService
-        .handleBpmnError(defaultIdentity, invalidworkerId, externalTaskIdBadPathTests, errorCode);
+        .handleBpmnError(defaultIdentity, invalidworkerId, externalTaskBadPathTests.id, errorCode);
 
-      should.fail(externalTaskIdBadPathTests, undefined, 'This request should have failed!');
+      should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 423;
       const expectedErrorMessage = /locked by another worker/i;
@@ -112,9 +109,9 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     try {
       await testFixtureProvider
         .externalTaskApiClientService
-        .handleBpmnError({}, workerId, externalTaskIdBadPathTests, errorCode);
+        .handleBpmnError({}, workerId, externalTaskBadPathTests.id, errorCode);
 
-      should.fail(externalTaskIdBadPathTests, undefined, 'This request should have failed!');
+      should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
@@ -128,9 +125,9 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     try {
       await testFixtureProvider
         .externalTaskApiClientService
-        .handleBpmnError(restrictedIdentity, workerId, externalTaskIdBadPathTests, errorCode);
+        .handleBpmnError(restrictedIdentity, workerId, externalTaskBadPathTests.id, errorCode);
 
-      should.fail(externalTaskIdBadPathTests, undefined, 'This request should have failed!');
+      should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 403;
       const expectedErrorMessage = /access denied/i;
@@ -155,7 +152,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     should(availableExternalTasks).be.an.Array();
     should(availableExternalTasks.length).be.equal(1);
 
-    return availableExternalTasks[0].id;
+    return availableExternalTasks[0];
   }
 
   async function assertThatErrorHandlingWasSuccessful(externalTaskIdToAssert) {
@@ -177,6 +174,16 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     should(externalTask).have.property('processInstanceId');
     should(externalTask).have.property('payload');
     should(externalTask).have.property('createdAt');
+  }
+
+  async function cleanup() {
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(externalTaskBadPathTests.correlationId, processModelId, resolve);
+
+      await testFixtureProvider
+        .externalTaskApiClientService
+        .finishExternalTask(defaultIdentity, workerId, externalTaskBadPathTests.id, {});
+    });
   }
 
 });

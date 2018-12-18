@@ -13,15 +13,19 @@ module.exports.migrate = async (env, database, sqlitePath) => {
 
   sqlitePath = getFullSqliteStoragePath(sqlitePath); //eslint-disable-line
 
-  const sequelizeInstance = env === 'sqlite'
-    ? await createSqLiteConnection(sqlitePath, database)
-    : await createPostgresConnection(database);
+  const sequelizeInstanceConfig = env === 'sqlite'
+    ? createSqLiteConfig(sqlitePath, database)
+    : createPostgresConfig(database);
+
+  const sequelizeInstance = await sequelizeConnectionManager.getConnection(sequelizeInstanceConfig);
 
   const umzugInstance = await createUmzugInstance(sequelizeInstance, database);
   await umzugInstance.up();
+
+  await sequelizeConnectionManager.destroyConnection(sequelizeInstanceConfig);
 };
 
-async function createSqLiteConnection(sqlitePath, store) {
+function createSqLiteConfig(sqlitePath, store) {
   const databaseFullPath = path.resolve(sqlitePath, store);
 
   const sqliteConfig = {
@@ -37,10 +41,10 @@ async function createSqLiteConnection(sqlitePath, store) {
     logging: false,
   };
 
-  return sequelizeConnectionManager.getConnection(sqliteConfig);
+  return sqliteConfig;
 }
 
-async function createPostgresConnection(database) {
+function createPostgresConfig(database) {
 
   const postgresConfig = {
     username: 'admin',
@@ -54,7 +58,7 @@ async function createPostgresConnection(database) {
     logging: false,
   };
 
-  return sequelizeConnectionManager.getConnection(postgresConfig);
+  return postgresConfig;
 }
 
 async function createUmzugInstance(sequelize, database) {

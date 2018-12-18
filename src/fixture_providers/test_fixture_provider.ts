@@ -19,6 +19,7 @@ import {
   Model,
 } from '@process-engine/process_engine_contracts';
 
+import {migrate as executeMigrations} from './migrator';
 import {initializeBootstrapper} from './setup_ioc_container';
 
 export type IdentityCollection = {
@@ -73,8 +74,8 @@ export class TestFixtureProvider {
 
   public async initializeAndStart(): Promise<void> {
 
+    await this._runMigrations();
     await this._initializeBootstrapper();
-
     await this.bootstrapper.start();
 
     await this._createMockIdentities();
@@ -91,7 +92,7 @@ export class TestFixtureProvider {
 
     this._deploymentApiService = await this.resolveAsync<IDeploymentApi>('DeploymentApiService');
     this._executeProcessService = await this.resolveAsync<IExecuteProcessService>('ExecuteProcessService');
-    this._externalTaskApiClientService = await this.resolveAsync<IExecuteProcessService>('ExternalTaskApiClientService');
+    this._externalTaskApiClientService = await this.resolveAsync<IExternalTaskApi>('ExternalTaskApiClientService');
     this._processModelService = await this.resolveAsync<IProcessModelService>('ProcessModelService');
   }
 
@@ -101,7 +102,11 @@ export class TestFixtureProvider {
     await this.bootstrapper.stop();
   }
 
-  public async resolveAsync<T>(moduleName: string, args?: any): Promise<any> {
+  public resolve<T>(moduleName: string, args?: any): T {
+    return this.container.resolve<T>(moduleName, args);
+  }
+
+  public async resolveAsync<T>(moduleName: string, args?: any): Promise<T> {
     return this.container.resolveAsync<T>(moduleName, args);
   }
 
@@ -137,6 +142,22 @@ export class TestFixtureProvider {
     return this
       .executeProcessService
       .startAndAwaitEndEvent(this.identities.defaultUser, processModel, startEventId, correlationId, initialToken);
+  }
+
+  private async _runMigrations(): Promise<void> {
+
+    logger.info('Running migrations....');
+    const repositories: Array<string> = [
+      'correlation',
+      'external_task',
+      'flow_node_instance',
+      'process_model',
+    ];
+
+    for (const repository of repositories) {
+      await executeMigrations(repository);
+    }
+    logger.info('Migrations successfully finished!');
   }
 
   private async _initializeBootstrapper(): Promise<void> {

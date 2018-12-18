@@ -3,10 +3,9 @@
 const uuid = require('uuid');
 const should = require('should');
 
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
-const ProcessInstanceHandler = require('../../dist/commonjs').ProcessInstanceHandler;
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs');
 
-describe('User Tasks - ', () => {
+describe('UserTasks - ', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -25,7 +24,6 @@ describe('User Tasks - ', () => {
       'user_task_parallel_test',
     ];
     await testFixtureProvider.importProcessFiles(processDefinitionFiles);
-
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
   });
 
@@ -33,7 +31,7 @@ describe('User Tasks - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should evaluate expressions in user task form fields.', async () => {
+  it('should evaluate expressions in UserTask form fields.', async () => {
 
     const processModelId = 'user_task_expression_test';
     const correlationId = uuid.v4();
@@ -61,10 +59,13 @@ describe('User Tasks - ', () => {
     should(waitingUserTaskFieldLabel).be.equal(expectedLabelValue);
     should(waitingUserTaskFieldDefaultValue).be.equal(expectedDefaultValue);
 
-    await processInstanceHandler.finishUserTaskInCorrelation(identity, correlationId, userTask.processInstanceId, userTask.flowNodeInstanceId, {});
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      await processInstanceHandler.finishUserTaskInCorrelation(identity, correlationId, userTask.processInstanceId, userTask.flowNodeInstanceId, {});
+    });
   });
 
-  it('should finish the user task.', async () => {
+  it('should finish the UserTask.', async () => {
 
     const processModelId = 'user_task_test';
     const correlationId = uuid.v4();
@@ -84,11 +85,14 @@ describe('User Tasks - ', () => {
       },
     };
 
-    await processInstanceHandler
-      .finishUserTaskInCorrelation(identity, correlationId, userTask.processInstanceId, userTask.flowNodeInstanceId, userTaskInput);
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      await processInstanceHandler
+        .finishUserTaskInCorrelation(identity, correlationId, userTask.processInstanceId, userTask.flowNodeInstanceId, userTaskInput);
+    });
   });
 
-  it('should finish two sequential user tasks', async () => {
+  it('should finish two sequential UserTasks', async () => {
 
     const processModelId = 'user_task_sequential_test';
     const correlationId = uuid.v4();
@@ -115,11 +119,14 @@ describe('User Tasks - ', () => {
     waitingUserTasks = await processInstanceHandler.getWaitingUserTasksForCorrelationId(identity, correlationId);
     const userTask2 = waitingUserTasks.userTasks[0];
 
-    await processInstanceHandler
-      .finishUserTaskInCorrelation(identity, correlationId, userTask2.processInstanceId, userTask2.flowNodeInstanceId, userTaskInput);
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      await processInstanceHandler
+        .finishUserTaskInCorrelation(identity, correlationId, userTask2.processInstanceId, userTask2.flowNodeInstanceId, userTaskInput);
+    });
   });
 
-  it('should finish two parallel running user tasks', async () => {
+  it('should finish two parallel running UserTasks', async () => {
 
     const processModelId = 'user_task_parallel_test';
     const correlationId = uuid.v4();
@@ -133,7 +140,7 @@ describe('User Tasks - ', () => {
     const currentRunningUserTasks = await processInstanceHandler.getWaitingUserTasksForCorrelationId(identity, correlationId);
 
     should(currentRunningUserTasks).have.property('userTasks');
-    should(currentRunningUserTasks.userTasks).have.size(2, 'There should be two waiting user tasks');
+    should(currentRunningUserTasks.userTasks).have.size(2, 'There should be two waiting UserTasks');
 
     const waitingUsersTasks = currentRunningUserTasks.userTasks;
 
@@ -143,58 +150,39 @@ describe('User Tasks - ', () => {
       },
     };
 
-    for (const currentWaitingUserTask of waitingUsersTasks) {
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
 
-      await testFixtureProvider
-        .consumerApiClientService
-        .finishUserTask(identity, currentWaitingUserTask.processInstanceId, correlationId, currentWaitingUserTask.flowNodeInstanceId, userTaskInput);
-    }
+      for (const userTask of waitingUsersTasks) {
+        await testFixtureProvider
+          .consumerApiClientService
+          .finishUserTask(identity, userTask.processInstanceId, correlationId, userTask.flowNodeInstanceId, userTaskInput);
+      }
+    });
   });
 
-  it('should fail to finish a user task which is not in a waiting state', async () => {
+  it('should fail to finish a non existing UserTask', async () => {
 
-    const processModelId = 'user_task_sequential_test';
     const correlationId = uuid.v4();
-    const initialToken = {
-      inputValues: {},
-    };
-
-    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, initialToken);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
-
-    const userTaskInput = {
-      formFields: {
-        Sample_Form_Field: 'Hello',
-      },
-    };
-
-    const errorObjectProperties = [
-      'name',
-      'code',
-      'message',
-    ];
 
     const errorName = /.*not.*found/i;
-    const errorMessage = /.*User_Task_2.*/i;
+    const errorMessage = /.*User_Task_1.*/i;
     const errorCode = 404;
 
     try {
-      // Try to finish the user task which is currently not waiting
       await testFixtureProvider
         .consumerApiClientService
-        .finishUserTask(identity, processModelId, correlationId, 'User_Task_2', userTaskInput);
+        .finishUserTask(identity, 'processInstanceId', correlationId, 'User_Task_1');
     } catch (error) {
-      should(error).have.properties(...errorObjectProperties);
-
       should(error.name).be.match(errorName);
       should(error.code).be.equal(errorCode);
       should(error.message).be.match(errorMessage);
     }
   });
 
-  it('should refuse to finish a user task twice', async () => {
+  it('should refuse to finish a UserTask twice', async () => {
 
-    const processModelId = 'user_task_sequential_test';
+    const processModelId = 'user_task_test';
     const correlationId = uuid.v4();
     const initialToken = {
       inputValues: {},
@@ -212,26 +200,21 @@ describe('User Tasks - ', () => {
       },
     };
 
-    const errorObjectProperties = [
-      'name',
-      'code',
-      'message',
-    ];
-
     const errorMessage = /does not have a usertask/i;
     const errorCode = 404;
 
-    await testFixtureProvider
-      .consumerApiClientService
-      .finishUserTask(identity, userTask.processInstanceId, correlationId, userTask.flowNodeInstanceId, userTaskInput);
+    await new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishUserTask(identity, userTask.processInstanceId, correlationId, userTask.flowNodeInstanceId, userTaskInput);
+    });
 
     try {
       await testFixtureProvider
         .consumerApiClientService
         .finishUserTask(identity, userTask.processInstanceId, correlationId, userTask.flowNodeInstanceId, userTaskInput);
     } catch (error) {
-      should(error).have.properties(...errorObjectProperties);
-
       should(error.code).be.equal(errorCode);
       should(error.message).be.match(errorMessage);
     }

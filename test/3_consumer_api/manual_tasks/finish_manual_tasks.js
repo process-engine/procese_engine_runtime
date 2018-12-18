@@ -2,8 +2,7 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
-const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
 const testCase = 'POST -> /process_models/:process_model_id/correlations/:correlation_id/manual_tasks/:manual_task_id/finish';
 describe(`Consumer API: ${testCase}`, () => {
@@ -14,6 +13,8 @@ describe(`Consumer API: ${testCase}`, () => {
 
   const processModelId = 'test_consumer_api_manualtask';
 
+  let manualTaskForBadPathTests;
+
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
@@ -22,9 +23,12 @@ describe(`Consumer API: ${testCase}`, () => {
     await testFixtureProvider.importProcessFiles([processModelId]);
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
+
+    manualTaskForBadPathTests = await createWaitingManualTask();
   });
 
   after(async () => {
+    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -43,86 +47,159 @@ describe(`Consumer API: ${testCase}`, () => {
   it('should successfully finish the manual task.', async () => {
 
     const manualTask = await createWaitingManualTask();
+    const {correlationId, flowNodeInstanceId, processInstanceId} = manualTask;
 
-    await testFixtureProvider
-      .consumerApiClientService
-      .finishManualTask(defaultIdentity, manualTask.processInstanceId, manualTask.correlationId, manualTask.flowNodeInstanceId);
-  });
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(manualTask.correlationId, processModelId, resolve);
 
-  it('should fail to finish the manual task, if the given process_model_id does not exist', async () => {
-
-    const manualTask = await createWaitingManualTask();
-    const invalidprocessInstanceId = 'invalidprocessInstanceId';
-
-    try {
       await testFixtureProvider
         .consumerApiClientService
-        .finishManualTask(defaultIdentity, invalidprocessInstanceId, manualTask.correlationId, manualTask.flowNodeInstanceId);
-
-      should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
-    } catch (error) {
-      const expectedErrorCode = 404;
-      const expectedErrorMessage = /does not have a ManualTask/i;
-      should(error.code).be.match(expectedErrorCode);
-      should(error.message).be.match(expectedErrorMessage);
-    }
+        .finishManualTask(defaultIdentity, processInstanceId, correlationId, flowNodeInstanceId);
+    });
   });
 
   it('should fail to finish an already finished manual task.', async () => {
 
     const manualTask = await createWaitingManualTask();
+    const {correlationId, flowNodeInstanceId, processInstanceId} = manualTask;
 
-    await testFixtureProvider
-      .consumerApiClientService
-      .finishManualTask(defaultIdentity, manualTask.processInstanceId, manualTask.correlationId, manualTask.flowNodeInstanceId);
+    await new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(manualTask.correlationId, processModelId, resolve);
+
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishManualTask(defaultIdentity, processInstanceId, correlationId, flowNodeInstanceId);
+    });
 
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .finishManualTask(defaultIdentity, manualTask.processInstanceId, manualTask.correlationId, manualTask.flowNodeInstanceId);
+        .finishManualTask(defaultIdentity, processInstanceId, correlationId, flowNodeInstanceId);
+
+      should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
+    } catch (error) {
+      const expectedErrorCode = 404;
+      should(error.code).be.match(expectedErrorCode);
+    }
+  });
+
+  it('should fail to finish the manual task, if the given processInstanceId does not exist', async () => {
+
+    const invalidprocessInstanceId = 'invalidprocessInstanceId';
+
+    const correlationId = manualTaskForBadPathTests.correlationId;
+    const manualTaskInstanceId = manualTaskForBadPathTests.flowNodeInstanceId;
+
+    try {
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishManualTask(defaultIdentity, invalidprocessInstanceId, correlationId, manualTaskInstanceId);
+
+      should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
+    } catch (error) {
+      const expectedErrorMessage = /does not have a ManualTask/i;
+      const expectedErrorCode = 404;
+      should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
+    }
+  });
+
+  it('should fail to finish the ManualTask, if the given CorrelationId does not exist', async () => {
+
+    const invalidCorrelationId = 'invalidCorrelationId';
+
+    const processInstanceId = manualTaskForBadPathTests.processInstanceId;
+    const manualTaskInstanceId = manualTaskForBadPathTests.flowNodeInstanceId;
+
+    try {
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishManualTask(defaultIdentity, processInstanceId, invalidCorrelationId, manualTaskInstanceId);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
+      const expectedErrorMessage = /correlation.*?invalidCorrelationId.*?does not have a manualtask/i;
       const expectedErrorCode = 404;
+      should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
+    }
+  });
+
+  it('should fail to finish the ManualTask, if the given ManualTaskInstanceId does not exist', async () => {
+
+    const invalidManualTaskId = 'invalidManualTaskId';
+
+    const processInstanceId = manualTaskForBadPathTests.processInstanceId;
+    const correlationId = manualTaskForBadPathTests.correlationId;
+
+    try {
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishManualTask(defaultIdentity, processInstanceId, correlationId, invalidManualTaskId);
+
+      should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
+    } catch (error) {
+      const expectedErrorMessage = /processinstance.*?in correlation.*?does not have.*?manualtask/i;
+      const expectedErrorCode = 404;
+      should(error.message).be.match(expectedErrorMessage);
       should(error.code).be.match(expectedErrorCode);
     }
   });
 
   it('should fail to finish the manual task, when the user is unauthorized', async () => {
 
-    const manualTask = await createWaitingManualTask();
+    const processInstanceId = manualTaskForBadPathTests.processInstanceId;
+    const correlationId = manualTaskForBadPathTests.correlationId;
+    const manualTaskInstanceId = manualTaskForBadPathTests.flowNodeInstanceId;
 
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .finishManualTask({}, manualTask.processInstanceId, manualTask.correlationId, manualTask.flowNodeInstanceId);
+        .finishManualTask({}, processInstanceId, correlationId, manualTaskInstanceId);
 
-      should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
+      should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
   it('should fail to finish the manual task, when the user is forbidden to retrieve it', async () => {
 
-    const manualTask = await createWaitingManualTask();
+    const processInstanceId = manualTaskForBadPathTests.processInstanceId;
+    const correlationId = manualTaskForBadPathTests.correlationId;
+    const flowNodeInstanceId = manualTaskForBadPathTests.flowNodeInstanceId;
+
     const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     try {
       await testFixtureProvider
         .consumerApiClientService
-        .finishManualTask(restrictedIdentity, manualTask.processInstanceId, manualTask.correlationId, manualTask.flowNodeInstanceId);
+        .finishManualTask(restrictedIdentity, processInstanceId, correlationId, flowNodeInstanceId);
 
-      should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
+      should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 403;
       const expectedErrorMessage = /access.*?denied/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 403;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
+  async function cleanup() {
+
+    return new Promise(async (resolve, reject) => {
+      const correlationId = manualTaskForBadPathTests.correlationId;
+      const processInstanceId = manualTaskForBadPathTests.processInstanceId;
+      const manualTaskId = manualTaskForBadPathTests.flowNodeInstanceId;
+
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishManualTask(defaultIdentity, processInstanceId, manualTaskForBadPathTests.correlationId, manualTaskId);
+    });
+  }
 });

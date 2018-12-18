@@ -13,36 +13,26 @@
         </bpmn:extensionElements>
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_1j67qnl</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>IntermediateThrowEvent_0ilp6z8</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_1iptwzz</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:sequenceFlow id="SequenceFlow_17a2x8b" sourceRef="IntermediateThrowEvent_0ilp6z8" targetRef="EndEvent_1j67qnl" />
     <bpmn:startEvent id="StartEvent_1" name="test_consumer_api_usertask_empty">
       <bpmn:outgoing>SequenceFlow_0yuregv</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:endEvent id="EndEvent_1j67qnl">
-      <bpmn:incoming>SequenceFlow_17a2x8b</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_0ilp6z8">
-      <bpmn:incoming>SequenceFlow_1f734wq</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_17a2x8b</bpmn:outgoing>
-      <bpmn:timerEventDefinition>
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P0Y0M0DT0H0M3S</bpmn:timeDuration>
-      </bpmn:timerEventDefinition>
-    </bpmn:intermediateCatchEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0yuregv" sourceRef="StartEvent_1" targetRef="Task_1iptwzz" />
-    <bpmn:sequenceFlow id="SequenceFlow_1f734wq" sourceRef="Task_1iptwzz" targetRef="IntermediateThrowEvent_0ilp6z8" />
-    <bpmn:scriptTask id="Task_1iptwzz" name="Do stuff">
+    <bpmn:sequenceFlow id="SequenceFlow_1f734wq" sourceRef="Task_1iptwzz" targetRef="EndEvent_1j67qnl" />
+    <bpmn:endEvent id="EndEvent_1j67qnl">
+      <bpmn:incoming>SequenceFlow_1f734wq</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:manualTask id="Task_1iptwzz" name="Do stuff">
       <bpmn:incoming>SequenceFlow_0yuregv</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1f734wq</bpmn:outgoing>
-      <bpmn:script>return 'scriptTask reached';</bpmn:script>
-    </bpmn:scriptTask>
+    </bpmn:manualTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1cidyxu">
       <bpmndi:BPMNShape id="Participant_0px403d_di" bpmnElement="Participant_0px403d">
-        <dc:Bounds x="5" y="4" width="520" height="200" />
+        <dc:Bounds x="5" y="4" width="408" height="203" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="101" y="86" width="36" height="36" />
@@ -51,20 +41,13 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3">
-        <dc:Bounds x="35" y="4" width="490" height="200" />
+        <dc:Bounds x="35" y="4" width="378" height="203" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1j67qnl_di" bpmnElement="EndEvent_1j67qnl">
-        <dc:Bounds x="473" y="86" width="36" height="36" />
+        <dc:Bounds x="347" y="86" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="418" y="105" width="0" height="12" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_17a2x8b_di" bpmnElement="SequenceFlow_17a2x8b">
-        <di:waypoint x="398" y="104" />
-        <di:waypoint x="473" y="104" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="IntermediateCatchEvent_1kfz0e7_di" bpmnElement="IntermediateThrowEvent_0ilp6z8">
-        <dc:Bounds x="362" y="86" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0yuregv_di" bpmnElement="SequenceFlow_0yuregv">
         <di:waypoint x="137" y="104" />
@@ -72,9 +55,9 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1f734wq_di" bpmnElement="SequenceFlow_1f734wq">
         <di:waypoint x="287" y="104" />
-        <di:waypoint x="362" y="104" />
+        <di:waypoint x="347" y="104" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ScriptTask_0zwjrht_di" bpmnElement="Task_1iptwzz">
+      <bpmndi:BPMNShape id="ManualTask_1k6p5oe_di" bpmnElement="Task_1iptwzz">
         <dc:Bounds x="187" y="64" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>

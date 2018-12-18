@@ -47,6 +47,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
   }
 
   it('should return all correlations through the management api', async () => {
+
     const correlations = await testFixtureProvider
       .managementApiClientService
       .getAllCorrelations(testFixtureProvider.identities.defaultUser);
@@ -63,10 +64,12 @@ describe('Management API:   GET  ->  /correlations/all', () => {
       should(correlation).have.property('processModels');
 
       correlation.processModels.forEach((processModel) => {
-        should(processModel).have.property('name');
+        should(processModel).have.property('processDefinitionName');
+        should(processModel).have.property('processModelId');
+        should(processModel).have.property('processInstanceId');
         should(processModel).have.property('hash');
         should(processModel).have.property('xml');
-        should(processModel).have.property('processInstanceId');
+        should(processModel).have.property('state');
         should(processModel).have.property('createdAt');
       });
     });

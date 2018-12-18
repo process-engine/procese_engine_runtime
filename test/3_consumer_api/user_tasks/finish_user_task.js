@@ -2,8 +2,7 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
-const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
 const testCase = 'POST -> /process_models/:process_model_id/correlations/:correlation_id/user_tasks/:user_task_id/finish';
 describe(`Consumer API: ${testCase}`, () => {
@@ -29,7 +28,7 @@ describe(`Consumer API: ${testCase}`, () => {
   });
 
   after(async () => {
-    await finishWaitingUserTasksAfterTests();
+    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -45,22 +44,6 @@ describe(`Consumer API: ${testCase}`, () => {
     return userTaskList.userTasks[0];
   }
 
-  async function finishWaitingUserTasksAfterTests() {
-
-    const correlationId = userTaskForBadPathTests.correlationId;
-    const processInstanceId = userTaskForBadPathTests.processInstanceId;
-    const userTaskId = userTaskForBadPathTests.flowNodeInstanceId;
-    const userTaskResult = {
-      formFields: {
-        Form_XGSVBgio: true,
-      },
-    };
-
-    await testFixtureProvider
-      .consumerApiClientService
-      .finishUserTask(defaultIdentity, processInstanceId, correlationId, userTaskId, userTaskResult);
-  }
-
   it('should successfully finish the given UserTask.', async () => {
 
     const userTask = await createWaitingUserTask();
@@ -71,9 +54,13 @@ describe(`Consumer API: ${testCase}`, () => {
       },
     };
 
-    await testFixtureProvider
-      .consumerApiClientService
-      .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskResult);
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(userTask.correlationId, processModelId, resolve);
+
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskResult);
+    });
   });
 
   it('should successfully finish the UserTask, if no result is provided', async () => {
@@ -82,9 +69,13 @@ describe(`Consumer API: ${testCase}`, () => {
 
     const userTaskResult = {};
 
-    await testFixtureProvider
-      .consumerApiClientService
-      .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskResult);
+    return new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(userTask.correlationId, processModelId, resolve);
+
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskResult);
+    });
   });
 
   it('should fail to finish an already finished UserTask.', async () => {
@@ -97,9 +88,13 @@ describe(`Consumer API: ${testCase}`, () => {
       },
     };
 
-    await testFixtureProvider
-      .consumerApiClientService
-      .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskResult);
+    await new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(userTask.correlationId, processModelId, resolve);
+
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskResult);
+    });
 
     try {
       await testFixtureProvider
@@ -108,10 +103,10 @@ describe(`Consumer API: ${testCase}`, () => {
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 404;
       const expectedErrorMessage = /processinstance.*?in correlation.*?does not have.*?UserTask/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -135,10 +130,10 @@ describe(`Consumer API: ${testCase}`, () => {
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 404;
       const expectedErrorMessage = /processinstance.*?invalidprocessModelId.*?does not have a usertask/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -162,10 +157,10 @@ describe(`Consumer API: ${testCase}`, () => {
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 404;
       const expectedErrorMessage = /correlation.*?invalidCorrelationId.*?does not have a usertask/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -188,10 +183,10 @@ describe(`Consumer API: ${testCase}`, () => {
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 404;
       const expectedErrorMessage = /processinstance.*?in correlation.*?does not have.*?usertask/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -212,10 +207,10 @@ describe(`Consumer API: ${testCase}`, () => {
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 400;
       const expectedErrorMessage = /not.*?an object/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 400;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -236,10 +231,10 @@ describe(`Consumer API: ${testCase}`, () => {
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 400;
       const expectedErrorMessage = /not.*?an object/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 400;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -262,10 +257,10 @@ describe(`Consumer API: ${testCase}`, () => {
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -290,11 +285,30 @@ describe(`Consumer API: ${testCase}`, () => {
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 403;
       const expectedErrorMessage = /access.*?denied/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 403;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
+  async function cleanup() {
+
+    return new Promise(async (resolve, reject) => {
+      const correlationId = userTaskForBadPathTests.correlationId;
+      const processInstanceId = userTaskForBadPathTests.processInstanceId;
+      const userTaskId = userTaskForBadPathTests.flowNodeInstanceId;
+      const userTaskResult = {
+        formFields: {
+          Form_XGSVBgio: true,
+        },
+      };
+
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishUserTask(defaultIdentity, processInstanceId, userTaskForBadPathTests.correlationId, userTaskId, userTaskResult);
+    });
+  }
 });

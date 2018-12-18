@@ -2,10 +2,17 @@
 'use strict';
 
 const InvocationContainer = require('addict-ioc').InvocationContainer;
+const Bluebird = require('bluebird');
 const fs = require('fs');
 const Logger = require('loggerhythm').Logger;
 const path = require('path');
 const platformFolders = require('platform-folders');
+
+Bluebird.config({
+  cancellation: true,
+});
+
+global.Promise = Bluebird;
 
 const executeMigrations = require('./migrator').migrate;
 
@@ -43,9 +50,11 @@ async function runMigrations(sqlitePath) {
     'process_model',
   ];
 
+  logger.info('Running migrations...');
   for (const repository of repositories) {
     await executeMigrations(env, repository, sqlitePath);
   }
+  logger.info('Migrations successfully executed.');
 }
 
 async function startProcessEngine(sqlitePath) {

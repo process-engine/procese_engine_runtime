@@ -3,8 +3,7 @@
 const should = require('should');
 const uuid = require('uuid');
 
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
-const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
 describe('Consumer API:   GET  ->  /process_models/:process_model_id/manual_tasks', () => {
 
@@ -39,18 +38,9 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/manual_task
   });
 
   after(async () => {
-    await finishWaitingManualTasksAfterTests();
+    await cleanup();
     await testFixtureProvider.tearDown();
   });
-
-  async function finishWaitingManualTasksAfterTests() {
-
-    const {processInstanceId, flowNodeInstanceId, correlationId} = manualTaskToFinishAfterTest;
-
-    await testFixtureProvider
-      .consumerApiClientService
-      .finishManualTask(defaultIdentity, processInstanceId, correlationId, flowNodeInstanceId);
-  }
 
   it('should return a ProcessModel\'s ManualTasks by its ProcessModelId through the consumer api', async () => {
 
@@ -139,5 +129,18 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/manual_task
       should(error.message).be.match(expectedErrorMessage);
     }
   });
+
+  async function cleanup() {
+    return new Promise(async (resolve, reject) => {
+      const processInstanceId = manualTaskToFinishAfterTest.processInstanceId;
+      const manualTaskId = manualTaskToFinishAfterTest.flowNodeInstanceId;
+
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishManualTask(defaultIdentity, processInstanceId, manualTaskToFinishAfterTest.correlationId, manualTaskId);
+    });
+  }
 
 });
