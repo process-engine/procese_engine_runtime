@@ -48,6 +48,21 @@ describe('Intermediate Events - ', () => {
     }
   });
 
+  it('Should throw an error, if multiple CatchEvents for the same link exist.', async () => {
+
+    try {
+      const startEventForInvalidLinkTest = 'StartEvent_2';
+      const result = await testFixtureProvider.executeProcess(processModelIdLinkTest, startEventForInvalidLinkTest);
+
+      should.fail(result, undefined, 'This should have failed, because the referenced link is not unique!');
+    } catch (error) {
+      const expectedMessage = /too many/i;
+      const expectedCode = 400;
+      should(error.message).be.match(expectedMessage);
+      should(error.code).be.match(expectedCode);
+    }
+  });
+
   it('Should pause execution for 2 seconds by use of a timer catch event and then resume the process.', async () => {
 
     const timeStampBeforeStart = moment();
