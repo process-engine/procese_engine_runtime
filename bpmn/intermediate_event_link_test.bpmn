@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definition_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
+  <bpmn:collaboration id="Collaboration_1cidyxu">
+    <bpmn:participant id="Participant_0px403d" name="intermediate_event_link_test" processRef="intermediate_event_link_test">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="" event="" />
+      </bpmn:extensionElements>
+    </bpmn:participant>
+  </bpmn:collaboration>
+  <bpmn:process id="intermediate_event_link_test" name="intermediate_event_link_test" isExecutable="true">
+    <bpmn:laneSet>
+      <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
+        <bpmn:extensionElements>
+          <camunda:executionListener class="" event="" />
+        </bpmn:extensionElements>
+        <bpmn:flowNodeRef>IntermediateLinkCatchEvent1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>IntermediateLinkCatchEvent2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEventLink1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEventLink2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ScripTaskAfterLink1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ScripTaskAfterLink2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>IntermediateLinkThrowEvent1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_666</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>IntermediateLinkThrowEvent666</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:sequenceFlow id="SequenceFlow_1r2ve0q" sourceRef="StartEvent_1" targetRef="IntermediateLinkThrowEvent1" />
+    <bpmn:intermediateCatchEvent id="IntermediateLinkCatchEvent1" name="CatchLink1">
+      <bpmn:outgoing>SequenceFlow_0fi72di</bpmn:outgoing>
+      <bpmn:linkEventDefinition name="testlink1" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0fi72di" sourceRef="IntermediateLinkCatchEvent1" targetRef="ScripTaskAfterLink1" />
+    <bpmn:intermediateCatchEvent id="IntermediateLinkCatchEvent2" name="CatchLink2">
+      <bpmn:outgoing>SequenceFlow_04b35p6</bpmn:outgoing>
+      <bpmn:linkEventDefinition name="testlink2" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_04b35p6" sourceRef="IntermediateLinkCatchEvent2" targetRef="ScripTaskAfterLink2" />
+    <bpmn:endEvent id="EndEventLink1" name="End1">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="" event="" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_11qneoi</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEventLink2" name="End2">
+      <bpmn:incoming>SequenceFlow_0j2xueq</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_11qneoi" sourceRef="ScripTaskAfterLink1" targetRef="EndEventLink1" />
+    <bpmn:scriptTask id="ScripTaskAfterLink1" name="Do stuff">
+      <bpmn:incoming>SequenceFlow_0fi72di</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_11qneoi</bpmn:outgoing>
+      <bpmn:script>console.log('followed link 1');
+return 'followed link 1';</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0j2xueq" sourceRef="ScripTaskAfterLink2" targetRef="EndEventLink2" />
+    <bpmn:scriptTask id="ScripTaskAfterLink2" name="Do other stuff">
+      <bpmn:incoming>SequenceFlow_04b35p6</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0j2xueq</bpmn:outgoing>
+      <bpmn:script>console.log('followed link 2');
+return 'followed link 2';</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:startEvent id="StartEvent_1" name="Regular start">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="" event="" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_1r2ve0q</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:intermediateThrowEvent id="IntermediateLinkThrowEvent1" name="ThrowLink1">
+      <bpmn:incoming>SequenceFlow_1r2ve0q</bpmn:incoming>
+      <bpmn:linkEventDefinition name="testlink1" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:startEvent id="StartEvent_666" name="Start with invalid ThrowLink">
+      <bpmn:outgoing>SequenceFlow_16fa2qw</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_16fa2qw" sourceRef="StartEvent_666" targetRef="IntermediateLinkThrowEvent666" />
+    <bpmn:intermediateThrowEvent id="IntermediateLinkThrowEvent666" name="ThrowLink666">
+      <bpmn:incoming>SequenceFlow_16fa2qw</bpmn:incoming>
+      <bpmn:linkEventDefinition name="testlink666" />
+    </bpmn:intermediateThrowEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1cidyxu">
+      <bpmndi:BPMNShape id="Participant_0px403d_di" bpmnElement="Participant_0px403d">
+        <dc:Bounds x="5" y="4" width="859" height="228" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="97" y="57" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="85" y="93" width="63" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3">
+        <dc:Bounds x="35" y="4" width="829" height="228" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_08xpzt2_di" bpmnElement="EndEventLink1">
+        <dc:Bounds x="777" y="57" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="782" y="104" width="26" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1r2ve0q_di" bpmnElement="SequenceFlow_1r2ve0q">
+        <di:waypoint x="133" y="75" />
+        <di:waypoint x="278" y="75" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateThrowEvent_0d6q2ar_di" bpmnElement="IntermediateLinkThrowEvent1">
+        <dc:Bounds x="278" y="57" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="268" y="100" width="57" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_177zaub_di" bpmnElement="IntermediateLinkCatchEvent1">
+        <dc:Bounds x="412" y="57" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="402" y="100" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0fi72di_di" bpmnElement="SequenceFlow_0fi72di">
+        <di:waypoint x="448" y="75" />
+        <di:waypoint x="562" y="75" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_0a0hj6v_di" bpmnElement="IntermediateLinkCatchEvent2">
+        <dc:Bounds x="412" y="146" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="402" y="189" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0g3mqab_di" bpmnElement="EndEventLink2">
+        <dc:Bounds x="777" y="146" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="782" y="189" width="26" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_04b35p6_di" bpmnElement="SequenceFlow_04b35p6">
+        <di:waypoint x="448" y="164" />
+        <di:waypoint x="562" y="164" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_11qneoi_di" bpmnElement="SequenceFlow_11qneoi">
+        <di:waypoint x="662" y="75" />
+        <di:waypoint x="777" y="75" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_024ffda_di" bpmnElement="ScripTaskAfterLink1">
+        <dc:Bounds x="562" y="35" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0j2xueq_di" bpmnElement="SequenceFlow_0j2xueq">
+        <di:waypoint x="662" y="164" />
+        <di:waypoint x="777" y="164" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_16c2gu1_di" bpmnElement="ScripTaskAfterLink2">
+        <dc:Bounds x="562" y="124" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1tc78ux_di" bpmnElement="StartEvent_666">
+        <dc:Bounds x="97" y="146" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="75" y="189" width="81" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_16fa2qw_di" bpmnElement="SequenceFlow_16fa2qw">
+        <di:waypoint x="133" y="164" />
+        <di:waypoint x="278" y="164" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateThrowEvent_1b5kkny_di" bpmnElement="IntermediateLinkThrowEvent666">
+        <dc:Bounds x="278" y="146" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="261" y="189" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
