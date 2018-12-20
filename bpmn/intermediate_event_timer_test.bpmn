@@ -38,7 +38,8 @@
     <bpmn:scriptTask id="Task_1mx3i7e" name="Inform User about pause">
       <bpmn:incoming>SequenceFlow_0x9ie3k</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1du0cwu</bpmn:outgoing>
-      <bpmn:script>console.log('Pausing execution for 2 seconds via timer');</bpmn:script>
+      <bpmn:script>console.log('Pausing execution for 2 seconds via timer');
+return token.current;</bpmn:script>
     </bpmn:scriptTask>
   </bpmn:process>
   <bpmn:message id="Message_1emkdwq" name="1234" />

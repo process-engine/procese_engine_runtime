@@ -8,26 +8,65 @@ describe('Intermediate Events - ', () => {
 
   let testFixtureProvider;
 
-  const processModelId = 'intermediate_event_timer_test';
+  const processModelIdLinkTest = 'intermediate_event_link_test';
+  const processModelIdTimerTest = 'intermediate_event_timer_test';
   const startEventId = 'StartEvent_1';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    const processDefFileList = [processModelId];
-
-    await testFixtureProvider.importProcessFiles(processDefFileList);
+    await testFixtureProvider.importProcessFiles([processModelIdLinkTest, processModelIdTimerTest]);
   });
 
   after(async () => {
     await testFixtureProvider.tearDown();
   });
 
+  it('Should successfully move to a linked IntermediateLinkCatchEvent, after a corresponding IntermediateLinkThrowEvent was reached.', async () => {
+
+    const result = await testFixtureProvider.executeProcess(processModelIdLinkTest, startEventId);
+
+    const expectedResult = /followed link 1/i;
+
+    should(result).have.property('currentToken');
+    should(result.currentToken).be.match(expectedResult);
+  });
+
+  it('Should throw an error, if a IntermediateLinkThrowEvent attempts to jump to a non existing IntermediateLinkCatchEvent.', async () => {
+
+    try {
+      const startEventForInvalidLinkTest = 'StartEvent_666';
+      const result = await testFixtureProvider.executeProcess(processModelIdLinkTest, startEventForInvalidLinkTest);
+
+      should.fail(result, undefined, 'This should have failed, because the referenced link does not exist!');
+    } catch (error) {
+      const expectedMessage = /No IntermediateCatchEvent.*?exists/i;
+      const expectedCode = 404;
+      should(error.message).be.match(expectedMessage);
+      should(error.code).be.match(expectedCode);
+    }
+  });
+
+  it('Should throw an error, if multiple CatchEvents for the same link exist.', async () => {
+
+    try {
+      const startEventForInvalidLinkTest = 'StartEvent_2';
+      const result = await testFixtureProvider.executeProcess(processModelIdLinkTest, startEventForInvalidLinkTest);
+
+      should.fail(result, undefined, 'This should have failed, because the referenced link is not unique!');
+    } catch (error) {
+      const expectedMessage = /too many/i;
+      const expectedCode = 400;
+      should(error.message).be.match(expectedMessage);
+      should(error.code).be.match(expectedCode);
+    }
+  });
+
   it('Should pause execution for 2 seconds by use of a timer catch event and then resume the process.', async () => {
 
     const timeStampBeforeStart = moment();
-    const result = await testFixtureProvider.executeProcess(processModelId, startEventId);
+    const result = await testFixtureProvider.executeProcess(processModelIdTimerTest, startEventId);
     const timeStampAfterFinish = moment();
 
     // Note that this is not exact,
