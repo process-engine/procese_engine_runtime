@@ -16,6 +16,7 @@ describe('Error End Event - ', () => {
     const processDefFileList = [
       'error_end_event_test',
       'error_end_event_subprocess_call_activity_test',
+      'error_end_event_call_activity_called_process',
     ];
     await testFixtureProvider.importProcessFiles(processDefFileList);
   });
