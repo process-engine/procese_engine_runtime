@@ -100,7 +100,7 @@ describe('Consumer API:   Receive Manual Task Notifications', () => {
       const notificationReceivedCallback = async (manualTaskWaitingMessage) => {
 
         should.exist(manualTaskWaitingMessage);
-        should(manualTaskWaitingMessage.identity).be.eql(defaultIdentity);
+        should(manualTaskWaitingMessage.processInstanceOwner).be.eql(defaultIdentity);
         // Store this for use in the second test, where we wait for the manualTaskFinished notification.
         manualTaskToFinish = manualTaskWaitingMessage;
 
@@ -134,7 +134,7 @@ describe('Consumer API:   Receive Manual Task Notifications', () => {
         should(manualTaskFinishedMessage.flowNodeId).be.equal(manualTaskToFinish.flowNodeId);
         should(manualTaskFinishedMessage.processModelId).be.equal(manualTaskToFinish.processModelId);
         should(manualTaskFinishedMessage.correlationId).be.equal(manualTaskToFinish.correlationId);
-        should(manualTaskFinishedMessage.identity).be.eql(defaultIdentity);
+        should(manualTaskFinishedMessage.processInstanceOwner).be.eql(defaultIdentity);
         notificationReceived = true;
       };
 
