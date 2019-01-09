@@ -6,6 +6,7 @@ const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/com
 
 describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', () => {
 
+  let eventAggregator;
   let processInstanceHandler;
   let testFixtureProvider;
 
@@ -30,6 +31,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
       processModelIdCallActivitySubprocess,
     ]);
 
+    eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
     correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
@@ -127,17 +129,23 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
 
   it('should return an empty Array, if the given correlation does not have any ManualTasks', async () => {
 
-    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdNoManualTasks);
+    return new Promise(async (resolve, reject) => {
+      const correlationId2 = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdNoManualTasks);
+      await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId2, processModelIdNoManualTasks);
 
-    await processInstanceHandler.wait(500);
+      // Wait for the ProcessInstance to finish, so it won't interfere with follow-up tests.
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId2, processModelIdNoManualTasks, resolve);
 
-    const manualTaskList = await testFixtureProvider
-      .consumerApiClientService
-      .getManualTasksForCorrelation(defaultIdentity, processModelIdNoManualTasks);
+      const manualTaskList = await testFixtureProvider
+        .consumerApiClientService
+        .getManualTasksForCorrelation(defaultIdentity, processModelIdNoManualTasks);
 
-    should(manualTaskList).have.property('manualTasks');
-    should(manualTaskList.manualTasks).be.instanceOf(Array);
-    should(manualTaskList.manualTasks.length).be.equal(0);
+      should(manualTaskList).have.property('manualTasks');
+      should(manualTaskList.manualTasks).be.instanceOf(Array);
+      should(manualTaskList.manualTasks.length).be.equal(0);
+
+      eventAggregator.publish('/processengine/process/signal/Continue', {});
+    });
   });
 
   it('should return an empty Array, if the correlationId does not exist', async () => {

@@ -5,9 +5,9 @@ const uuid = require('uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
-const testCase = 'GET  ->  /process_models/:process_model_id/correlations/:correlation_id/manual_tasks';
-describe(`Consumer API: ${testCase}`, () => {
+describe('Consumer API:   GET  ->  /process_models/:process_model_id/manual_tasks', () => {
 
+  let eventAggregator;
   let processInstanceHandler;
   let testFixtureProvider;
 
@@ -25,8 +25,14 @@ describe(`Consumer API: ${testCase}`, () => {
     await testFixtureProvider.initializeAndStart();
     defaultIdentity = testFixtureProvider.identities.defaultUser;
 
-    await testFixtureProvider.importProcessFiles([processModelId, processModelIdNoManualTasks]);
+    const processModelsToImport = [
+      processModelId,
+      processModelIdNoManualTasks,
+    ];
 
+    await testFixtureProvider.importProcessFiles(processModelsToImport);
+
+    eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
     await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
@@ -38,11 +44,11 @@ describe(`Consumer API: ${testCase}`, () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should return a list of ManualTasks for a given process model in a given correlation', async () => {
+  it('should return a ProcessModel\'s ManualTasks by its ProcessModelId through the consumer api', async () => {
 
     const manualTaskList = await testFixtureProvider
       .consumerApiClientService
-      .getManualTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
+      .getManualTasksForProcessModel(defaultIdentity, processModelId);
 
     should(manualTaskList).have.property('manualTasks');
 
@@ -51,7 +57,9 @@ describe(`Consumer API: ${testCase}`, () => {
 
     const manualTask = manualTaskList.manualTasks[0];
 
-    manualTaskToFinishAfterTest = manualTask;
+    manualTaskToFinishAfterTest = manualTaskList.manualTasks.find((entry) => {
+      return entry.correlationId === correlationId;
+    });
 
     should(manualTask).have.property('id');
     should(manualTask).have.property('flowNodeInstanceId');
@@ -62,53 +70,46 @@ describe(`Consumer API: ${testCase}`, () => {
     should(manualTask).have.property('tokenPayload');
   });
 
-  it('should return an empty Array, if the given correlation does not have any ManualTasks', async () => {
+  it('should return an empty Array, if the given ProcessModel does not have any ManualTasks', async () => {
 
-    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdNoManualTasks);
+    return new Promise(async (resolve, reject) => {
+      const correlationId2 = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdNoManualTasks);
+      await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId2, processModelIdNoManualTasks);
 
-    await processInstanceHandler.wait(500);
+      // Wait for the ProcessInstance to finish, so it won't interfere with follow-up tests.
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId2, processModelIdNoManualTasks, resolve);
+
+      const manualTaskList = await testFixtureProvider
+        .consumerApiClientService
+        .getManualTasksForProcessModel(defaultIdentity, processModelIdNoManualTasks);
+
+      should(manualTaskList).have.property('manualTasks');
+      should(manualTaskList.manualTasks).be.instanceOf(Array);
+      should(manualTaskList.manualTasks.length).be.equal(0);
+
+      eventAggregator.publish('/processengine/process/signal/Continue', {});
+    });
+  });
+
+  it('should return an empty Array, if the process_model_id does not exist', async () => {
+
+    const invalidprocessModelId = 'invalidprocessModelId';
 
     const manualTaskList = await testFixtureProvider
       .consumerApiClientService
-      .getManualTasksForProcessModel(defaultIdentity, processModelIdNoManualTasks);
+      .getManualTasksForProcessModel(defaultIdentity, invalidprocessModelId);
 
     should(manualTaskList).have.property('manualTasks');
     should(manualTaskList.manualTasks).be.instanceOf(Array);
     should(manualTaskList.manualTasks.length).be.equal(0);
   });
 
-  it('should return an empty Array, if the processModelId does not exist', async () => {
-
-    const invalidProcessModelId = 'invalidProcessModelId';
-
-    const manualTaskList = await testFixtureProvider
-      .consumerApiClientService
-      .getManualTasksForProcessModelInCorrelation(defaultIdentity, invalidProcessModelId, correlationId);
-
-    should(manualTaskList).have.property('manualTasks');
-    should(manualTaskList.manualTasks).be.instanceOf(Array);
-    should(manualTaskList.manualTasks.length).be.equal(0);
-  });
-
-  it('should return an empty Array, if the correlationId does not exist', async () => {
-
-    const invalidCorrelationId = 'invalidCorrelationId';
-
-    const manualTaskList = await testFixtureProvider
-      .consumerApiClientService
-      .getManualTasksForProcessModelInCorrelation(defaultIdentity, processModelId, invalidCorrelationId);
-
-    should(manualTaskList).have.property('manualTasks');
-    should(manualTaskList.manualTasks).be.instanceOf(Array);
-    should(manualTaskList.manualTasks.length).be.equal(0);
-  });
-
-  it('should fail to retrieve the correlation\'s ManualTasks, when the user is unauthorized', async () => {
+  it('should fail to retrieve the ProcessModel\'s ManualTasks, when the user is unauthorized', async () => {
 
     try {
       const manualTaskList = await testFixtureProvider
         .consumerApiClientService
-        .getManualTasksForProcessModelInCorrelation({}, processModelId, correlationId);
+        .getManualTasksForProcessModel({}, processModelId);
 
       should.fail(manualTaskList, undefined, 'This request should have failed!');
     } catch (error) {
@@ -119,14 +120,14 @@ describe(`Consumer API: ${testCase}`, () => {
     }
   });
 
-  it('should fail to retrieve the correlation\'s ManualTasks, when the user forbidden to retrieve it', async () => {
+  it('should fail to retrieve the ProcessModel\'s ManualTasks, when the user forbidden to retrieve it', async () => {
 
     const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     try {
       const manualTaskList = await testFixtureProvider
         .consumerApiClientService
-        .getManualTasksForProcessModelInCorrelation(restrictedIdentity, processModelId, correlationId);
+        .getManualTasksForProcessModel(restrictedIdentity, processModelId);
 
       should.fail(manualTaskList, undefined, 'This request should have failed!');
     } catch (error) {
@@ -140,13 +141,14 @@ describe(`Consumer API: ${testCase}`, () => {
   async function cleanup() {
     return new Promise(async (resolve, reject) => {
       const processInstanceId = manualTaskToFinishAfterTest.processInstanceId;
-      const userTaskId = manualTaskToFinishAfterTest.flowNodeInstanceId;
+      const manualTaskId = manualTaskToFinishAfterTest.flowNodeInstanceId;
 
       processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService
-        .finishManualTask(defaultIdentity, processInstanceId, manualTaskToFinishAfterTest.correlationId, userTaskId);
+        .finishManualTask(defaultIdentity, processInstanceId, manualTaskToFinishAfterTest.correlationId, manualTaskId);
     });
   }
+
 });

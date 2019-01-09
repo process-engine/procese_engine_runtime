@@ -6,6 +6,7 @@ const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/com
 
 describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () => {
 
+  let eventAggregator;
   let processInstanceHandler;
   let testFixtureProvider;
 
@@ -30,6 +31,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
       processModelIdCallActivitySubprocess,
     ]);
 
+    eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
     correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
@@ -147,17 +149,23 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
 
   it('should return an empty Array, if the given correlation does not have any UserTasks', async () => {
 
-    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdNoUserTasks);
+    return new Promise(async (resolve, reject) => {
+      const correlationId2 = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdNoUserTasks);
+      await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId2, processModelIdNoUserTasks);
 
-    await processInstanceHandler.wait(500);
+      // Wait for the ProcessInstance to finish, so it won't interfere with follow-up tests.
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId2, processModelIdNoUserTasks, resolve);
 
-    const userTaskList = await testFixtureProvider
-      .consumerApiClientService
-      .getUserTasksForProcessModel(defaultIdentity, processModelIdNoUserTasks);
+      const userTaskList = await testFixtureProvider
+        .consumerApiClientService
+        .getUserTasksForCorrelation(defaultIdentity, correlationId);
 
-    should(userTaskList).have.property('userTasks');
-    should(userTaskList.userTasks).be.instanceOf(Array);
-    should(userTaskList.userTasks.length).be.equal(0);
+      should(userTaskList).have.property('userTasks');
+      should(userTaskList.userTasks).be.instanceOf(Array);
+      should(userTaskList.userTasks.length).be.equal(0);
+
+      eventAggregator.publish('/processengine/process/signal/Continue', {});
+    });
   });
 
   it('should return an empty Array, if the correlationId does not exist', async () => {
