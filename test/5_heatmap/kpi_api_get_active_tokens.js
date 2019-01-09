@@ -12,24 +12,22 @@ describe('KPI API -> Get Active Tokens - ', () => {
 
   let kpiApiService;
 
+  let defaultIdentity;
+
   const processModelId = 'heatmap_sample';
   const correlationId = uuid.v4();
 
   const userTask1Id = 'UserTask_1';
 
-  const dummyIdentity = {
-    token: 'defaultUser',
-  };
-
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    kpiApiService = await testFixtureProvider.resolveAsync('KpiApiService');
-
     await testFixtureProvider.importProcessFiles([processModelId]);
-
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
+
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
+    kpiApiService = await testFixtureProvider.resolveAsync('KpiApiService');
 
     await executeProcessAndWaitForUserTask();
   });
@@ -41,7 +39,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
 
   it('should successfully get the active tokens for a running ProcessModel', async () => {
 
-    const activeTokens = await kpiApiService.getActiveTokensForProcessModel(dummyIdentity, processModelId);
+    const activeTokens = await kpiApiService.getActiveTokensForProcessModel(defaultIdentity, processModelId);
 
     should(activeTokens).be.an.Array();
     should(activeTokens.length).be.equal(2); // 2 UserTasks running in parallel executed branches
@@ -53,7 +51,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
 
   it('should successfully get the active tokens for a running ProcessModel within a correlation', async () => {
 
-    const activeTokens = await kpiApiService.getActiveTokensForCorrelationAndProcessModel(dummyIdentity, correlationId, processModelId);
+    const activeTokens = await kpiApiService.getActiveTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId);
 
     should(activeTokens).be.an.Array();
     should(activeTokens.length).be.equal(2); // 2 UserTasks running in parallel executed branches
@@ -65,7 +63,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
 
   it('should successfully get the active tokens for a running FlowNodeInstance', async () => {
 
-    const activeTokens = await kpiApiService.getActiveTokensForFlowNode(dummyIdentity, userTask1Id);
+    const activeTokens = await kpiApiService.getActiveTokensForFlowNode(defaultIdentity, userTask1Id);
 
     should(activeTokens).be.an.Array();
     should(activeTokens.length).be.equal(1);
@@ -81,7 +79,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
     // The tokens of this ProcessInstance should not show as ActiveTokens.
     await executeSampleProcess();
 
-    const activeTokens = await kpiApiService.getActiveTokensForProcessModel(dummyIdentity, processModelId);
+    const activeTokens = await kpiApiService.getActiveTokensForProcessModel(defaultIdentity, processModelId);
 
     should(activeTokens).be.an.Array();
     should(activeTokens.length).be.equal(2); // 2 UserTasks running in parallel executed branches
@@ -97,7 +95,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
     // The tokens of this ProcessInstance should not show as ActiveTokens.
     await executeSampleProcess();
 
-    const activeTokens = await kpiApiService.getActiveTokensForFlowNode(dummyIdentity, userTask1Id);
+    const activeTokens = await kpiApiService.getActiveTokensForFlowNode(defaultIdentity, userTask1Id);
 
     should(activeTokens).be.an.Array();
     should(activeTokens.length).be.equal(1);
@@ -136,7 +134,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
     should(activeToken.correlationId).be.equal(correlationId);
     should(activeToken.processModelId).be.equal(processModelId);
     should(activeToken.flowNodeId).be.equal(flowNodeId);
-    should(activeToken.identity).be.eql(dummyIdentity);
+    should(activeToken.identity).be.eql(defaultIdentity);
     should(activeToken.payload).be.eql(expectedPayload);
 
     should(activeToken).have.property('processInstanceId');
