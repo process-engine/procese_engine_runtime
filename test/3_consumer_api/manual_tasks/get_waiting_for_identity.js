@@ -57,12 +57,9 @@ describe('ConsumerAPI:   GET  ->  /manual_tasks/own', () => {
     should(manualTask).have.property('correlationId');
     should(manualTask).have.property('processModelId');
     should(manualTask).have.property('processInstanceId');
-    should(manualTask).have.property('processInstanceOwner');
     should(manualTask).have.property('tokenPayload');
-
-    const decodedRequestingIdentity = jsonwebtoken.decode(manualTask.processInstanceOwner.token);
-    const decodedManualTaskIdentity = jsonwebtoken.decode(defaultIdentity.token);
-    should(decodedRequestingIdentity.sub).be.equal(decodedManualTaskIdentity.sub);
+    should(manualTask).not.have.property('processInstanceOwner');
+    should(manualTask).not.have.property('identity');
   });
 
   it('should return an empty Array, if the user does not have access to any waiting ManualTasks', async () => {

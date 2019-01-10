@@ -96,6 +96,8 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
     should(userTask).have.property('processModelId');
     should(userTask).have.property('processInstanceId');
     should(userTask).have.property('data');
+    should(userTask).not.have.property('processInstanceOwner');
+    should(userTask).not.have.property('identity');
 
     should(userTask.data).have.property('formFields');
     should(userTask.data.formFields).be.instanceOf(Array);

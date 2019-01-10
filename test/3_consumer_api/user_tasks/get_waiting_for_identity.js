@@ -57,12 +57,9 @@ describe('ConsumerAPI:   GET  ->  /user_tasks/own', () => {
     should(userTask).have.property('correlationId');
     should(userTask).have.property('processModelId');
     should(userTask).have.property('processInstanceId');
-    should(userTask).have.property('processInstanceOwner');
     should(userTask).have.property('tokenPayload');
-
-    const decodedRequestingIdentity = jsonwebtoken.decode(userTask.processInstanceOwner.token);
-    const decodedUserTaskIdentity = jsonwebtoken.decode(defaultIdentity.token);
-    should(decodedRequestingIdentity.sub).be.equal(decodedUserTaskIdentity.sub);
+    should(userTask).not.have.property('processInstanceOwner');
+    should(userTask).not.have.property('identity');
   });
 
   it('should return an empty Array, if the user does not have access to any waiting UserTasks', async () => {

@@ -96,6 +96,8 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
     should(manualTask).have.property('processModelId');
     should(manualTask).have.property('processInstanceId');
     should(manualTask).have.property('tokenPayload');
+    should(manualTask).not.have.property('processInstanceOwner');
+    should(manualTask).not.have.property('identity');
 
     await cleanup(manualTask);
   });

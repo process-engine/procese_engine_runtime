@@ -68,6 +68,8 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
     should(userTask).have.property('processModelId');
     should(userTask).have.property('processInstanceId');
     should(userTask).have.property('data');
+    should(userTask).not.have.property('processInstanceOwner');
+    should(userTask).not.have.property('identity');
 
     should(userTask.data).have.property('formFields');
     should(userTask.data.formFields).be.instanceOf(Array);

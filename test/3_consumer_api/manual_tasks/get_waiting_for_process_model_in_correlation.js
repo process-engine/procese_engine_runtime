@@ -62,6 +62,8 @@ describe(`Consumer API: ${testCase}`, () => {
     should(manualTask).have.property('processModelId');
     should(manualTask).have.property('processInstanceId');
     should(manualTask).have.property('tokenPayload');
+    should(manualTask).not.have.property('processInstanceOwner');
+    should(manualTask).not.have.property('identity');
   });
 
   it('should return an empty Array, if the given correlation does not have any ManualTasks', async () => {
