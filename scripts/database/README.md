@@ -1,23 +1,21 @@
-# process-engine Skeleton PostgreSQL-DB
+# ProcessEngine-Runtime PostgreSQL-DB
 
 ## Requirements
 
-- an x86 computer
-- bash
 - docker >= `17.06.0-ce`
 
 ## Setup
 
 ### Build and start the volume- and database-containers
 
-To bootstrap the minimal skeleton, run
+To bootstrap a new PostgreSQL database, simply run:
 ```bash
 node postgres_docker.js start
 ```
 
-To bootstrap the database for the reservation-process, run
+If you already have a database setup and want to reset it, run:
 ```bash
-node postgres_docker.js start demo
+node postgres_docker.js reset
 ```
 
 ## Configuration
@@ -51,14 +49,11 @@ roles: ['operator']
 
 The convenience-script `postgres_docker.sh` lets you:
 ```bash
-node postgres_docker.js start [scenario]   # create and start the volume and db container
-node postgres_docker.js stop               # stop the db container
-node postgres_docker.js restart            # run stop and then start
-node postgres_docker.js reset [scenario]   # run stop, then delete volume and db-container and then run start
+node postgres_docker.js start   # create and start the volume and db container
+node postgres_docker.js stop    # stop the db container
+node postgres_docker.js restart # run stop and then start
+node postgres_docker.js reset   # run stop, then delete volume and db-container and then run start
 ```
-
-- if you omit the `scenario`, the db will be seeded with the default minimal-skeleton data (the two users mentioned above).
-- if you set `scenario` to `demo`, the db will be seeded with the reservation-process data (incl. the third user mentioned above).
 
 ## What else is there to know?
 
