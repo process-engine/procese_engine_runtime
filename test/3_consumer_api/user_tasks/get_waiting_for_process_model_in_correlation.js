@@ -8,6 +8,7 @@ const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/com
 const testCase = 'GET  ->  /process_models/:process_model_id/correlations/:correlation_id/userTasks';
 describe(`Consumer API: ${testCase}`, () => {
 
+  let eventAggregator;
   let processInstanceHandler;
   let testFixtureProvider;
 
@@ -27,6 +28,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     await testFixtureProvider.importProcessFiles([processModelId, processModelIdNoUserTasks]);
 
+    eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
     await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
@@ -60,6 +62,8 @@ describe(`Consumer API: ${testCase}`, () => {
     should(userTask).have.property('processModelId');
     should(userTask).have.property('processInstanceId');
     should(userTask).have.property('data');
+    should(userTask).not.have.property('processInstanceOwner');
+    should(userTask).not.have.property('identity');
 
     should(userTask.data).have.property('formFields');
     should(userTask.data.formFields).be.instanceOf(Array);
@@ -76,17 +80,23 @@ describe(`Consumer API: ${testCase}`, () => {
 
   it('should return an empty Array, if the given correlation does not have any UserTasks', async () => {
 
-    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdNoUserTasks);
+    return new Promise(async (resolve, reject) => {
+      const correlationId2 = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdNoUserTasks);
+      await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId2, processModelIdNoUserTasks);
 
-    await processInstanceHandler.wait(500);
+      // Wait for the ProcessInstance to finish, so it won't interfere with follow-up tests.
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId2, processModelIdNoUserTasks, resolve);
 
-    const userTaskList = await testFixtureProvider
-      .consumerApiClientService
-      .getUserTasksForProcessModel(defaultIdentity, processModelIdNoUserTasks);
+      const userTaskList = await testFixtureProvider
+        .consumerApiClientService
+        .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelIdNoUserTasks, correlationId);
 
-    should(userTaskList).have.property('userTasks');
-    should(userTaskList.userTasks).be.instanceOf(Array);
-    should(userTaskList.userTasks.length).be.equal(0);
+      should(userTaskList).have.property('userTasks');
+      should(userTaskList.userTasks).be.instanceOf(Array);
+      should(userTaskList.userTasks.length).be.equal(0);
+
+      eventAggregator.publish('/processengine/process/signal/Continue', {});
+    });
   });
 
   it('should return an empty Array, if the processModelId does not exist', async () => {

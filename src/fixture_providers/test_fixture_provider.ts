@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as jsonwebtoken from 'jsonwebtoken';
 import * as path from 'path';
 
 import {InvocationContainer} from 'addict-ioc';
@@ -7,7 +8,7 @@ import {Logger} from 'loggerhythm';
 const logger: Logger = Logger.createLogger('test:bootstrapper');
 
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
-import {IIdentity} from '@essential-projects/iam_contracts';
+import {IIdentity, TokenBody} from '@essential-projects/iam_contracts';
 
 import {IConsumerApi} from '@process-engine/consumer_api_contracts';
 import {IDeploymentApi} from '@process-engine/deployment_api_contracts';
@@ -191,10 +192,19 @@ export class TestFixtureProvider {
 
   private async _createIdentity(username: string): Promise<IIdentity> {
 
-    // Note: Since the iam facade is mocked, it doesn't matter what type of token is used here.
-    // It only matters that one is present.
+    const tokenBody: TokenBody = {
+      sub: username,
+      name: 'hellas',
+    };
+
+    const signOptions: jsonwebtoken.SignOptions = {
+      expiresIn: 60,
+    };
+
+    const encodedToken: string = jsonwebtoken.sign(tokenBody, 'randomkey', signOptions);
+
     return <IIdentity> {
-      token: username,
+      token: encodedToken,
     };
   }
 

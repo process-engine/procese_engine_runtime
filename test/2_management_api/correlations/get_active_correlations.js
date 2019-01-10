@@ -2,13 +2,16 @@
 
 const should = require('should');
 
+const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
 const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 
 describe('Management API:   GET  ->  /correlations/active', () => {
 
+  let processInstanceHandler;
   let testFixtureProvider;
 
   let correlationId;
+  let defaultIdentity;
   const processModelId = 'user_task_test';
 
   before(async () => {
@@ -16,17 +19,21 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     await testFixtureProvider.initializeAndStart();
 
     await testFixtureProvider.importProcessFiles([processModelId]);
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
 
     const result = await testFixtureProvider
       .managementApiClientService
-      .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelId, 'StartEvent_1', {});
+      .startProcessInstance(defaultIdentity, processModelId, 'StartEvent_1', {});
 
     correlationId = result.correlationId;
+
+    processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
     await waitForProcessToReachFirstFlowNode();
   });
 
   after(async () => {
+    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -34,7 +41,7 @@ describe('Management API:   GET  ->  /correlations/active', () => {
 
     const correlations = await testFixtureProvider
       .managementApiClientService
-      .getActiveCorrelations(testFixtureProvider.identities.defaultUser);
+      .getActiveCorrelations(defaultIdentity);
 
     should(correlations).be.instanceOf(Array);
     should(correlations.length).be.greaterThan(0);
@@ -99,6 +106,29 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     }
 
     throw new Error(`No process instance within correlation '${correlationId}' found! The process instance like failed to start!`);
+  }
+
+  async function cleanup() {
+
+    await new Promise(async (resolve, reject) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+
+      const userTaskList = await testFixtureProvider
+        .consumerApiClientService
+        .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
+
+      const userTaskInput = {
+        formFields: {
+          Sample_Form_Field: 'Hello',
+        },
+      };
+
+      for (const userTask of userTaskList.userTasks) {
+        await testFixtureProvider
+          .consumerApiClientService
+          .finishUserTask(defaultIdentity, userTask.processInstanceId, correlationId, userTask.flowNodeInstanceId, userTaskInput);
+      }
+    });
   }
 
   async function wait(timeInMs) {
