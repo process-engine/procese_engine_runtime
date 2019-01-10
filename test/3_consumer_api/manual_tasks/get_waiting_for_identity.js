@@ -57,10 +57,10 @@ describe('ConsumerAPI:   GET  ->  /manual_tasks/own', () => {
     should(manualTask).have.property('correlationId');
     should(manualTask).have.property('processModelId');
     should(manualTask).have.property('processInstanceId');
-    should(manualTask).have.property('owner');
+    should(manualTask).have.property('processInstanceOwner');
     should(manualTask).have.property('tokenPayload');
 
-    const decodedRequestingIdentity = jsonwebtoken.decode(manualTask.owner.token);
+    const decodedRequestingIdentity = jsonwebtoken.decode(manualTask.processInstanceOwner.token);
     const decodedManualTaskIdentity = jsonwebtoken.decode(defaultIdentity.token);
     should(decodedRequestingIdentity.sub).be.equal(decodedManualTaskIdentity.sub);
   });
