@@ -191,12 +191,7 @@ describe('ManualTask BoundaryEvent Chaining Tests - ', () => {
     return new Promise((resolve) => {
       // eslint-disable-next-line
       const finishedManualTaskMsg = `/processengine/correlation/${correlationId}/processinstance/${manualTask.processInstanceId}/manualtask/${manualTask.flowNodeInstanceId}/finished`;
-      const subscription = eventAggregator.subscribeOnce(finishedManualTaskMsg, (message) => {
-        if (subscription) {
-          subscription.dispose();
-        }
-        resolve();
-      });
+      eventAggregator.subscribeOnce(finishedManualTaskMsg, resolve);
       // eslint-disable-next-line
       const finishManualTaskMsg = `/processengine/correlation/${correlationId}/processinstance/${manualTask.processInstanceId}/manualtask/${manualTask.flowNodeInstanceId}/finish`;
       eventAggregator.publish(finishManualTaskMsg, {});
@@ -256,38 +251,17 @@ describe('ManualTask BoundaryEvent Chaining Tests - ', () => {
       const finishWithTimerBoundaryEvent = eventToTriggerFirst !== 'timeout';
       if (finishWithTimerBoundaryEvent) {
         // Wait until the TimerBoundaryEvent is supposed to be triggered.
-        // Don't await the actual notification, because it is not actually supposed to happen!
+        // Don't wait for the notification itself, because it is not actually supposed to happen!
         await new Promise((cb) => {
           setTimeout(cb, 2000);
         });
       }
 
-      if (manualTaskSubscription) {
-        manualTaskSubscription.dispose();
-      }
-
-      if (messageReceivedSubscription) {
-        manualTaskSubscription.dispose();
-      }
-
-      if (signalReceivedSubscription) {
-        manualTaskSubscription.dispose();
-      }
-
-      if (timeoutExpiredSubscription) {
-        manualTaskSubscription.dispose();
-      }
-
-      // TODO - BUG: For some reason, calling dispose on the subscriptions does not remove them from the EventAggregator.
-      // This means that they will keep getting called, until the EventAggregator is disposed after the tests.
-      // To avoid false positives, the subscriptions get cleared here manually.
-      //
-      // The Subscriptions created by the BoundaryEvents seem to dispose correctly, though.
-      delete eventAggregator.eventLookup[manualTaskConfirmationMessage];
-      delete eventAggregator.eventLookup[messageConfirmationMessage];
-      delete eventAggregator.eventLookup[signalConfirmationMessage];
-      delete eventAggregator.eventLookup[timeoutConfirmationMessage];
-      delete eventAggregator.eventLookup[`/processengine/correlation/${correlationId}/processmodel/${processModelId}/ended`];
+      // Clear all subscriptions that may still be active to avoid false positives for follow up tests.
+      eventAggregator.unsubscribe(manualTaskSubscription);
+      eventAggregator.unsubscribe(messageReceivedSubscription);
+      eventAggregator.unsubscribe(signalReceivedSubscription);
+      eventAggregator.unsubscribe(timeoutExpiredSubscription);
 
       return resolve({
         manualTaskWasFinished: manualTaskWasFinished,

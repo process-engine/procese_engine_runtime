@@ -9,16 +9,15 @@ describe('KPI API -> Get Runtime Informations - ', () => {
 
   let kpiApiService;
 
-  const processModelId = 'kpi_api_test_data';
+  let defaultIdentity;
 
-  const dummyIdentity = {
-    token: 'defaultUser',
-  };
+  const processModelId = 'kpi_api_test_data';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
     kpiApiService = await testFixtureProvider.resolveAsync('KpiApiService');
   });
 
@@ -27,7 +26,7 @@ describe('KPI API -> Get Runtime Informations - ', () => {
   });
 
   it('should successfully get the runtime informations for a ProcessModel', async () => {
-    const runtimeInfos = await kpiApiService.getRuntimeInformationForProcessModel(dummyIdentity, processModelId);
+    const runtimeInfos = await kpiApiService.getRuntimeInformationForProcessModel(defaultIdentity, processModelId);
 
     should(runtimeInfos).be.an.Array();
     should(runtimeInfos.length).be.equal(10, `Expected 10 runtime informations, but got ${runtimeInfos.length}.`);
@@ -64,7 +63,7 @@ describe('KPI API -> Get Runtime Informations - ', () => {
 
   it('should successfully get the runtime information for a FlowNode with an odd number of executions', async () => {
     const flowNodeToQuery = 'UserTask_1'; // in the metrics sample file, this task was run 5 times.
-    const runtimeInfo = await kpiApiService.getRuntimeInformationForFlowNode(dummyIdentity, processModelId, flowNodeToQuery);
+    const runtimeInfo = await kpiApiService.getRuntimeInformationForFlowNode(defaultIdentity, processModelId, flowNodeToQuery);
 
     should(runtimeInfo).not.be.an.Array();
     should(runtimeInfo.constructor.name).be.equal('FlowNodeRuntimeInformation');
@@ -90,7 +89,7 @@ describe('KPI API -> Get Runtime Informations - ', () => {
 
   it('should successfully get the runtime information for a FlowNode with an even number of executions', async () => {
     const flowNodeToQuery = 'ScriptTask_1'; // in the metrics sample file, this task was run 20 times.
-    const runtimeInfo = await kpiApiService.getRuntimeInformationForFlowNode(dummyIdentity, processModelId, flowNodeToQuery);
+    const runtimeInfo = await kpiApiService.getRuntimeInformationForFlowNode(defaultIdentity, processModelId, flowNodeToQuery);
 
     should(runtimeInfo).not.be.an.Array();
     should(runtimeInfo.constructor.name).be.equal('FlowNodeRuntimeInformation');
