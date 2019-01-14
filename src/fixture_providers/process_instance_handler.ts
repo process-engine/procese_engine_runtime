@@ -79,7 +79,11 @@ export class ProcessInstanceHandler {
     return result;
   }
 
-  public async waitForProcessInstanceToReachSuspendedTask(correlationId: string, processModelId?: string): Promise<void> {
+  public async waitForProcessInstanceToReachSuspendedTask(
+    correlationId: string,
+    processModelId?: string,
+    expectedNumberOfWaitingTasks: number = 1,
+  ): Promise<void> {
 
     const maxNumberOfRetries: number = 60;
     const delayBetweenRetriesInMs: number = 200;
@@ -98,7 +102,7 @@ export class ProcessInstanceHandler {
         });
       }
 
-      if (flowNodeInstances.length >= 1) {
+      if (flowNodeInstances.length >= expectedNumberOfWaitingTasks) {
         return;
       }
     }
@@ -232,6 +236,11 @@ export class ProcessInstanceHandler {
    */
   public waitForProcessInstanceToEnd(correlationId: string, processModelId: string, resolveFunc: EventReceivedCallback): void {
     const endMessageToWaitFor: string = `/processengine/correlation/${correlationId}/processmodel/${processModelId}/ended`;
+    this.eventAggregator.subscribeOnce(endMessageToWaitFor, resolveFunc);
+  }
+
+  public waitForProcessByInstanceIdToEnd(processInstanceId: string, resolveFunc: EventReceivedCallback): void {
+    const endMessageToWaitFor: string = `/processengine/process/${processInstanceId}/ended`;
     this.eventAggregator.subscribeOnce(endMessageToWaitFor, resolveFunc);
   }
 
