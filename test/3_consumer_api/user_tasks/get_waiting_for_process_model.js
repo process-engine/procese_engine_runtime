@@ -163,7 +163,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
         },
       };
 
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskToFinishAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService

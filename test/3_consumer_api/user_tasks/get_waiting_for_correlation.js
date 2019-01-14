@@ -186,8 +186,6 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
   async function cleanup(userTaskToFinishAfterTest) {
 
     return new Promise(async (resolve, reject) => {
-      const userTaskCorrelation = userTaskToFinishAfterTest.correlationId;
-      const userTaskProcessModel = userTaskToFinishAfterTest.processModelId;
       const processInstanceId = userTaskToFinishAfterTest.processInstanceId;
       const userTaskId = userTaskToFinishAfterTest.flowNodeInstanceId;
       const userTaskResult = {
@@ -196,7 +194,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
         },
       };
 
-      processInstanceHandler.waitForProcessInstanceToEnd(userTaskCorrelation, userTaskProcessModel, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskToFinishAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService

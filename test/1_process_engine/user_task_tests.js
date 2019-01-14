@@ -60,7 +60,7 @@ describe('UserTasks - ', () => {
     should(waitingUserTaskFieldDefaultValue).be.equal(expectedDefaultValue);
 
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTask.processInstanceId, resolve);
       await processInstanceHandler.finishUserTaskInCorrelation(identity, correlationId, userTask.processInstanceId, userTask.flowNodeInstanceId, {});
     });
   });
@@ -86,7 +86,7 @@ describe('UserTasks - ', () => {
     };
 
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTask.processInstanceId, resolve);
       await processInstanceHandler
         .finishUserTaskInCorrelation(identity, correlationId, userTask.processInstanceId, userTask.flowNodeInstanceId, userTaskInput);
     });
@@ -120,7 +120,7 @@ describe('UserTasks - ', () => {
     const userTask2 = waitingUserTasks.userTasks[0];
 
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTask2.processInstanceId, resolve);
       await processInstanceHandler
         .finishUserTaskInCorrelation(identity, correlationId, userTask2.processInstanceId, userTask2.flowNodeInstanceId, userTaskInput);
     });
@@ -135,7 +135,7 @@ describe('UserTasks - ', () => {
     };
 
     await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, initialToken);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId, 2);
 
     const currentRunningUserTasks = await processInstanceHandler.getWaitingUserTasksForCorrelationId(identity, correlationId);
 
@@ -151,7 +151,7 @@ describe('UserTasks - ', () => {
     };
 
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(waitingUsersTasks[0].processInstanceId, resolve);
 
       for (const userTask of waitingUsersTasks) {
         await testFixtureProvider
@@ -204,7 +204,7 @@ describe('UserTasks - ', () => {
     const errorCode = 404;
 
     await new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTask.processInstanceId, resolve);
       await testFixtureProvider
         .consumerApiClientService
         .finishUserTask(identity, userTask.processInstanceId, correlationId, userTask.flowNodeInstanceId, userTaskInput);

@@ -58,7 +58,8 @@ describe('Inter-process communication - ', () => {
 
       const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelStartEventTests}/ended`;
       const evaluationCallback = (message) => {
-        if (message.flowNodeId === endEventToWaitFor) {
+        const expectedEndEventReached = message.flowNodeId === endEventToWaitFor;
+        if (expectedEndEventReached) {
           should(message).have.property('currentToken');
           should(message.currentToken).be.match(expectedResult);
           resolve();
@@ -90,7 +91,8 @@ describe('Inter-process communication - ', () => {
 
       const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelStartEventTests}/ended`;
       const evaluationCallback = (message) => {
-        if (message.flowNodeId === endEventToWaitFor) {
+        const expectedEndEventReached = message.flowNodeId === endEventToWaitFor;
+        if (expectedEndEventReached) {
           should(message).have.property('currentToken');
           should(message.currentToken).be.match(expectedResult);
           resolve();
@@ -176,19 +178,39 @@ describe('Inter-process communication - ', () => {
 
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelReceiveTask);
 
+    let sendTaskProcessFinished = false;
+    let receiveTaskProcessFinished = false;
+
     return new Promise((resolve) => {
 
-      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelReceiveTask}/ended`;
-      const evaluationCallback = (message) => {
+      const endMessageReceiveTaskProcess = `/processengine/correlation/${correlationId}/processmodel/${processModelReceiveTask}/ended`;
+      const receiveTaskProcessFinishedCallback = (message) => {
         if (message.flowNodeId === endEventToWaitFor) {
           should(message).have.property('currentToken');
           should(message.currentToken).be.eql('Message Received');
-          resolve();
+
+          receiveTaskProcessFinished = true;
+
+          if (receiveTaskProcessFinished && sendTaskProcessFinished) {
+            resolve();
+          }
         }
       };
 
-      // Subscribe for the EndEvent
-      eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
+      const endMessageSendTaskProcess = `/processengine/correlation/${correlationId}/processmodel/${processModelSendTask}/ended`;
+      const sendTaskProcessFinishedCallback = (message) => {
+        if (message.flowNodeId === endEventToWaitFor) {
+          sendTaskProcessFinished = true;
+
+          if (receiveTaskProcessFinished && sendTaskProcessFinished) {
+            resolve();
+          }
+        }
+      };
+
+      // Subscribe for the EndEvents
+      eventAggregator.subscribeOnce(endMessageReceiveTaskProcess, receiveTaskProcessFinishedCallback);
+      eventAggregator.subscribeOnce(endMessageSendTaskProcess, sendTaskProcessFinishedCallback);
 
       // Run the process that is supposed to publish the signal.
       testFixtureProvider.executeProcess(processModelSendTask, 'StartEvent_1', correlationId);

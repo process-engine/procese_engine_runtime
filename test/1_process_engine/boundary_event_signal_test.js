@@ -1,19 +1,26 @@
 'use strict';
 
+const uuid = require('uuid');
 const should = require('should');
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs');
 
 describe('Signal Boundary Event - ', () => {
 
+  let eventAggregator;
+  let processInstanceHandler;
   let testFixtureProvider;
 
   const processModelId = 'boundary_event_signal_test';
   const startEventId = 'StartEvent_1';
+  const correlationId = uuid.v4();
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
+    eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
+    processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
     await testFixtureProvider.importProcessFiles([processModelId]);
   });
 
@@ -21,12 +28,24 @@ describe('Signal Boundary Event - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should interrupt the running service task when a signal arrives', async () => {
+  it('should interrupt the UserTask when a signal arrives', async () => {
 
     const expectedResult = /signal received/i;
 
-    const result = await testFixtureProvider.executeProcess(processModelId, startEventId);
+    testFixtureProvider.executeProcess(processModelId, startEventId, correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
 
-    should(result.currentToken.XORJoin1).be.match(expectedResult);
+    await new Promise((resolve) => {
+
+      const onProcessFinishedCallback = (signal) => {
+        should(signal.currentToken).be.match(expectedResult);
+        resolve();
+      };
+
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, onProcessFinishedCallback);
+
+      const triggerSignalEventName = '/processengine/process/signal/Signal1234';
+      eventAggregator.publish(triggerSignalEventName, {});
+    });
   });
 });

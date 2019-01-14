@@ -7,8 +7,8 @@
     <bpmn:laneSet>
       <bpmn:lane id="Lane_1sdv4a2" name="Default_Test_Lane">
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>ExclusiveGateway_0ejxoeo</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>ExclusiveGateway_0uyb09l</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ParallelSplitGateway_UserTaskTests</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ParallelJoinGateway_UserTaskTests</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_1k8oh30</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_004be4s</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_1xcmvjs</bpmn:flowNodeRef>
@@ -17,17 +17,17 @@
     <bpmn:startEvent id="StartEvent_1" name="StartEvent_1">
       <bpmn:outgoing>SequenceFlow_0s9fjbq</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_0s9fjbq" sourceRef="StartEvent_1" targetRef="ExclusiveGateway_0ejxoeo" />
-    <bpmn:parallelGateway id="ExclusiveGateway_0ejxoeo">
+    <bpmn:sequenceFlow id="SequenceFlow_0s9fjbq" sourceRef="StartEvent_1" targetRef="ParallelSplitGateway_UserTaskTests" />
+    <bpmn:parallelGateway id="ParallelSplitGateway_UserTaskTests">
       <bpmn:incoming>SequenceFlow_0s9fjbq</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0bejemz</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_0642hel</bpmn:outgoing>
     </bpmn:parallelGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_0bejemz" sourceRef="ExclusiveGateway_0ejxoeo" targetRef="Task_004be4s" />
-    <bpmn:sequenceFlow id="SequenceFlow_0642hel" sourceRef="ExclusiveGateway_0ejxoeo" targetRef="Task_1xcmvjs" />
-    <bpmn:sequenceFlow id="SequenceFlow_0qntpdh" sourceRef="Task_1xcmvjs" targetRef="ExclusiveGateway_0uyb09l" />
-    <bpmn:sequenceFlow id="SequenceFlow_1eennhh" sourceRef="Task_004be4s" targetRef="ExclusiveGateway_0uyb09l" />
-    <bpmn:parallelGateway id="ExclusiveGateway_0uyb09l">
+    <bpmn:sequenceFlow id="SequenceFlow_0bejemz" sourceRef="ParallelSplitGateway_UserTaskTests" targetRef="Task_004be4s" />
+    <bpmn:sequenceFlow id="SequenceFlow_0642hel" sourceRef="ParallelSplitGateway_UserTaskTests" targetRef="Task_1xcmvjs" />
+    <bpmn:sequenceFlow id="SequenceFlow_0qntpdh" sourceRef="Task_1xcmvjs" targetRef="ParallelJoinGateway_UserTaskTests" />
+    <bpmn:sequenceFlow id="SequenceFlow_1eennhh" sourceRef="Task_004be4s" targetRef="ParallelJoinGateway_UserTaskTests" />
+    <bpmn:parallelGateway id="ParallelJoinGateway_UserTaskTests">
       <bpmn:incoming>SequenceFlow_0qntpdh</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1eennhh</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0md1mbf</bpmn:outgoing>
@@ -35,7 +35,7 @@
     <bpmn:endEvent id="EndEvent_1k8oh30" name="End">
       <bpmn:incoming>SequenceFlow_0md1mbf</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_0md1mbf" sourceRef="ExclusiveGateway_0uyb09l" targetRef="EndEvent_1k8oh30" />
+    <bpmn:sequenceFlow id="SequenceFlow_0md1mbf" sourceRef="ParallelJoinGateway_UserTaskTests" targetRef="EndEvent_1k8oh30" />
     <bpmn:userTask id="Task_004be4s" name="User Task 1">
       <bpmn:extensionElements>
         <camunda:formData>
@@ -76,7 +76,7 @@
           <dc:Bounds x="358" y="311.5" width="0" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ParallelGateway_1sg1uet_di" bpmnElement="ExclusiveGateway_0ejxoeo">
+      <bpmndi:BPMNShape id="ParallelGateway_1sg1uet_di" bpmnElement="ParallelSplitGateway_UserTaskTests">
         <dc:Bounds x="383" y="308" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="443" y="326" width="0" height="13" />
@@ -114,7 +114,7 @@
           <dc:Bounds x="665" y="233.5" width="0" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ParallelGateway_04z6mnq_di" bpmnElement="ExclusiveGateway_0uyb09l">
+      <bpmndi:BPMNShape id="ParallelGateway_04z6mnq_di" bpmnElement="ParallelJoinGateway_UserTaskTests">
         <dc:Bounds x="688" y="308" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="678" y="326" width="0" height="13" />

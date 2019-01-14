@@ -165,12 +165,10 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
 
   async function cleanup(manualTask) {
     return new Promise(async (resolve, reject) => {
-      const manualTaskCorrelation = manualTask.correlationId;
-      const manualTaskProcessModel = manualTask.processModelId;
       const processInstanceId = manualTask.processInstanceId;
       const manualTaskId = manualTask.flowNodeInstanceId;
 
-      processInstanceHandler.waitForProcessInstanceToEnd(manualTaskCorrelation, manualTaskProcessModel, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTask.processInstanceId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService

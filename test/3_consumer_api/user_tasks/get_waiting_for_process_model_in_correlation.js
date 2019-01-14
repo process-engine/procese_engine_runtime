@@ -170,7 +170,7 @@ describe(`Consumer API: ${testCase}`, () => {
         },
       };
 
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskToFinishAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService
