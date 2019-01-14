@@ -138,7 +138,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
 
     processInstanceId = startResult.processInstanceId;
 
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId, 2);
   }
 
   function assertActiveToken(activeToken, flowNodeId) {
@@ -165,16 +165,16 @@ describe('KPI API -> Get Active Tokens - ', () => {
 
       const userTaskList = await testFixtureProvider
         .consumerApiClientService
-        .getUserTasksForProcessModelInCorrelation(testFixtureProvider.identities.defaultUser, processModelId, correlationId);
+        .getUserTasksForCorrelation(testFixtureProvider.identities.defaultUser, correlationId);
 
       for (const userTask of userTaskList.userTasks) {
-        const processInstanceId = userTask.processInstanceId;
+        const userTaskProcessInstanceId = userTask.processInstanceId;
         const userTaskInstanceId = userTask.flowNodeInstanceId;
         const userTaskResult = {};
 
         await testFixtureProvider
           .consumerApiClientService
-          .finishUserTask(testFixtureProvider.identities.defaultUser, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
+          .finishUserTask(testFixtureProvider.identities.defaultUser, userTaskProcessInstanceId, correlationId, userTaskInstanceId, userTaskResult);
       }
     });
   }

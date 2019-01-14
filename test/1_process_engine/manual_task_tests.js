@@ -62,7 +62,7 @@ describe('Manual Tasks - ', () => {
     const manualTask2 = waitingManualTasks.manualTasks[0];
 
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessByInstanceIdToEnd(manualTask2.processInstanceId, resolve);
       await processInstanceHandler
         .finishManualTaskInCorrelation(identity, manualTask2.processInstanceId, manualTask2.correlationId, manualTask2.flowNodeInstanceId);
     });
@@ -77,7 +77,7 @@ describe('Manual Tasks - ', () => {
     };
 
     await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, initialToken);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId, 2);
 
     const currentRunningManualTasks = await processInstanceHandler.getWaitingManualTasksForCorrelationId(identity, correlationId);
 
@@ -87,7 +87,7 @@ describe('Manual Tasks - ', () => {
     const waitingManualsTasks = currentRunningManualTasks.manualTasks;
 
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessByInstanceIdToEnd(waitingManualsTasks[0].processInstanceId, resolve);
 
       for (const manualTask of waitingManualsTasks) {
         await testFixtureProvider
@@ -135,7 +135,7 @@ describe('Manual Tasks - ', () => {
     const manualTask = waitingManualTasks.manualTasks[0];
 
     await new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessByInstanceIdToEnd(manualTask.processInstanceId, resolve);
       await testFixtureProvider
         .consumerApiClientService
         .finishManualTask(identity, manualTask.processInstanceId, correlationId, manualTask.flowNodeInstanceId);
