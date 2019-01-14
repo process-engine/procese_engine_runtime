@@ -13,6 +13,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
   let kpiApiService;
 
   let defaultIdentity;
+  let processInstanceId;
 
   const processModelId = 'heatmap_sample';
   const correlationId = uuid.v4();
@@ -52,6 +53,18 @@ describe('KPI API -> Get Active Tokens - ', () => {
   it('should successfully get the active tokens for a running ProcessModel within a correlation', async () => {
 
     const activeTokens = await kpiApiService.getActiveTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId);
+
+    should(activeTokens).be.an.Array();
+    should(activeTokens.length).be.equal(2); // 2 UserTasks running in parallel executed branches
+
+    for (const activeToken of activeTokens) {
+      assertActiveToken(activeToken, activeToken.flowNodeId);
+    }
+  });
+
+  it('should successfully get the active tokens for a running ProcessInstance', async () => {
+
+    const activeTokens = await kpiApiService.getActiveTokensForProcessInstance(defaultIdentity, processInstanceId);
 
     should(activeTokens).be.an.Array();
     should(activeTokens.length).be.equal(2); // 2 UserTasks running in parallel executed branches
@@ -121,7 +134,10 @@ describe('KPI API -> Get Active Tokens - ', () => {
       user_task: true,
     };
 
-    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, initialToken);
+    const startResult = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, correlationId, initialToken);
+
+    processInstanceId = startResult.processInstanceId;
+
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
   }
 
