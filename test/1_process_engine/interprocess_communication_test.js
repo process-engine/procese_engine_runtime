@@ -58,7 +58,8 @@ describe('Inter-process communication - ', () => {
 
       const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelStartEventTests}/ended`;
       const evaluationCallback = (message) => {
-        if (message.flowNodeId === endEventToWaitFor) {
+        const expectedEndEventReached = message.flowNodeId === endEventToWaitFor;
+        if (expectedEndEventReached) {
           should(message).have.property('currentToken');
           should(message.currentToken).be.match(expectedResult);
           resolve();
@@ -90,7 +91,8 @@ describe('Inter-process communication - ', () => {
 
       const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelStartEventTests}/ended`;
       const evaluationCallback = (message) => {
-        if (message.flowNodeId === endEventToWaitFor) {
+        const expectedEndEventReached = message.flowNodeId === endEventToWaitFor;
+        if (expectedEndEventReached) {
           should(message).have.property('currentToken');
           should(message.currentToken).be.match(expectedResult);
           resolve();
