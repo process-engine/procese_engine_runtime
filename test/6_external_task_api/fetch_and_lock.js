@@ -59,7 +59,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
 
     const externalTask = availableExternalTasks[0];
 
-    await cleanup(externalTask.id, externalTask.correlationId);
+    await cleanup(externalTask);
 
     should(externalTask.workerId).be.equal(workerId);
     should(externalTask.topic).be.equal(topicName);
@@ -95,7 +95,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
     console.log(externalTask);
     should(externalTask.payload.currentToken).have.property('test_type');
 
-    await cleanup(externalTask.id, externalTask.correlationId);
+    await cleanup(externalTask);
 
     should(externalTask.payload).have.property('testProperty');
     should(externalTask.payload.testProperty).be.equal('Test');
@@ -137,19 +137,18 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
 
     const correlationId = uuid.v4();
 
-    testFixtureProvider.executeProcess(processModelId, 'StartEvent_1', correlationId, { test_type: testType });
+    testFixtureProvider.executeProcess(processModelId, 'StartEvent_1', correlationId, {test_type: testType});
 
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
     await processInstanceHandler.waitForExternalTaskToBeCreated(targetTopicName);
   }
 
-  async function cleanup(externalTaskId, correlationId) {
+  async function cleanup(externalTask) {
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessByInstanceIdToEnd(externalTask.processInstanceId, resolve);
 
       await testFixtureProvider
         .externalTaskApiClientService
-        .finishExternalTask(defaultIdentity, workerId, externalTaskId, {});
+        .finishExternalTask(defaultIdentity, workerId, externalTask.id, {});
     });
   }
 

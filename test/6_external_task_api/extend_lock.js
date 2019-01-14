@@ -176,7 +176,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
   async function cleanup() {
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(externalTask.correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessByInstanceIdToEnd(externalTask.processInstanceId, resolve);
 
       await testFixtureProvider
         .externalTaskApiClientService
