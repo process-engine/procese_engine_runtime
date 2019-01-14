@@ -50,7 +50,7 @@ describe(`Consumer API: ${testCase}`, () => {
     const {correlationId, flowNodeInstanceId, processInstanceId} = manualTask;
 
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(manualTask.correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService
@@ -64,7 +64,7 @@ describe(`Consumer API: ${testCase}`, () => {
     const {correlationId, flowNodeInstanceId, processInstanceId} = manualTask;
 
     await new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(manualTask.correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService
@@ -191,11 +191,10 @@ describe(`Consumer API: ${testCase}`, () => {
   async function cleanup() {
 
     return new Promise(async (resolve, reject) => {
-      const correlationId = manualTaskForBadPathTests.correlationId;
       const processInstanceId = manualTaskForBadPathTests.processInstanceId;
       const manualTaskId = manualTaskForBadPathTests.flowNodeInstanceId;
 
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTaskForBadPathTests.processInstanceId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService

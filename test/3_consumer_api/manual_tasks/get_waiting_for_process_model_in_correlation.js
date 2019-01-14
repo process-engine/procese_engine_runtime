@@ -152,7 +152,7 @@ describe(`Consumer API: ${testCase}`, () => {
       const processInstanceId = manualTaskToFinishAfterTest.processInstanceId;
       const userTaskId = manualTaskToFinishAfterTest.flowNodeInstanceId;
 
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTaskToFinishAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService

@@ -62,7 +62,7 @@ describe('Manual Tasks - ', () => {
     const manualTask2 = waitingManualTasks.manualTasks[0];
 
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessByInstanceIdToEnd(manualTask2.processInstanceId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTask2.processInstanceId, resolve);
       await processInstanceHandler
         .finishManualTaskInCorrelation(identity, manualTask2.processInstanceId, manualTask2.correlationId, manualTask2.flowNodeInstanceId);
     });
@@ -87,7 +87,7 @@ describe('Manual Tasks - ', () => {
     const waitingManualsTasks = currentRunningManualTasks.manualTasks;
 
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessByInstanceIdToEnd(waitingManualsTasks[0].processInstanceId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(waitingManualsTasks[0].processInstanceId, resolve);
 
       for (const manualTask of waitingManualsTasks) {
         await testFixtureProvider
@@ -135,7 +135,7 @@ describe('Manual Tasks - ', () => {
     const manualTask = waitingManualTasks.manualTasks[0];
 
     await new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessByInstanceIdToEnd(manualTask.processInstanceId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTask.processInstanceId, resolve);
       await testFixtureProvider
         .consumerApiClientService
         .finishManualTask(identity, manualTask.processInstanceId, correlationId, manualTask.flowNodeInstanceId);

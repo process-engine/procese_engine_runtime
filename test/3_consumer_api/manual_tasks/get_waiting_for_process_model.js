@@ -145,7 +145,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/manual_task
       const processInstanceId = manualTaskToFinishAfterTest.processInstanceId;
       const manualTaskId = manualTaskToFinishAfterTest.flowNodeInstanceId;
 
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTaskToFinishAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService

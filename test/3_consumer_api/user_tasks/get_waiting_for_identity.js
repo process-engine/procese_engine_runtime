@@ -93,12 +93,10 @@ describe('ConsumerAPI:   GET  ->  /user_tasks/own', () => {
 
   async function cleanup() {
     return new Promise(async (resolve, reject) => {
-      const userTaskCorrelation = userTaskToCleanupAfterTest.correlationId;
-      const userTaskProcessModel = userTaskToCleanupAfterTest.processModelId;
       const processInstanceId = userTaskToCleanupAfterTest.processInstanceId;
       const userTaskId = userTaskToCleanupAfterTest.flowNodeInstanceId;
 
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, userTaskProcessModel, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskToCleanupAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService

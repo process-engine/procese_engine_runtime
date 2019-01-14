@@ -240,7 +240,7 @@ export class ProcessInstanceHandler {
     this.eventAggregator.subscribeOnce(endMessageToWaitFor, resolveFunc);
   }
 
-  public waitForProcessByInstanceIdToEnd(processInstanceId: string, resolveFunc: EventReceivedCallback): void {
+  public waitForProcessWithInstanceIdToEnd(processInstanceId: string, resolveFunc: EventReceivedCallback): void {
     const endMessageToWaitFor: string = `/processengine/process/${processInstanceId}/ended`;
     this.eventAggregator.subscribeOnce(endMessageToWaitFor, resolveFunc);
   }

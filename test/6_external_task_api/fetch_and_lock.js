@@ -144,7 +144,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
 
   async function cleanup(externalTask) {
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessByInstanceIdToEnd(externalTask.processInstanceId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(externalTask.processInstanceId, resolve);
 
       await testFixtureProvider
         .externalTaskApiClientService
