@@ -61,6 +61,24 @@ export class ProcessInstanceHandler {
     return result.correlationId;
   }
 
+  public async startProcessInstanceAndReturnResult(processModelId: string,
+                                                   correlationId?: string,
+                                                   inputValues?: any): Promise<ProcessStartResponsePayload> {
+
+    const startEventId: string = 'StartEvent_1';
+    const startCallbackType: StartCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
+    const payload: ProcessStartRequestPayload = {
+      correlationId: correlationId || uuid.v4(),
+      inputValues: inputValues || {},
+    };
+
+    const result: ProcessStartResponsePayload = await this.testFixtureProvider
+      .consumerApiClientService
+      .startProcessInstance(this.testFixtureProvider.identities.defaultUser, processModelId, startEventId, payload, startCallbackType);
+
+    return result;
+  }
+
   public async waitForProcessInstanceToReachSuspendedTask(correlationId: string, processModelId?: string): Promise<void> {
 
     const maxNumberOfRetries: number = 60;
