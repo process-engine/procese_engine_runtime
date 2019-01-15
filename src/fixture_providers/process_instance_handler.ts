@@ -1,18 +1,9 @@
-'use strict';
-
 import * as should from 'should';
 import * as uuid from 'uuid';
 
 import {EventReceivedCallback, IEventAggregator} from '@essential-projects/event_aggregator_contracts';
 import {IIdentity} from '@essential-projects/iam_contracts';
-import {
-  ManualTaskList,
-  ProcessStartRequestPayload,
-  ProcessStartResponsePayload,
-  StartCallbackType,
-  UserTask,
-  UserTaskList,
-} from '@process-engine/consumer_api_contracts';
+import {DataModels} from '@process-engine/consumer_api_contracts';
 import {ExternalTask, IExternalTaskRepository} from '@process-engine/external_task_api_contracts';
 import {IFlowNodeInstanceService, Runtime} from '@process-engine/process_engine_contracts';
 
@@ -48,13 +39,13 @@ export class ProcessInstanceHandler {
   public async startProcessInstanceAndReturnCorrelationId(processModelId: string, correlationId?: string, inputValues?: any): Promise<string> {
 
     const startEventId: string = 'StartEvent_1';
-    const startCallbackType: StartCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
-    const payload: ProcessStartRequestPayload = {
+    const startCallbackType: DataModels.ProcessModels.StartCallbackType = DataModels.ProcessModels.StartCallbackType.CallbackOnProcessInstanceCreated;
+    const payload: DataModels.ProcessModels.ProcessStartRequestPayload = {
       correlationId: correlationId || uuid.v4(),
       inputValues: inputValues || {},
     };
 
-    const result: ProcessStartResponsePayload = await this.testFixtureProvider
+    const result: DataModels.ProcessModels.ProcessStartResponsePayload = await this.testFixtureProvider
       .consumerApiClientService
       .startProcessInstance(this.testFixtureProvider.identities.defaultUser, processModelId, startEventId, payload, startCallbackType);
 
@@ -63,16 +54,16 @@ export class ProcessInstanceHandler {
 
   public async startProcessInstanceAndReturnResult(processModelId: string,
                                                    correlationId?: string,
-                                                   inputValues?: any): Promise<ProcessStartResponsePayload> {
+                                                   inputValues?: any): Promise<DataModels.ProcessModels.ProcessStartResponsePayload> {
 
     const startEventId: string = 'StartEvent_1';
-    const startCallbackType: StartCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
-    const payload: ProcessStartRequestPayload = {
+    const startCallbackType: DataModels.ProcessModels.StartCallbackType = DataModels.ProcessModels.StartCallbackType.CallbackOnProcessInstanceCreated;
+    const payload: DataModels.ProcessModels.ProcessStartRequestPayload = {
       correlationId: correlationId || uuid.v4(),
       inputValues: inputValues || {},
     };
 
-    const result: ProcessStartResponsePayload = await this.testFixtureProvider
+    const result: DataModels.ProcessModels.ProcessStartResponsePayload = await this.testFixtureProvider
       .consumerApiClientService
       .startProcessInstance(this.testFixtureProvider.identities.defaultUser, processModelId, startEventId, payload, startCallbackType);
 
@@ -140,7 +131,7 @@ export class ProcessInstanceHandler {
    * @param   correlationId The ID of the Correlation for which to get the UserTasks.
    * @returns               A list of waiting UserTasks.
    */
-  public async getWaitingUserTasksForCorrelationId(identity: IIdentity, correlationId: string): Promise<UserTaskList> {
+  public async getWaitingUserTasksForCorrelationId(identity: IIdentity, correlationId: string): Promise<DataModels.UserTasks.UserTaskList> {
 
     return this.testFixtureProvider
       .consumerApiClientService
@@ -155,7 +146,7 @@ export class ProcessInstanceHandler {
    * @param   correlationId The ID of the Correlation for which to get the ManualTasks.
    * @returns               A list of waiting ManualTasks.
    */
-  public async getWaitingManualTasksForCorrelationId(identity: IIdentity, correlationId: string): Promise<ManualTaskList> {
+  public async getWaitingManualTasksForCorrelationId(identity: IIdentity, correlationId: string): Promise<DataModels.ManualTasks.ManualTaskList> {
 
     return this.testFixtureProvider
       .consumerApiClientService
@@ -204,12 +195,12 @@ export class ProcessInstanceHandler {
                                            userTaskInstanceId: string,
                                            userTaskInput: any): Promise<any> {
 
-    const waitingUserTasks: UserTaskList = await this.getWaitingUserTasksForCorrelationId(identity, correlationId);
+    const waitingUserTasks: DataModels.UserTasks.UserTaskList = await this.getWaitingUserTasksForCorrelationId(identity, correlationId);
 
     should(waitingUserTasks).have.property('userTasks');
     should(waitingUserTasks.userTasks.length).be.equal(1, 'The process should have one waiting user task');
 
-    const waitingUserTask: UserTask = waitingUserTasks.userTasks[0];
+    const waitingUserTask: DataModels.UserTasks.UserTask = waitingUserTasks.userTasks[0];
 
     should(waitingUserTask.flowNodeInstanceId).be.equal(userTaskInstanceId);
 
