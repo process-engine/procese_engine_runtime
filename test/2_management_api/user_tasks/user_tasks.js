@@ -2,8 +2,7 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
-const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs');
 
 // NOTE:
 // The consumer api alrady contains extensive testing for this, so there is no need to cover everything here.
