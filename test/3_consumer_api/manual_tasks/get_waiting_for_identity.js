@@ -1,6 +1,5 @@
 'use strict';
 
-const jsonwebtoken = require('jsonwebtoken');
 const should = require('should');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
