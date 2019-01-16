@@ -3,8 +3,7 @@
 const should = require('should');
 const uuid = require('uuid');
 
-const ProcessInstanceHandler = require('../../dist/commonjs').ProcessInstanceHandler;
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs');
 
 describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_id/handle_service_error', () => {
 

@@ -3,7 +3,7 @@
 const should = require('should');
 const uuid = require('uuid');
 
-const StartCallbackType = require('@process-engine/management_api_contracts').ProcessModelExecution.StartCallbackType; //eslint-disable-line
+const StartCallbackType = require('@process-engine/management_api_contracts').DataModels.ProcessModels.StartCallbackType;
 
 const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 

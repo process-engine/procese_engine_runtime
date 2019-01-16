@@ -2,8 +2,7 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
-const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
 describe('Consumer API: POST  ->  /messages/:message_name/trigger', () => {
 

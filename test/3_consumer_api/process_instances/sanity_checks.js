@@ -3,7 +3,7 @@
 const should = require('should');
 const uuid = require('uuid');
 
-const StartCallbackType = require('@process-engine/consumer_api_contracts').StartCallbackType;
+const StartCallbackType = require('@process-engine/consumer_api_contracts').DataModels.ProcessModels.StartCallbackType;
 
 const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 

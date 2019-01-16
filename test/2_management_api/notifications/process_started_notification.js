@@ -3,10 +3,9 @@
 const should = require('should');
 const uuid = require('uuid');
 
-const StartCallbackType = require('@process-engine/management_api_contracts').ProcessModelExecution.StartCallbackType;
+const StartCallbackType = require('@process-engine/management_api_contracts').DataModels.ProcessModels.StartCallbackType;
 
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
-const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs');
 
 describe('Management API:   Receive Process Started Notification', () => {
 
