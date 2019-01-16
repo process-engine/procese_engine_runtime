@@ -52,9 +52,11 @@ export class ProcessInstanceHandler {
     return result.correlationId;
   }
 
-  public async startProcessInstanceAndReturnResult(processModelId: string,
-                                                   correlationId?: string,
-                                                   inputValues?: any): Promise<DataModels.ProcessModels.ProcessStartResponsePayload> {
+  public async startProcessInstanceAndReturnResult(
+    processModelId: string,
+    correlationId?: string,
+    inputValues?: any,
+  ): Promise<DataModels.ProcessModels.ProcessStartResponsePayload> {
 
     const startEventId: string = 'StartEvent_1';
     const startCallbackType: DataModels.ProcessModels.StartCallbackType = DataModels.ProcessModels.StartCallbackType.CallbackOnProcessInstanceCreated;
