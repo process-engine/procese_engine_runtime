@@ -39,7 +39,7 @@ describe('ManualTask BoundaryEvent Chaining Tests - ', () => {
     const manualTask = await getWaitingManualTask();
 
     await finishManualTask(manualTask);
-    const results = await triggerEventsInSequence(manualTask, finishManualTask);
+    const results = await triggerEventsInSequence(manualTask);
 
     should(results.messageReceived).be.equal(false, 'The MessageBoundaryEvent was triggered after the ManualTask was finished!');
     should(results.signalReceived).be.equal(false, 'The SignalBoundaryEvent was triggered after the ManualTask was finished!');

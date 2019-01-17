@@ -39,7 +39,7 @@ describe('UserTask BoundaryEvent Chaining Tests - ', () => {
     const userTask = await getWaitingUserTask();
 
     await finishUserTask(userTask);
-    const results = await triggerEventsInSequence(userTask, userTask);
+    const results = await triggerEventsInSequence(userTask);
 
     should(results.messageReceived).be.equal(false, 'The MessageBoundaryEvent was triggered after the UserTask was finished!');
     should(results.signalReceived).be.equal(false, 'The SignalBoundaryEvent was triggered after the UserTask was finished!');
