@@ -104,12 +104,12 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
 
   it('should return a list of ManualTasks from a call activity, by the given correlationId through the ConsumerAPI', async () => {
 
-    const correlationIdCallActivity = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdCallActivity);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationIdCallActivity, processModelIdCallActivitySubprocess);
+    const processStartResult = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelIdCallActivity);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(processStartResult.correlationId, processModelIdCallActivitySubprocess);
 
     const manualTaskList = await testFixtureProvider
       .consumerApiClientService
-      .getManualTasksForCorrelation(defaultIdentity, correlationIdCallActivity);
+      .getManualTasksForCorrelation(defaultIdentity, processStartResult.correlationId);
 
     should(manualTaskList).have.property('manualTasks');
 
@@ -126,7 +126,13 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
     should(manualTask).have.property('processInstanceId');
     should(manualTask).have.property('tokenPayload');
 
-    await cleanup(manualTask);
+    await new Promise((resolve, reject) => {
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(processStartResult.processInstanceId, resolve);
+
+      testFixtureProvider
+        .consumerApiClientService
+        .finishManualTask(defaultIdentity, manualTask.processInstanceId, manualTask.correlationId, manualTask.flowNodeInstanceId);
+    });
   });
 
   it('should return an empty Array, if the given correlation does not have any ManualTasks', async () => {
@@ -165,12 +171,10 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
 
   async function cleanup(manualTask) {
     return new Promise(async (resolve, reject) => {
-      const manualTaskCorrelation = manualTask.correlationId;
-      const manualTaskProcessModel = manualTask.processModelId;
       const processInstanceId = manualTask.processInstanceId;
       const manualTaskId = manualTask.flowNodeInstanceId;
 
-      processInstanceHandler.waitForProcessInstanceToEnd(manualTaskCorrelation, manualTaskProcessModel, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTask.processInstanceId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService

@@ -2,8 +2,7 @@
 
 const should = require('should');
 
-const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs');
 
 describe('Management API:   GET  ->  /correlations/active', () => {
 

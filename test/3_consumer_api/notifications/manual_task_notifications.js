@@ -3,8 +3,7 @@
 const should = require('should');
 const uuid = require('uuid');
 
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
-const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
 describe('Consumer API:   Receive Manual Task Notifications', () => {
 
@@ -64,7 +63,7 @@ describe('Consumer API:   Receive Manual Task Notifications', () => {
     });
   });
 
-  it('should send a notification via socket when ManualTask is finished', async () => {
+  it('should send a notification via socket when a ManualTask is finished', async () => {
 
     return new Promise(async (resolve, reject) => {
 

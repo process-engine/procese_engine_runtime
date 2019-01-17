@@ -3,8 +3,7 @@
 const should = require('should');
 const uuid = require('uuid');
 
-const ProcessInstanceHandler = require('../../dist/commonjs').ProcessInstanceHandler;
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs');
 
 describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_id/handle_service_error', () => {
 
@@ -143,7 +142,6 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     testFixtureProvider.executeProcess(processModelId, 'StartEvent_1', correlationId, {test_type: 'without_payload'});
 
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
     await processInstanceHandler.waitForExternalTaskToBeCreated(topicName);
 
     const availableExternalTasks = await testFixtureProvider
@@ -180,7 +178,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
   async function cleanup() {
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(externalTaskBadPathTests.correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(externalTaskBadPathTests.processInstanceId, resolve);
 
       await testFixtureProvider
         .externalTaskApiClientService

@@ -1,6 +1,5 @@
 'use strict';
 
-const jsonwebtoken = require('jsonwebtoken');
 const should = require('should');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
@@ -94,11 +93,10 @@ describe('ConsumerAPI:   GET  ->  /manual_tasks/own', () => {
   async function cleanup() {
     return new Promise(async (resolve, reject) => {
       const manualTaskCorrelation = manualTaskToCleanupAfterTest.correlationId;
-      const manualTaskProcessModel = manualTaskToCleanupAfterTest.processModelId;
       const processInstanceId = manualTaskToCleanupAfterTest.processInstanceId;
       const manualTaskId = manualTaskToCleanupAfterTest.flowNodeInstanceId;
 
-      processInstanceHandler.waitForProcessInstanceToEnd(manualTaskCorrelation, manualTaskProcessModel, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTaskToCleanupAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService

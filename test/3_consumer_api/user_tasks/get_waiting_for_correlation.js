@@ -116,12 +116,12 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
 
   it('should return a list of UserTasks from a call activity, by the given correlationId through the ConsumerAPI', async () => {
 
-    const correlationIdCallActivity = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdCallActivity);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationIdCallActivity, processModelIdCallActivitySubprocess);
+    const processStartResult = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelIdCallActivity);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(processStartResult.correlationId, processModelIdCallActivitySubprocess);
 
     const userTaskList = await testFixtureProvider
       .consumerApiClientService
-      .getUserTasksForCorrelation(defaultIdentity, correlationIdCallActivity);
+      .getUserTasksForCorrelation(defaultIdentity, processStartResult.correlationId);
 
     should(userTaskList).have.property('userTasks');
 
@@ -146,7 +146,13 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
     should(formField).have.property('label');
     should(formField).have.property('defaultValue');
 
-    await cleanup(userTask);
+    await new Promise((resolve, reject) => {
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(processStartResult.processInstanceId, resolve);
+
+      testFixtureProvider
+        .consumerApiClientService
+        .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId);
+    });
   });
 
   it('should return an empty Array, if the given correlation does not have any UserTasks', async () => {
@@ -186,8 +192,6 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
   async function cleanup(userTaskToFinishAfterTest) {
 
     return new Promise(async (resolve, reject) => {
-      const userTaskCorrelation = userTaskToFinishAfterTest.correlationId;
-      const userTaskProcessModel = userTaskToFinishAfterTest.processModelId;
       const processInstanceId = userTaskToFinishAfterTest.processInstanceId;
       const userTaskId = userTaskToFinishAfterTest.flowNodeInstanceId;
       const userTaskResult = {
@@ -196,7 +200,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
         },
       };
 
-      processInstanceHandler.waitForProcessInstanceToEnd(userTaskCorrelation, userTaskProcessModel, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskToFinishAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService

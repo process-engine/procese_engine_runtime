@@ -13,6 +13,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
   let kpiApiService;
 
   let defaultIdentity;
+  let processInstanceId;
 
   const processModelId = 'heatmap_sample';
   const correlationId = uuid.v4();
@@ -42,7 +43,8 @@ describe('KPI API -> Get Active Tokens - ', () => {
     const activeTokens = await kpiApiService.getActiveTokensForProcessModel(defaultIdentity, processModelId);
 
     should(activeTokens).be.an.Array();
-    should(activeTokens.length).be.equal(2); // 2 UserTasks running in parallel executed branches
+    const assertionError = `Expected ${JSON.stringify(activeTokens)} to have two entries, but received ${activeTokens.length}!`;
+    should(activeTokens.length).be.equal(2, assertionError); // 2 UserTasks running in parallel executed branches
 
     for (const activeToken of activeTokens) {
       assertActiveToken(activeToken, activeToken.flowNodeId);
@@ -54,7 +56,21 @@ describe('KPI API -> Get Active Tokens - ', () => {
     const activeTokens = await kpiApiService.getActiveTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId);
 
     should(activeTokens).be.an.Array();
-    should(activeTokens.length).be.equal(2); // 2 UserTasks running in parallel executed branches
+    const assertionError = `Expected ${JSON.stringify(activeTokens)} to have two entries, but received ${activeTokens.length}!`;
+    should(activeTokens.length).be.equal(2, assertionError); // 2 UserTasks running in parallel executed branches
+
+    for (const activeToken of activeTokens) {
+      assertActiveToken(activeToken, activeToken.flowNodeId);
+    }
+  });
+
+  it('should successfully get the active tokens for a running ProcessInstance', async () => {
+
+    const activeTokens = await kpiApiService.getActiveTokensForProcessInstance(defaultIdentity, processInstanceId);
+
+    should(activeTokens).be.an.Array();
+    const assertionError = `Expected ${JSON.stringify(activeTokens)} to have two entries, but received ${activeTokens.length}!`;
+    should(activeTokens.length).be.equal(2, assertionError); // 2 UserTasks running in parallel executed branches
 
     for (const activeToken of activeTokens) {
       assertActiveToken(activeToken, activeToken.flowNodeId);
@@ -82,7 +98,8 @@ describe('KPI API -> Get Active Tokens - ', () => {
     const activeTokens = await kpiApiService.getActiveTokensForProcessModel(defaultIdentity, processModelId);
 
     should(activeTokens).be.an.Array();
-    should(activeTokens.length).be.equal(2); // 2 UserTasks running in parallel executed branches
+    const assertionError = `Expected ${JSON.stringify(activeTokens)} to have two entries, but received ${activeTokens.length}!`;
+    should(activeTokens.length).be.equal(2, assertionError); // 2 UserTasks running in parallel executed branches
 
     for (const activeToken of activeTokens) {
       assertActiveToken(activeToken, activeToken.flowNodeId);
@@ -121,8 +138,11 @@ describe('KPI API -> Get Active Tokens - ', () => {
       user_task: true,
     };
 
-    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, initialToken);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+    const startResult = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, correlationId, initialToken);
+
+    processInstanceId = startResult.processInstanceId;
+
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId, 2);
   }
 
   function assertActiveToken(activeToken, flowNodeId) {
@@ -131,9 +151,9 @@ describe('KPI API -> Get Active Tokens - ', () => {
       user_task: true,
     };
 
-    should(activeToken.correlationId).be.equal(correlationId);
     should(activeToken.processModelId).be.equal(processModelId);
     should(activeToken.flowNodeId).be.equal(flowNodeId);
+    should(activeToken.correlationId).be.equal(correlationId);
     should(activeToken.identity).be.eql(defaultIdentity);
     should(activeToken.payload).be.eql(expectedPayload);
 
@@ -149,16 +169,16 @@ describe('KPI API -> Get Active Tokens - ', () => {
 
       const userTaskList = await testFixtureProvider
         .consumerApiClientService
-        .getUserTasksForProcessModelInCorrelation(testFixtureProvider.identities.defaultUser, processModelId, correlationId);
+        .getUserTasksForCorrelation(testFixtureProvider.identities.defaultUser, correlationId);
 
       for (const userTask of userTaskList.userTasks) {
-        const processInstanceId = userTask.processInstanceId;
+        const userTaskProcessInstanceId = userTask.processInstanceId;
         const userTaskInstanceId = userTask.flowNodeInstanceId;
         const userTaskResult = {};
 
         await testFixtureProvider
           .consumerApiClientService
-          .finishUserTask(testFixtureProvider.identities.defaultUser, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
+          .finishUserTask(testFixtureProvider.identities.defaultUser, userTaskProcessInstanceId, correlationId, userTaskInstanceId, userTaskResult);
       }
     });
   }

@@ -3,8 +3,7 @@
 const should = require('should');
 const uuid = require('uuid');
 
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
-const ProcessInstanceHandler = require('../../../dist/commonjs').ProcessInstanceHandler;
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
 describe('Consumer API:   Receive User Task Notifications', () => {
 

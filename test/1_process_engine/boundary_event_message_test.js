@@ -1,19 +1,26 @@
 'use strict';
 
+const uuid = require('uuid');
 const should = require('should');
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs');
 
 describe('Message Boundary Event - ', () => {
 
+  let eventAggregator;
+  let processInstanceHandler;
   let testFixtureProvider;
 
   const processModelId = 'boundary_event_message_test';
   const startEventId = 'StartEvent_1';
+  const correlationId = uuid.v4();
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
+    eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
+    processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
     await testFixtureProvider.importProcessFiles([processModelId]);
   });
 
@@ -21,12 +28,24 @@ describe('Message Boundary Event - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should interrupt the running service task when a message arrives', async () => {
+  it('should interrupt the UserTask when a message arrives', async () => {
 
     const expectedResult = /message received/i;
 
-    const result = await testFixtureProvider.executeProcess(processModelId, startEventId);
+    testFixtureProvider.executeProcess(processModelId, startEventId, correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
 
-    should(result.currentToken.Task4).be.match(expectedResult);
+    await new Promise((resolve) => {
+
+      const onProcessFinishedCallback = (message) => {
+        should(message.currentToken).be.match(expectedResult);
+        resolve();
+      };
+
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, onProcessFinishedCallback);
+
+      const triggerMessageEventName = '/processengine/process/message/Message1234';
+      eventAggregator.publish(triggerMessageEventName, {});
+    });
   });
 });

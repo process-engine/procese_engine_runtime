@@ -4,8 +4,7 @@ const moment = require('moment');
 const should = require('should');
 const uuid = require('uuid');
 
-const ProcessInstanceHandler = require('../../dist/commonjs').ProcessInstanceHandler;
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs');
 
 describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_id/extend_lock', () => {
 
@@ -176,7 +175,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
   async function cleanup() {
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(externalTask.correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(externalTask.processInstanceId, resolve);
 
       await testFixtureProvider
         .externalTaskApiClientService

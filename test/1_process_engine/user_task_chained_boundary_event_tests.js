@@ -38,8 +38,14 @@ describe('UserTask BoundaryEvent Chaining Tests - ', () => {
 
     const userTask = await getWaitingUserTask();
 
-    await finishUserTask(userTask);
-    const results = await triggerEventsInSequence(userTask, userTask);
+    await new Promise(async (resolve) => {
+      // Wait for the confirmation message that the UserTask was finished.
+      // At that point, the BoundaryEvents should not be active any more.
+      eventAggregator.subscribeOnce('/processengine/process/message/AcknowledgeUserTaskFinished', resolve);
+
+      await finishUserTask(userTask);
+    });
+    const results = await triggerEventsInSequence(userTask);
 
     should(results.messageReceived).be.equal(false, 'The MessageBoundaryEvent was triggered after the UserTask was finished!');
     should(results.signalReceived).be.equal(false, 'The SignalBoundaryEvent was triggered after the UserTask was finished!');
@@ -112,7 +118,7 @@ describe('UserTask BoundaryEvent Chaining Tests - ', () => {
 
     // Finish the task and wait for the ProcessInstance to finish to get a clean database structure.
     await new Promise((resolve) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTask.processInstanceId, resolve);
       const triggerMessageEventName = '/processengine/process/message/TestMessage1234';
       eventAggregator.publish(triggerMessageEventName, {});
     });
@@ -137,7 +143,7 @@ describe('UserTask BoundaryEvent Chaining Tests - ', () => {
 
     // Finish the task and wait for the ProcessInstance to finish to get a clean database structure.
     await new Promise((resolve) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTask.processInstanceId, resolve);
       const triggerSignalEventName = '/processengine/process/signal/TestSignal1234';
       eventAggregator.publish(triggerSignalEventName, {});
     });
@@ -162,7 +168,7 @@ describe('UserTask BoundaryEvent Chaining Tests - ', () => {
 
     // Wait until the TimerBoundaryEvent gets triggered and finishes the ProcessInstance.
     await new Promise((resolve) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTask.processInstanceId, resolve);
     });
 
     // Now see if the UserTask is still listed as active.
