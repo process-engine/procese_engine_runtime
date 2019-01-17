@@ -59,7 +59,7 @@
     "@process-engine/logging_api_core": "1.0.0",
     "@process-engine/logging.repository.file_system": "1.1.0",
     "@process-engine/management_api_client": "2.0.0",
-    "@process-engine/management_api_contracts": "3.0.0",
+    "@process-engine/management_api_contracts": "3.0.1",
     "@process-engine/management_api_core": "2.0.0",
     "@process-engine/management_api_http": "2.0.0",
     "@process-engine/metrics_api_core": "1.0.0",
