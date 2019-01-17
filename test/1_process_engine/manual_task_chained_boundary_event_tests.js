@@ -40,10 +40,10 @@ describe('ManualTask BoundaryEvent Chaining Tests - ', () => {
 
     await finishManualTask(manualTask);
 
-    await new Promise(async (cb) => {
+    await new Promise(async (resolve) => {
       // Wait for the confirmation message that the ManualTask was finished.
       // At that point, the BoundaryEvents should not be active any more.
-      eventAggregator.subscribeOnce('/processengine/process/message/AcknowledgeManualTaskFinished', cb);
+      eventAggregator.subscribeOnce('/processengine/process/message/AcknowledgeManualTaskFinished', resolve);
 
       await finishManualTask(manualTask);
     });
