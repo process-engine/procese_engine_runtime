@@ -39,7 +39,15 @@ describe('ManualTask BoundaryEvent Chaining Tests - ', () => {
     const manualTask = await getWaitingManualTask();
 
     await finishManualTask(manualTask);
-    const results = await triggerEventsInSequence(manualTask, finishManualTask);
+
+    await new Promise(async (resolve) => {
+      // Wait for the confirmation message that the ManualTask was finished.
+      // At that point, the BoundaryEvents should not be active any more.
+      eventAggregator.subscribeOnce('/processengine/process/message/AcknowledgeManualTaskFinished', resolve);
+
+      await finishManualTask(manualTask);
+    });
+    const results = await triggerEventsInSequence(manualTask);
 
     should(results.messageReceived).be.equal(false, 'The MessageBoundaryEvent was triggered after the ManualTask was finished!');
     should(results.signalReceived).be.equal(false, 'The SignalBoundaryEvent was triggered after the ManualTask was finished!');
