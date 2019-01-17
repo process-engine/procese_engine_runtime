@@ -38,7 +38,13 @@ describe('UserTask BoundaryEvent Chaining Tests - ', () => {
 
     const userTask = await getWaitingUserTask();
 
-    await finishUserTask(userTask);
+    await new Promise(async (cb) => {
+      // Wait for the confirmation message that the UserTask was finished.
+      // At that point, the BoundaryEvents should not be active any more.
+      eventAggregator.subscribeOnce('/processengine/process/message/AcknowledgeUserTaskFinished', cb);
+
+      await finishUserTask(userTask);
+    });
     const results = await triggerEventsInSequence(userTask);
 
     should(results.messageReceived).be.equal(false, 'The MessageBoundaryEvent was triggered after the UserTask was finished!');
