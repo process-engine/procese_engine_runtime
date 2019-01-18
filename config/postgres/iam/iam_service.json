@@ -1,4 +1,5 @@
 {
+  "basePath": "http://localhost:5000/",
   "claimPath": "http://localhost:5000/claims/ensure",
   "disableClaimCheck": true
 }
