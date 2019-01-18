@@ -87,6 +87,18 @@ async function startProcessEngine(sqlitePath) {
         .send(JSON.stringify(packageInfo, null, 2));
     });
 
+    const iamConfigPath = path.join(process.env.CONFIG_PATH, 'sqlite', 'iam', 'iam_service.json');
+
+    // eslint-disable-next-line global-require
+    const iamConfig = require(iamConfigPath);
+
+    httpExtension.app.get('/identity', (request, response) => {
+      response
+        .status(200)
+        .header('Content-Type', 'application/json')
+        .send(JSON.stringify(iamConfig, null, 2));
+    });
+
   } catch (error) {
     logger.error('Bootstrapper failed to start.', error);
   }
