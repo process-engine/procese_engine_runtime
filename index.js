@@ -87,7 +87,7 @@ async function startProcessEngine(sqlitePath) {
         .send(JSON.stringify(packageInfo, null, 2));
     });
 
-    const iamConfigPath = path.join(process.env.CONFIG_PATH, 'sqlite', 'iam', 'iam_service.json');
+    const iamConfigPath = path.join(process.env.CONFIG_PATH, process.env.NODE_ENV, 'iam', 'iam_service.json');
 
     // eslint-disable-next-line global-require
     const iamConfig = require(iamConfigPath);
