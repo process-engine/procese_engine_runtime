@@ -38,6 +38,7 @@ module.exports = async (sqlitePath) => {
   await runMigrations(sqlitePath);
   await startProcessEngine(sqlitePath);
   await resumeProcessInstances();
+  await configureGlobalRoutes();
 };
 
 async function runMigrations(sqlitePath) {
@@ -75,29 +76,6 @@ async function startProcessEngine(sqlitePath) {
     await bootstrapper.start();
 
     logger.info('Bootstrapper started successfully.');
-
-    const httpExtension = await container.resolveAsync('HttpExtension');
-    httpExtension.app.get('/', (request, response) => {
-
-      const packageInfo = getInfosFromPackageJson();
-
-      response
-        .status(200)
-        .header('Content-Type', 'application/json')
-        .send(JSON.stringify(packageInfo, null, 2));
-    });
-
-    const iamConfigPath = path.join(process.env.CONFIG_PATH, process.env.NODE_ENV, 'iam', 'iam_service.json');
-
-    // eslint-disable-next-line global-require
-    const iamConfig = require(iamConfigPath);
-
-    httpExtension.app.get('/identity', (request, response) => {
-      response
-        .status(200)
-        .header('Content-Type', 'application/json')
-        .send(JSON.stringify(iamConfig, null, 2));
-    });
 
   } catch (error) {
     logger.error('Bootstrapper failed to start.', error);
@@ -270,4 +248,35 @@ function getInfosFromPackageJson() {
   };
 
   return applicationInfo;
+}
+
+async function configureGlobalRoutes() {
+  const httpExtension = await container.resolveAsync('HttpExtension');
+  httpExtension.app.get('/', (request, response) => {
+
+    const packageInfo = getInfosFromPackageJson();
+
+    response
+      .status(200)
+      .header('Content-Type', 'application/json')
+      .send(JSON.stringify(packageInfo, null, 2));
+  });
+
+  const iamConfigPath = path.join(process.env.CONFIG_PATH, process.env.NODE_ENV, 'iam', 'iam_service.json');
+  const iamConfig = loadConfigJson('iam', 'iam_service');
+
+  httpExtension.app.get('/identity', (request, response) => {
+    response
+      .status(200)
+      .header('Content-Type', 'application/json')
+      .send(JSON.stringify(iamConfig, null, 2));
+  });
+}
+
+function loadConfigJson(configDirName, configFileName) {
+  const configPath = path.join(process.env.CONFIG_PATH, process.env.NODE_ENV, configDirName, `${configFileName}.json`);
+
+  // eslint-disable-next-line global-require
+  const loadedConfig = require(configPath);
+  return loadedConfig;
 }
