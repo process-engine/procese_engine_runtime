@@ -7,15 +7,18 @@ module.exports = {
   configureGlobalRoutes: configureGlobalRoutes,
 };
 
+let httpExtension;
+let routeConfiguration;
+
 async function configureGlobalRoutes(container) {
-  const httpExtension = await container.resolveAsync('HttpExtension');
-  const routeConfiguration = loadConfigJson('http', 'global_routes');
+  httpExtension = await container.resolveAsync('HttpExtension');
+  routeConfiguration = loadConfigJson('http', 'global_routes');
 
   configureRootRoute(httpExtension);
   configureAuthorityRoute(httpExtension, routeConfiguration);
 }
 
-function configureRootRoute(httpExtension) {
+function configureRootRoute() {
   const packageInfo = getInfosFromPackageJson();
   httpExtension.app.get('/', (request, response) => {
     response
@@ -25,7 +28,7 @@ function configureRootRoute(httpExtension) {
   });
 }
 
-function configureAuthorityRoute(httpExtension, routeConfiguration) {
+function configureAuthorityRoute() {
   const iamConfig = loadConfigJson('iam', 'iam_service');
   const authorityRoute = routeConfiguration.authority ? routeConfiguration.authority : '/authority';
 
