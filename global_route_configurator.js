@@ -9,7 +9,7 @@ module.exports = {
 
 async function configureGlobalRoutes(container) {
   const httpExtension = await container.resolveAsync('HttpExtension');
-  const routeConfiguration = loadConfigJson('http', 'global_route_configuration');
+  const routeConfiguration = loadConfigJson('http', 'global_routes');
 
   configureRootRoute(httpExtension);
   configureAuthorityRoute(httpExtension, routeConfiguration);

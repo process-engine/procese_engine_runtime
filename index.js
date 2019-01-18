@@ -7,7 +7,7 @@ const fs = require('fs');
 const Logger = require('loggerhythm').Logger;
 const path = require('path');
 const platformFolders = require('platform-folders');
-const globalRouteConfigurator = require('./global-route-configurator');
+const globalRouteConfigurator = require('./global_route_configurator');
 
 Bluebird.config({
   cancellation: true,
