@@ -7,7 +7,7 @@ const fs = require('fs');
 const Logger = require('loggerhythm').Logger;
 const path = require('path');
 const platformFolders = require('platform-folders');
-const packageJson = require('./package.json');
+const globalRouteConfigurator = require('./global-route-configurator');
 
 Bluebird.config({
   cancellation: true,
@@ -38,7 +38,7 @@ module.exports = async (sqlitePath) => {
   await runMigrations(sqlitePath);
   await startProcessEngine(sqlitePath);
   await resumeProcessInstances();
-  await configureGlobalRoutes();
+  await globalRouteConfigurator.configureGlobalRoutes(container);
 };
 
 async function runMigrations(sqlitePath) {
@@ -219,64 +219,4 @@ async function resumeProcessInstances() {
   const resumeProcessService = await container.resolveAsync('ResumeProcessService');
   await resumeProcessService.findAndResumeInterruptedProcessInstances();
   logger.info('Done.');
-}
-
-function getInfosFromPackageJson() {
-
-  const {
-    name,
-    version,
-    description,
-    license,
-    homepage,
-    author,
-    contributors,
-    repository,
-    bugs,
-  } = packageJson;
-
-  const applicationInfo = {
-    name: name,
-    version: version,
-    description: description,
-    license: license,
-    homepage: homepage,
-    author: author,
-    contributors: contributors,
-    repository: repository,
-    bugs: bugs,
-  };
-
-  return applicationInfo;
-}
-
-async function configureGlobalRoutes() {
-  const httpExtension = await container.resolveAsync('HttpExtension');
-  httpExtension.app.get('/', (request, response) => {
-
-    const packageInfo = getInfosFromPackageJson();
-
-    response
-      .status(200)
-      .header('Content-Type', 'application/json')
-      .send(JSON.stringify(packageInfo, null, 2));
-  });
-
-  const iamConfigPath = path.join(process.env.CONFIG_PATH, process.env.NODE_ENV, 'iam', 'iam_service.json');
-  const iamConfig = loadConfigJson('iam', 'iam_service');
-
-  httpExtension.app.get('/identity', (request, response) => {
-    response
-      .status(200)
-      .header('Content-Type', 'application/json')
-      .send(JSON.stringify(iamConfig, null, 2));
-  });
-}
-
-function loadConfigJson(configDirName, configFileName) {
-  const configPath = path.join(process.env.CONFIG_PATH, process.env.NODE_ENV, configDirName, `${configFileName}.json`);
-
-  // eslint-disable-next-line global-require
-  const loadedConfig = require(configPath);
-  return loadedConfig;
 }
