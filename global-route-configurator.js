@@ -16,10 +16,8 @@ async function configureGlobalRoutes(container) {
 }
 
 function configureRootRoute(httpExtension) {
+  const packageInfo = getInfosFromPackageJson();
   httpExtension.app.get('/', (request, response) => {
-
-    const packageInfo = getInfosFromPackageJson();
-
     response
       .status(200)
       .header('Content-Type', 'application/json')
