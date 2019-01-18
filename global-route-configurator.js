@@ -29,7 +29,7 @@ function configureAuthorityRoute(httpExtension, routeConfiguration) {
   const iamConfig = loadConfigJson('iam', 'iam_service');
   const authorityRoute = routeConfiguration.authority ? routeConfiguration.authority : '/authority';
 
-  httpExtension.app.get('/authority', (request, response) => {
+  httpExtension.app.get(authorityRoute, (request, response) => {
     response
       .status(200)
       .header('Content-Type', 'application/json')
