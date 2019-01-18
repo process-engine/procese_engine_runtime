@@ -14,8 +14,8 @@ async function configureGlobalRoutes(container) {
   httpExtension = await container.resolveAsync('HttpExtension');
   routeConfiguration = loadConfigJson('http', 'global_routes');
 
-  configureRootRoute(httpExtension);
-  configureAuthorityRoute(httpExtension, routeConfiguration);
+  configureRootRoute();
+  configureAuthorityRoute();
 }
 
 function configureRootRoute() {
