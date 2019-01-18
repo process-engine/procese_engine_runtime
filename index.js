@@ -78,24 +78,13 @@ async function startProcessEngine(sqlitePath) {
 
     const httpExtension = await container.resolveAsync('HttpExtension');
     httpExtension.app.get('/', (request, response) => {
-      const {
-        name,
-        version,
-        license,
-        contributors,
-      } = packageJson;
 
-      const returnObject = {
-        name: name,
-        version: version,
-        license: license,
-        contributors: contributors,
-      };
+      const packageInfo = getInfosFromPackageJson();
 
       response
         .status(200)
         .header('Content-Type', 'application/json')
-        .send(JSON.stringify(returnObject, null, 2));
+        .send(JSON.stringify(packageInfo, null, 2));
     });
 
   } catch (error) {
@@ -240,4 +229,33 @@ async function resumeProcessInstances() {
   const resumeProcessService = await container.resolveAsync('ResumeProcessService');
   await resumeProcessService.findAndResumeInterruptedProcessInstances();
   logger.info('Done.');
+}
+
+function getInfosFromPackageJson() {
+
+  const {
+    name,
+    version,
+    description,
+    license,
+    homepage,
+    author,
+    contributors,
+    repository,
+    bugs,
+  } = packageJson;
+
+  const applicationInfo = {
+    name: name,
+    version: version,
+    description: description,
+    license: license,
+    homepage: homepage,
+    author: author,
+    contributors: contributors,
+    repository: repository,
+    bugs: bugs,
+  };
+
+  return applicationInfo;
 }
