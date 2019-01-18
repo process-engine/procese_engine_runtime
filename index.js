@@ -78,10 +78,12 @@ async function startProcessEngine(sqlitePath) {
 
     const httpExtension = await container.resolveAsync('HttpExtension');
     httpExtension.app.get('/', (request, response) => {
-      const name = packageJson.name;
-      const version = packageJson.version;
-      const license = packageJson.license;
-      const contributors = packageJson.contributors;
+      const {
+        name,
+        version,
+        license,
+        contributors,
+      } = packageJson;
 
       const returnObject = {
         name: name,
