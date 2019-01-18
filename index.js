@@ -7,6 +7,7 @@ const fs = require('fs');
 const Logger = require('loggerhythm').Logger;
 const path = require('path');
 const platformFolders = require('platform-folders');
+const packageJson = require('./package.json');
 
 Bluebird.config({
   cancellation: true,
@@ -74,6 +75,29 @@ async function startProcessEngine(sqlitePath) {
     await bootstrapper.start();
 
     logger.info('Bootstrapper started successfully.');
+
+    const httpExtension = await container.resolveAsync('HttpExtension');
+    httpExtension.app.get('/', (request, response) => {
+      const {
+        name,
+        version,
+        license,
+        contributors,
+      } = packageJson;
+
+      const returnObject = {
+        name: name,
+        version: version,
+        license: license,
+        contributors: contributors,
+      };
+
+      response
+        .status(200)
+        .header('Content-Type', 'application/json')
+        .send(JSON.stringify(returnObject, null, 2));
+    });
+
   } catch (error) {
     logger.error('Bootstrapper failed to start.', error);
   }
