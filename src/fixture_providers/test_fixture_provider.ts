@@ -23,6 +23,8 @@ import {
 import {migrate as executeMigrations} from './migrator';
 import {initializeBootstrapper} from './setup_ioc_container';
 
+import {configureGlobalRoutes} from './global_route_configurator';
+
 export type IdentityCollection = {
   defaultUser: IIdentity;
   restrictedUser: IIdentity;
@@ -78,6 +80,7 @@ export class TestFixtureProvider {
     await this._runMigrations();
     await this._initializeBootstrapper();
     await this.bootstrapper.start();
+    await configureGlobalRoutes(this.container);
 
     await this._createMockIdentities();
 
