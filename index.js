@@ -7,7 +7,7 @@ const fs = require('fs');
 const Logger = require('loggerhythm').Logger;
 const path = require('path');
 const platformFolders = require('platform-folders');
-const globalRouteConfigurator = require('./global_route_configurator');
+const configureGlobalRoutes = require('./global_route_configurator');
 
 Bluebird.config({
   cancellation: true,
@@ -37,8 +37,8 @@ const container = new InvocationContainer({
 module.exports = async (sqlitePath) => {
   await runMigrations(sqlitePath);
   await startProcessEngine(sqlitePath);
+  await configureGlobalRoutes(container);
   await resumeProcessInstances();
-  await globalRouteConfigurator.configureGlobalRoutes(container);
 };
 
 async function runMigrations(sqlitePath) {
