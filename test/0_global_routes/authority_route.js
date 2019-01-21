@@ -5,7 +5,7 @@ const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
 const HttpClient = require('@essential-projects/http').HttpClient;
 
-describe.only('Authority Route /security/authority - ', () => {
+describe('Authority Route /security/authority - ', () => {
 
   let httpClient;
 

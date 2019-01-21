@@ -5,7 +5,7 @@ const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
 const HttpClient = require('@essential-projects/http').HttpClient;
 
-describe.only('Main Route http://localhost:8000 - ', () => {
+describe('Main Route http://localhost:8000 - ', () => {
 
   let httpClient;
 
