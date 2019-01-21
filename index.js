@@ -35,11 +35,94 @@ const container = new InvocationContainer({
 // than the one we are using now. The BPMN Studio needs to be able to provide
 // a path to the databases, so that the backend can access them.
 module.exports = async (sqlitePath) => {
+  initializeEnvironment(sqlitePath);
   await runMigrations(sqlitePath);
-  await startProcessEngine(sqlitePath);
+  await startProcessEngine();
   await configureGlobalRoutes(container);
   await resumeProcessInstances();
 };
+
+function initializeEnvironment(sqlitePath) {
+
+  setConfigPath();
+  loadConfiguredEnvironmentOrDefault();
+
+  // set current working directory
+  const userDataFolderPath = platformFolders.getConfigHome();
+  const userDataProcessEngineFolderName = 'process_engine_runtime';
+
+  const workingDir = path.join(userDataFolderPath, userDataProcessEngineFolderName);
+
+  if (!fs.existsSync(workingDir)) {
+    fs.mkdirSync(workingDir);
+  }
+
+  process.chdir(workingDir);
+
+  setDatabasePaths(sqlitePath);
+}
+
+function setConfigPath() {
+
+  const configPathProvided = process.env.CONFIG_PATH !== undefined;
+  if (configPathProvided) {
+    const configPathIsAbsolute = path.isAbsolute(process.env.CONFIG_PATH);
+    if (configPathIsAbsolute) {
+      ensureConfigPathExists(process.env.CONFIG_PATH);
+      return;
+    }
+  }
+
+  const configFolderToUse = process.env.CONFIG_PATH || 'config';
+
+  const configPath = path.join(__dirname, configFolderToUse);
+
+  ensureConfigPathExists(configPath);
+
+  process.env.CONFIG_PATH = configPath;
+}
+
+function ensureConfigPathExists(configPath) {
+
+  const configPathNotFound = !fs.existsSync(configPath);
+  if (configPathNotFound) {
+    logger.error('Specified configuration folder not found!');
+    logger.error(`Please make sure the folder ${configPath} exists!`);
+    process.exit(1);
+  }
+}
+
+function loadConfiguredEnvironmentOrDefault() {
+
+  const selectedEnvironment = process.env.NODE_ENV;
+
+  const defaultEnvironment = 'sqlite';
+
+  if (!selectedEnvironment) {
+    process.env.NODE_ENV = defaultEnvironment;
+    return;
+  }
+
+  let configDirNameNormalized = path.normalize(process.env.CONFIG_PATH);
+  const appAsarPathPart = path.normalize(path.join('.', 'app.asar'));
+
+  if (configDirNameNormalized.indexOf('app.asar') > -1) {
+    configDirNameNormalized = configDirNameNormalized.replace(appAsarPathPart, '');
+  }
+
+  const configPath = path.join(configDirNameNormalized, selectedEnvironment);
+
+  const isEnvironmentAvailable = fs.existsSync(configPath);
+
+  if (isEnvironmentAvailable) {
+    process.env.NODE_ENV = selectedEnvironment;
+    return;
+  }
+
+  logger.error(`Configuration for environment "${selectedEnvironment}" is not available.`);
+  logger.error(`Please make sure the configuration files are available at: ${process.env.CONFIG_PATH}/${selectedEnvironment}`);
+  process.exit(1);
+}
 
 async function runMigrations(sqlitePath) {
 
@@ -59,11 +142,9 @@ async function runMigrations(sqlitePath) {
   logger.info('Migrations successfully executed.');
 }
 
-async function startProcessEngine(sqlitePath) {
+async function startProcessEngine() {
 
   const iocModules = loadIocModules();
-
-  initializeEnvironment(sqlitePath);
 
   for (const iocModule of iocModules) {
     iocModule.registerInContainer(container);
@@ -119,61 +200,6 @@ function loadIocModules() {
   });
 
   return iocModules;
-}
-
-function loadConfiguredEnvironmentOrDefault() {
-
-  const availableEnvironments = [
-    'sqlite',
-    'postgres',
-  ];
-
-  const configuredEnvironment = process.env.NODE_ENV;
-
-  const defaultEnvironment = 'sqlite';
-
-  if (configuredEnvironment === undefined) {
-    process.env.NODE_ENV = defaultEnvironment;
-    return;
-  }
-
-  const isEnvironmentAvailable = availableEnvironments.find((environment) => {
-    return configuredEnvironment === environment;
-  });
-
-  if (isEnvironmentAvailable) {
-    process.env.NODE_ENV = configuredEnvironment;
-    return;
-  }
-
-  logger.info(`Configuration for environment "${configuredEnvironment}" is not available.`);
-  logger.info(`Please make sure the configuration files are available at: ${__dirname}/config/${configuredEnvironment}`);
-  process.exit(1);
-}
-
-function initializeEnvironment(sqlitePath) {
-
-  loadConfiguredEnvironmentOrDefault();
-
-  // set current working directory
-  const userDataFolderPath = platformFolders.getConfigHome();
-  const userDataProcessEngineFolderName = 'process_engine_runtime';
-
-  const workingDir = path.join(userDataFolderPath, userDataProcessEngineFolderName);
-
-  if (!fs.existsSync(workingDir)) {
-    fs.mkdirSync(workingDir);
-  }
-
-  process.chdir(workingDir);
-
-  setConfigPath();
-  setDatabasePaths(sqlitePath);
-}
-
-function setConfigPath() {
-  const configPath = path.join(__dirname, 'config');
-  process.env.CONFIG_PATH = configPath;
 }
 
 function setDatabasePaths(sqlitePath) {
