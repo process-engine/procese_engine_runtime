@@ -134,7 +134,7 @@ describe('Deployment API -> importBpmnFromXml', () => {
 
     try {
       await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
-      should.fail(undefined, 'error', 'This request should have failed, because the ProcessDefinition has more than one model!');
+      should.fail(undefined, 'error', 'This request should have failed, because ProcessModel name differs from the ProcessDefinitions name!');
     } catch (error) {
       const expectedErrorMessage = /ProcessModel contained within the diagram.*?must also use the name/i;
       const expectedErrorCode = 422;

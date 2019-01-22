@@ -106,7 +106,7 @@ describe('Deployment API -> importBpmnFromFile', () => {
         .deploymentApiService
         .importBpmnFromFile(defaultIdentity, processModelPathNameMismatch, processModelIdNameMismatch);
 
-      should.fail(undefined, 'error', 'This request should have failed, because the ProcessDefinition has more than one model!');
+      should.fail(undefined, 'error', 'This request should have failed, because ProcessModel name differs from the ProcessDefinitions name!');
     } catch (error) {
       const expectedErrorMessage = /ProcessModel contained within the diagram.*?must also use the name/i;
       const expectedErrorCode = 422;
