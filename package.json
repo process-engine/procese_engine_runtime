@@ -47,7 +47,7 @@
     "@essential-projects/bootstrapper": "3.3.0",
     "@essential-projects/bootstrapper_node": "3.2.4",
     "@essential-projects/event_aggregator": "4.0.0",
-    "@essential-projects/http_extension": "6.3.1",
+    "@essential-projects/http_extension": "6.4.1",
     "@essential-projects/iam_contracts": "3.4.0",
     "@essential-projects/services": "2.1.2",
     "@essential-projects/sequelize_connection_manager": "2.1.1",
