@@ -1,7 +1,6 @@
 'use strict';
 
 const should = require('should');
-const uuid = require('uuid');
 
 const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
@@ -19,8 +18,13 @@ describe(`Deployment API -> POST ${importRoute}`, () => {
 
   const processModelId = 'generic_sample';
   const processModelIdNoLanes = 'process_model_without_lanes';
+  const processModelIdNameMismatch = 'process_model_name_mismatch';
+  const processModelIdTooManyProcesses = 'process_model_too_many_processes';
+
   let processModelAsXml;
   let processModelNoLanesAsXml;
+  let processModelPathNameMismatchAsXml;
+  let processModelPathTooManyProcessesAsXml;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -31,6 +35,8 @@ describe(`Deployment API -> POST ${importRoute}`, () => {
 
     processModelAsXml = testFixtureProvider.readProcessModelFile(processModelId);
     processModelNoLanesAsXml = testFixtureProvider.readProcessModelFile(processModelIdNoLanes);
+    processModelPathNameMismatchAsXml = testFixtureProvider.readProcessModelFile(processModelIdNameMismatch);
+    processModelPathTooManyProcessesAsXml = testFixtureProvider.readProcessModelFile(processModelIdTooManyProcesses);
 
     httpClient = await testFixtureProvider.resolveAsync('HttpService');
   });
@@ -39,37 +45,15 @@ describe(`Deployment API -> POST ${importRoute}`, () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should successfully import a ProcessModel, if it does not yet exist and overwriteExisting is set to false', async () => {
-
-    // This is to ensure that any existing process models will not falsify the results.
-    const uniqueImportName = uuid.v4();
+  it('should successfully import a ProcessModel', async () => {
 
     const importPayload = {
-      name: uniqueImportName,
-      xml: processModelAsXml,
-      overwriteExisting: false,
-    };
-
-    await httpClient.post(importRoute, importPayload, authHeadersDefault);
-
-    await assertThatImportWasSuccessful();
-  });
-
-  it('should successfully import a ProcessModel, if it already exists and overwriteExisting is set to true', async () => {
-
-    // This is to ensure that any existing process models will not falsify the results.
-    const uniqueImportName = uuid.v4();
-
-    const importPayload = {
-      name: uniqueImportName,
+      name: processModelId,
       xml: processModelAsXml,
       overwriteExisting: true,
     };
 
-    // The value of overwriteExisting doesn't matter for the first import run.
     await httpClient.post(importRoute, importPayload, authHeadersDefault);
-    await httpClient.post(importRoute, importPayload, authHeadersDefault);
-
     await assertThatImportWasSuccessful();
   });
 
@@ -82,24 +66,19 @@ describe(`Deployment API -> POST ${importRoute}`, () => {
     };
 
     await httpClient.post(importRoute, importPayload, authHeadersDefault);
-
     await assertThatImportWasSuccessful();
   });
 
   it('should fail to import a ProcessModel, if a process model by the same name exists, and overwriteExisting is set to false', async () => {
 
     try {
-
-      // This is to ensure that any existing process models will not falsify the results.
-      const uniqueImportName = uuid.v4();
-
       const importPayload = {
-        name: uniqueImportName,
+        name: processModelId,
         xml: processModelAsXml,
         overwriteExisting: false,
       };
 
-      // The value of overwriteExisting doesn't matter for the first import run.
+      // Run this twice to ensure that this test case is always executable.
       await httpClient.post(importRoute, importPayload, authHeadersDefault);
       await httpClient.post(importRoute, importPayload, authHeadersDefault);
 
@@ -148,6 +127,49 @@ describe(`Deployment API -> POST ${importRoute}`, () => {
       const expectedErrorMessage = /access denied/i;
       should(error.code).be.eql(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
+    }
+  });
+
+  // Note: Current restrictions state that a ProcessModel must have the same name as the Definition file.
+  // Otherwise the ProcessModel would not be retrievable.
+  it('should fail to import a ProcessModel, when the ProcessModel name does not match the ProcessDefinition name', async () => {
+
+    const importPayload = {
+      name: processModelIdNameMismatch,
+      xml: processModelPathNameMismatchAsXml,
+      overwriteExisting: false,
+    };
+
+    try {
+      await httpClient.post(importRoute, importPayload, authHeadersDefault);
+      should.fail(undefined, 'error', 'This request should have failed, because ProcessModel name differs from the ProcessDefinitions name!');
+    } catch (error) {
+      const expectedErrorMessage = /ProcessModel contained within the diagram.*?must also use the name/i;
+      const expectedErrorCode = 422;
+      should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.eql(expectedErrorCode);
+    }
+  });
+
+  // Note: This may be supported in future versions, but right now such a BPMN file would break everything.
+  // So we need to make sure that those types of ProcessModels do not get deployed.
+  // Otherwise, BPMN Studio will be unable to use the Runtime at all.
+  it('should fail to import a ProcessModel, when the file contains more than one Process', async () => {
+
+    const importPayload = {
+      name: processModelIdTooManyProcesses,
+      xml: processModelPathTooManyProcessesAsXml,
+      overwriteExisting: false,
+    };
+
+    try {
+      await httpClient.post(importRoute, importPayload, authHeadersDefault);
+      should.fail(undefined, 'error', 'This request should have failed, because the ProcessDefinition has more than one model!');
+    } catch (error) {
+      const expectedErrorMessage = /contains more than one ProcessModel/i;
+      const expectedErrorCode = 422;
+      should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.eql(expectedErrorCode);
     }
   });
 
