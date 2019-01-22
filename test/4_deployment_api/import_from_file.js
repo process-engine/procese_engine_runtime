@@ -13,7 +13,9 @@ describe('Deployment API -> importBpmnFromFile', () => {
   let restrictedIdentity;
 
   const processModelId = 'generic_sample';
+  const processModelIdNoLanes = 'process_model_without_lanes';
   let processModelPath;
+  let processModelPathNoLanes;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -24,13 +26,14 @@ describe('Deployment API -> importBpmnFromFile', () => {
 
     const bpmnFolderLocation = testFixtureProvider.getBpmnDirectoryPath();
     processModelPath = path.join(bpmnFolderLocation, `${processModelId}.bpmn`);
+    processModelPathNoLanes = path.join(bpmnFolderLocation, `${processModelIdNoLanes}.bpmn`);
   });
 
   after(async () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should successfully import the process model, if it does not yet exist and overwriteExisting is set to false', async () => {
+  it('should successfully import a ProcessModel, if it does not yet exist and overwriteExisting is set to false', async () => {
 
     // This is to ensure that any existing process models will not falsify the results.
     const uniqueImportName = uuid.v4();
@@ -40,7 +43,7 @@ describe('Deployment API -> importBpmnFromFile', () => {
     await assertThatImportWasSuccessful();
   });
 
-  it('should successfully import the process model, if it already exists and overwriteExisting is set to true', async () => {
+  it('should successfully import a ProcessModel, if it already exists and overwriteExisting is set to true', async () => {
 
     // This is to ensure that any existing process models will not falsify the results.
     const uniqueImportName = uuid.v4();
@@ -52,7 +55,17 @@ describe('Deployment API -> importBpmnFromFile', () => {
     await assertThatImportWasSuccessful();
   });
 
-  it('should fail to import the process model, if a process model by the same name exists, and overwriteExisting is set to false', async () => {
+  it('should successfully import a ProcessModel without any lanes', async () => {
+
+    const overwriteIfExists = true;
+    await testFixtureProvider
+      .deploymentApiService
+      .importBpmnFromFile(defaultIdentity, processModelPathNoLanes, processModelIdNoLanes, overwriteIfExists);
+
+    await assertThatImportWasSuccessful();
+  });
+
+  it('should fail to import a ProcessModel, if a process model by the same name exists, and overwriteExisting is set to false', async () => {
 
     try {
 
@@ -63,7 +76,7 @@ describe('Deployment API -> importBpmnFromFile', () => {
       await testFixtureProvider.deploymentApiService.importBpmnFromFile(defaultIdentity, processModelPath, uniqueImportName);
       await testFixtureProvider.deploymentApiService.importBpmnFromFile(defaultIdentity, processModelPath, uniqueImportName, false);
 
-      should.fail(undefined, 'error', 'This request should have failed, because the process model already exists!');
+      should.fail(undefined, 'error', 'This request should have failed, because a ProcessModel already exists!');
     } catch (error) {
       const expectedErrorCode = 409;
       const expectedErrorMessage = /already exists/i;
@@ -73,7 +86,7 @@ describe('Deployment API -> importBpmnFromFile', () => {
 
   });
 
-  it('should fail to import the process model, when the user is not authenticated', async () => {
+  it('should fail to import a ProcessModel, when the user is not authenticated', async () => {
 
     try {
       await testFixtureProvider.deploymentApiService.importBpmnFromFile(undefined, processModelPath);
@@ -86,7 +99,7 @@ describe('Deployment API -> importBpmnFromFile', () => {
     }
   });
 
-  it('should fail to import the process model, when the user is forbidden to see the process instance result', async () => {
+  it('should fail to import a ProcessModel, when the user is forbidden to see the process instance result', async () => {
 
     try {
       await testFixtureProvider.deploymentApiService.importBpmnFromFile(restrictedIdentity, processModelPath);
