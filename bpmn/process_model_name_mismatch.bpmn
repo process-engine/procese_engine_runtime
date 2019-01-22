@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_15mlx3e" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.0.3">
+  <bpmn:collaboration id="Collaboration_0bxb8mu">
+    <bpmn:participant id="Participant_0ylnmok" name="process_model_name_mismatch_part_2" processRef="process_model_name_mismatch_part_2" />
+  </bpmn:collaboration>
+  <bpmn:process id="process_model_name_mismatch_part_2" name="process_model_name_mismatch_part_2" isExecutable="true" camunda:versionTag="1.0">
+    <bpmn:laneSet id="LaneSet_08i1la7" />
+    <bpmn:startEvent id="startEvent" name="Start" camunda:formKey="TradeId">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="FormField_0go8uv1" label="test" type="long" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_0coq1aw</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0coq1aw" sourceRef="startEvent" targetRef="Task_1a5ko2x" />
+    <bpmn:sequenceFlow id="SequenceFlow_0ya4kwj" sourceRef="Task_0a8vuqp" targetRef="ExclusiveGateway_17rh46l" />
+    <bpmn:sequenceFlow id="SequenceFlow_08ip971" sourceRef="Task_1dejorx" targetRef="ExclusiveGateway_17rh46l" />
+    <bpmn:sequenceFlow id="SequenceFlow_003v0e4" sourceRef="ExclusiveGateway_1khwy6z" targetRef="Task_0a8vuqp" />
+    <bpmn:sequenceFlow id="SequenceFlow_1jlkayj" sourceRef="ExclusiveGateway_1khwy6z" targetRef="Task_1dejorx" />
+    <bpmn:sequenceFlow id="SequenceFlow_0581wvt" sourceRef="Task_1a5ko2x" targetRef="ExclusiveGateway_1khwy6z" />
+    <bpmn:sequenceFlow id="SequenceFlow_1xxn53i" sourceRef="ExclusiveGateway_17rh46l" targetRef="EndEvent_1fffh59" />
+    <bpmn:sequenceFlow id="SequenceFlow_1kelad1" sourceRef="Task_1234" targetRef="ExclusiveGateway_17rh46l" />
+    <bpmn:sequenceFlow id="SequenceFlow_0nchi8x" sourceRef="ExclusiveGateway_1khwy6z" targetRef="Task_1234" />
+    <bpmn:serviceTask id="Task_0a8vuqp" name="Update pricing event dates" camunda:type="external" camunda:topic="Terra.Valuation.UpdatePricingEventDatesForTrade">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="TradeId">${TradeId}</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:properties>
+          <camunda:property name="payload" value="{&#10;  tradeId: token.history.startEvent.tradeId&#10;}" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_003v0e4</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0ya4kwj</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_1dejorx" name="Update settlement dates" camunda:type="external" camunda:topic="Terra.Settlement.UpdateSettlementDatesForTrade">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="TradeId">${TradeId}</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:properties>
+          <camunda:property name="payload" value="{&#10;  tradeId: token.history.startEvent.tradeId&#10;}" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1jlkayj</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_08ip971</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:parallelGateway id="ExclusiveGateway_17rh46l">
+      <bpmn:incoming>SequenceFlow_1kelad1</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_08ip971</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0ya4kwj</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1xxn53i</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:parallelGateway id="ExclusiveGateway_1khwy6z">
+      <bpmn:incoming>SequenceFlow_0581wvt</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0nchi8x</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_1jlkayj</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_003v0e4</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:endEvent id="EndEvent_1fffh59" name="End">
+      <bpmn:incoming>SequenceFlow_1xxn53i</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Task_1234" name="Update payment due dates" camunda:type="external" camunda:topic="Terra.Settlement.UpdatePaymentDueDatesForTrade">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="TradeId">${TradeId}</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:properties>
+          <camunda:property name="payload" value="{&#10;  tradeId: token.history.startEvent.tradeId&#10;}" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0nchi8x</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1kelad1</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_1a5ko2x" name="Update unscheduled quantities" camunda:type="external" camunda:topic="Terra.Scheduling.UpdateUnscheduledQuantitiesForTrade">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="TradeId">${TradeId}</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:properties>
+          <camunda:property name="payload" value="{&#10;  tradeId: token.history.startEvent.tradeId&#10;}" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0coq1aw</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0581wvt</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0bxb8mu">
+      <bpmndi:BPMNShape id="Participant_0ylnmok_di" bpmnElement="Participant_0ylnmok">
+        <dc:Bounds x="109" y="69" width="893" height="390" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_0mnj5km_di" bpmnElement="Task_1234">
+        <dc:Bounds x="615" y="102" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_10ithzc_di" bpmnElement="startEvent">
+        <dc:Bounds x="161" y="124" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="168" y="167" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1fffh59_di" bpmnElement="EndEvent_1fffh59">
+        <dc:Bounds x="942" y="124" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="950" y="167" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0coq1aw_di" bpmnElement="SequenceFlow_0coq1aw">
+        <di:waypoint x="197" y="142" />
+        <di:waypoint x="283" y="142" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0581wvt_di" bpmnElement="SequenceFlow_0581wvt">
+        <di:waypoint x="383" y="142" />
+        <di:waypoint x="474" y="142" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ParallelGateway_0b7ur9p_di" bpmnElement="ExclusiveGateway_1khwy6z">
+        <dc:Bounds x="474" y="117" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0nchi8x_di" bpmnElement="SequenceFlow_0nchi8x">
+        <di:waypoint x="524" y="142" />
+        <di:waypoint x="615" y="142" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1kelad1_di" bpmnElement="SequenceFlow_1kelad1">
+        <di:waypoint x="715" y="142" />
+        <di:waypoint x="806" y="142" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1xxn53i_di" bpmnElement="SequenceFlow_1xxn53i">
+        <di:waypoint x="856" y="142" />
+        <di:waypoint x="942" y="142" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ParallelGateway_1gywxjy_di" bpmnElement="ExclusiveGateway_17rh46l">
+        <dc:Bounds x="806" y="117" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1jlkayj_di" bpmnElement="SequenceFlow_1jlkayj">
+        <di:waypoint x="499" y="167" />
+        <di:waypoint x="499" y="265" />
+        <di:waypoint x="615" y="265" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_08ip971_di" bpmnElement="SequenceFlow_08ip971">
+        <di:waypoint x="715" y="265" />
+        <di:waypoint x="831" y="265" />
+        <di:waypoint x="831" y="167" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_003v0e4_di" bpmnElement="SequenceFlow_003v0e4">
+        <di:waypoint x="499" y="167" />
+        <di:waypoint x="499" y="387" />
+        <di:waypoint x="615" y="387" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0ya4kwj_di" bpmnElement="SequenceFlow_0ya4kwj">
+        <di:waypoint x="715" y="387" />
+        <di:waypoint x="831" y="387" />
+        <di:waypoint x="831" y="167" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_029o80s_di" bpmnElement="Task_1dejorx">
+        <dc:Bounds x="615" y="225" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_1oo84a2_di" bpmnElement="Task_0a8vuqp">
+        <dc:Bounds x="615" y="347" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_0gz0aa3_di" bpmnElement="Task_1a5ko2x">
+        <dc:Bounds x="283" y="102" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
