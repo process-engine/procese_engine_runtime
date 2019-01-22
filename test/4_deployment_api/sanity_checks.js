@@ -33,7 +33,7 @@ describe('Deployment API -> Sanity checks after import', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should always return the most up to date version of any process definition', async () => {
+  it('should always return the most up to date version of any ProcessDefinition', async () => {
 
     const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
@@ -52,7 +52,7 @@ describe('Deployment API -> Sanity checks after import', () => {
     should(startEvent.id).be.equal(expectedStartEventId, `Received an unexpected StartEventId: ${startEvent.id}`);
   });
 
-  it('should not contain outdated versions of any process definitions, when querying all process definitions', async () => {
+  it('should not contain outdated versions of any ProcessDefinitions, when querying all ProcessDefinitions', async () => {
 
     const processModels = await processModelService.getProcessModels(testFixtureProvider.identities.defaultUser);
 
