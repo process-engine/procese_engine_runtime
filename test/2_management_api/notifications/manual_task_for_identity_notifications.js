@@ -5,16 +5,16 @@ const uuid = require('uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
-describe('Management API:   Receive global UserTask Notifications', () => {
+describe('Management API:   Receive identity specific ManualTask Notifications', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
 
   let defaultIdentity;
 
-  const processModelId = 'test_management_api_usertask';
+  const processModelId = 'test_management_api_manualtask';
   let correlationId;
-  let userTaskToFinish;
+  let manualTaskToFinish;
 
   const noopCallback = () => {};
 
@@ -34,27 +34,27 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should send a notification when UserTask is suspended', async () => {
+  it('should send a notification via socket when a ManualTask for the given identity is suspended', async () => {
 
     correlationId = uuid.v4();
 
     return new Promise(async (resolve, reject) => {
 
-      const notificationReceivedCallback = async (userTaskWaitingMessage) => {
+      const notificationReceivedCallback = async (manualTaskWaitingMessage) => {
 
-        should.exist(userTaskWaitingMessage);
-        // Store this for use in the second test, where we wait for the UserTaskFinished notification.
-        userTaskToFinish = userTaskWaitingMessage;
+        should.exist(manualTaskWaitingMessage);
+        // Store this for use in the second test, where we wait for the manualTaskFinished notification.
+        manualTaskToFinish = manualTaskWaitingMessage;
 
-        const userTaskList = await testFixtureProvider
+        const manualTaskList = await testFixtureProvider
           .managementApiClientService
-          .getUserTasksForProcessModel(defaultIdentity, processModelId);
+          .getManualTasksForProcessModel(defaultIdentity, processModelId);
 
-        const listContainsUserTaskIdFromMessage = userTaskList.userTasks.some((userTask) => {
-          return userTask.id === userTaskWaitingMessage.flowNodeId;
+        const listContainsManualTaskIdFromMessage = manualTaskList.manualTasks.some((manualTask) => {
+          return manualTask.id === manualTaskWaitingMessage.flowNodeId;
         });
 
-        should(listContainsUserTaskIdFromMessage).be.true();
+        should(listContainsManualTaskIdFromMessage).be.true();
 
         resolve();
       };
@@ -62,27 +62,30 @@ describe('Management API:   Receive global UserTask Notifications', () => {
       const subscribeOnce = true;
       await testFixtureProvider
         .managementApiClientService
-        .onUserTaskWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+        .onManualTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
   });
 
-  it('should send a notification when UserTask is finished', async () => {
+  it('should send a notification via socket when a ManualTask for the given identity is finished', async () => {
 
     return new Promise(async (resolve, reject) => {
 
       let notificationReceived = false;
 
-      const notificationReceivedCallback = async (userTaskFinishedMessage) => {
-        should(userTaskFinishedMessage).not.be.undefined();
-        should(userTaskFinishedMessage.flowNodeId).be.equal(userTaskToFinish.flowNodeId);
-        should(userTaskFinishedMessage.processModelId).be.equal(userTaskToFinish.processModelId);
-        should(userTaskFinishedMessage.correlationId).be.equal(userTaskToFinish.correlationId);
+      const notificationReceivedCallback = async (manualTaskFinishedMessage) => {
+        should(manualTaskFinishedMessage).not.be.undefined();
+        should(manualTaskFinishedMessage.flowNodeId).be.equal(manualTaskToFinish.flowNodeId);
+        should(manualTaskFinishedMessage.processModelId).be.equal(manualTaskToFinish.processModelId);
+        should(manualTaskFinishedMessage.correlationId).be.equal(manualTaskToFinish.correlationId);
         notificationReceived = true;
       };
 
-      testFixtureProvider.managementApiClientService.onUserTaskFinished(defaultIdentity, notificationReceivedCallback);
+      const subscribeOnce = true;
+      await testFixtureProvider
+        .managementApiClientService
+        .onManualTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       const processFinishedCallback = () => {
         if (!notificationReceived) {
@@ -91,16 +94,16 @@ describe('Management API:   Receive global UserTask Notifications', () => {
         resolve();
       };
       processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, processFinishedCallback);
-      finishWaitingUserTask();
+      finishWaitingManualTask();
     });
   });
 
-  it('should fail to subscribe for the UserTaskWaiting notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the ManualTaskForIdentityWaiting notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
         .managementApiClientService
-        .onUserTaskWaiting({}, noopCallback, subscribeOnce);
+        .onManualTaskForIdentityWaiting({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
       const expectedErrorMessage = /no auth token/i;
@@ -110,12 +113,12 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     }
   });
 
-  it('should fail to subscribe for the UserTaskFinished notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the ManualTaskForIdentityFinished notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
         .managementApiClientService
-        .onUserTaskFinished({}, noopCallback, subscribeOnce);
+        .onManualTaskForIdentityFinished({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
       const expectedErrorMessage = /no auth token/i;
@@ -125,18 +128,13 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     }
   });
 
-  async function finishWaitingUserTask() {
-    const userTaskResult = {
-      formFields: {
-        Form_XGSVBgio: true,
-      },
-    };
+  async function finishWaitingManualTask() {
 
-    const processInstanceId = userTaskToFinish.processInstanceId;
-    const userTaskInstanceId = userTaskToFinish.flowNodeInstanceId;
+    const processInstanceId = manualTaskToFinish.processInstanceId;
+    const manualTaskInstanceId = manualTaskToFinish.flowNodeInstanceId;
 
     await testFixtureProvider
       .managementApiClientService
-      .finishUserTask(defaultIdentity, processInstanceId, userTaskToFinish.correlationId, userTaskInstanceId, userTaskResult);
+      .finishManualTask(defaultIdentity, processInstanceId, manualTaskToFinish.correlationId, manualTaskInstanceId);
   }
 });

@@ -15,6 +15,8 @@ describe('Management API:   Receive Process Terminated Notification', () => {
   const correlationId = uuid.v4();
   const processModelId = 'test_consumer_api_process_terminate';
 
+  const noopCallback = () => {};
+
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
@@ -56,6 +58,21 @@ describe('Management API:   Receive Process Terminated Notification', () => {
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
+  });
+
+  it('should fail to subscribe for the ProcessTerminated notification, if the user is unauthorized', async () => {
+    try {
+      const subscribeOnce = true;
+      const subscription = await testFixtureProvider
+        .managementApiClientService
+        .onProcessTerminated({}, noopCallback, subscribeOnce);
+      should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
+    } catch (error) {
+      const expectedErrorMessage = /no auth token/i;
+      const expectedErrorCode = 401;
+      should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
+    }
   });
 
 });

@@ -5,7 +5,7 @@ const uuid = require('uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
-describe('Consumer API:   Receive global ManualTask Notifications', () => {
+describe('Consumer API:   Receive identity specific ManualTask Notifications', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -34,7 +34,7 @@ describe('Consumer API:   Receive global ManualTask Notifications', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should send a notification via socket when ManualTask is suspended', async () => {
+  it('should send a notification via socket when a ManualTask for the given identity is suspended', async () => {
 
     correlationId = uuid.v4();
 
@@ -62,13 +62,13 @@ describe('Consumer API:   Receive global ManualTask Notifications', () => {
       const subscribeOnce = true;
       await testFixtureProvider
         .consumerApiClientService
-        .onManualTaskWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+        .onManualTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
   });
 
-  it('should send a notification via socket when a ManualTask is finished', async () => {
+  it('should send a notification via socket when a ManualTask for the given identity is finished', async () => {
 
     return new Promise(async (resolve, reject) => {
 
@@ -85,7 +85,7 @@ describe('Consumer API:   Receive global ManualTask Notifications', () => {
       const subscribeOnce = true;
       await testFixtureProvider
         .consumerApiClientService
-        .onManualTaskFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+        .onManualTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       const processFinishedCallback = () => {
         if (!notificationReceived) {
@@ -98,12 +98,12 @@ describe('Consumer API:   Receive global ManualTask Notifications', () => {
     });
   });
 
-  it('should fail to subscribe for the ManualTaskWaiting notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the ManualTaskForIdentityWaiting notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
         .consumerApiClientService
-        .onManualTaskWaiting({}, noopCallback, subscribeOnce);
+        .onManualTaskForIdentityWaiting({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
       const expectedErrorMessage = /no auth token/i;
@@ -113,12 +113,12 @@ describe('Consumer API:   Receive global ManualTask Notifications', () => {
     }
   });
 
-  it('should fail to subscribe for the ManualTaskFinished notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the ManualTaskForIdentityFinished notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
         .consumerApiClientService
-        .onManualTaskFinished({}, noopCallback, subscribeOnce);
+        .onManualTaskForIdentityFinished({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
       const expectedErrorMessage = /no auth token/i;

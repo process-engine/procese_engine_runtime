@@ -5,7 +5,7 @@ const uuid = require('uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
-describe('Management API:   Receive global UserTask Notifications', () => {
+describe('Management API:   Receive identity specific UserTask Notifications', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -34,7 +34,7 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should send a notification when UserTask is suspended', async () => {
+  it('should send a notification when a UserTask for the given identity is suspended', async () => {
 
     correlationId = uuid.v4();
 
@@ -59,16 +59,13 @@ describe('Management API:   Receive global UserTask Notifications', () => {
         resolve();
       };
 
-      const subscribeOnce = true;
-      await testFixtureProvider
-        .managementApiClientService
-        .onUserTaskWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+      testFixtureProvider.managementApiClientService.onUserTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
   });
 
-  it('should send a notification when UserTask is finished', async () => {
+  it('should send a notification when a UserTask for the given identity is finished', async () => {
 
     return new Promise(async (resolve, reject) => {
 
@@ -82,7 +79,7 @@ describe('Management API:   Receive global UserTask Notifications', () => {
         notificationReceived = true;
       };
 
-      testFixtureProvider.managementApiClientService.onUserTaskFinished(defaultIdentity, notificationReceivedCallback);
+      testFixtureProvider.managementApiClientService.onUserTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback);
 
       const processFinishedCallback = () => {
         if (!notificationReceived) {
@@ -95,12 +92,12 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     });
   });
 
-  it('should fail to subscribe for the UserTaskWaiting notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the UserTaskForIdentityWaiting notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
         .managementApiClientService
-        .onUserTaskWaiting({}, noopCallback, subscribeOnce);
+        .onUserTaskForIdentityWaiting({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
       const expectedErrorMessage = /no auth token/i;
@@ -110,12 +107,12 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     }
   });
 
-  it('should fail to subscribe for the UserTaskFinished notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the UserTaskForIdentityFinished notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
         .managementApiClientService
-        .onUserTaskFinished({}, noopCallback, subscribeOnce);
+        .onUserTaskForIdentityFinished({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
       const expectedErrorMessage = /no auth token/i;
