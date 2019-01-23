@@ -57,7 +57,10 @@ describe('Consumer API:   Receive Manual Task Notifications', () => {
         resolve();
       };
 
-      testFixtureProvider.consumerApiClientService.onManualTaskWaiting(defaultIdentity, notificationReceivedCallback);
+      const subscribeOnce = true;
+      await testFixtureProvider
+        .consumerApiClientService
+        .onManualTaskWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
@@ -77,7 +80,10 @@ describe('Consumer API:   Receive Manual Task Notifications', () => {
         notificationReceived = true;
       };
 
-      testFixtureProvider.consumerApiClientService.onManualTaskFinished(defaultIdentity, notificationReceivedCallback);
+      const subscribeOnce = true;
+      await testFixtureProvider
+        .consumerApiClientService
+        .onManualTaskFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       const processFinishedCallback = () => {
         if (!notificationReceived) {
@@ -115,7 +121,10 @@ describe('Consumer API:   Receive Manual Task Notifications', () => {
         resolve();
       };
 
-      testFixtureProvider.consumerApiClientService.onManualTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback);
+      const subscribeOnce = true;
+      await testFixtureProvider
+        .consumerApiClientService
+        .onManualTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
@@ -135,7 +144,10 @@ describe('Consumer API:   Receive Manual Task Notifications', () => {
         notificationReceived = true;
       };
 
-      testFixtureProvider.consumerApiClientService.onManualTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback);
+      const subscribeOnce = true;
+      await testFixtureProvider
+        .consumerApiClientService
+        .onManualTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       const processFinishedCallback = () => {
         if (!notificationReceived) {

@@ -3,15 +3,16 @@
 const should = require('should');
 const uuid = require('uuid');
 
-const StartCallbackType = require('@process-engine/management_api_contracts').DataModels.ProcessModels.StartCallbackType;
-
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
 describe('Management API:   Receive Process Terminated Notification', () => {
 
+  let processInstanceHandler;
   let testFixtureProvider;
+
   let defaultIdentity;
 
+  const correlationId = uuid.v4();
   const processModelId = 'test_consumer_api_process_terminate';
 
   before(async () => {
@@ -24,6 +25,8 @@ describe('Management API:   Receive Process Terminated Notification', () => {
     ];
 
     await testFixtureProvider.importProcessFiles(processModelsToImport);
+
+    processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
   });
 
   after(async () => {
@@ -32,38 +35,26 @@ describe('Management API:   Receive Process Terminated Notification', () => {
 
   it('should send a notification when a process is terminated', async () => {
 
-    return new Promise((resolve, reject) => {
-
-      const startEventId = 'StartEvent_1';
-      const endEventId = 'EndEvent_1';
-      const payload = {
-        correlationId: uuid.v4(),
-        inputValues: {},
-      };
-      const startCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
+    return new Promise(async (resolve, reject) => {
 
       const messageReceivedCallback = (processTerminatedMessage) => {
-
-        // Since this notification channel will receive ALL processTerminatedMessage messages,
-        // we need to make sure that we intercepted the one we anticipated.
-        if (processTerminatedMessage.correlationId !== payload.correlationId) {
-          return;
-        }
+        const expectedEndEventId = 'EndEvent_1';
 
         should(processTerminatedMessage).not.be.undefined();
         should(processTerminatedMessage).have.property('correlationId');
-        should(processTerminatedMessage.correlationId).be.equal(payload.correlationId);
+        should(processTerminatedMessage.correlationId).be.equal(correlationId);
         should(processTerminatedMessage).have.property('flowNodeId');
-        should(processTerminatedMessage.flowNodeId).be.equal(endEventId);
+        should(processTerminatedMessage.flowNodeId).be.equal(expectedEndEventId);
 
         resolve();
       };
 
-      testFixtureProvider.managementApiClientService.onProcessTerminated(defaultIdentity, messageReceivedCallback);
-
-      testFixtureProvider
+      const subscribeOnce = true;
+      await testFixtureProvider
         .managementApiClientService
-        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
+        .onProcessTerminated(defaultIdentity, messageReceivedCallback, subscribeOnce);
+
+      await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
   });
 

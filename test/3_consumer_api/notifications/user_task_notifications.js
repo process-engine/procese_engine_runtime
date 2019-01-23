@@ -13,7 +13,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
   let defaultIdentity;
 
   const processModelId = 'test_consumer_api_usertask';
-  let correlationId = uuid.v4();
+  let correlationId;
   let userTaskToFinish;
 
   before(async () => {
@@ -41,7 +41,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
       const notificationReceivedCallback = async (userTaskWaitingMessage) => {
 
         should.exist(userTaskWaitingMessage);
-        // Store this for use in the second test, where we wait for the manualTaskFinished notification.
+        // Store this for use in the second test, where we wait for the UserTaskFinished notification.
         userTaskToFinish = userTaskWaitingMessage;
 
         const userTaskList = await testFixtureProvider
@@ -57,7 +57,10 @@ describe('Consumer API:   Receive User Task Notifications', () => {
         resolve();
       };
 
-      testFixtureProvider.consumerApiClientService.onUserTaskWaiting(defaultIdentity, notificationReceivedCallback);
+      const subscribeOnce = true;
+      await testFixtureProvider
+        .consumerApiClientService
+        .onUserTaskWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
@@ -99,7 +102,7 @@ describe('Consumer API:   Receive User Task Notifications', () => {
       const notificationReceivedCallback = async (userTaskWaitingMessage) => {
 
         should.exist(userTaskWaitingMessage);
-        // Store this for use in the second test, where we wait for the manualTaskFinished notification.
+        // Store this for use in the second test, where we wait for the UserTaskFinished notification.
         userTaskToFinish = userTaskWaitingMessage;
 
         const userTaskList = await testFixtureProvider
