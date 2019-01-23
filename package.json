@@ -62,7 +62,7 @@
     "@process-engine/external_task_api_core": "1.1.2",
     "@process-engine/external_task_api_http": "1.0.4",
     "@process-engine/external_task.repository.sequelize": "2.1.1",
-    "@process-engine/flow_node_instance.repository.sequelize": "8.3.3",
+    "@process-engine/flow_node_instance.repository.sequelize": "feature~add_query_for_suspended_by_process-instance",
     "@process-engine/iam": "1.4.1",
     "@process-engine/kpi_api_http": "1.2.1",
     "@process-engine/kpi_api_core": "1.2.2",
