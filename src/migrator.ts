@@ -68,8 +68,6 @@ async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: str
   const rootDirName: string = path.join(__dirname, '..', '..');
 
   let dirNameNormalized: string = path.normalize(rootDirName);
-  console.log(rootDirName);
-  console.log(dirNameNormalized);
   const appAsarPathPart: string = path.normalize(path.join('.', 'app.asar'));
 
   if (dirNameNormalized.indexOf('app.asar') > -1) {
