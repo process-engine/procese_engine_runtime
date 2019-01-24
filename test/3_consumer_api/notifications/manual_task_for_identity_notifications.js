@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
-describe('Management API:   Receive global ManualTask Notifications', () => {
+describe('Consumer API:   Receive identity specific ManualTask Notifications', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -13,7 +13,7 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
 
   let defaultIdentity;
 
-  const processModelId = 'test_management_api_manualtask';
+  const processModelId = 'test_consumer_api_manualtask';
   let correlationId;
   let manualTaskToFinish;
 
@@ -30,6 +30,15 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
     processInstanceOwner: undefined, // Can only be set after the TestFixtureProvider was initialized.
     payload: {},
   };
+  const sampleManualTaskMessageForDifferentUser = {
+    correlationId: uuid.v4(),
+    processModelId: 'processModelId',
+    processInstanceId: uuid.v4(),
+    flowNodeId: 'Manual_Task_1',
+    flowNodeInstanceId: uuid.v4(),
+    processInstanceOwner: undefined, // Can only be set after the TestFixtureProvider was initialized.
+    payload: {},
+  };
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -37,6 +46,7 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
     defaultIdentity = testFixtureProvider.identities.defaultUser;
 
     sampleManualTaskMessage.processInstanceOwner = defaultIdentity;
+    sampleManualTaskMessageForDifferentUser.processInstanceOwner = testFixtureProvider.identities.restrictedUser;
 
     const processModelsToImport = [processModelId];
     await testFixtureProvider.importProcessFiles(processModelsToImport);
@@ -49,7 +59,7 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should send a notification via socket when ManualTask is suspended', async () => {
+  it('should send a notification via socket when a ManualTask for the given identity is suspended', async () => {
 
     correlationId = uuid.v4();
 
@@ -62,7 +72,7 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
         manualTaskToFinish = manualTaskWaitingMessage;
 
         const manualTaskList = await testFixtureProvider
-          .managementApiClientService
+          .consumerApiClientService
           .getManualTasksForProcessModel(defaultIdentity, processModelId);
 
         const listContainsManualTaskIdFromMessage = manualTaskList.manualTasks.some((manualTask) => {
@@ -76,14 +86,14 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
 
       const subscribeOnce = true;
       await testFixtureProvider
-        .managementApiClientService
-        .onManualTaskWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+        .consumerApiClientService
+        .onManualTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
   });
 
-  it('should send a notification via socket when a ManualTask is finished', async () => {
+  it('should send a notification via socket when a ManualTask for the given identity is finished', async () => {
 
     return new Promise(async (resolve, reject) => {
 
@@ -99,8 +109,8 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
 
       const subscribeOnce = true;
       await testFixtureProvider
-        .managementApiClientService
-        .onManualTaskFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+        .consumerApiClientService
+        .onManualTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       const processFinishedCallback = () => {
         if (!notificationReceived) {
@@ -113,12 +123,12 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
     });
   });
 
-  it('should fail to subscribe for the ManualTaskWaiting notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the ManualTaskForIdentityWaiting notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .managementApiClientService
-        .onManualTaskWaiting({}, noopCallback, subscribeOnce);
+        .consumerApiClientService
+        .onManualTaskForIdentityWaiting({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
       const expectedErrorMessage = /no auth token/i;
@@ -128,12 +138,12 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
     }
   });
 
-  it('should fail to subscribe for the ManualTaskFinished notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the ManualTaskForIdentityFinished notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .managementApiClientService
-        .onManualTaskFinished({}, noopCallback, subscribeOnce);
+        .consumerApiClientService
+        .onManualTaskForIdentityFinished({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
       const expectedErrorMessage = /no auth token/i;
@@ -154,8 +164,8 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .managementApiClientService
-      .onManualTaskWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+      .consumerApiClientService
+      .onManualTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
     eventAggregator.publish(manualTaskWaitingMessagePath, sampleManualTaskMessage);
@@ -166,7 +176,7 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
 
     // Remove the subscription
     await testFixtureProvider
-      .managementApiClientService
+      .consumerApiClientService
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
@@ -188,8 +198,8 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .managementApiClientService
-      .onManualTaskFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+      .consumerApiClientService
+      .onManualTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
     eventAggregator.publish(manualTaskFinishedMessagePath, sampleManualTaskMessage);
@@ -200,7 +210,7 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
 
     // Remove the subscription
     await testFixtureProvider
-      .managementApiClientService
+      .consumerApiClientService
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
@@ -223,7 +233,7 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .managementApiClientService
+            .consumerApiClientService
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -233,8 +243,8 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .managementApiClientService
-        .onManualTaskWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+        .consumerApiClientService
+        .onManualTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
       eventAggregator.publish(manualTaskWaitingMessagePath, sampleManualTaskMessage);
@@ -254,7 +264,7 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .managementApiClientService
+            .consumerApiClientService
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -264,13 +274,73 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .managementApiClientService
-        .onManualTaskFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+        .consumerApiClientService
+        .onManualTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
       eventAggregator.publish(manualTaskFinishedMessagePath, sampleManualTaskMessage);
       eventAggregator.publish(manualTaskFinishedMessagePath, sampleManualTaskMessage);
     });
+  });
+
+  it('should only receive ManualTaskWaiting notifications about the users own ManualTasks', async () => {
+
+    let receivedNotifications = 0;
+
+    const notificationReceivedCallback = async (message) => {
+      receivedNotifications++;
+    };
+
+    // Create the subscription
+    const subscribeOnce = false;
+    const subscription = await testFixtureProvider
+      .consumerApiClientService
+      .onManualTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+
+    // Publish a number of events
+    eventAggregator.publish(manualTaskWaitingMessagePath, sampleManualTaskMessage);
+    eventAggregator.publish(manualTaskWaitingMessagePath, sampleManualTaskMessageForDifferentUser);
+
+    // Wait some time before removing the subscription, or we risk it being destroyed
+    // before the notifications are received.
+    await processInstanceHandler.wait(500);
+
+    await testFixtureProvider
+      .consumerApiClientService
+      .removeSubscription(defaultIdentity, subscription);
+
+    const expectedReceivedAmountOfNotifications = 1;
+    should(receivedNotifications).be.equal(expectedReceivedAmountOfNotifications);
+  });
+
+  it('should only receive ManualTaskFinished notifications about the users own ManualTasks', async () => {
+
+    let receivedNotifications = 0;
+
+    const notificationReceivedCallback = async (message) => {
+      receivedNotifications++;
+    };
+
+    // Create the subscription
+    const subscribeOnce = false;
+    const subscription = await testFixtureProvider
+      .consumerApiClientService
+      .onManualTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+
+    // Publish a number of events
+    eventAggregator.publish(manualTaskFinishedMessagePath, sampleManualTaskMessage);
+    eventAggregator.publish(manualTaskFinishedMessagePath, sampleManualTaskMessageForDifferentUser);
+
+    // Wait some time before removing the subscription, or we risk it being destroyed
+    // before the notifications are received.
+    await processInstanceHandler.wait(500);
+
+    await testFixtureProvider
+      .consumerApiClientService
+      .removeSubscription(defaultIdentity, subscription);
+
+    const expectedReceivedAmountOfNotifications = 1;
+    should(receivedNotifications).be.equal(expectedReceivedAmountOfNotifications);
   });
 
   it('should only receive one ManualTaskWaiting notification, if subscribeOnce is set to "true"', async () => {
@@ -283,8 +353,8 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .managementApiClientService
-      .onManualTaskWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+      .consumerApiClientService
+      .onManualTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
     eventAggregator.publish(manualTaskWaitingMessagePath, sampleManualTaskMessage);
@@ -309,8 +379,8 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .managementApiClientService
-      .onManualTaskFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+      .consumerApiClientService
+      .onManualTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
     eventAggregator.publish(manualTaskFinishedMessagePath, sampleManualTaskMessage);
@@ -331,7 +401,7 @@ describe('Management API:   Receive global ManualTask Notifications', () => {
     const manualTaskInstanceId = manualTaskToFinish.flowNodeInstanceId;
 
     await testFixtureProvider
-      .managementApiClientService
+      .consumerApiClientService
       .finishManualTask(defaultIdentity, processInstanceId, manualTaskToFinish.correlationId, manualTaskInstanceId);
   }
 });

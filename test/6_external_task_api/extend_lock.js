@@ -2,7 +2,7 @@
 
 const moment = require('moment');
 const should = require('should');
-const uuid = require('uuid');
+const uuid = require('node-uuid');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs');
 

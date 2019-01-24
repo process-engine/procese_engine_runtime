@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const should = require('should');
-const uuid = require('uuid');
+const uuid = require('node-uuid');
 const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
 describe('Metric API Tests - ', () => {

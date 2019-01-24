@@ -1,7 +1,7 @@
 'use strict';
 
 const should = require('should');
-const uuid = require('uuid');
+const uuid = require('node-uuid');
 
 const StartCallbackType = require('@process-engine/management_api_contracts').DataModels.ProcessModels.StartCallbackType;
 
@@ -95,7 +95,6 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
       'ExclusiveGateway_134ybqm',
       'EndEvent_0eie6q6',
     ];
-
 
     const tokenHistoryGroup = await testFixtureProvider
       .managementApiClientService
@@ -237,8 +236,8 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
     const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
 
     const startResponse = await testFixtureProvider
-                                  .managementApiClientService
-                                  .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, returnOn);
+      .managementApiClientService
+      .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, returnOn);
 
     return startResponse;
   }

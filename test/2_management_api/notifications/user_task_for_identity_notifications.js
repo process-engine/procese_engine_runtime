@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
-describe('Management API:   Receive global UserTask Notifications', () => {
+describe('Management API:   Receive identity specific UserTask Notifications', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -30,6 +30,15 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     processInstanceOwner: undefined, // Can only be set after the TestFixtureProvider was initialized.
     payload: {},
   };
+  const sampleUserTaskMessageForDifferentUser = {
+    correlationId: uuid.v4(),
+    processModelId: 'processModelId',
+    processInstanceId: uuid.v4(),
+    flowNodeId: 'User_Task_1',
+    flowNodeInstanceId: uuid.v4(),
+    processInstanceOwner: undefined, // Can only be set after the TestFixtureProvider was initialized.
+    payload: {},
+  };
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -37,6 +46,7 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     defaultIdentity = testFixtureProvider.identities.defaultUser;
 
     sampleUserTaskMessage.processInstanceOwner = defaultIdentity;
+    sampleUserTaskMessageForDifferentUser.processInstanceOwner = testFixtureProvider.identities.restrictedUser;
 
     const processModelsToImport = [processModelId];
     await testFixtureProvider.importProcessFiles(processModelsToImport);
@@ -49,7 +59,7 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should send a notification when UserTask is suspended', async () => {
+  it('should send a notification when a UserTask for the given identity is suspended', async () => {
 
     correlationId = uuid.v4();
 
@@ -77,13 +87,13 @@ describe('Management API:   Receive global UserTask Notifications', () => {
       const subscribeOnce = true;
       await testFixtureProvider
         .managementApiClientService
-        .onUserTaskWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+        .onUserTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
   });
 
-  it('should send a notification when UserTask is finished', async () => {
+  it('should send a notification when a UserTask for the given identity is finished', async () => {
 
     return new Promise(async (resolve, reject) => {
 
@@ -100,7 +110,7 @@ describe('Management API:   Receive global UserTask Notifications', () => {
       const subscribeOnce = true;
       await testFixtureProvider
         .managementApiClientService
-        .onUserTaskFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+        .onUserTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       const processFinishedCallback = () => {
         if (!notificationReceived) {
@@ -113,12 +123,12 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     });
   });
 
-  it('should fail to subscribe for the UserTaskWaiting notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the UserTaskForIdentityWaiting notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
         .managementApiClientService
-        .onUserTaskWaiting({}, noopCallback, subscribeOnce);
+        .onUserTaskForIdentityWaiting({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
       const expectedErrorMessage = /no auth token/i;
@@ -128,12 +138,12 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     }
   });
 
-  it('should fail to subscribe for the UserTaskFinished notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the UserTaskForIdentityFinished notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
         .managementApiClientService
-        .onUserTaskFinished({}, noopCallback, subscribeOnce);
+        .onUserTaskForIdentityFinished({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
       const expectedErrorMessage = /no auth token/i;
@@ -155,7 +165,7 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
       .managementApiClientService
-      .onUserTaskWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+      .onUserTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
     eventAggregator.publish(userTaskWaitingMessagePath, sampleUserTaskMessage);
@@ -189,7 +199,7 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
       .managementApiClientService
-      .onUserTaskFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+      .onUserTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
     eventAggregator.publish(userTaskFinishedMessagePath, sampleUserTaskMessage);
@@ -234,7 +244,7 @@ describe('Management API:   Receive global UserTask Notifications', () => {
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
         .managementApiClientService
-        .onUserTaskWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+        .onUserTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
       eventAggregator.publish(userTaskWaitingMessagePath, sampleUserTaskMessage);
@@ -265,12 +275,72 @@ describe('Management API:   Receive global UserTask Notifications', () => {
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
         .managementApiClientService
-        .onUserTaskFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+        .onUserTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
       eventAggregator.publish(userTaskFinishedMessagePath, sampleUserTaskMessage);
       eventAggregator.publish(userTaskFinishedMessagePath, sampleUserTaskMessage);
     });
+  });
+
+  it('should only receive UserTaskWaiting notifications about the users own UserTasks', async () => {
+
+    let receivedNotifications = 0;
+
+    const notificationReceivedCallback = async (message) => {
+      receivedNotifications++;
+    };
+
+    // Create the subscription
+    const subscribeOnce = false;
+    const subscription = await testFixtureProvider
+      .managementApiClientService
+      .onUserTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+
+    // Publish a number of events
+    eventAggregator.publish(userTaskWaitingMessagePath, sampleUserTaskMessage);
+    eventAggregator.publish(userTaskWaitingMessagePath, sampleUserTaskMessageForDifferentUser);
+
+    // Wait some time before removing the subscription, or we risk it being destroyed
+    // before the notifications are received.
+    await processInstanceHandler.wait(500);
+
+    await testFixtureProvider
+      .managementApiClientService
+      .removeSubscription(defaultIdentity, subscription);
+
+    const expectedReceivedAmountOfNotifications = 1;
+    should(receivedNotifications).be.equal(expectedReceivedAmountOfNotifications);
+  });
+
+  it('should only receive UserTaskFinished notifications about the users own UserTasks', async () => {
+
+    let receivedNotifications = 0;
+
+    const notificationReceivedCallback = async (message) => {
+      receivedNotifications++;
+    };
+
+    // Create the subscription
+    const subscribeOnce = false;
+    const subscription = await testFixtureProvider
+      .managementApiClientService
+      .onUserTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+
+    // Publish a number of events
+    eventAggregator.publish(userTaskFinishedMessagePath, sampleUserTaskMessage);
+    eventAggregator.publish(userTaskFinishedMessagePath, sampleUserTaskMessageForDifferentUser);
+
+    // Wait some time before removing the subscription, or we risk it being destroyed
+    // before the notifications are received.
+    await processInstanceHandler.wait(500);
+
+    await testFixtureProvider
+      .managementApiClientService
+      .removeSubscription(defaultIdentity, subscription);
+
+    const expectedReceivedAmountOfNotifications = 1;
+    should(receivedNotifications).be.equal(expectedReceivedAmountOfNotifications);
   });
 
   it('should only receive one UserTaskWaiting notification, if subscribeOnce is set to "true"', async () => {
@@ -284,7 +354,7 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     const subscribeOnce = true;
     await testFixtureProvider
       .managementApiClientService
-      .onUserTaskWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+      .onUserTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
     eventAggregator.publish(userTaskWaitingMessagePath, sampleUserTaskMessage);
@@ -310,7 +380,7 @@ describe('Management API:   Receive global UserTask Notifications', () => {
     const subscribeOnce = true;
     await testFixtureProvider
       .managementApiClientService
-      .onUserTaskFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+      .onUserTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
     eventAggregator.publish(userTaskFinishedMessagePath, sampleUserTaskMessage);

@@ -1,7 +1,6 @@
 'use strict';
 
 const should = require('should');
-const uuid = require('uuid');
 
 const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
 
@@ -28,9 +27,6 @@ describe('Management API:   POST  ->  /process_models/:process_model_id/update',
 
   it('should successfully import the process definitions, if it does not yet exist and overwriteExisting is set to false', async () => {
 
-    // This is to ensure that any existing process definitions will not falsify the results.
-    const uniqueImportName = uuid.v4();
-
     const importPayload = {
       xml: processModelAsXml,
       overwriteExisting: true,
@@ -38,7 +34,7 @@ describe('Management API:   POST  ->  /process_models/:process_model_id/update',
 
     await testFixtureProvider
       .managementApiClientService
-      .updateProcessDefinitionsByName(testFixtureProvider.identities.defaultUser, uniqueImportName, importPayload);
+      .updateProcessDefinitionsByName(testFixtureProvider.identities.defaultUser, processModelId, importPayload);
 
     await assertThatImportWasSuccessful();
   });

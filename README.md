@@ -64,6 +64,47 @@ standard configuration requires it to run on port `5432`.
 NODE_ENV=postgres process-engine
 ```
 
+#### Customized Configuration
+
+By default, the runtime will use a set of configurations located within an integrated `config`
+folder.
+
+If you wish to provide your own set of configurations, you can do so by setting the following
+environment variables prior to startup:
+- `CONFIG_PATH` - The path to your configuration folder 
+- `NODE_ENV` - The name of the environment to use
+
+**NOTE:**
+The path in `CONFIG_PATH` must be absolute.
+
+Also, each environment must have its own configuration folder.
+
+See [here](https://github.com/process-engine/process_engine_runtime/tree/develop/config/test) for an example on how a config must be structured.
+
+**Make sure you provide settings to _all_ config sections listed there!**
+
+**Example**:
+
+Let's say you want to store your configs in your local home folder, in a subfolder named `runtime`
+and the environment you wish to use is named `production`.
+
+Your configs must then be located in the following path:
+- macOS: `/Users/{{YOUR_USERNAME}}/runtime/production`
+- Linux: `/home/{{YOUR_USERNAME}}/runtime/production`
+- Windows: `C:\Users\{{YOUR_USERNAME}}\runtime\production`
+
+You would need to provide the following environment parameters to access this config:
+- `CONFIG_PATH`:
+    - macOS: `/Users/{{YOUR_USERNAME}}/runtime`
+    - Linux: `/home/{{YOUR_USERNAME}}/runtime`
+    - Windows: `C:\Users\{{YOUR_USERNAME}}\runtime`
+- `NODE_ENV` = `production`
+
+The full start command will then look like this:
+- macOS: `CONFIG_PATH=/Users/{{YOUR_USERNAME}}/runtime NODE_ENV=production process-engine`
+- Linux: `CONFIG_PATH=/home/{{YOUR_USERNAME}}/runtime NODE_ENV=production process-engine`
+- Windows: `CONFIG_PATH=C:\Users\{{YOUR_USERNAME}}\runtime NODE_ENV=production process-engine`
+
 ### Automatically starting ProcessEngine-Server on system startup
 
 **macOS**

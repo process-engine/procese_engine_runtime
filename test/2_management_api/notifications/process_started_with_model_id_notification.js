@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
 
-describe('Management API:   Receive Process Started Notification', () => {
+describe('Management API:   Receive ProcessWithProcessModelIdStarted Notifications', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -17,10 +17,18 @@ describe('Management API:   Receive Process Started Notification', () => {
 
   const noopCallback = () => {};
 
-  const processStartedMessagePath = 'process_started';
   const sampleProcessStartedMessage = {
     correlationId: uuid.v4(),
-    processModelId: 'processModelId',
+    processModelId: processModelId,
+    processInstanceId: uuid.v4(),
+    flowNodeId: 'Start_Event_1',
+    flowNodeInstanceId: uuid.v4(),
+    processInstanceOwner: undefined, // Can only be set after the TestFixtureProvider was initialized.
+    payload: {},
+  };
+  const sampleProcessStartedMessage2 = {
+    correlationId: uuid.v4(),
+    processModelId: 'anotherProcessModelId',
     processInstanceId: uuid.v4(),
     flowNodeId: 'Start_Event_1',
     flowNodeInstanceId: uuid.v4(),
@@ -28,12 +36,15 @@ describe('Management API:   Receive Process Started Notification', () => {
     payload: {},
   };
 
+  const processStartedMessagePath = 'process_started';
+
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
     defaultIdentity = testFixtureProvider.identities.defaultUser;
 
     sampleProcessStartedMessage.processInstanceOwner = defaultIdentity;
+    sampleProcessStartedMessage2.processInstanceOwner = testFixtureProvider.identities.restrictedUser;
 
     const processModelsToImport = [processModelId];
     await testFixtureProvider.importProcessFiles(processModelsToImport);
@@ -46,7 +57,7 @@ describe('Management API:   Receive Process Started Notification', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should send a notification when the ProcessInstance was started', async () => {
+  it('should send a notification when a process with a given ProcessModelId was started', async () => {
 
     return new Promise(async (resolve, reject) => {
 
@@ -57,8 +68,6 @@ describe('Management API:   Receive Process Started Notification', () => {
         should.exist(processStartedMessage);
         should(processStartedMessage).have.property('correlationId');
 
-        // Since this notification channel will receive ALL processStarted messages,
-        // we need to make sure that we intercepted the one we anticipated.
         const messageWasNotFromSpecifiedCorrelation = processStartedMessage.correlationId !== correlationId;
         if (messageWasNotFromSpecifiedCorrelation) {
           return;
@@ -72,9 +81,10 @@ describe('Management API:   Receive Process Started Notification', () => {
         notificationReceived = true;
       };
 
+      const subscribeOnce = false;
       const notificationSubscription = await testFixtureProvider
         .managementApiClientService
-        .onProcessStarted(defaultIdentity, notificationReceivedCallback);
+        .onProcessWithProcessModelIdStarted(defaultIdentity, notificationReceivedCallback, processModelId, subscribeOnce);
 
       // We must await the end of the ProcessInstance to avoid messed up entries in the database.
       const processFinishedCallback = async () => {
@@ -93,12 +103,12 @@ describe('Management API:   Receive Process Started Notification', () => {
     });
   });
 
-  it('should fail to subscribe for the ProcessStarted notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the ProcessWithProcessModelIdStarted notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
         .managementApiClientService
-        .onProcessStarted({}, noopCallback, subscribeOnce);
+        .onProcessWithProcessModelIdStarted({}, noopCallback, processModelId, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
       const expectedErrorMessage = /no auth token/i;
@@ -112,7 +122,7 @@ describe('Management API:   Receive Process Started Notification', () => {
 
     let receivedNotifications = 0;
 
-    const notificationReceivedCallback = async (message) => {
+    const notificationReceivedCallback = (message) => {
       receivedNotifications++;
     };
 
@@ -120,7 +130,7 @@ describe('Management API:   Receive Process Started Notification', () => {
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
       .managementApiClientService
-      .onProcessStarted(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+      .onProcessWithProcessModelIdStarted(defaultIdentity, notificationReceivedCallback, processModelId, subscribeOnce);
 
     // Publish the first notification
     eventAggregator.publish(processStartedMessagePath, sampleProcessStartedMessage);
@@ -165,7 +175,7 @@ describe('Management API:   Receive Process Started Notification', () => {
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
         .managementApiClientService
-        .onProcessStarted(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+        .onProcessWithProcessModelIdStarted(defaultIdentity, notificationReceivedCallback, processModelId, subscribeOnce);
 
       // Publish a number of events
       eventAggregator.publish(processStartedMessagePath, sampleProcessStartedMessage);
@@ -173,10 +183,39 @@ describe('Management API:   Receive Process Started Notification', () => {
     });
   });
 
+  it('should only receive notifications for those ProcessModels with a matching ProcessModelId', async () => {
+    let receivedNotifications = 0;
+
+    const notificationReceivedCallback = (message) => {
+      receivedNotifications++;
+    };
+
+    // Create the subscription
+    const subscribeOnce = false;
+    const subscription = await testFixtureProvider
+      .managementApiClientService
+      .onProcessWithProcessModelIdStarted(defaultIdentity, notificationReceivedCallback, processModelId, subscribeOnce);
+
+    // Publish a number of events for various process models
+    eventAggregator.publish(processStartedMessagePath, sampleProcessStartedMessage);
+    eventAggregator.publish(processStartedMessagePath, sampleProcessStartedMessage2);
+
+    // Wait some time before removing the subscription, or we risk it being destroyed
+    // before the notifications are received.
+    await processInstanceHandler.wait(500);
+
+    await testFixtureProvider
+      .managementApiClientService
+      .removeSubscription(defaultIdentity, subscription);
+
+    const expectedReceivedAmountOfNotifications = 1;
+    should(receivedNotifications).be.equal(expectedReceivedAmountOfNotifications);
+  });
+
   it('should only receive one ProcessStarted notification, if subscribeOnce is set to "true"', async () => {
     let receivedNotifications = 0;
 
-    const notificationReceivedCallback = async (message) => {
+    const notificationReceivedCallback = (message) => {
       receivedNotifications++;
     };
 
@@ -184,7 +223,7 @@ describe('Management API:   Receive Process Started Notification', () => {
     const subscribeOnce = true;
     await testFixtureProvider
       .managementApiClientService
-      .onProcessStarted(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+      .onProcessWithProcessModelIdStarted(defaultIdentity, notificationReceivedCallback, processModelId, subscribeOnce);
 
     // Publish a number of events
     eventAggregator.publish(processStartedMessagePath, sampleProcessStartedMessage);
