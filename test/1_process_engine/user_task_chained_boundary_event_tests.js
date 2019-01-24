@@ -1,6 +1,6 @@
 'use strict';
 
-const uuid = require('uuid');
+const uuid = require('node-uuid');
 const should = require('should');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs');

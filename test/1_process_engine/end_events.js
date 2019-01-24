@@ -1,7 +1,7 @@
 'use strict';
 
 const should = require('should');
-const uuid = require('uuid');
+const uuid = require('node-uuid');
 const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
 describe('EndEvents - ', () => {
