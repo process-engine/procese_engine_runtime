@@ -96,7 +96,6 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
       'EndEvent_0eie6q6',
     ];
 
-
     const tokenHistoryGroup = await testFixtureProvider
       .managementApiClientService
       .getTokensForProcessInstance(defaultIdentity, processInstanceId);
@@ -237,8 +236,8 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
     const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
 
     const startResponse = await testFixtureProvider
-                                  .managementApiClientService
-                                  .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, returnOn);
+      .managementApiClientService
+      .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, returnOn);
 
     return startResponse;
   }
