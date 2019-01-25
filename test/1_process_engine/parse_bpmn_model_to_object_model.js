@@ -93,4 +93,82 @@ describe('Process-Engine   Parse BPMN Process into new object model', () => {
     should(process.sequenceFlows.length).be.equal(1);
   });
 
+  it('should sucessfully parse a ProcessModel which contains a valid timer definition', async () => {
+    const validTimerProcessName = 'intermediate_event_timer_test';
+
+    const validTimerBpmnFile = testFixtureProvider.readProcessModelFile(validTimerProcessName);
+
+    const result = await bpmnModelParser.parseXmlToObjectModel(validTimerBpmnFile);
+
+    // Basic Definitions-Properties
+    should.exist(result.xmlns);
+    should.exist(result.collaboration);
+    should(result.id).be.equal('Definitions_019scie');
+    should(result.processes).be.an.instanceOf(Array);
+    should(result.processes.length).be.equal(1);
+
+    // Collaboration and Participants
+    const collaboration = result.collaboration;
+
+    should(collaboration.id).be.equal('Definitions_019scie');
+    should(collaboration.participants).be.an.instanceOf(Array);
+    should(collaboration.participants.length).be.equal(1);
+
+    const participant = collaboration.participants[0];
+
+    should(participant.id).be.equal('Participant_1ndejx1');
+    should(participant.name).be.equal('intermediate_event_timer_test');
+    should(participant.processReference).be.equal('intermediate_event_timer_test');
+  });
+
+  it('should throw an UnprocessableEntity error when trying to parse a Process which contains a cyclic timer definition', async () => {
+    const cyclicTimerProcessName = 'modell_parser_cyclic_timer_test';
+
+    const cylicTimerBpmnFile = testFixtureProvider.readProcessModelFile(cyclicTimerProcessName);
+
+    try {
+      const result = await bpmnModelParser.parseXmlToObjectModel(cylicTimerBpmnFile);
+
+      should.fail(result, undefined, 'The process definition should not have been parsed, because of a cyclic timer!');
+    } catch (error) {
+      const errorCode = 422;
+      const errorMessage = /cyclic.*unsupported/i;
+      should(error.message).be.match(errorMessage);
+      should(error.code).be.equal(errorCode);
+    }
+  });
+
+  it('should throw an UnprocessableEntity error when trying to parse a Process which contains an invalid duration timer definition', async () => {
+    const cyclicTimerProcessName = 'modell_parser_timer_invalid_duration';
+
+    const cylicTimerBpmnFile = testFixtureProvider.readProcessModelFile(cyclicTimerProcessName);
+
+    try {
+      const result = await bpmnModelParser.parseXmlToObjectModel(cylicTimerBpmnFile);
+
+      should.fail(result, undefined, 'The process definition should not have been parsed, because the timer duration definition is invalid!');
+    } catch (error) {
+      const errorCode = 422;
+      const errorMessage = /duration.*not.*format/i;
+      should(error.message).be.match(errorMessage);
+      should(error.code).be.equal(errorCode);
+    }
+  });
+
+  it('should throw an UnprocessableEntity error when trying to parse a Process which contains an invalid date timer definition', async () => {
+    const cyclicTimerProcessName = 'modell_parser_timer_invalid_date';
+
+    const cylicTimerBpmnFile = testFixtureProvider.readProcessModelFile(cyclicTimerProcessName);
+
+    try {
+      const result = await bpmnModelParser.parseXmlToObjectModel(cylicTimerBpmnFile);
+
+      should.fail(result, undefined, 'The process definition should not have been parsed, because the attached date timer definition is invalid!');
+    } catch (error) {
+      const errorCode = 422;
+      const errorMessage = /date.*not.*format/i;
+      should(error.message).be.match(errorMessage);
+      should(error.code).be.equal(errorCode);
+    }
+  });
 });
