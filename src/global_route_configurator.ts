@@ -30,7 +30,7 @@ export async function configureGlobalRoutes(container: InvocationContainer): Pro
 }
 
 function configureRootRoute(): void {
-  const packageInfo: any = getInfosFromPackageJson();
+  const packageInfo: IApplicationInfo = getInfosFromPackageJson();
 
   // tslint:disable-next-line:no-magic-numbers
   const formattedResponse: string = JSON.stringify(packageInfo, null, 2);
@@ -69,13 +69,12 @@ function loadConfig(configDirName: string, configFileName: string): any {
 
   const configPath: string = path.join(baseConfigPath, process.env.NODE_ENV, configDirName, `${configFileName}.json`);
 
-  // eslint-disable-next-line global-require
   const loadedConfig: any = require(configPath);
 
   return loadedConfig;
 }
 
-function getInfosFromPackageJson(): any {
+function getInfosFromPackageJson(): IApplicationInfo {
 
   const pathToPackageJson: string = path.join(__dirname, '..', '..', 'package.json');
   const packageJsonAsString: string = fs.readFileSync(pathToPackageJson, 'utf-8');
