@@ -60,25 +60,24 @@ function setConfigPath(): void {
 
   const configPathProvided: boolean = process.env.CONFIG_PATH !== undefined;
   if (configPathProvided) {
+
     const configPathIsAbsolute: boolean = path.isAbsolute(process.env.CONFIG_PATH);
     if (configPathIsAbsolute) {
       ensureConfigPathExists(process.env.CONFIG_PATH);
 
       return;
-    } else {
-      logger.warn('Cannot use path provided with CONFIG_PATH, because it is not absolute!');
-      logger.warn('Falling back to default internal config.');
     }
+
+    logger.warn('Cannot use path provided with CONFIG_PATH, because it is not absolute!');
+    logger.warn('Falling back to default internal config.');
   }
 
-  // If CONFIG_PATH is not absolute, path resolution won't work anyway, so we can ignore it here.
-  const configFolderToUse: string = 'config';
+  const internalConfigFolderName: string = 'config';
+  const internalConfigPath: string = path.join(process.cwd(), internalConfigFolderName);
 
-  const configPath: string = path.join(process.cwd(), configFolderToUse);
+  ensureConfigPathExists(internalConfigPath);
 
-  ensureConfigPathExists(configPath);
-
-  process.env.CONFIG_PATH = configPath;
+  process.env.CONFIG_PATH = internalConfigPath;
 }
 
 function ensureConfigPathExists(configPath: string): void {
