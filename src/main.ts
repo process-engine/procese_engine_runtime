@@ -1,8 +1,8 @@
 import {InvocationContainer} from 'addict-ioc';
 import * as fs from 'fs';
 import {Logger} from 'loggerhythm';
+import * as os from 'os';
 import * as path from 'path';
-import * as platformFolders from 'platform-folders';
 
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
 import {IIdentity} from '@essential-projects/iam_contracts';
@@ -42,7 +42,7 @@ function initializeEnvironment(sqlitePath: string): void {
   loadConfiguredEnvironmentOrDefault();
 
   // set current working directory
-  const userDataFolderPath: string = platformFolders.getConfigHome();
+  const userDataFolderPath: string = os.homedir();
   const userDataProcessEngineFolderName: string = 'process_engine_runtime';
 
   const workingDir: string = path.join(userDataFolderPath, userDataProcessEngineFolderName);
@@ -228,13 +228,26 @@ function getSqliteStoragePath(sqlitePath?: string): string {
     return sqlitePath;
   }
 
-  const userDataFolderPath: string = platformFolders.getConfigHome();
+  const userDataFolderPath: string = getUserConfigFolder();
   const userDataProcessEngineFolderName: string = 'process_engine_runtime';
   const processEngineDatabaseFolderName: string = 'databases';
 
   const databaseBasePath: string = path.resolve(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
 
   return databaseBasePath;
+}
+
+function getUserConfigFolder(): string {
+
+  const userHomeDir: string = os.homedir();
+  switch (process.platform) {
+    case 'darwin':
+      return path.join(userHomeDir, 'Library', 'Application Support');
+    case 'win32':
+      return path.join(userHomeDir, 'AppData', 'Roaming');
+    default:
+      return path.join(userHomeDir, '.config');
+  }
 }
 
 async function resumeProcessInstances(): Promise<void> {
