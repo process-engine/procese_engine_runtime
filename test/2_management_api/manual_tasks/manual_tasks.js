@@ -14,6 +14,7 @@ describe(`Management API: ${testCase}`, () => {
   let testFixtureProvider;
 
   let correlationId;
+  let processInstanceId;
 
   let manualTaskToFinish;
 
@@ -27,7 +28,10 @@ describe(`Management API: ${testCase}`, () => {
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
-    correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
+    const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId);
+    correlationId = result.correlationId;
+    processInstanceId = result.processInstanceId;
+
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
   });
 
@@ -49,6 +53,15 @@ describe(`Management API: ${testCase}`, () => {
     const manualTaskList = await testFixtureProvider
       .managementApiClientService
       .getManualTasksForProcessModel(testFixtureProvider.identities.defaultUser, processModelId);
+
+    assertmanualTaskList(manualTaskList);
+  });
+
+  it('should return a process model\'s ManualTasks by its process_instance_id through the consumer api', async () => {
+
+    const manualTaskList = await testFixtureProvider
+      .managementApiClientService
+      .getManualTasksForProcessInstance(testFixtureProvider.identities.defaultUser, processInstanceId);
 
     assertmanualTaskList(manualTaskList);
   });
