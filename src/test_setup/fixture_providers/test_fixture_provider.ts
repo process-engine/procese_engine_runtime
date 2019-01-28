@@ -20,10 +20,10 @@ import {
   Model,
 } from '@process-engine/process_engine_contracts';
 
-import {migrate as executeMigrations} from './migrator';
 import {initializeBootstrapper} from './setup_ioc_container';
+import {migrate as executeMigrations} from './test_migrator';
 
-import {configureGlobalRoutes} from './global_route_configurator';
+import {configureGlobalRoutes} from '../../global_route_configurator';
 
 export type IdentityCollection = {
   defaultUser: IIdentity;
