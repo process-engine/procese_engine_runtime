@@ -107,7 +107,8 @@ function loadConfiguredEnvironmentOrDefault(): void {
   // If the runtime is run within the BPMN studio, electron will place it in `app.asar`.
   // We must account for that fact here, or we won't be able to correctly initialize the runtimes environment.
   const appAsarPathPart: string = path.normalize(path.join('.', 'app.asar'));
-  if (configDirNameNormalized.indexOf('app.asar') > -1) {
+
+  if (configDirNameNormalized.includes('app.asar')) {
     configDirNameNormalized = configDirNameNormalized.replace(appAsarPathPart, '');
   }
 

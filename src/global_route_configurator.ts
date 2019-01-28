@@ -10,6 +10,18 @@ let httpExtension: IHttpExtension;
 const httpStatusCodeSuccess: number = 200;
 const authorityRoute: string = '/security/authority';
 
+interface IApplicationInfo {
+  name: string;
+  version: string;
+  description: string;
+  license: string;
+  homepage: string;
+  author: string;
+  contributors: string;
+  repository: string;
+  bugs: string;
+}
+
 export async function configureGlobalRoutes(container: InvocationContainer): Promise<void> {
   httpExtension = await container.resolveAsync<IHttpExtension>('HttpExtension');
 
@@ -66,9 +78,9 @@ function loadConfig(configDirName: string, configFileName: string): any {
 function getInfosFromPackageJson(): any {
 
   const pathToPackageJson: string = path.join(__dirname, '..', '..', 'package.json');
-  const packageJsonAsString: any = fs.readFileSync(pathToPackageJson, 'utf-8');
+  const packageJsonAsString: string = fs.readFileSync(pathToPackageJson, 'utf-8');
 
-  const packageJson: any = JSON.parse(packageJsonAsString);
+  const packageJson: IApplicationInfo = JSON.parse(packageJsonAsString);
 
   const {
     name,
@@ -82,7 +94,7 @@ function getInfosFromPackageJson(): any {
     bugs,
   } = packageJson;
 
-  const applicationInfo: any = {
+  const applicationInfo: IApplicationInfo = {
     name: name,
     version: version,
     description: description,

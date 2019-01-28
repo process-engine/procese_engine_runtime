@@ -14,7 +14,7 @@ export async function migrate(env: string, database: string, sqlitePath: string)
 
   sqlitePath = getFullSqliteStoragePath(sqlitePath);
 
-  const sequelizeInstanceConfig: any = env === 'sqlite'
+  const sequelizeInstanceConfig: Sequelize.Options = env === 'sqlite'
     ? createSqLiteConfig(sqlitePath, database)
     : createPostgresConfig(database);
 
@@ -26,10 +26,10 @@ export async function migrate(env: string, database: string, sqlitePath: string)
   await sequelizeConnectionManager.destroyConnection(sequelizeInstanceConfig);
 }
 
-function createSqLiteConfig(sqlitePath: string, store: string): any {
+function createSqLiteConfig(sqlitePath: string, store: string): object {
   const databaseFullPath: string = path.resolve(sqlitePath, store);
 
-  const sqliteConfig: any = {
+  const sqliteConfig: object = {
     username: null,
     password: null,
     database: null,
@@ -45,9 +45,9 @@ function createSqLiteConfig(sqlitePath: string, store: string): any {
   return sqliteConfig;
 }
 
-function createPostgresConfig(database: string): any {
+function createPostgresConfig(database: string): object {
 
-  const postgresConfig: any = {
+  const postgresConfig: object = {
     username: 'admin',
     password: 'admin',
     database: `${database}`,
@@ -70,7 +70,7 @@ async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: str
   let dirNameNormalized: string = path.normalize(rootDirName);
   const appAsarPathPart: string = path.normalize(path.join('.', 'app.asar'));
 
-  if (dirNameNormalized.indexOf('app.asar') > -1) {
+  if (dirNameNormalized.includes('app.asar')) {
     dirNameNormalized = dirNameNormalized.replace(appAsarPathPart, '');
   }
 
