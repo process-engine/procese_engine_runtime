@@ -6,13 +6,12 @@ import * as path from 'path';
 import {IHttpExtension} from '@essential-projects/http_contracts';
 
 let httpExtension: IHttpExtension;
-let routeConfiguration: any;
 
 const httpStatusCodeSuccess: number = 200;
+const authorityRoute: string = '/security/authority';
 
 export async function configureGlobalRoutes(container: InvocationContainer): Promise<void> {
   httpExtension = await container.resolveAsync<IHttpExtension>('HttpExtension');
-  routeConfiguration = loadConfig('http', 'global_routes');
 
   configureRootRoute();
   configureAuthorityRoute();
@@ -34,7 +33,6 @@ function configureRootRoute(): void {
 
 function configureAuthorityRoute(): void {
   const iamConfig: any = loadConfig('iam', 'iam_service');
-  const authorityRoute: string = routeConfiguration.authority;
 
   const responseBody: any = {
     authority: iamConfig.basePath,
@@ -52,7 +50,12 @@ function configureAuthorityRoute(): void {
 }
 
 function loadConfig(configDirName: string, configFileName: string): any {
-  const configPath: string = path.join(process.env.CONFIG_PATH, process.env.NODE_ENV, configDirName, `${configFileName}.json`);
+
+  const baseConfigPath: string = process.env.CONFIG_PATH && path.isAbsolute(process.env.CONFIG_PATH)
+    ? process.env.CONFIG_PATH
+    : path.join(process.cwd(), 'config');
+
+  const configPath: string = path.join(baseConfigPath, process.env.NODE_ENV, configDirName, `${configFileName}.json`);
 
   // eslint-disable-next-line global-require
   const loadedConfig: any = require(configPath);
