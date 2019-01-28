@@ -42,7 +42,7 @@ function initializeEnvironment(sqlitePath: string): void {
   loadConfiguredEnvironmentOrDefault();
 
   // set current working directory
-  const userDataFolderPath: string = os.homedir();
+  const userDataFolderPath: string = getUserConfigFolder();
   const userDataProcessEngineFolderName: string = 'process_engine_runtime';
 
   const workingDir: string = path.join(userDataFolderPath, userDataProcessEngineFolderName);
