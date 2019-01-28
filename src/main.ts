@@ -222,7 +222,7 @@ function setDatabasePaths(sqlitePath: string): void {
   process.env.process_engine__metrics_repository__log_output_path = metricsStoragePath;
 }
 
-function getSqliteStoragePath(sqlitePath: string): string {
+function getSqliteStoragePath(sqlitePath?: string): string {
 
   if (sqlitePath) {
     return sqlitePath;
