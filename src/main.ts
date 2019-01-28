@@ -103,8 +103,10 @@ function loadConfiguredEnvironmentOrDefault(): void {
   }
 
   let configDirNameNormalized: string = path.normalize(process.env.CONFIG_PATH);
-  const appAsarPathPart: string = path.normalize(path.join('.', 'app.asar'));
 
+  // If the runtime is run within the BPMN studio, electron will place it in `app.asar`.
+  // We must account for that fact here, or we won't be able to correctly initialize the runtimes environment.
+  const appAsarPathPart: string = path.normalize(path.join('.', 'app.asar'));
   if (configDirNameNormalized.indexOf('app.asar') > -1) {
     configDirNameNormalized = configDirNameNormalized.replace(appAsarPathPart, '');
   }
