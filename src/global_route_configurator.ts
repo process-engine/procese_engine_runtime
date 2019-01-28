@@ -16,10 +16,10 @@ interface IApplicationInfo {
   description: string;
   license: string;
   homepage: string;
-  author: string;
-  contributors: string;
-  repository: string;
-  bugs: string;
+  author: string | object;
+  contributors: Array<string>;
+  repository: string | object;
+  bugs: string | object;
 }
 
 export async function configureGlobalRoutes(container: InvocationContainer): Promise<void> {
