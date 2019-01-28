@@ -112,6 +112,7 @@ pipeline {
           sh('npm install -g mocha cross-env')
           sh('npm install')
           sh('npm run build')
+          sh('npm rebuild')
         }
 
         archiveArtifacts('package-lock.json')
