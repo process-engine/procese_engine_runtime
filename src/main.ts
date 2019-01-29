@@ -115,10 +115,7 @@ function loadConfiguredEnvironmentOrDefault(): void {
   const configPath: string = path.join(configDirNameNormalized, selectedEnvironment);
 
   const isEnvironmentAvailable: boolean = fs.existsSync(configPath);
-
   if (isEnvironmentAvailable) {
-    process.env.NODE_ENV = selectedEnvironment;
-
     return;
   }
 
