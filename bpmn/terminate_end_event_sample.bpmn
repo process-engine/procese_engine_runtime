@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
   <bpmn:collaboration id="ProcessResult_001">
     <bpmn:participant id="DemoProcess.TerminateEndEvent" name="Terminate End Event Sample" processRef="terminate_end_event_sample" />
   </bpmn:collaboration>
@@ -7,44 +7,26 @@
     <bpmn:laneSet>
       <bpmn:lane id="Lane_0iq41av" name="Default_Test_Lane">
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>TerminateEndEvent_JoinGateway</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>RegularEndEvent</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>TerminateEndEvent_SplitGateway</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>UnreachableScriptTask_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>IntermediateThrowEvent_1eqvyfn</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SampleScriptTask1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_05qk8pm</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>TerminateEndEvent_JoinGateway</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>BoundaryEvent_141aa5r</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>TerminateEndEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>RegularEndEvent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_0ldaqqf</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="StartEvent_1" name="Start">
       <bpmn:outgoing>ProcessInput</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:parallelGateway id="TerminateEndEvent_JoinGateway">
-      <bpmn:incoming>SequenceFlow_0vuigj4</bpmn:incoming>
-      <bpmn:incoming>SequenceFlow_1bnj4ce</bpmn:incoming>
-      <bpmn:outgoing>StoreInput</bpmn:outgoing>
-    </bpmn:parallelGateway>
-    <bpmn:endEvent id="RegularEndEvent" name="Finished">
-      <bpmn:incoming>StoreInput</bpmn:incoming>
-    </bpmn:endEvent>
     <bpmn:sequenceFlow id="ProcessInput" sourceRef="StartEvent_1" targetRef="TerminateEndEvent_SplitGateway" />
     <bpmn:sequenceFlow id="SequenceFlow_19imvxa" sourceRef="TerminateEndEvent_SplitGateway" targetRef="SampleScriptTask1" />
-    <bpmn:sequenceFlow id="SequenceFlow_0w50vbx" sourceRef="BoundaryEvent_141aa5r" targetRef="TerminateEndEvent_1">
-      <bpmn:extensionElements>
-        <camunda:properties>
-          <camunda:property name="mapper" value="&#39;Terminated ending&#39;" />
-        </camunda:properties>
-      </bpmn:extensionElements>
-    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0w50vbx" name="" sourceRef="BoundaryEvent_141aa5r" targetRef="Task_05qk8pm" />
     <bpmn:sequenceFlow id="SequenceFlow_0vuigj4" sourceRef="UnreachableScriptTask_1" targetRef="TerminateEndEvent_JoinGateway" />
-    <bpmn:sequenceFlow id="StoreInput" sourceRef="TerminateEndEvent_JoinGateway" targetRef="RegularEndEvent">
-      <bpmn:extensionElements>
-        <camunda:properties>
-          <camunda:property name="mapper" value="&#39;Regular ending&#39;" />
-        </camunda:properties>
-      </bpmn:extensionElements>
-    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="StoreInput" name="" sourceRef="TerminateEndEvent_JoinGateway" targetRef="Task_0ldaqqf" />
     <bpmn:parallelGateway id="TerminateEndEvent_SplitGateway" name="">
       <bpmn:incoming>ProcessInput</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_19imvxa</bpmn:outgoing>
@@ -70,19 +52,39 @@
       <bpmn:outgoing>SequenceFlow_1bnj4ce</bpmn:outgoing>
       <bpmn:script>throw new Error("Critical error that causes termination!");</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:boundaryEvent id="BoundaryEvent_141aa5r" attachedToRef="SampleScriptTask1">
+    <bpmn:boundaryEvent id="BoundaryEvent_141aa5r" name="" attachedToRef="SampleScriptTask1">
       <bpmn:outgoing>SequenceFlow_0w50vbx</bpmn:outgoing>
       <bpmn:errorEventDefinition />
     </bpmn:boundaryEvent>
-    <bpmn:endEvent id="TerminateEndEvent_1" name="Terminate everything">
+    <bpmn:sequenceFlow id="SequenceFlow_1jty1lg" name="" sourceRef="Task_05qk8pm" targetRef="TerminateEndEvent_1" />
+    <bpmn:scriptTask id="Task_05qk8pm" name="Return Terminate-Result">
       <bpmn:incoming>SequenceFlow_0w50vbx</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1jty1lg</bpmn:outgoing>
+      <bpmn:script>return 'Terminated ending';</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="TerminateEndEvent_1" name="Terminate everything">
+      <bpmn:incoming>SequenceFlow_1jty1lg</bpmn:incoming>
       <bpmn:terminateEventDefinition />
     </bpmn:endEvent>
+    <bpmn:parallelGateway id="TerminateEndEvent_JoinGateway" name="">
+      <bpmn:incoming>SequenceFlow_0vuigj4</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1bnj4ce</bpmn:incoming>
+      <bpmn:outgoing>StoreInput</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:endEvent id="RegularEndEvent" name="Finished">
+      <bpmn:incoming>SequenceFlow_0l064o7</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0l064o7" name="" sourceRef="Task_0ldaqqf" targetRef="RegularEndEvent" />
+    <bpmn:scriptTask id="Task_0ldaqqf" name="Return regular result">
+      <bpmn:incoming>StoreInput</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0l064o7</bpmn:outgoing>
+      <bpmn:script>return 'Regular ending';</bpmn:script>
+    </bpmn:scriptTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ProcessResult_001">
       <bpmndi:BPMNShape id="Participant_0yv4605_di" bpmnElement="DemoProcess.TerminateEndEvent">
-        <dc:Bounds x="17" y="27" width="818" height="374" />
+        <dc:Bounds x="17" y="-1" width="898" height="405" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="98" y="209" width="36" height="36" />
@@ -98,14 +100,14 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="EndEvent_1dejkz2_di" bpmnElement="RegularEndEvent">
-        <dc:Bounds x="767" y="209" width="36" height="36" />
+        <dc:Bounds x="854" y="209" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="764" y="248" width="42" height="13" />
+          <dc:Bounds x="851" y="248" width="42" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0ladgwm_di" bpmnElement="StoreInput">
-        <di:waypoint x="707" y="227" />
-        <di:waypoint x="767" y="227" />
+        <di:waypoint x="658" y="227" />
+        <di:waypoint x="699" y="227" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="692" y="206" width="90" height="13" />
         </bpmndi:BPMNLabel>
@@ -117,7 +119,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ParallelGateway_0rsy32p_di" bpmnElement="TerminateEndEvent_JoinGateway">
-        <dc:Bounds x="657" y="202" width="50" height="50" />
+        <dc:Bounds x="608" y="202" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="592" y="255" width="90" height="13" />
         </bpmndi:BPMNLabel>
@@ -132,23 +134,24 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0vuigj4_di" bpmnElement="SequenceFlow_0vuigj4">
         <di:waypoint x="579" y="303" />
-        <di:waypoint x="682" y="303" />
-        <di:waypoint x="682" y="252" />
+        <di:waypoint x="633" y="303" />
+        <di:waypoint x="633" y="252" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="573" y="206" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0w50vbx_di" bpmnElement="SequenceFlow_0w50vbx">
-        <di:waypoint x="414" y="106" />
-        <di:waypoint x="511" y="106" />
+        <di:waypoint x="396" y="88" />
+        <di:waypoint x="396" y="52" />
+        <di:waypoint x="479" y="52" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="431" y="81" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="EndEvent_0j75qho_di" bpmnElement="TerminateEndEvent_1">
-        <dc:Bounds x="511" y="88" width="36" height="36" />
+        <dc:Bounds x="655" y="34" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="556" y="92" width="51" height="27" />
+          <dc:Bounds x="700" y="38" width="51" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ScriptTask_0ua10uk_di" bpmnElement="SampleScriptTask1">
@@ -158,15 +161,15 @@
         <dc:Bounds x="479" y="263" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_0iq41av_di" bpmnElement="Lane_0iq41av">
-        <dc:Bounds x="47" y="27" width="788" height="374" />
+        <dc:Bounds x="47" y="-1" width="868" height="405" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BoundaryEvent_0hi1j9z_di" bpmnElement="BoundaryEvent_141aa5r">
         <dc:Bounds x="378" y="88" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1bnj4ce_di" bpmnElement="SequenceFlow_1bnj4ce">
         <di:waypoint x="396" y="146" />
-        <di:waypoint x="682" y="146" />
-        <di:waypoint x="682" y="202" />
+        <di:waypoint x="633" y="146" />
+        <di:waypoint x="633" y="202" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_058cjt0_di" bpmnElement="SequenceFlow_058cjt0">
         <di:waypoint x="219" y="252" />
@@ -182,6 +185,20 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="325" y="328" width="43" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1jty1lg_di" bpmnElement="SequenceFlow_1jty1lg">
+        <di:waypoint x="579" y="52" />
+        <di:waypoint x="655" y="52" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_176u6wx_di" bpmnElement="Task_05qk8pm">
+        <dc:Bounds x="479" y="12" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0l064o7_di" bpmnElement="SequenceFlow_0l064o7">
+        <di:waypoint x="799" y="227" />
+        <di:waypoint x="854" y="227" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_0q3fu31_di" bpmnElement="Task_0ldaqqf">
+        <dc:Bounds x="699" y="187" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

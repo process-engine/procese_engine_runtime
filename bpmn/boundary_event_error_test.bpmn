@@ -8,7 +8,6 @@
       <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
         <bpmn:extensionElements>
           <camunda:executionListener class="" event="" />
-
         </bpmn:extensionElements>
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_0ax00t6</bpmn:flowNodeRef>
@@ -50,13 +49,7 @@ console.log(token.history.ScriptTask_ErrorRaiser);
 return 'test'</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_0szmujr" name="" sourceRef="ScriptTask_ErrorRaiser" targetRef="ScriptTask_Success" />
-    <bpmn:sequenceFlow id="SequenceFlow_0ue80rd" sourceRef="ScriptTask_Success" targetRef="EndEvent_0ax00t6">
-      <bpmn:extensionElements>
-        <camunda:properties>
-          <camunda:property name="mapper" value="token.history.ScriptTask_Success" />
-        </camunda:properties>
-      </bpmn:extensionElements>
-    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0ue80rd" name="" sourceRef="ScriptTask_Success" targetRef="EndEvent_0ax00t6" />
     <bpmn:scriptTask id="ScriptTask_Success" name="Script Task after previous task was successful">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
@@ -67,13 +60,7 @@ return 'test'</bpmn:script>
 console.log(token.history.ScriptTask_ErrorRaiser);
 return 'success!';</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:sequenceFlow id="SequenceFlow_1dir57p" sourceRef="ScriptTask_AfterErrorThrown" targetRef="EndEvent_14s92ha">
-      <bpmn:extensionElements>
-        <camunda:properties>
-          <camunda:property name="mapper" value="token.history.ScriptTask_ErrorRaiser" />
-        </camunda:properties>
-      </bpmn:extensionElements>
-    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1dir57p" name="" sourceRef="ScriptTask_AfterErrorThrown" targetRef="EndEvent_14s92ha" />
     <bpmn:scriptTask id="ScriptTask_ErrorRaiser" name="Sample Script Task">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
