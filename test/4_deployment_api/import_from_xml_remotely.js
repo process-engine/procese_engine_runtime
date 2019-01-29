@@ -5,7 +5,6 @@ const should = require('should');
 const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
 
 const importRoute = 'api/deployment/v1/import_process_model';
-
 describe(`Deployment API -> POST ${importRoute}`, () => {
 
   let testFixtureProvider;

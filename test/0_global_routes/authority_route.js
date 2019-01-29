@@ -19,7 +19,7 @@ describe('Authority Route /security/authority - ', () => {
 
     httpClient = new HttpClient();
     httpClient.config = {
-      url: 'http://localhost:8000',
+      url: 'http://localhost:32413',
     };
   });
 
