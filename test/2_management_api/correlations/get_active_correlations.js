@@ -68,11 +68,11 @@ describe('Management API:   GET  ->  /correlations/active', () => {
 
   it('should fail to retrieve a list of correlations, when the user is unauthorized', async () => {
     try {
-      const processModelList = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClientService
         .getActiveCorrelations({});
 
-      should.fail(processModelList, undefined, 'This request should have failed!');
+      should.fail(correlationList, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;

@@ -81,11 +81,11 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
     const invalidProcessModelId = 'invalid_id';
 
     try {
-      const processModelList = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClientService
         .getCorrelationsByProcessModelId(testFixtureProvider.identities.defaultUser, invalidProcessModelId);
 
-      should.fail(processModelList, undefined, 'This request should have failed!');
+      should.fail(correlationList, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 404;
       const expectedErrorMessage = /No correlations.*?found/i;
@@ -94,13 +94,13 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
     }
   });
 
-  it('should fail to retrieve the ProcessModel, if the user is unauthorized', async () => {
+  it('should fail to retrieve the Correlations, if the user is unauthorized', async () => {
     try {
-      const processModelList = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClientService
         .getCorrelationsByProcessModelId({}, processModelId);
 
-      should.fail(processModelList, undefined, 'This request should have failed!');
+      should.fail(correlationList, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
