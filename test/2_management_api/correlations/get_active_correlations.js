@@ -36,14 +36,13 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should return all active correlations through the management api', async () => {
+  it('should return all active correlations for an user through the management api', async () => {
 
     const correlations = await testFixtureProvider
       .managementApiClientService
       .getActiveCorrelations(defaultIdentity);
 
     should(correlations).be.instanceOf(Array);
-    should(correlations.length).be.greaterThan(0);
 
     correlations.forEach((correlation) => {
       should(correlation).have.property('id');
