@@ -13,7 +13,7 @@
     "test-debug": "cross-env NODE_ENV=test CONFIG_PATH=config mocha --inspect-brk test/**/*.js test/**/**/*.js  --exit",
     "build": "gulp build"
   },
-  "main": "./index.js",
+  "main": "./dist/commonjs/index.js",
   "license": "MIT",
   "homepage": "https://www.process-engine.io/",
   "author": {
