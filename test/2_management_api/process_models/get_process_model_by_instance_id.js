@@ -4,6 +4,7 @@ const should = require('should');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs');
 
+const processModelId = 'test_consumer_api_correlation_result';
 let processInstanceHandler;
 let processInstanceId;
 
@@ -11,7 +12,6 @@ describe('Management API:   GET  -> /process_instance/:process_instance_id/proce
 
   let testFixtureProvider;
 
-  const processModelId = 'test_consumer_api_correlation_result';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
