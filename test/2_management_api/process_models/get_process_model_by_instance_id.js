@@ -9,7 +9,7 @@ describe('Management API:   GET  -> /process_instance/:process_instance_id/proce
   let testFixtureProvider;
   let processInstanceHandler;
 
-  const processModelId = 'heatmap_sample';
+  const processModelId = 'test_consumer_api_correlation_result';
   let processInstanceId;
 
   before(async () => {
@@ -20,8 +20,7 @@ describe('Management API:   GET  -> /process_instance/:process_instance_id/proce
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
-    const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId);
-    processInstanceId = result.processInstanceId;
+    await createFinishedProcessInstance();
   });
 
   after(async () => {
@@ -42,3 +41,12 @@ describe('Management API:   GET  -> /process_instance/:process_instance_id/proce
     should(processModel.endEvents.length).be.greaterThan(0);
   });
 });
+
+async function createFinishedProcessInstance() {
+  return new Promise(async (resolve, reject) => {
+    processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+
+    const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId);
+    processInstanceId = result.processInstanceId;
+  });
+}
