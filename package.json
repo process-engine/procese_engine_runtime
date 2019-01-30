@@ -74,7 +74,7 @@
     "@process-engine/management_api_http": "3.1.0",
     "@process-engine/metrics_api_core": "1.0.0",
     "@process-engine/metrics.repository.file_system": "1.1.0",
-    "@process-engine/process_engine_core": "8.9.0",
+    "@process-engine/process_engine_core": "feature~add_identity_to_correlation-service",
     "@process-engine/process_model.repository.sequelize": "4.2.3",
     "@process-engine/token_history_api_http": "1.3.2",
     "@process-engine/token_history_api_core": "1.3.3",
