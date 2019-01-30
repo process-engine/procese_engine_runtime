@@ -1,17 +1,17 @@
 'use strict';
 
 const should = require('should');
+const uuid = require('node-uuid');
 
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-const processModelId = 'test_consumer_api_correlation_result';
-let processInstanceHandler;
-let processInstanceId;
-
-describe('Management API:   GET  -> /process_instance/:process_instance_id/process_models/', () => {
+describe('Management API:   GET  -> /process_instance/:process_instance_id/process_model/', () => {
 
   let testFixtureProvider;
+  let processInstanceHandler;
 
+  const processModelId = 'test_consumer_api_correlation_result';
+  let processInstanceId;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -41,14 +41,14 @@ describe('Management API:   GET  -> /process_instance/:process_instance_id/proce
     should(processModel.startEvents.length).be.greaterThan(0);
     should(processModel.endEvents.length).be.greaterThan(0);
   });
+
+  async function createFinishedProcessInstance() {
+    return new Promise(async (resolve, reject) => {
+      const correlationId = uuid.v4();
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+
+      const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, correlationId);
+      processInstanceId = result.processInstanceId;
+    });
+  }
 });
-
-async function createFinishedProcessInstance() {
-  return new Promise(async (resolve, reject) => {
-    const correlationId = uuid.v4();
-    processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
-
-    const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, correlationId);
-    processInstanceId = result.processInstanceId;
-  });
-}
