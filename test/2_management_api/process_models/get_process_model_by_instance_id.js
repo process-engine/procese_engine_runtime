@@ -4,13 +4,14 @@ const should = require('should');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs');
 
+let processInstanceHandler;
+let processInstanceId;
+
 describe('Management API:   GET  -> /process_instance/:process_instance_id/process_models/', () => {
 
   let testFixtureProvider;
-  let processInstanceHandler;
 
   const processModelId = 'test_consumer_api_correlation_result';
-  let processInstanceId;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -44,9 +45,10 @@ describe('Management API:   GET  -> /process_instance/:process_instance_id/proce
 
 async function createFinishedProcessInstance() {
   return new Promise(async (resolve, reject) => {
+    const correlationId = uuid.v4();
     processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
 
-    const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId);
+    const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, correlationId);
     processInstanceId = result.processInstanceId;
   });
 }
