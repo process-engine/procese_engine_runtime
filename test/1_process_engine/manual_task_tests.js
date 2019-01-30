@@ -3,7 +3,7 @@
 const uuid = require('node-uuid');
 const should = require('should');
 
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs/test_setup');
 
 describe('Manual Tasks - ', () => {
 

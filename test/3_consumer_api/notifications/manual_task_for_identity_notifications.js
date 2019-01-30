@@ -3,7 +3,7 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
 describe('Consumer API:   Receive identity specific ManualTask Notifications', () => {
 

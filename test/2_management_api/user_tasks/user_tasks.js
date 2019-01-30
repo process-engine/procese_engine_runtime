@@ -2,7 +2,7 @@
 
 const should = require('should');
 
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 // NOTE:
 // The consumer api alrady contains extensive testing for this, so there is no need to cover everything here.

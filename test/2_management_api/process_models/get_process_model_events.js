@@ -2,7 +2,7 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
+const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
 describe('Management API:   GET  ->  /process_models/:process_model_id/events', () => {
 

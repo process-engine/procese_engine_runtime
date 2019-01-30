@@ -12,5 +12,3 @@ global.Promise = Bluebird;
 export * from './global_route_configurator';
 export * from './main';
 export * from './migrator';
-
-export * from './test_setup/index';

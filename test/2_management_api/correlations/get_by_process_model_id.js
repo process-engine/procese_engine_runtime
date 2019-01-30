@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const StartCallbackType = require('@process-engine/management_api_contracts').DataModels.ProcessModels.StartCallbackType;
 
-const TestFixtureProvider = require('../../../dist/commonjs').TestFixtureProvider;
+const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
 describe('Management API:   GET  ->  /correlations/process_model/:process_model_id', () => {
 

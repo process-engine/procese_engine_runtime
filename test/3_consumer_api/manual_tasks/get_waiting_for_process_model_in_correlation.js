@@ -3,7 +3,7 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
 const testCase = 'GET  ->  /process_models/:process_model_id/correlations/:correlation_id/manual_tasks';
 describe(`Consumer API: ${testCase}`, () => {

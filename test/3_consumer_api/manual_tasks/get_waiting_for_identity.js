@@ -2,7 +2,7 @@
 
 const should = require('should');
 
-const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
 describe('ConsumerAPI:   GET  ->  /manual_tasks/own', () => {
 

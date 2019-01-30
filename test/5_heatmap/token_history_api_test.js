@@ -2,7 +2,7 @@
 
 const should = require('should');
 const uuid = require('node-uuid');
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+const TestFixtureProvider = require('../../dist/commonjs/test_setup').TestFixtureProvider;
 
 describe('TokenHistory API Tests - ', () => {
 

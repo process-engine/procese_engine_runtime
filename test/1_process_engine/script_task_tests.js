@@ -1,6 +1,6 @@
 'use strict';
 const should = require('should');
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+const TestFixtureProvider = require('../../dist/commonjs/test_setup').TestFixtureProvider;
 
 describe('Script Tasks - ', () => {
 

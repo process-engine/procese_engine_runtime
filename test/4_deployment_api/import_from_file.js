@@ -3,7 +3,7 @@
 const should = require('should');
 const path = require('path');
 
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+const TestFixtureProvider = require('../../dist/commonjs/test_setup').TestFixtureProvider;
 
 describe('Deployment API -> importBpmnFromFile', () => {
 
