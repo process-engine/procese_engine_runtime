@@ -11,7 +11,7 @@ describe.only('Management API:   GET  ->  /correlations/all', () => {
 
   let testFixtureProvider;
 
-  const genericProcessModelId = 'generic_sample';
+  const genericProcessModelId = 'test_consumer_api_correlation_result';
   const errorProcessModelId = 'test_management_api_correlation_error';
 
   before(async () => {
