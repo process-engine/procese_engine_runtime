@@ -115,7 +115,7 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
     }
   });
 
-  it('should only return correlations by ProcessInstnceId of a specific user', async () => {
+  it('should only return correlations by ProcessInstanceId for a specific user', async () => {
     const correlationDefaultUser = await testFixtureProvider
       .managementApiClientService
       .getCorrelationByProcessInstanceId(testFixtureProvider.identities.defaultUser, processInstanceId_1);
