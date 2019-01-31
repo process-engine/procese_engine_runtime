@@ -10,6 +10,8 @@ const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFix
 describe('Management API:   GET  ->  /correlations/process_instance/:process_instance_id', () => {
 
   let testFixtureProvider;
+  let processInstanceId_1;
+  let processInstanceId_2;
 
   const processModelId = 'test_consumer_api_correlation_result';
 
@@ -19,14 +21,15 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
 
     await testFixtureProvider.importProcessFiles([processModelId]);
 
-    await createFinishedProcessInstance();
+    processInstanceId_1 = await createFinishedProcessInstance(testFixtureProvider.identities.defaultUser);
+    processInstanceId_2 = await createFinishedProcessInstance(testFixtureProvider.identities.secondDefaultUser);
   });
 
   after(async () => {
     await testFixtureProvider.tearDown();
   });
 
-  async function createFinishedProcessInstance() {
+  async function createFinishedProcessInstance(identity) {
 
     const startEventId = 'StartEvent_1';
     const payload = {
@@ -38,12 +41,13 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
 
     const result = await testFixtureProvider
       .managementApiClientService
-      .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelId, startEventId, payload, returnOn);
+      .startProcessInstance(identity, processModelId, startEventId, payload, returnOn);
 
+    console.log(result);
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);
 
-    return result.correlationId;
+    return result.processInstanceId;
   }
 
   // Difficult to test, since we won't get a ProcessInstanceId returned after starting a new one.
@@ -51,7 +55,7 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
 
     const correlations = await testFixtureProvider
       .managementApiClientService
-      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.defaultUser, processModelId);
+      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.defaultUser, processInstanceId_1);
 
     should(correlations).be.an.Array();
     should(correlations.length).be.greaterThan(0);
@@ -80,12 +84,12 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
   });
 
   it('should fail to retrieve the Correlation, if no Correlation for the given ProcessInstanceId exists', async () => {
-    const invalidProcessModelId = 'invalid_id';
+    const invalidProcessInstanceId = 'invalid_id';
 
     try {
       const correlationList = await testFixtureProvider
         .managementApiClientService
-        .getCorrelationByProcessInstanceId(testFixtureProvider.identities.defaultUser, invalidProcessModelId);
+        .getCorrelationByProcessInstanceId(testFixtureProvider.identities.defaultUser, invalidProcessInstanceId);
 
       should.fail(correlationList, undefined, 'This request should have failed!');
     } catch (error) {
@@ -100,7 +104,7 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
     try {
       const correlationList = await testFixtureProvider
         .managementApiClientService
-        .getCorrelationByProcessInstanceId({}, processModelId);
+        .getCorrelationByProcessInstanceId({}, processInstanceId_1);
 
       should.fail(correlationList, undefined, 'This request should have failed!');
     } catch (error) {
@@ -109,6 +113,20 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
       should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
+  });
+
+  it('should only return correlations by ProcessInstnceId of a specific user', async () => {
+    const correlationDefaultUser = await testFixtureProvider
+      .managementApiClientService
+      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.defaultUser, processInstanceId_1);
+
+    should(correlationDefaultUser.identity.userId).equal(testFixtureProvider.identities.defaultUser.userId)
+
+    const correlationSecondUser = await testFixtureProvider
+      .managementApiClientService
+      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.secondDefaultUser, processInstanceId_2);
+
+    should(correlationSecondUser.identity.userId).equal(testFixtureProvider.identities.secondDefaultUser.userId)
   });
 
 });
