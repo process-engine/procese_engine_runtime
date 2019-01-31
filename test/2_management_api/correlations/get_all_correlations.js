@@ -5,28 +5,29 @@ const uuid = require('node-uuid');
 
 const StartCallbackType = require('@process-engine/management_api_contracts').DataModels.ProcessModels.StartCallbackType;
 
-const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
+const TestFixtureProvider = require('../../../dist/commonjs/test_setup/fixture_providers/test_fixture_provider').TestFixtureProvider;
 
-describe('Management API:   GET  ->  /correlations/all', () => {
+describe.only('Management API:   GET  ->  /correlations/all', () => {
 
   let testFixtureProvider;
 
-  const processModelId = 'test_consumer_api_correlation_result';
+  const genericProcessModelId = 'generic_sample';
+  const errorProcessModelId = 'test_management_api_correlation_error';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    await testFixtureProvider.importProcessFiles([processModelId]);
+    await testFixtureProvider.importProcessFiles([genericProcessModelId, errorProcessModelId]);
 
-    await createFinishedProcessInstance();
+    await createFinishedProcessInstance(genericProcessModelId);
   });
 
   after(async () => {
     await testFixtureProvider.tearDown();
   });
 
-  async function createFinishedProcessInstance() {
+  async function createFinishedProcessInstance(processModelIdToUse) {
 
     const startEventId = 'StartEvent_1';
     const payload = {
@@ -38,7 +39,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
 
     const result = await testFixtureProvider
       .managementApiClientService
-      .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelId, startEventId, payload, returnOn);
+      .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelIdToUse, startEventId, payload, returnOn);
 
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);
@@ -46,7 +47,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
     return result.correlationId;
   }
 
-  it('should return all correlations through the management api', async () => {
+  it('should include all correlations that were finished with an error', async () => {
 
     const correlations = await testFixtureProvider
       .managementApiClientService
@@ -75,6 +76,34 @@ describe('Management API:   GET  ->  /correlations/all', () => {
     });
   });
 
+  it('should return all correlations and at least one which has the error state set', async () => {
+    try {
+      await createFinishedProcessInstance(errorProcessModelId);
+
+      should.fail('The expected Error was not thrown');
+    } catch (error) {
+      /**
+      * Give the persistance backend some time to persist the Correlation
+      * results.
+      */
+      await new Promise((resolve) => setTimeout(resolve, 750));
+    }
+
+    const correlations = await testFixtureProvider
+      .managementApiClientService
+      .getAllCorrelations(testFixtureProvider.identities.defaultUser);
+
+    should(correlations).be.instanceOf(Array);
+    should(correlations.length).be.greaterThan(0);
+
+    const oneCorrelationErrorState = correlations.some((currentCorrelation) => {
+      return currentCorrelation.state === 'error';
+    });
+
+    should(oneCorrelationErrorState).be.true('No Correlation with an error state was found.');
+
+  });
+
   it('should fail to retrieve a list of correlations, when the user is unauthorized', async () => {
     try {
       const processModelList = await testFixtureProvider
@@ -90,4 +119,11 @@ describe('Management API:   GET  ->  /correlations/all', () => {
     }
   });
 
+  async function wait(timeInMs) {
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve();
+      }, timeInMs);
+    });
+  }
 });
