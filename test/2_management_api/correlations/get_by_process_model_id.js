@@ -53,6 +53,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
       .getCorrelationsByProcessModelId(testFixtureProvider.identities.defaultUser, processModelId);
 
     should(correlations).be.an.Array();
+    should(correlations.length).be.greaterThan(0);
 
     correlations.forEach((correlation) => {
 
