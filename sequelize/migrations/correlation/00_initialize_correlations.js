@@ -24,6 +24,7 @@ module.exports = {
     }
 
     console.log('Creating Correlations table');
+    console.log('################HELLO WORLD##################');
 
     return queryInterface.createTable('Correlations', {
       id: {
@@ -48,6 +49,14 @@ module.exports = {
         allowNull: false,
       },
       identity: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+      state: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      error: {
         type: Sequelize.TEXT,
         allowNull: true,
       },
