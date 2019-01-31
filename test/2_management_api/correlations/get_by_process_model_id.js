@@ -19,14 +19,15 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
 
     await testFixtureProvider.importProcessFiles([processModelId]);
 
-    await createFinishedProcessInstance();
+    await createFinishedProcessInstanceWithIdentity(testFixtureProvider.identities.defaultUser);
+    await createFinishedProcessInstanceWithIdentity(testFixtureProvider.identities.secondDefaultUser);
   });
 
   after(async () => {
     await testFixtureProvider.tearDown();
   });
 
-  async function createFinishedProcessInstance() {
+  async function createFinishedProcessInstanceWithIdentity(identity) {
 
     const startEventId = 'StartEvent_1';
     const payload = {
@@ -38,7 +39,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
 
     const result = await testFixtureProvider
       .managementApiClientService
-      .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelId, startEventId, payload, returnOn);
+      .startProcessInstance(identity, processModelId, startEventId, payload, returnOn);
 
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);
@@ -108,6 +109,24 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
       should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
+  });
+
+  it('should only return correlations by ProcessModelId of the specific user', async () => {
+    const correlationListDefaultUser = await testFixtureProvider
+      .managementApiClientService
+      .getCorrelationsByProcessModelId(testFixtureProvider.identities.defaultUser, processModelId);
+
+    correlationListDefaultUser.forEach((correlation) => {
+      should(correlation.identity.userId).equal(testFixtureProvider.identities.defaultUser.userId)
+    });
+
+    const correlationListSecondUser = await testFixtureProvider
+      .managementApiClientService
+      .getCorrelationsByProcessModelId(testFixtureProvider.identities.secondDefaultUser, processModelId);
+
+    correlationListSecondUser.forEach((correlation) => {
+      should(correlation.identity.userId).equal(testFixtureProvider.identities.secondDefaultUser.userId)
+    });
   });
 
 });
