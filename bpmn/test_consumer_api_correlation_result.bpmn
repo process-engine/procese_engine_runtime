@@ -17,13 +17,7 @@
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:sequenceFlow id="SequenceFlow_0vspoh6" sourceRef="StartEvent_1" targetRef="scriptTask_CreateSampleResult" />
-    <bpmn:sequenceFlow id="SequenceFlow_0dqpbny" sourceRef="scriptTask_CreateSampleResult" targetRef="EndEvent_Success">
-      <bpmn:extensionElements>
-        <camunda:properties>
-          <camunda:property name="mapper" value="token.history.scriptTask_CreateSampleResult" />
-        </camunda:properties>
-      </bpmn:extensionElements>
-    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0dqpbny" name="" sourceRef="scriptTask_CreateSampleResult" targetRef="EndEvent_Success" />
     <bpmn:scriptTask id="scriptTask_CreateSampleResult" name="Create Sample Result">
       <bpmn:incoming>SequenceFlow_0vspoh6</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0dqpbny</bpmn:outgoing>

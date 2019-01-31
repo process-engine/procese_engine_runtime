@@ -1,7 +1,7 @@
 'use strict';
 
 const should = require('should');
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+const TestFixtureProvider = require('../../dist/commonjs/test_setup').TestFixtureProvider;
 
 const HttpClient = require('@essential-projects/http').HttpClient;
 
@@ -19,7 +19,7 @@ describe('Authority Route /security/authority - ', () => {
 
     httpClient = new HttpClient();
     httpClient.config = {
-      url: 'http://localhost:8000',
+      url: 'http://localhost:32413',
     };
   });
 

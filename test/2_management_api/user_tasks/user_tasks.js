@@ -2,7 +2,7 @@
 
 const should = require('should');
 
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 // NOTE:
 // The consumer api alrady contains extensive testing for this, so there is no need to cover everything here.
@@ -18,6 +18,7 @@ describe(`Management API: ${testCase}`, () => {
   let userTaskToFinish;
 
   const processModelId = 'test_management_api_usertask';
+  let processInstanceId;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -27,7 +28,10 @@ describe(`Management API: ${testCase}`, () => {
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
-    correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
+    const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId);
+    correlationId = result.correlationId;
+    processInstanceId = result.processInstanceId;
+
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
   });
 
@@ -49,6 +53,15 @@ describe(`Management API: ${testCase}`, () => {
     const userTaskList = await testFixtureProvider
       .managementApiClientService
       .getUserTasksForProcessModel(testFixtureProvider.identities.defaultUser, processModelId);
+
+    assertUserTaskList(userTaskList);
+  });
+
+  it('should return a process model\'s user tasks by its process_instance_id through the consumer api', async () => {
+
+    const userTaskList = await testFixtureProvider
+      .managementApiClientService
+      .getUserTasksForProcessInstance(testFixtureProvider.identities.defaultUser, processInstanceId);
 
     assertUserTaskList(userTaskList);
   });

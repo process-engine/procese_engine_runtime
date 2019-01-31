@@ -3,7 +3,7 @@
 const jsonwebtoken = require('jsonwebtoken');
 const should = require('should');
 
-const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
 describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
 

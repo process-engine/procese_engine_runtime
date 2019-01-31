@@ -1,6 +1,6 @@
 'use strict';
 const should = require('should');
-const TestFixtureProver = require('../../dist/commonjs').TestFixtureProvider;
+const TestFixtureProver = require('../../dist/commonjs/test_setup').TestFixtureProvider;
 
 describe('Error End Event - ', () => {
 

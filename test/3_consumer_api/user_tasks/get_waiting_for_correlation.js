@@ -2,7 +2,7 @@
 
 const should = require('should');
 
-const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs');
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
 describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () => {
 

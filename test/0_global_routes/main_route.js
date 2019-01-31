@@ -1,11 +1,11 @@
 'use strict';
 
 const should = require('should');
-const TestFixtureProvider = require('../../dist/commonjs').TestFixtureProvider;
+const TestFixtureProvider = require('../../dist/commonjs/test_setup').TestFixtureProvider;
 
 const HttpClient = require('@essential-projects/http').HttpClient;
 
-describe('Main Route http://localhost:8000 - ', () => {
+describe('Main Route http://localhost:32413 - ', () => {
 
   let httpClient;
 
@@ -19,7 +19,7 @@ describe('Main Route http://localhost:8000 - ', () => {
 
     httpClient = new HttpClient();
     httpClient.config = {
-      url: 'http://localhost:8000',
+      url: 'http://localhost:32413',
     };
   });
 

@@ -1,7 +1,3 @@
-export * from './fixture_providers/index';
-export * from './mocks/index';
-export * from './test_services';
-
 import * as Bluebird from 'bluebird';
 
 // By default, Promise-Cancellation is deactivated.
@@ -12,3 +8,7 @@ Bluebird.config({
 
 // This will make Bluebird the default Promise implementation throughout the core package.
 global.Promise = Bluebird;
+
+export * from './global_route_configurator';
+export * from './main';
+export * from './migrator';

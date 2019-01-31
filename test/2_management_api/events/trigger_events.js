@@ -1,6 +1,6 @@
 'use strict';
 
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 // NOTE: All main functionality is located in the Consumer API.
 // Therefore, we just need to ensure that communication with the API is working correctly.

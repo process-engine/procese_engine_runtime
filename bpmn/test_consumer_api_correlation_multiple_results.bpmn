@@ -21,13 +21,7 @@
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:sequenceFlow id="SequenceFlow_0vspoh6" sourceRef="StartEvent_1" targetRef="ExclusiveGateway_11dzwzz" />
-    <bpmn:sequenceFlow id="SequenceFlow_0dqpbny" sourceRef="scriptTask_CreateSampleResult" targetRef="EndEvent_2">
-      <bpmn:extensionElements>
-        <camunda:properties>
-          <camunda:property name="mapper" value="token.history.scriptTask_CreateSampleResult" />
-        </camunda:properties>
-      </bpmn:extensionElements>
-    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0dqpbny" name="" sourceRef="scriptTask_CreateSampleResult" targetRef="EndEvent_2" />
     <bpmn:sequenceFlow id="SequenceFlow_1w8o033" sourceRef="ExclusiveGateway_11dzwzz" targetRef="IntermediateThrowEvent_1rrhagu" />
     <bpmn:startEvent id="StartEvent_1" name="Start_Event_1">
       <bpmn:outgoing>SequenceFlow_0vspoh6</bpmn:outgoing>

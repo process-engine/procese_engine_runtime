@@ -17,19 +17,12 @@
       <bpmn:outgoing>SequenceFlow_0ybdavc</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0ybdavc" sourceRef="StartEvent_1" targetRef="scriptTaskBeforeSubProcess" />
-    <bpmn:sequenceFlow id="SequenceFlow_1iy8lx5" sourceRef="sp_Sub" targetRef="scriptTaskAfterSubProcess" />
-    <bpmn:sequenceFlow id="SequenceFlow_1fh6yzy" sourceRef="scriptTaskAfterSubProcess" targetRef="mainProcessEndEvent">
-      <bpmn:extensionElements>
-        <camunda:executionListener class="" event="" />
-        <camunda:properties>
-          <camunda:property name="mapper" value="token.history.sp_Sub" />
-        </camunda:properties>
-      </bpmn:extensionElements>
-    </bpmn:sequenceFlow>
-    <bpmn:endEvent id="mainProcessEndEvent" name="test finished">
+    <bpmn:sequenceFlow id="SequenceFlow_1iy8lx5" name="" sourceRef="sp_Sub" targetRef="scriptTaskAfterSubProcess" />
+    <bpmn:sequenceFlow id="SequenceFlow_1fh6yzy" name="" sourceRef="scriptTaskAfterSubProcess" targetRef="mainProcessEndEvent" />
+    <bpmn:endEvent id="mainProcessEndEvent" name="">
       <bpmn:incoming>SequenceFlow_1fh6yzy</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:scriptTask id="scriptTaskAfterSubProcess" name="Return current token as result">
+    <bpmn:scriptTask id="scriptTaskAfterSubProcess">
       <bpmn:incoming>SequenceFlow_1iy8lx5</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1fh6yzy</bpmn:outgoing>
       <bpmn:script>return token.current;</bpmn:script>
@@ -41,11 +34,11 @@
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1y2u9ls</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1iy8lx5</bpmn:outgoing>
-      <bpmn:startEvent id="subProcessStartEvent" name="Start Subprocess">
+      <bpmn:startEvent id="subProcessStartEvent">
         <bpmn:outgoing>SequenceFlow_0gs2h60</bpmn:outgoing>
       </bpmn:startEvent>
       <bpmn:sequenceFlow id="SequenceFlow_0gs2h60" sourceRef="subProcessStartEvent" targetRef="subProcessScriptTask" />
-      <bpmn:scriptTask id="subProcessScriptTask" name="Update token">
+      <bpmn:scriptTask id="subProcessScriptTask" name="">
         <bpmn:extensionElements>
           <camunda:executionListener class="" event="" />
           <camunda:properties />
@@ -54,13 +47,13 @@
         <bpmn:outgoing>SequenceFlow_1086di1</bpmn:outgoing>
         <bpmn:script>return {secondTest: token.history.subProcessStartEvent.firstTest + "456" };</bpmn:script>
       </bpmn:scriptTask>
-      <bpmn:endEvent id="subProcessEndEvent" name="End Subprocess">
+      <bpmn:endEvent id="subProcessEndEvent">
         <bpmn:incoming>SequenceFlow_1086di1</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="SequenceFlow_1086di1" sourceRef="subProcessScriptTask" targetRef="subProcessEndEvent" />
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="SequenceFlow_1y2u9ls" sourceRef="scriptTaskBeforeSubProcess" targetRef="sp_Sub" />
-    <bpmn:scriptTask id="scriptTaskBeforeSubProcess" name="Set initial token">
+    <bpmn:scriptTask id="scriptTaskBeforeSubProcess">
       <bpmn:incoming>SequenceFlow_0ybdavc</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1y2u9ls</bpmn:outgoing>
       <bpmn:script>return { firstTest: "123" };</bpmn:script>
@@ -93,7 +86,7 @@
       <bpmndi:BPMNShape id="EndEvent_1ciedz4_di" bpmnElement="mainProcessEndEvent">
         <dc:Bounds x="940" y="144" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="929" y="187" width="59" height="14" />
+          <dc:Bounds x="913" y="183" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1iy8lx5_di" bpmnElement="SequenceFlow_1iy8lx5">
@@ -106,7 +99,7 @@
       <bpmndi:BPMNShape id="StartEvent_0k3rajt_di" bpmnElement="subProcessStartEvent">
         <dc:Bounds x="421" y="143" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="397" y="186" width="85" height="14" />
+          <dc:Bounds x="394" y="182" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0gs2h60_di" bpmnElement="SequenceFlow_0gs2h60">
@@ -122,7 +115,7 @@
       <bpmndi:BPMNShape id="EndEvent_13jrx80_di" bpmnElement="subProcessEndEvent">
         <dc:Bounds x="651" y="143" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="629" y="186" width="81" height="14" />
+          <dc:Bounds x="624" y="182" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1086di1_di" bpmnElement="SequenceFlow_1086di1">

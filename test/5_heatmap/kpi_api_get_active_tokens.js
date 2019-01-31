@@ -3,7 +3,7 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {TestFixtureProvider, ProcessInstanceHandler} = require('../../dist/commonjs');
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../dist/commonjs/test_setup');
 
 describe('KPI API -> Get Active Tokens - ', () => {
 
