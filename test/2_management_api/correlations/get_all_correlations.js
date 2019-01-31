@@ -19,14 +19,15 @@ describe('Management API:   GET  ->  /correlations/all', () => {
 
     await testFixtureProvider.importProcessFiles([processModelId]);
 
-    await createFinishedProcessInstance();
+    await createFinishedProcessInstance(testFixtureProvider.identities.defaultUser);
+    await createFinishedProcessInstance(testFixtureProvider.identities.secondDefaultUser);
   });
 
   after(async () => {
     await testFixtureProvider.tearDown();
   });
 
-  async function createFinishedProcessInstance() {
+  async function createFinishedProcessInstance(identity) {
 
     const startEventId = 'StartEvent_1';
     const payload = {
@@ -38,7 +39,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
 
     const result = await testFixtureProvider
       .managementApiClientService
-      .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelId, startEventId, payload, returnOn);
+      .startProcessInstance(identity, processModelId, startEventId, payload, returnOn);
 
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);
@@ -88,6 +89,24 @@ describe('Management API:   GET  ->  /correlations/all', () => {
       should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
+  });
+
+  it('should only return all correlations of a specific user', async () => {
+    const correlationListDefaultUser = await testFixtureProvider
+      .managementApiClientService
+      .getAllCorrelations(testFixtureProvider.identities.defaultUser);
+
+    correlationListDefaultUser.forEach((correlation) => {
+      should(correlation.identity.userId).equal(testFixtureProvider.identities.defaultUser.userId)
+    });
+
+    const correlationListSecondUser = await testFixtureProvider
+      .managementApiClientService
+      .getAllCorrelations(testFixtureProvider.identities.secondDefaultUser);
+
+    correlationListSecondUser.forEach((correlation) => {
+      should(correlation.identity.userId).equal(testFixtureProvider.identities.secondDefaultUser.userId)
+    });
   });
 
 });
