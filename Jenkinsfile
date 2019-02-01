@@ -2,13 +2,13 @@
 
 def cleanup_workspace() {
   cleanWs()
-  dir("${env.WORKSPACE}@tmp") {
+  dir("${WORKSPACE}@tmp") {
     deleteDir()
   }
-  dir("${env.WORKSPACE}@script") {
+  dir("${WORKSPACE}@script") {
     deleteDir()
   }
-  dir("${env.WORKSPACE}@script@tmp") {
+  dir("${WORKSPACE}@script@tmp") {
     deleteDir()
   }
 }
@@ -43,13 +43,13 @@ def slack_send_summary(testlog, test_failed) {
 
   def color_string     =  '"color":"good"';
   def markdown_string  =  '"mrkdwn_in":["text","title"]';
-  def title_string     =  "\"title\":\":white_check_mark: Process Engine Runtime Integration Tests for ${env.BRANCH_NAME} Succeeded!\"";
+  def title_string     =  "\"title\":\":white_check_mark: Process Engine Runtime Integration Tests for ${BRANCH_NAME} Succeeded!\"";
   def result_string    =  "\"text\":\"${passing}\\n${failing}\\n${pending}\"";
   def action_string    =  "\"actions\":[{\"name\":\"open_jenkins\",\"type\":\"button\",\"text\":\"Open this run\",\"url\":\"${RUN_DISPLAY_URL}\"}]";
 
   if (test_failed == true) {
     color_string = '"color":"danger"';
-    title_string =  "\"title\":\":boom: Process Engine Runtime Integration Tests for ${env.BRANCH_NAME} Failed!\"";
+    title_string =  "\"title\":\":boom: Process Engine Runtime Integration Tests for ${BRANCH_NAME} Failed!\"";
   }
 
   slackSend(attachments: "[{$color_string, $title_string, $markdown_string, $result_string, $action_string}]");
@@ -92,14 +92,14 @@ pipeline {
           package_version = raw_package_version.trim()
           echo("Package version is '${package_version}'")
 
-          branch = env.BRANCH_NAME;
+          branch = BRANCH_NAME;
           branch_is_master = branch == 'master';
           branch_is_develop = branch == 'develop';
 
           if (branch_is_master) {
             full_release_version_string = "${package_version}";
           } else {
-            full_release_version_string = "${package_version}-pre-b${env.BUILD_NUMBER}";
+            full_release_version_string = "${package_version}-pre-b${BUILD_NUMBER}";
           }
 
           // When building a non master or develop branch the release will be a draft.
@@ -107,7 +107,7 @@ pipeline {
 
           echo("Branch is '${branch}'")
         }
-        nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
+        nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
           sh('node --version')
           sh('npm install -g mocha cross-env')
           sh('npm install')
@@ -137,7 +137,7 @@ pipeline {
 
           def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test JUNIT_REPORT_PATH=report.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
 
-          docker.image('node:8').inside("--env PATH=$PATH:/$WORKSPACE/node_modules/.bin") {
+          docker.image("node:${NODE_VERSION_NUMBER}").inside("--env PATH=$PATH:/$WORKSPACE/node_modules/.bin") {
             error_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > result.txt", returnStatus: true);
           };
 
@@ -173,7 +173,7 @@ pipeline {
     stage('publish') {
       steps {
         script {
-          def new_commit = env.GIT_PREVIOUS_COMMIT != env.GIT_COMMIT;
+          def new_commit = env.GIT_PREVIOUS_COMMIT != GIT_COMMIT;
 
           if (branch_is_master) {
             if (new_commit) {
@@ -191,7 +191,7 @@ pipeline {
               def version_has_changed = current_published_version != raw_package_version;
 
               if (version_has_changed) {
-                nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
+                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
                   sh('node --version')
                   sh('npm publish --ignore-scripts')
                 }
@@ -204,11 +204,11 @@ pipeline {
             // when not on master, publish a prerelease based on the package version, the
             // current git commit and the build number.
             // the published version gets tagged as the branch name.
-            def first_seven_digits_of_git_hash = env.GIT_COMMIT.substring(0, 8);
-            def publish_version = "${package_version}-${first_seven_digits_of_git_hash}-b${env.BUILD_NUMBER}";
+            def first_seven_digits_of_git_hash = GIT_COMMIT.substring(0, 8);
+            def publish_version = "${package_version}-${first_seven_digits_of_git_hash}-b${BUILD_NUMBER}";
             def publish_tag = branch.replace("/", "~");
 
-            nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
+            nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
               sh('node --version')
               sh("npm version ${publish_version} --allow-same-version --force --no-git-tag-version ")
               sh("npm publish --tag ${publish_tag} --ignore-scripts")

@@ -73,7 +73,7 @@ function setConfigPath(): void {
   }
 
   const internalConfigFolderName: string = 'config';
-  const internalConfigPath: string = path.join(process.cwd(), internalConfigFolderName);
+  const internalConfigPath: string = path.join(__dirname, '..', '..', internalConfigFolderName);
 
   ensureConfigPathExists(internalConfigPath);
 
