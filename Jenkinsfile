@@ -173,7 +173,7 @@ pipeline {
     stage('publish') {
       steps {
         script {
-          def new_commit = GIT_PREVIOUS_COMMIT != GIT_COMMIT;
+          def new_commit = env.GIT_PREVIOUS_COMMIT != GIT_COMMIT;
 
           if (branch_is_master) {
             if (new_commit) {
