@@ -137,7 +137,7 @@ pipeline {
 
           def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test JUNIT_REPORT_PATH=report.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
 
-          docker.image('node:8').inside("--env PATH=$PATH:/$WORKSPACE/node_modules/.bin") {
+          docker.image("node:${NODE_VERSION_NUMBER}").inside("--env PATH=$PATH:/$WORKSPACE/node_modules/.bin") {
             error_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > result.txt", returnStatus: true);
           };
 
