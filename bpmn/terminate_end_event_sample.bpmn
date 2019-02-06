@@ -9,7 +9,7 @@
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>TerminateEndEvent_SplitGateway</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>UnreachableScriptTask_1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>IntermediateThrowEvent_1eqvyfn</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>IntermediateTimerCatchEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SampleScriptTask1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_05qk8pm</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>TerminateEndEvent_JoinGateway</bpmn:flowNodeRef>
@@ -33,14 +33,14 @@
       <bpmn:outgoing>SequenceFlow_058cjt0</bpmn:outgoing>
     </bpmn:parallelGateway>
     <bpmn:sequenceFlow id="SequenceFlow_1bnj4ce" sourceRef="SampleScriptTask1" targetRef="TerminateEndEvent_JoinGateway" />
-    <bpmn:sequenceFlow id="SequenceFlow_058cjt0" sourceRef="TerminateEndEvent_SplitGateway" targetRef="IntermediateThrowEvent_1eqvyfn" />
-    <bpmn:sequenceFlow id="SequenceFlow_1w2702e" sourceRef="IntermediateThrowEvent_1eqvyfn" targetRef="UnreachableScriptTask_1" />
+    <bpmn:sequenceFlow id="SequenceFlow_058cjt0" sourceRef="TerminateEndEvent_SplitGateway" targetRef="IntermediateTimerCatchEvent_1" />
+    <bpmn:sequenceFlow id="SequenceFlow_1w2702e" sourceRef="IntermediateTimerCatchEvent_1" targetRef="UnreachableScriptTask_1" />
     <bpmn:scriptTask id="UnreachableScriptTask_1" name="Script Task should not be called">
       <bpmn:incoming>SequenceFlow_1w2702e</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0vuigj4</bpmn:outgoing>
       <bpmn:script>console.error("ERROR: DELAYED SCRIPT TASK REACHED!");</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_1eqvyfn" name="2s Delay">
+    <bpmn:intermediateCatchEvent id="IntermediateTimerCatchEvent_1" name="2s Delay">
       <bpmn:incoming>SequenceFlow_058cjt0</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1w2702e</bpmn:outgoing>
       <bpmn:timerEventDefinition>
@@ -180,7 +180,7 @@
         <di:waypoint x="364" y="303" />
         <di:waypoint x="479" y="303" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="IntermediateCatchEvent_1597v4y_di" bpmnElement="IntermediateThrowEvent_1eqvyfn">
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_1597v4y_di" bpmnElement="IntermediateTimerCatchEvent_1">
         <dc:Bounds x="328" y="285" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="325" y="328" width="43" height="14" />
