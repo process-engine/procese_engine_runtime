@@ -9,8 +9,10 @@ describe('Management API:   GET  ->  /correlations/active', () => {
   let processInstanceHandler;
   let testFixtureProvider;
 
-  let correlationId;
+  let correlationId_1;
+  let correlationId_2;
   let defaultIdentity;
+  let secondDefaultIdentity;
   const processModelId = 'user_task_test';
 
   before(async () => {
@@ -19,24 +21,32 @@ describe('Management API:   GET  ->  /correlations/active', () => {
 
     await testFixtureProvider.importProcessFiles([processModelId]);
     defaultIdentity = testFixtureProvider.identities.defaultUser;
+    secondDefaultIdentity = testFixtureProvider.identities.secondDefaultUser;
 
-    const result = await testFixtureProvider
+    const result1 = await testFixtureProvider
       .managementApiClientService
       .startProcessInstance(defaultIdentity, processModelId, 'StartEvent_1', {});
 
-    correlationId = result.correlationId;
+    const result2 = await testFixtureProvider
+      .managementApiClientService
+      .startProcessInstance(secondDefaultIdentity, processModelId, 'StartEvent_1', {});
+
+    correlationId_1 = result1.correlationId;
+    correlationId_2 = result2.correlationId;
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
-    await waitForProcessToReachFirstFlowNode();
+    await waitForProcessToReachFirstFlowNode(correlationId_1);
+    await waitForProcessToReachFirstFlowNode(correlationId_2);
   });
 
   after(async () => {
-    await cleanup();
+    await cleanup(correlationId_1, defaultIdentity);
+    await cleanup(correlationId_2, secondDefaultIdentity);
     await testFixtureProvider.tearDown();
   });
 
-  it('should return all active correlations through the management api', async () => {
+  it('should return all active correlations for an user through the management api', async () => {
 
     const correlations = await testFixtureProvider
       .managementApiClientService
@@ -69,11 +79,11 @@ describe('Management API:   GET  ->  /correlations/active', () => {
 
   it('should fail to retrieve a list of correlations, when the user is unauthorized', async () => {
     try {
-      const processModelList = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClientService
         .getActiveCorrelations({});
 
-      should.fail(processModelList, undefined, 'This request should have failed!');
+      should.fail(correlationList, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
@@ -82,11 +92,29 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     }
   });
 
+  it('should only return active correlations of a specific user', async () => {
+    const correlationListDefaultUser = await testFixtureProvider
+      .managementApiClientService
+      .getActiveCorrelations(defaultIdentity);
+
+    correlationListDefaultUser.forEach((correlation) => {
+      should(correlation.identity.userId).equal(defaultIdentity.userId)
+    });
+
+    const correlationListSecondUser = await testFixtureProvider
+      .managementApiClientService
+      .getActiveCorrelations(secondDefaultIdentity);
+
+    correlationListSecondUser.forEach((correlation) => {
+      should(correlation.identity.userId).equal(secondDefaultIdentity.userId)
+    });
+  });
+
   /**
    * Periodically checks if a given correlation exists. After a specific number of retries has been exceeded, an error is thrown.
    * This is to help avoid any timing errors that may occur because of the immediate resolving after starting the process instance.
    */
-  async function waitForProcessToReachFirstFlowNode() {
+  async function waitForProcessToReachFirstFlowNode(correlationId) {
 
     const maxNumberOfRetries = 10;
     const delayBetweenRetriesInMs = 500;
@@ -107,14 +135,14 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     throw new Error(`No process instance within correlation '${correlationId}' found! The process instance like failed to start!`);
   }
 
-  async function cleanup() {
+  async function cleanup(correlationId, identity) {
 
     await new Promise(async (resolve, reject) => {
       processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
 
       const userTaskList = await testFixtureProvider
         .consumerApiClientService
-        .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
+        .getUserTasksForProcessModelInCorrelation(identity, processModelId, correlationId);
 
       const userTaskInput = {
         formFields: {
@@ -125,7 +153,7 @@ describe('Management API:   GET  ->  /correlations/active', () => {
       for (const userTask of userTaskList.userTasks) {
         await testFixtureProvider
           .consumerApiClientService
-          .finishUserTask(defaultIdentity, userTask.processInstanceId, correlationId, userTask.flowNodeInstanceId, userTaskInput);
+          .finishUserTask(identity, userTask.processInstanceId, correlationId, userTask.flowNodeInstanceId, userTaskInput);
       }
     });
   }
