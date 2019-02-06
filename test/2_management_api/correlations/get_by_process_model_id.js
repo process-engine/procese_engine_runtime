@@ -47,7 +47,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
     return result.correlationId;
   }
 
-  it('should return a correlation by its id for an user through the Management API', async () => {
+  it('should return a correlation by its id for a user through the Management API', async () => {
 
     const correlations = await testFixtureProvider
       .managementApiClientService
