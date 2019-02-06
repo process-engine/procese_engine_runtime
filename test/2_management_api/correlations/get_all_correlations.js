@@ -97,7 +97,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
       .getAllCorrelations(testFixtureProvider.identities.defaultUser);
 
     correlationListDefaultUser.forEach((correlation) => {
-      should(correlation.identity.userId).equal(testFixtureProvider.identities.defaultUser.userId)
+      should(correlation.identity.userId).be.equal(testFixtureProvider.identities.defaultUser.userId);
     });
 
     const correlationListSecondUser = await testFixtureProvider
@@ -105,7 +105,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
       .getAllCorrelations(testFixtureProvider.identities.secondDefaultUser);
 
     correlationListSecondUser.forEach((correlation) => {
-      should(correlation.identity.userId).equal(testFixtureProvider.identities.secondDefaultUser.userId)
+      should(correlation.identity.userId).be.equal(testFixtureProvider.identities.secondDefaultUser.userId);
     });
   });
 

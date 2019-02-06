@@ -10,8 +10,8 @@ const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFix
 describe('Management API:   GET  ->  /correlations/process_instance/:process_instance_id', () => {
 
   let testFixtureProvider;
-  let processInstanceId_1;
-  let processInstanceId_2;
+  let processInstanceId1;
+  let processInstanceId2;
 
   const processModelId = 'test_consumer_api_correlation_result';
 
@@ -21,8 +21,8 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
 
     await testFixtureProvider.importProcessFiles([processModelId]);
 
-    processInstanceId_1 = await createFinishedProcessInstance(testFixtureProvider.identities.defaultUser);
-    processInstanceId_2 = await createFinishedProcessInstance(testFixtureProvider.identities.secondDefaultUser);
+    processInstanceId1 = await createFinishedProcessInstance(testFixtureProvider.identities.defaultUser);
+    processInstanceId2 = await createFinishedProcessInstance(testFixtureProvider.identities.secondDefaultUser);
   });
 
   after(async () => {
@@ -43,44 +43,35 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
       .managementApiClientService
       .startProcessInstance(identity, processModelId, startEventId, payload, returnOn);
 
-    console.log(result);
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);
 
     return result.processInstanceId;
   }
 
-  // Difficult to test, since we won't get a ProcessInstanceId returned after starting a new one.
-  it.skip('should return a correlation by its ProcessInstanceId through the Management API', async () => {
+  it('should return a correlation by its ProcessInstanceId through the Management API', async () => {
 
-    const correlations = await testFixtureProvider
+    const correlation = await testFixtureProvider
       .managementApiClientService
-      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.defaultUser, processInstanceId_1);
+      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.defaultUser, processInstanceId1);
 
-    should(correlations).be.an.Array();
-    should(correlations.length).be.greaterThan(0);
+    should(correlation).have.property('id');
+    should(correlation).have.property('state');
+    should(correlation).have.property('createdAt');
+    should(correlation).have.property('identity');
+    should(correlation.identity).have.property('token');
+    should(correlation).have.property('processModels');
 
-    correlations.forEach((correlation) => {
-
-      should(correlation).have.property('id');
-      should(correlation).have.property('state');
-      should(correlation).have.property('createdAt');
-      should(correlation).have.property('identity');
-      should(correlation.identity).have.property('token');
-      should(correlation).have.property('processModels');
-
-      correlation.processModels.forEach((processModel) => {
-        should(processModel).have.property('processDefinitionName');
-        should(processModel).have.property('processModelId');
-        should(processModel.processModelId).be.equal(processModelId);
-        should(processModel).have.property('processInstanceId');
-        should(processModel).have.property('hash');
-        should(processModel).have.property('xml');
-        should(processModel).have.property('state');
-        should(processModel).have.property('createdAt');
-      });
+    correlation.processModels.forEach((processModel) => {
+      should(processModel).have.property('processDefinitionName');
+      should(processModel).have.property('processModelId');
+      should(processModel.processModelId).be.equal(processModelId);
+      should(processModel).have.property('processInstanceId');
+      should(processModel).have.property('hash');
+      should(processModel).have.property('xml');
+      should(processModel).have.property('state');
+      should(processModel).have.property('createdAt');
     });
-
   });
 
   it('should fail to retrieve the Correlation, if no Correlation for the given ProcessInstanceId exists', async () => {
@@ -104,7 +95,7 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
     try {
       const correlationList = await testFixtureProvider
         .managementApiClientService
-        .getCorrelationByProcessInstanceId({}, processInstanceId_1);
+        .getCorrelationByProcessInstanceId({}, processInstanceId1);
 
       should.fail(correlationList, undefined, 'This request should have failed!');
     } catch (error) {
@@ -118,15 +109,14 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
   it('should only return correlations by ProcessInstanceId for a specific user', async () => {
     const correlationDefaultUser = await testFixtureProvider
       .managementApiClientService
-      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.defaultUser, processInstanceId_1);
+      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.defaultUser, processInstanceId1);
 
-    should(correlationDefaultUser.identity.userId).equal(testFixtureProvider.identities.defaultUser.userId)
+    should(correlationDefaultUser.identity.userId).be.equal(testFixtureProvider.identities.defaultUser.userId);
 
     const correlationSecondUser = await testFixtureProvider
       .managementApiClientService
-      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.secondDefaultUser, processInstanceId_2);
+      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.secondDefaultUser, processInstanceId2);
 
-    should(correlationSecondUser.identity.userId).equal(testFixtureProvider.identities.secondDefaultUser.userId)
+    should(correlationSecondUser.identity.userId).be.equal(testFixtureProvider.identities.secondDefaultUser.userId);
   });
-
 });

@@ -9,8 +9,8 @@ describe('Management API:   GET  ->  /correlations/active', () => {
   let processInstanceHandler;
   let testFixtureProvider;
 
-  let correlationId_1;
-  let correlationId_2;
+  let correlationId1;
+  let correlationId2;
   let defaultIdentity;
   let secondDefaultIdentity;
   const processModelId = 'user_task_test';
@@ -20,29 +20,18 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     await testFixtureProvider.initializeAndStart();
 
     await testFixtureProvider.importProcessFiles([processModelId]);
-    defaultIdentity = testFixtureProvider.identities.defaultUser;
-    secondDefaultIdentity = testFixtureProvider.identities.secondDefaultUser;
-
-    const result1 = await testFixtureProvider
-      .managementApiClientService
-      .startProcessInstance(defaultIdentity, processModelId, 'StartEvent_1', {});
-
-    const result2 = await testFixtureProvider
-      .managementApiClientService
-      .startProcessInstance(secondDefaultIdentity, processModelId, 'StartEvent_1', {});
-
-    correlationId_1 = result1.correlationId;
-    correlationId_2 = result2.correlationId;
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
-    await waitForProcessToReachFirstFlowNode(correlationId_1);
-    await waitForProcessToReachFirstFlowNode(correlationId_2);
+    defaultIdentity = testFixtureProvider.identities.defaultUser;
+    secondDefaultIdentity = testFixtureProvider.identities.secondDefaultUser;
+
+    await createActiveCorrelations();
   });
 
   after(async () => {
-    await cleanup(correlationId_1, defaultIdentity);
-    await cleanup(correlationId_2, secondDefaultIdentity);
+    await cleanup(correlationId1, defaultIdentity);
+    await cleanup(correlationId2, secondDefaultIdentity);
     await testFixtureProvider.tearDown();
   });
 
@@ -98,7 +87,7 @@ describe('Management API:   GET  ->  /correlations/active', () => {
       .getActiveCorrelations(defaultIdentity);
 
     correlationListDefaultUser.forEach((correlation) => {
-      should(correlation.identity.userId).equal(defaultIdentity.userId)
+      should(correlation.identity.userId).be.equal(defaultIdentity.userId);
     });
 
     const correlationListSecondUser = await testFixtureProvider
@@ -106,33 +95,16 @@ describe('Management API:   GET  ->  /correlations/active', () => {
       .getActiveCorrelations(secondDefaultIdentity);
 
     correlationListSecondUser.forEach((correlation) => {
-      should(correlation.identity.userId).equal(secondDefaultIdentity.userId)
+      should(correlation.identity.userId).be.equal(secondDefaultIdentity.userId);
     });
   });
 
-  /**
-   * Periodically checks if a given correlation exists. After a specific number of retries has been exceeded, an error is thrown.
-   * This is to help avoid any timing errors that may occur because of the immediate resolving after starting the process instance.
-   */
-  async function waitForProcessToReachFirstFlowNode(correlationId) {
+  async function createActiveCorrelations() {
+    correlationId1 = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId1, processModelId);
 
-    const maxNumberOfRetries = 10;
-    const delayBetweenRetriesInMs = 500;
-
-    const flowNodeInstanceService = await testFixtureProvider.resolveAsync('FlowNodeInstanceService');
-
-    for (let i = 0; i < maxNumberOfRetries; i++) {
-
-      await wait(delayBetweenRetriesInMs);
-
-      const flowNodeInstances = await flowNodeInstanceService.queryByCorrelation(correlationId);
-
-      if (flowNodeInstances && flowNodeInstances.length >= 1) {
-        return;
-      }
-    }
-
-    throw new Error(`No process instance within correlation '${correlationId}' found! The process instance like failed to start!`);
+    correlationId2 = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId2, processModelId);
   }
 
   async function cleanup(correlationId, identity) {
@@ -141,7 +113,7 @@ describe('Management API:   GET  ->  /correlations/active', () => {
       processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
 
       const userTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .managementApiClientService
         .getUserTasksForProcessModelInCorrelation(identity, processModelId, correlationId);
 
       const userTaskInput = {
@@ -152,17 +124,9 @@ describe('Management API:   GET  ->  /correlations/active', () => {
 
       for (const userTask of userTaskList.userTasks) {
         await testFixtureProvider
-          .consumerApiClientService
+          .managementApiClientService
           .finishUserTask(identity, userTask.processInstanceId, correlationId, userTask.flowNodeInstanceId, userTaskInput);
       }
-    });
-  }
-
-  async function wait(timeInMs) {
-    await new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve();
-      }, timeInMs);
     });
   }
 

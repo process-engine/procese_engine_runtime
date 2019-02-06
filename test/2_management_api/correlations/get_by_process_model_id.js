@@ -117,7 +117,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
       .getCorrelationsByProcessModelId(testFixtureProvider.identities.defaultUser, processModelId);
 
     correlationListDefaultUser.forEach((correlation) => {
-      should(correlation.identity.userId).equal(testFixtureProvider.identities.defaultUser.userId)
+      should(correlation.identity.userId).be.equal(testFixtureProvider.identities.defaultUser.userId);
     });
 
     const correlationListSecondUser = await testFixtureProvider
@@ -125,7 +125,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
       .getCorrelationsByProcessModelId(testFixtureProvider.identities.secondDefaultUser, processModelId);
 
     correlationListSecondUser.forEach((correlation) => {
-      should(correlation.identity.userId).equal(testFixtureProvider.identities.secondDefaultUser.userId)
+      should(correlation.identity.userId).be.equal(testFixtureProvider.identities.secondDefaultUser.userId);
     });
   });
 
