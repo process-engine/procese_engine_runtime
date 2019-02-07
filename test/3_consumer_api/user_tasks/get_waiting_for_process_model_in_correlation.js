@@ -141,7 +141,7 @@ describe(`Consumer API: ${testCase}`, () => {
     }
   });
 
-  it('should fail to retrieve the correlation\'s UserTasks, when the user forbidden to retrieve it', async () => {
+  it('should fail to retrieve the correlation\'s UserTasks, when the user is forbidden to retrieve it', async () => {
 
     const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 

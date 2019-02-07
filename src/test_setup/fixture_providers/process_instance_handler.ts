@@ -36,7 +36,12 @@ export class ProcessInstanceHandler {
     return this._testFixtureProvider;
   }
 
-  public async startProcessInstanceAndReturnCorrelationId(processModelId: string, correlationId?: string, inputValues?: any): Promise<string> {
+  public async startProcessInstanceAndReturnCorrelationId(
+    processModelId: string,
+    correlationId?: string,
+    inputValues?: any,
+    identity?: IIdentity,
+  ): Promise<string> {
 
     const startEventId: string = 'StartEvent_1';
     const startCallbackType: DataModels.ProcessModels.StartCallbackType = DataModels.ProcessModels.StartCallbackType.CallbackOnProcessInstanceCreated;
@@ -45,9 +50,11 @@ export class ProcessInstanceHandler {
       inputValues: inputValues || {},
     };
 
+    const identityToUse: IIdentity = identity || this.testFixtureProvider.identities.defaultUser;
+
     const result: DataModels.ProcessModels.ProcessStartResponsePayload = await this.testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(this.testFixtureProvider.identities.defaultUser, processModelId, startEventId, payload, startCallbackType);
+      .startProcessInstance(identityToUse, processModelId, startEventId, payload, startCallbackType);
 
     return result.correlationId;
   }
@@ -56,6 +63,7 @@ export class ProcessInstanceHandler {
     processModelId: string,
     correlationId?: string,
     inputValues?: any,
+    identity?: IIdentity,
   ): Promise<DataModels.ProcessModels.ProcessStartResponsePayload> {
 
     const startEventId: string = 'StartEvent_1';
@@ -65,9 +73,11 @@ export class ProcessInstanceHandler {
       inputValues: inputValues || {},
     };
 
+    const identityToUse: IIdentity = identity || this.testFixtureProvider.identities.defaultUser;
+
     const result: DataModels.ProcessModels.ProcessStartResponsePayload = await this.testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(this.testFixtureProvider.identities.defaultUser, processModelId, startEventId, payload, startCallbackType);
+      .startProcessInstance(identityToUse, processModelId, startEventId, payload, startCallbackType);
 
     return result;
   }
