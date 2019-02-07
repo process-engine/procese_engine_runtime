@@ -13,6 +13,7 @@ const iocModuleNames: Array<string> = [
   '@process-engine/correlations.repository.sequelize',
   '@process-engine/external_task_api_core',
   '@process-engine/external_task_api_http',
+  '@process-engine/external_task_sample_worker',
   '@process-engine/external_task.repository.sequelize',
   '@process-engine/flow_node_instance.repository.sequelize',
   '@process-engine/iam',
