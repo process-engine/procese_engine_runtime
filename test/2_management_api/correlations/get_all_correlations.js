@@ -19,14 +19,15 @@ describe('Management API:   GET  ->  /correlations/all', () => {
 
     await testFixtureProvider.importProcessFiles([processModelId]);
 
-    await createFinishedProcessInstance();
+    await createFinishedProcessInstance(testFixtureProvider.identities.defaultUser);
+    await createFinishedProcessInstance(testFixtureProvider.identities.secondDefaultUser);
   });
 
   after(async () => {
     await testFixtureProvider.tearDown();
   });
 
-  async function createFinishedProcessInstance() {
+  async function createFinishedProcessInstance(identity) {
 
     const startEventId = 'StartEvent_1';
     const payload = {
@@ -38,7 +39,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
 
     const result = await testFixtureProvider
       .managementApiClientService
-      .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelId, startEventId, payload, returnOn);
+      .startProcessInstance(identity, processModelId, startEventId, payload, returnOn);
 
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);
@@ -46,7 +47,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
     return result.correlationId;
   }
 
-  it('should return all correlations through the management api', async () => {
+  it('should return all correlations for an user through the management api', async () => {
 
     const correlations = await testFixtureProvider
       .managementApiClientService
@@ -77,17 +78,35 @@ describe('Management API:   GET  ->  /correlations/all', () => {
 
   it('should fail to retrieve a list of correlations, when the user is unauthorized', async () => {
     try {
-      const processModelList = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClientService
         .getAllCorrelations({});
 
-      should.fail(processModelList, undefined, 'This request should have failed!');
+      should.fail(correlationList, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
       should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
+  });
+
+  it('should only return all correlations of a specific user', async () => {
+    const correlationListDefaultUser = await testFixtureProvider
+      .managementApiClientService
+      .getAllCorrelations(testFixtureProvider.identities.defaultUser);
+
+    correlationListDefaultUser.forEach((correlation) => {
+      should(correlation.identity.userId).be.equal(testFixtureProvider.identities.defaultUser.userId);
+    });
+
+    const correlationListSecondUser = await testFixtureProvider
+      .managementApiClientService
+      .getAllCorrelations(testFixtureProvider.identities.secondDefaultUser);
+
+    correlationListSecondUser.forEach((correlation) => {
+      should(correlation.identity.userId).be.equal(testFixtureProvider.identities.secondDefaultUser.userId);
+    });
   });
 
 });

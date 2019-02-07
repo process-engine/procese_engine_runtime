@@ -81,10 +81,7 @@ describe('Service Task - ', () => {
     should(result.currentToken).be.match(expectedResult);
   });
 
-  // NOTE: Can't test this in the runtime, because we can't guarantee to have an external worker available here.
-  // Using the SampleWorker here is not a good idea, because that would hardwire it into the runtime,
-  // which could lead to unforseen side effects.
-  it.skip('should sucessfully execute an external ServiceTask via the ExternalTask API', async () => {
+  it('should sucessfully execute an external ServiceTask via the ExternalTask API', async () => {
 
     const initialToken = {
       test_type: 'normal',

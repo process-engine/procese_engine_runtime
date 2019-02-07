@@ -13,6 +13,7 @@ import {IIdentity, TokenBody} from '@essential-projects/iam_contracts';
 import {IConsumerApi} from '@process-engine/consumer_api_contracts';
 import {IDeploymentApi} from '@process-engine/deployment_api_contracts';
 import {IExternalTaskApi} from '@process-engine/external_task_api_contracts';
+import {ExternalTaskSampleWorker} from '@process-engine/external_task_sample_worker';
 import {IManagementApi} from '@process-engine/management_api_contracts';
 import {
   IExecuteProcessService,
@@ -27,6 +28,7 @@ import {configureGlobalRoutes} from '../../global_route_configurator';
 
 export type IdentityCollection = {
   defaultUser: IIdentity;
+  secondDefaultUser: IIdentity,
   restrictedUser: IIdentity;
   userWithAccessToSubLaneC: IIdentity;
   userWithAccessToLaneA: IIdentity;
@@ -42,6 +44,7 @@ export class TestFixtureProvider {
   private _deploymentApiService: IDeploymentApi;
   private _executeProcessService: IExecuteProcessService;
   private _externalTaskApiClientService: IExternalTaskApi;
+  private _sampleExternalTaskWorker: ExternalTaskSampleWorker;
   private _managementApiClientService: IManagementApi;
   private _processModelService: IProcessModelService;
 
@@ -98,9 +101,13 @@ export class TestFixtureProvider {
     this._executeProcessService = await this.resolveAsync<IExecuteProcessService>('ExecuteProcessService');
     this._externalTaskApiClientService = await this.resolveAsync<IExternalTaskApi>('ExternalTaskApiClientService');
     this._processModelService = await this.resolveAsync<IProcessModelService>('ProcessModelService');
+
+    this._sampleExternalTaskWorker = await this.resolveAsync<ExternalTaskSampleWorker>('ExternalTaskSampleWorker');
+    this._sampleExternalTaskWorker.start();
   }
 
   public async tearDown(): Promise<void> {
+    this._sampleExternalTaskWorker.stop();
     const httpExtension: any = await this.container.resolveAsync('HttpExtension');
     await httpExtension.close();
     await this.bootstrapper.stop();
@@ -184,6 +191,7 @@ export class TestFixtureProvider {
     this._identities = {
       // all access user
       defaultUser: await this._createIdentity('defaultUser'),
+      secondDefaultUser: await this._createIdentity('secondDefaultUser'),
       // no access user
       restrictedUser: await this._createIdentity('restrictedUser'),
       // partially restricted users

@@ -83,10 +83,10 @@ describe('ConsumerAPI:   GET  ->  /manual_tasks/own', () => {
 
       should.fail(manualTaskList, undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 

@@ -139,7 +139,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
     }
   });
 
-  it('should fail to retrieve the ProcessModel\'s UserTasks, when the user forbidden to retrieve it', async () => {
+  it('should fail to retrieve the ProcessModel\'s UserTasks, when the user is forbidden to retrieve it', async () => {
 
     const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 

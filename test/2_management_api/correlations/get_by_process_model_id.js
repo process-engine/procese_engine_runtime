@@ -19,14 +19,15 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
 
     await testFixtureProvider.importProcessFiles([processModelId]);
 
-    await createFinishedProcessInstance();
+    await createFinishedProcessInstanceWithIdentity(testFixtureProvider.identities.defaultUser);
+    await createFinishedProcessInstanceWithIdentity(testFixtureProvider.identities.secondDefaultUser);
   });
 
   after(async () => {
     await testFixtureProvider.tearDown();
   });
 
-  async function createFinishedProcessInstance() {
+  async function createFinishedProcessInstanceWithIdentity(identity) {
 
     const startEventId = 'StartEvent_1';
     const payload = {
@@ -38,7 +39,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
 
     const result = await testFixtureProvider
       .managementApiClientService
-      .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelId, startEventId, payload, returnOn);
+      .startProcessInstance(identity, processModelId, startEventId, payload, returnOn);
 
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);
@@ -46,7 +47,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
     return result.correlationId;
   }
 
-  it('should return a correlation by its id through the Management API', async () => {
+  it('should return a correlation by its id for a user through the Management API', async () => {
 
     const correlations = await testFixtureProvider
       .managementApiClientService
@@ -82,11 +83,11 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
     const invalidProcessModelId = 'invalid_id';
 
     try {
-      const processModelList = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClientService
         .getCorrelationsByProcessModelId(testFixtureProvider.identities.defaultUser, invalidProcessModelId);
 
-      should.fail(processModelList, undefined, 'This request should have failed!');
+      should.fail(correlationList, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 404;
       const expectedErrorMessage = /No correlations.*?found/i;
@@ -95,19 +96,37 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
     }
   });
 
-  it('should fail to retrieve the ProcessModel, if the user is unauthorized', async () => {
+  it('should fail to retrieve the Correlations, if the user is unauthorized', async () => {
     try {
-      const processModelList = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClientService
         .getCorrelationsByProcessModelId({}, processModelId);
 
-      should.fail(processModelList, undefined, 'This request should have failed!');
+      should.fail(correlationList, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
       should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
+  });
+
+  it('should only return correlations by ProcessModelId of the specific user', async () => {
+    const correlationListDefaultUser = await testFixtureProvider
+      .managementApiClientService
+      .getCorrelationsByProcessModelId(testFixtureProvider.identities.defaultUser, processModelId);
+
+    correlationListDefaultUser.forEach((correlation) => {
+      should(correlation.identity.userId).be.equal(testFixtureProvider.identities.defaultUser.userId);
+    });
+
+    const correlationListSecondUser = await testFixtureProvider
+      .managementApiClientService
+      .getCorrelationsByProcessModelId(testFixtureProvider.identities.secondDefaultUser, processModelId);
+
+    correlationListSecondUser.forEach((correlation) => {
+      should(correlation.identity.userId).be.equal(testFixtureProvider.identities.secondDefaultUser.userId);
+    });
   });
 
 });
