@@ -122,14 +122,14 @@ describe(`Consumer API: ${testCase}`, () => {
 
       should.fail(manualTaskList, undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
-  it('should fail to retrieve the correlation\'s ManualTasks, when the user forbidden to retrieve it', async () => {
+  it('should fail to retrieve the correlation\'s ManualTasks, when the user is forbidden to retrieve it', async () => {
 
     const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
@@ -140,10 +140,10 @@ describe(`Consumer API: ${testCase}`, () => {
 
       should.fail(manualTaskList, undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 403;
       const expectedErrorMessage = /access denied/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 403;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 

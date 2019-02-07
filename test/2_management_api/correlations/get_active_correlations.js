@@ -26,7 +26,8 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     defaultIdentity = testFixtureProvider.identities.defaultUser;
     secondDefaultIdentity = testFixtureProvider.identities.secondDefaultUser;
 
-    await createActiveCorrelations();
+    correlationId1 = await createActiveCorrelations(defaultIdentity);
+    correlationId2 = await createActiveCorrelations(secondDefaultIdentity);
   });
 
   after(async () => {
@@ -99,12 +100,11 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     });
   });
 
-  async function createActiveCorrelations() {
-    correlationId1 = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId1, processModelId);
+  async function createActiveCorrelations(identity) {
+    const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, undefined, {}, identity);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
 
-    correlationId2 = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId2, processModelId);
+    return correlationId;
   }
 
   async function cleanup(correlationId, identity) {
