@@ -94,7 +94,7 @@ module.exports = {
          * state of running.
          */
         if (correlationContainsRunningTask) {
-          updateStateForId(currentCorrelationEntry.id, 'running');
+          await updateStateForId(currentCorrelationEntry.id, 'running');
           continue;
         }
 
@@ -107,7 +107,7 @@ module.exports = {
         const correlationContainsErroneousTasks = correlationsWithErroneousTasks.length > 0;
 
         if (correlationContainsErroneousTasks) {
-          updateStateForId(currentCorrelationEntry.id, 'error');
+          await updateStateForId(currentCorrelationEntry.id, 'error');
         }
       }
     }
