@@ -53,14 +53,6 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      state: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      error: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: true,
