@@ -71,6 +71,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
         should(matchingTokenHistoryEntry.processModelId).be.equal(processModelId, 'No ProcessModelId was assigned to the TokenHistory entry!');
 
         should(matchingTokenHistoryEntry).have.property('flowNodeInstanceId');
+        should(matchingTokenHistoryEntry).have.property('previousFlowNodeInstanceId');
         should(matchingTokenHistoryEntry).have.property('processInstanceId');
         should(matchingTokenHistoryEntry).have.property('identity');
         should(matchingTokenHistoryEntry).have.property('createdAt');
@@ -121,6 +122,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
         should(matchingTokenHistoryEntry.processModelId).be.equal(processModelId, 'No ProcessModelId was assigned to the TokenHistory entry!');
 
         should(matchingTokenHistoryEntry).have.property('flowNodeInstanceId');
+        should(matchingTokenHistoryEntry).have.property('previousFlowNodeInstanceId');
         should(matchingTokenHistoryEntry).have.property('processInstanceId');
         should(matchingTokenHistoryEntry).have.property('identity');
         should(matchingTokenHistoryEntry).have.property('createdAt');
@@ -200,6 +202,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
         should(matchingTokenHistoryEntry.processModelId).be.equal(processModelId, 'No ProcessModelId was assigned to the TokenHistory entry!');
 
         should(matchingTokenHistoryEntry).have.property('flowNodeInstanceId');
+        should(matchingTokenHistoryEntry).have.property('previousFlowNodeInstanceId');
         should(matchingTokenHistoryEntry).have.property('processInstanceId');
         should(matchingTokenHistoryEntry).have.property('identity');
         should(matchingTokenHistoryEntry).have.property('createdAt');
