@@ -53,6 +53,19 @@ module.exports = {
       }
     };
 
+    const updateStateForId = async (id, updatedState) => {
+      const updateStatement =
+        `UPDATE Correlations
+         SET state = '${updatedState}'
+         WHERE id = ${id}`;
+
+      try {
+        await queryInterface.sequelize.query(updateStatement);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     const flowNodeInstancesTableExists = await tableExists('FlowNodeInstances');
     console.log(flowNodeInstancesTableExists);
     if (flowNodeInstancesTableExists) {
@@ -83,6 +96,7 @@ module.exports = {
           console.log('======================================================');
           console.log('State to set: ', stateToSet);
           console.log('======================================================');
+          updateStateForId(currentCorrelationEntry.id, stateToSet);
         }
       }
     }
