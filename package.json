@@ -74,7 +74,7 @@
     "@process-engine/management_api_http": "3.1.0",
     "@process-engine/metrics_api_core": "1.0.0",
     "@process-engine/metrics.repository.file_system": "1.1.0",
-    "@process-engine/process_engine_core": "9.0.3",
+    "@process-engine/process_engine_core": "feature~use_promise_chain_based_flow_node_handling",
     "@process-engine/process_model.repository.sequelize": "4.2.4",
     "@process-engine/token_history_api_http": "1.4.0",
     "@process-engine/token_history_api_core": "1.4.0",
