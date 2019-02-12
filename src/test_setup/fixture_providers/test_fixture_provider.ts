@@ -90,13 +90,6 @@ export class TestFixtureProvider {
     this._consumerApiClientService = await this.resolveAsync<IConsumerApi>('ConsumerApiClientService');
     this._managementApiClientService = await this.resolveAsync<IManagementApi>('ManagementApiClientService');
 
-    const accessApisExternally: boolean = process.env.API_ACCESS_TYPE === 'external';
-
-    if (accessApisExternally) {
-      (this._consumerApiClientService as any).consumerApiAccessor.initializeSocket(this.identities.defaultUser);
-      (this._managementApiClientService as any).managementApiAccessor.initializeSocket(this.identities.defaultUser);
-    }
-
     this._deploymentApiService = await this.resolveAsync<IDeploymentApi>('DeploymentApiService');
     this._executeProcessService = await this.resolveAsync<IExecuteProcessService>('ExecuteProcessService');
     this._externalTaskApiClientService = await this.resolveAsync<IExternalTaskApi>('ExternalTaskApiClientService');

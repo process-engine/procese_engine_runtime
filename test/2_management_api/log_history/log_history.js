@@ -3,21 +3,23 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const StartCallbackType = require('@process-engine/management_api_contracts').DataModels.ProcessModels.StartCallbackType;
-
-const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 describe('Management API: GET -> /process_model/:processModelId/logs?correlationId=value', () => {
+
+  let processInstanceHandler;
   let testFixtureProvider;
+
   let defaultIdentity;
 
   const processModelId = 'test_management_api_logging_simple_process';
   const correlationId = uuid.v4();
-  const startEventId = 'StartEvent_1';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
+
+    processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
     defaultIdentity = testFixtureProvider.identities.defaultUser;
 
@@ -113,18 +115,14 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
   });
 
   async function executeSampleProcess(usedCorrelationId) {
+    return new Promise(async (resolve) => {
 
-    const payload = {
-      correlationId: usedCorrelationId,
-      inputValues: {
+      const payload = {
         user_task: false,
-      },
-    };
+      };
 
-    const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
-
-    await testFixtureProvider
-      .managementApiClientService
-      .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, returnOn);
+      const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, usedCorrelationId, payload);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
+    });
   }
 });

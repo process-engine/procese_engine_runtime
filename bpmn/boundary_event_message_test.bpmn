@@ -6,6 +6,9 @@
   <bpmn:process id="boundary_event_message_test" name="boundary_event_message_test" isExecutable="true">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_1uilmrj" name="Default_Test_Lane">
+        <bpmn:extensionElements>
+          <camunda:formData />
+        </bpmn:extensionElements>
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_1wtiq9c</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ScriptTask_NoMessageReceivedError</bpmn:flowNodeRef>
@@ -13,6 +16,12 @@
         <bpmn:flowNodeRef>ExclusiveJoinGateway_MessageBoundaryTest</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ServiceTask_WaitForBoundaryMessageEvent</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>MessageBoundaryEvent1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_NotInterrupted</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>BoundaryEvent_0vfpldb</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_0atsrgi</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_0ab1gvh</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_1pkkkav</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="StartEvent_1" name="Start">
@@ -54,16 +63,55 @@
       <bpmn:outgoing>SequenceFlow_1wxvj4v</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:boundaryEvent id="MessageBoundaryEvent1" name="Receive Message 1234" attachedToRef="ServiceTask_WaitForBoundaryMessageEvent">
+      <bpmn:extensionElements>
+        <camunda:formData />
+      </bpmn:extensionElements>
       <bpmn:outgoing>SequenceFlow_16bknz3</bpmn:outgoing>
       <bpmn:messageEventDefinition messageRef="Message_1415hon" />
     </bpmn:boundaryEvent>
+    <bpmn:startEvent id="StartEvent_2" name="Start non-interrupting">
+      <bpmn:outgoing>SequenceFlow_052jqcl</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_052jqcl" sourceRef="StartEvent_2" targetRef="UserTask_NotInterrupted" />
+    <bpmn:userTask id="UserTask_NotInterrupted" name="Suspendable task" camunda:formKey="Form Key">
+      <bpmn:extensionElements>
+        <camunda:formData />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_052jqcl</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1vbk6wz</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="BoundaryEvent_0vfpldb" name="" cancelActivity="false" attachedToRef="UserTask_NotInterrupted">
+      <bpmn:outgoing>SequenceFlow_12o7lot</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_1415hon" />
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="EndEvent_0atsrgi" name="End non-interrupting">
+      <bpmn:extensionElements>
+        <camunda:formData />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_08k9qjw</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1vbk6wz" sourceRef="UserTask_NotInterrupted" targetRef="ExclusiveGateway_0ab1gvh" />
+    <bpmn:sequenceFlow id="SequenceFlow_12o7lot" sourceRef="BoundaryEvent_0vfpldb" targetRef="Task_1pkkkav" />
+    <bpmn:sequenceFlow id="SequenceFlow_08k9qjw" sourceRef="ExclusiveGateway_0ab1gvh" targetRef="EndEvent_0atsrgi" />
+    <bpmn:sequenceFlow id="SequenceFlow_0alzi68" sourceRef="Task_1pkkkav" targetRef="ExclusiveGateway_0ab1gvh" />
+    <bpmn:parallelGateway id="ExclusiveGateway_0ab1gvh">
+      <bpmn:incoming>SequenceFlow_1vbk6wz</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0alzi68</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_08k9qjw</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:scriptTask id="Task_1pkkkav" name="Print message">
+      <bpmn:incoming>SequenceFlow_12o7lot</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0alzi68</bpmn:outgoing>
+      <bpmn:script>console.log('Message received!');
+return 'message received';</bpmn:script>
+    </bpmn:scriptTask>
   </bpmn:process>
   <bpmn:message id="Message_1415hon" name="Message1234" />
   <bpmn:error id="Error_0agxpau" name="no_message_received" errorCode="666" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0e03n3l">
       <bpmndi:BPMNShape id="Participant_1yuoono_di" bpmnElement="Participant_1yuoono">
-        <dc:Bounds x="236" y="199" width="966" height="462" />
+        <dc:Bounds x="236" y="199" width="970" height="616" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="StartEvent_1rmaugb_di" bpmnElement="StartEvent_1">
         <dc:Bounds x="342" y="329.61400000000003" width="36" height="36" />
@@ -72,7 +120,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_1uilmrj_di" bpmnElement="Lane_1uilmrj">
-        <dc:Bounds x="266" y="199" width="936" height="462" />
+        <dc:Bounds x="266" y="199" width="940" height="616" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1xmddm8_di" bpmnElement="SequenceFlow_1xmddm8">
         <di:waypoint x="378" y="348" />
@@ -132,6 +180,52 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="UserTask_19949qo_di" bpmnElement="ServiceTask_WaitForBoundaryMessageEvent">
         <dc:Bounds x="495" y="308" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1s429zi_di" bpmnElement="StartEvent_2">
+        <dc:Bounds x="342" y="571" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="332" y="614" width="56" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_052jqcl_di" bpmnElement="SequenceFlow_052jqcl">
+        <di:waypoint x="378" y="589" />
+        <di:waypoint x="495" y="589" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_18ynnm9_di" bpmnElement="UserTask_NotInterrupted">
+        <dc:Bounds x="495" y="549" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BoundaryEvent_1kts2bi_di" bpmnElement="BoundaryEvent_0vfpldb">
+        <dc:Bounds x="577" y="611" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0atsrgi_di" bpmnElement="EndEvent_0atsrgi">
+        <dc:Bounds x="1028" y="571" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1018" y="614" width="56" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1vbk6wz_di" bpmnElement="SequenceFlow_1vbk6wz">
+        <di:waypoint x="595" y="589" />
+        <di:waypoint x="858" y="589" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_12o7lot_di" bpmnElement="SequenceFlow_12o7lot">
+        <di:waypoint x="595" y="647" />
+        <di:waypoint x="595" y="664" />
+        <di:waypoint x="684" y="664" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_08k9qjw_di" bpmnElement="SequenceFlow_08k9qjw">
+        <di:waypoint x="908" y="589" />
+        <di:waypoint x="1028" y="589" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0alzi68_di" bpmnElement="SequenceFlow_0alzi68">
+        <di:waypoint x="784" y="664" />
+        <di:waypoint x="883" y="664" />
+        <di:waypoint x="883" y="614" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ParallelGateway_10po0h9_di" bpmnElement="ExclusiveGateway_0ab1gvh">
+        <dc:Bounds x="858" y="564" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ScriptTask_1idnx9c_di" bpmnElement="Task_1pkkkav">
+        <dc:Bounds x="684" y="624" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

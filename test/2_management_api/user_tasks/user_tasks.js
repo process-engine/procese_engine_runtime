@@ -83,18 +83,7 @@ describe(`Management API: ${testCase}`, () => {
     // Mocha resolves and disassembles the backend BEFORE the process was finished, thus leading to inconsistent database entries.
     // To avoid a messed up database that could break other tests, we must wait here for the process to finish, before finishing the test.
     return new Promise(async (resolve) => {
-
-      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelId}/ended`;
-      const evaluationCallback = () => {
-        resolve();
-      };
-
-      // Subscribe for end of the process
-      const eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
-      eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
-
-      const processInstanceId = userTaskToFinish.processInstanceId;
-      const flowNodeInstanceId = userTaskToFinish.flowNodeInstanceId;
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskToFinish.processInstanceId, resolve);
 
       const userTaskResult = {
         formFields: {
@@ -105,7 +94,13 @@ describe(`Management API: ${testCase}`, () => {
       // Now finish the UserTask.
       await testFixtureProvider
         .managementApiClientService
-        .finishUserTask(testFixtureProvider.identities.defaultUser, processInstanceId, correlationId, flowNodeInstanceId, userTaskResult);
+        .finishUserTask(
+          testFixtureProvider.identities.defaultUser,
+          userTaskToFinish.processInstanceId,
+          correlationId,
+          userTaskToFinish.flowNodeInstanceId,
+          userTaskResult,
+        );
     });
   });
 

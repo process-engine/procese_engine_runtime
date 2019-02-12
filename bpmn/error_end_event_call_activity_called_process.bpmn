@@ -26,7 +26,7 @@
       <bpmn:errorEventDefinition errorRef="Error_0dynwia" />
     </bpmn:endEvent>
   </bpmn:process>
-  <bpmn:error id="Error_0dynwia" name="Expected Error" errorCode="expected_error" />
+  <bpmn:error id="Error_0dynwia" name="ExpectedError" errorCode="ErrorCode" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0k2ro9a">
       <bpmndi:BPMNShape id="Participant_0s15ih3_di" bpmnElement="Participant_0s15ih3">
