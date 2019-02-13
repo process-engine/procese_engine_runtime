@@ -4,8 +4,8 @@
 // https://sequelize.readthedocs.io/en/latest/docs/migrations/#functions
 
 // CHANGE NOTES:
-// Changes between 1.2.0 and 2.0.0:
-// - Added new column: parentProcessInstanceId
+// Changes for version 4.0.0:
+// - Added new state and error columns to the Correlation data model.
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
@@ -15,14 +15,14 @@ module.exports = {
 
     const tableHasMatchingColumns =
       correlationTableInfo.state !== undefined
-      && correlationTableInfo.error;
+      && correlationTableInfo.error !== undefined;
 
     if (tableHasMatchingColumns) {
       console.log('The database is already up to date. Nothing to do here.');
       return;
     }
 
-    console.log('Addings state and error columns');
+    console.log('Adding state and error columns');
 
     await queryInterface.addColumn(
       'Correlations',
@@ -62,51 +62,50 @@ module.exports = {
       try {
         await queryInterface.sequelize.query(updateStatement);
       } catch (error) {
-        console.error(' + '.repeat(20));
         console.error('ERROR WHILE MIGRATING THE CORRELATIONS DATA MODEL');
         console.error('cause: ', error);
-        console.error(' + '.repeat(20));
       }
     };
 
     const flowNodeInstancesTableExists = await tableExists('FlowNodeInstances');
-    console.log(flowNodeInstancesTableExists);
     if (flowNodeInstancesTableExists) {
+      console.log('Syncing new Correlation-states with FlowNodeInstance states');
       const obtainAllCorrelationsQuery = 'SELECT * FROM Correlations';
-      const allCorrelations = await queryInterface.sequelize.query(obtainAllCorrelationsQuery);
+      const allCorrelations = await queryInterface.sequelize.query(obtainAllCorrelationsQuery)[0];
 
-      for (const currentCorrelationEntry of allCorrelations[0]) {
-        const currentInstanceId = currentCorrelationEntry.processInstanceId;
-        const checkRunningInstancesStatement =
+      for (const currentCorrelationEntry of allCorrelations) {
+        const currentProcessInstanceId = currentCorrelationEntry.processInstanceId;
+        const queryActiveFlowNodes =
           `SELECT state
           FROM FlowNodeInstances
-          WHERE processInstanceId = '${currentInstanceId}' AND (state = 'running' OR state = 'suspended')`;
+          WHERE processInstanceId = '${currentProcessInstanceId}' AND (state = 'running' OR state = 'suspended')`;
 
-        const correlationsWithRunningTasks = (await queryInterface.sequelize.query(checkRunningInstancesStatement))[0];
-        const correlationContainsRunningTask = correlationsWithRunningTasks.length > 0;
+        const activeFlowNodeInstancesforProcessInstance = (await queryInterface.sequelize.query(queryActiveFlowNodes))[0];
+        const processInstanceIsActive = activeFlowNodeInstancesforProcessInstance.length > 0;
 
         /**
          * A FlowNodeInstance whose current state is set to running will always
          * prioritized over those, with an error state.
          *
-         * If a Correlation is associated with two different FlowNodeInstances whose
-         * states are running and error, the Correlation will get a definitive
-         * state of running.
+         *
+         * If a ProcessInstance has FlowNodeInstances with both, "error" and "running|suspended" states,
+         * the containing correlation will be in a "running" state.
+         * This is because errors within a FlowNode do not necessarily cause the entire ProcessInstance to fail.
          */
-        if (correlationContainsRunningTask) {
+        if (processInstanceIsActive) {
           await updateStateForId(currentCorrelationEntry.id, 'running');
           continue;
         }
 
-        const checkErroneousInstancesStatement =
+        const queryErroneousFlowNodes =
         `SELECT state
         FROM FlowNodeInstances
-        WHERE processInstanceId = '${currentInstanceId}' AND (state = 'error' OR state = 'terminated')`;
+        WHERE processInstanceId = '${currentProcessInstanceId}' AND (state = 'error' OR state = 'terminated')`;
 
-        const correlationsWithErroneousTasks = (await queryInterface.sequelize.query(checkErroneousInstancesStatement))[0];
-        const correlationContainsErroneousTasks = correlationsWithErroneousTasks.length > 0;
+        const erroneousFlowNodeInstancesforProcessInstance = (await queryInterface.sequelize.query(queryErroneousFlowNodes))[0];
+        const processInstanceHasErrored = erroneousFlowNodeInstancesforProcessInstance.length > 0;
 
-        if (correlationContainsErroneousTasks) {
+        if (processInstanceHasErrored) {
           await updateStateForId(currentCorrelationEntry.id, 'error');
         }
       }
