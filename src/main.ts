@@ -158,6 +158,12 @@ async function startProcessEngine(): Promise<void> {
 
     logger.info('Bootstrapper started successfully.');
 
+    // TODO: Typings can only be applied, after the ProcessEngineContracts package was published.
+    const autoStartService: any = await container.resolveAsync<any>('AutoStartService');
+    await autoStartService.start();
+
+    logger.info('AutoStartService started successfully.');
+
   } catch (error) {
     logger.error('Bootstrapper failed to start.', error);
   }
