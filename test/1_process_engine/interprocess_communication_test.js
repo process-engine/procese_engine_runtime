@@ -7,6 +7,7 @@ const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/common
 
 describe('Inter-process communication - ', () => {
 
+  let autoStartService;
   let processInstanceHandler;
   let testFixtureProvider;
 
@@ -34,32 +35,29 @@ describe('Inter-process communication - ', () => {
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
+    autoStartService = await testFixtureProvider.resolveAsync('AutoStartService');
     eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
+
+    await autoStartService.start();
   });
 
   after(async () => {
+    await autoStartService.stop();
     await testFixtureProvider.tearDown();
   });
 
   it('should start process B with MessageStartEvent, after process A finished with a MessageEndEvent', async () => {
 
     const correlationId = uuid.v4();
-    const endEventToWaitFor = 'EndEvent_MessageTest';
-
-    const expectedResult = /message received/i;
-
-    // We can't await the process execution here, because that would prevent us from starting the second process.
-    // As a result we must subscribe to the event that gets send when the test is done.
-    testFixtureProvider.executeProcess(processModelStartEventTests, 'MessageStartEvent_1', correlationId);
-
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelStartEventTests);
 
     return new Promise((resolve) => {
 
       const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelStartEventTests}/ended`;
       const evaluationCallback = (message) => {
-        const expectedEndEventReached = message.flowNodeId === endEventToWaitFor;
-        if (expectedEndEventReached) {
+
+        const endEventToWaitFor = 'EndEvent_MessageTest';
+        if (message.flowNodeId === endEventToWaitFor) {
+          const expectedResult = /message received/i;
           should(message).have.property('currentToken');
           should(message.currentToken).be.match(expectedResult);
           resolve();
@@ -77,22 +75,15 @@ describe('Inter-process communication - ', () => {
   it('should start process B with SignalStartEvent, after process A finished with a SignalEndEvent', async () => {
 
     const correlationId = uuid.v4();
-    const endEventToWaitFor = 'EndEvent_SignalTest';
-
-    const expectedResult = /signal received/i;
-
-    // We can't await the process execution here, because that would prevent us from starting the second process.
-    // As a result we must subscribe to the event that gets send when the test is done.
-    testFixtureProvider.executeProcess(processModelStartEventTests, 'SignalStartEvent_1', correlationId);
-
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelStartEventTests);
 
     return new Promise((resolve) => {
 
       const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelStartEventTests}/ended`;
       const evaluationCallback = (message) => {
-        const expectedEndEventReached = message.flowNodeId === endEventToWaitFor;
-        if (expectedEndEventReached) {
+
+        const endEventToWaitFor = 'EndEvent_SignalTest';
+        if (message.flowNodeId === endEventToWaitFor) {
+          const expectedResult = /signal received/i;
           should(message).have.property('currentToken');
           should(message.currentToken).be.match(expectedResult);
           resolve();
@@ -185,7 +176,8 @@ describe('Inter-process communication - ', () => {
 
       const endMessageReceiveTaskProcess = `/processengine/correlation/${correlationId}/processmodel/${processModelReceiveTask}/ended`;
       const receiveTaskProcessFinishedCallback = (message) => {
-        if (message.flowNodeId === endEventToWaitFor) {
+        const expectedEndEventReached = message.flowNodeId === endEventToWaitFor;
+        if (expectedEndEventReached) {
           should(message).have.property('currentToken');
           should(message.currentToken).be.eql('Message Received');
 
@@ -199,7 +191,8 @@ describe('Inter-process communication - ', () => {
 
       const endMessageSendTaskProcess = `/processengine/correlation/${correlationId}/processmodel/${processModelSendTask}/ended`;
       const sendTaskProcessFinishedCallback = (message) => {
-        if (message.flowNodeId === endEventToWaitFor) {
+        const expectedEndEventReached = message.flowNodeId === endEventToWaitFor;
+        if (expectedEndEventReached) {
           sendTaskProcessFinished = true;
 
           if (receiveTaskProcessFinished && sendTaskProcessFinished) {

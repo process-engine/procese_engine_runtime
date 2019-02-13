@@ -7,16 +7,22 @@
     <bpmn:laneSet>
       <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
         <bpmn:flowNodeRef>EndEvent_0eie6q6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>IntermediateThrowEvent_1sfij9w</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:sequenceFlow id="SequenceFlow_1jdocur" sourceRef="StartEvent_1" targetRef="EndEvent_0eie6q6" />
+    <bpmn:sequenceFlow id="SequenceFlow_1jdocur" sourceRef="StartEvent_1" targetRef="IntermediateThrowEvent_1sfij9w" />
     <bpmn:endEvent id="EndEvent_0eie6q6" name="End Event">
-      <bpmn:incoming>SequenceFlow_1jdocur</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_14st5tp</bpmn:incoming>
     </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_14st5tp" sourceRef="IntermediateThrowEvent_1sfij9w" targetRef="EndEvent_0eie6q6" />
+    <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_1sfij9w" name="Wait for Signal">
+      <bpmn:incoming>SequenceFlow_1jdocur</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_14st5tp</bpmn:outgoing>
+      <bpmn:signalEventDefinition signalRef="Signal_grWHe8Se" />
+    </bpmn:intermediateCatchEvent>
     <bpmn:startEvent id="StartEvent_1" name="Start Event">
       <bpmn:outgoing>SequenceFlow_1jdocur</bpmn:outgoing>
-      <bpmn:signalEventDefinition signalRef="Signal_grWHe8Se" />
     </bpmn:startEvent>
   </bpmn:process>
   <bpmn:signal id="Signal_grWHe8Se" name="test_signal_event" />
@@ -33,9 +39,19 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1jdocur_di" bpmnElement="SequenceFlow_1jdocur">
         <di:waypoint x="119" y="87" />
+        <di:waypoint x="266" y="87" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_14st5tp_di" bpmnElement="SequenceFlow_14st5tp">
+        <di:waypoint x="302" y="87" />
         <di:waypoint x="503" y="87" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="StartEvent_1fg86fs_di" bpmnElement="StartEvent_1">
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_0fi3gke_di" bpmnElement="IntermediateThrowEvent_1sfij9w">
+        <dc:Bounds x="266" y="69" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="248" y="112" width="72" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1seb33r_di" bpmnElement="StartEvent_1">
         <dc:Bounds x="83" y="69" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="74" y="105" width="55" height="14" />
