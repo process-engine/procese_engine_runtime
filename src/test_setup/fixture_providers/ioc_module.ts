@@ -68,20 +68,20 @@ function registerApisWithInternalAccessors(container: InvocationContainer): void
 function registerWithExternalAccessors(container: InvocationContainer): void {
 
   container.register('ConsumerApiExternalAccessor', ConsumerApiExternalAccessor)
-    .dependencies('HttpService')
+    .dependencies('HttpClient')
     .configure('consumer_api:external_accessor');
 
   container.register('ConsumerApiClientService', ConsumerApiClientService)
     .dependencies('ConsumerApiExternalAccessor');
 
   container.register('ExternalTaskApiExternalAccessor', ExternalTaskApiExternalAccessor)
-    .dependencies('HttpService');
+    .dependencies('HttpClient');
 
   container.register('ExternalTaskApiClientService', ExternalTaskApiClientService)
     .dependencies('ExternalTaskApiExternalAccessor');
 
   container.register('ManagementApiExternalAccessor', ManagementApiExternalAccessor)
-    .dependencies('HttpService')
+    .dependencies('HttpClient')
     .configure('management_api:external_accessor');
 
   container.register('ManagementApiClientService', ManagementApiClientService)

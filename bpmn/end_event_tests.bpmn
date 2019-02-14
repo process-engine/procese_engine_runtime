@@ -43,8 +43,8 @@
       <bpmn:signalEventDefinition signalRef="Signal_1gmrdgn" />
     </bpmn:endEvent>
   </bpmn:process>
-  <bpmn:message id="Message_18zwda3" name="Message_Test" />
-  <bpmn:signal id="Signal_1gmrdgn" name="Signal_Test" />
+  <bpmn:message id="Message_18zwda3" name="MessageAutoStart_Test" />
+  <bpmn:signal id="Signal_1gmrdgn" name="SignalAutoStart_Test" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1dwnbx6">
       <bpmndi:BPMNShape id="Participant_1ndejx1_di" bpmnElement="Participant_1ndejx1">

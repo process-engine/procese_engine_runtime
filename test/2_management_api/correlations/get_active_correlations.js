@@ -36,7 +36,7 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should return all active correlations for an user through the management api', async () => {
+  it('should return all active correlations for a user through the management api', async () => {
 
     const correlations = await testFixtureProvider
       .managementApiClientService

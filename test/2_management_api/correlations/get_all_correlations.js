@@ -12,22 +12,23 @@ describe('Management API:   GET  ->  /correlations/all', () => {
   let testFixtureProvider;
 
   const processModelId = 'test_consumer_api_correlation_result';
+  const errorProcessModelId = 'test_management_api_correlation_error';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    await testFixtureProvider.importProcessFiles([processModelId]);
+    await testFixtureProvider.importProcessFiles([processModelId, errorProcessModelId]);
 
-    await createFinishedProcessInstance(testFixtureProvider.identities.defaultUser);
-    await createFinishedProcessInstance(testFixtureProvider.identities.secondDefaultUser);
+    await createFinishedProcessInstance(testFixtureProvider.identities.defaultUser, processModelId);
+    await createFinishedProcessInstance(testFixtureProvider.identities.secondDefaultUser, processModelId);
   });
 
   after(async () => {
     await testFixtureProvider.tearDown();
   });
 
-  async function createFinishedProcessInstance(identity) {
+  async function createFinishedProcessInstance(identity, processModelIdToUse) {
 
     const startEventId = 'StartEvent_1';
     const payload = {
@@ -39,7 +40,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
 
     const result = await testFixtureProvider
       .managementApiClientService
-      .startProcessInstance(identity, processModelId, startEventId, payload, returnOn);
+      .startProcessInstance(identity, processModelIdToUse, startEventId, payload, returnOn);
 
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);
@@ -76,6 +77,34 @@ describe('Management API:   GET  ->  /correlations/all', () => {
     });
   });
 
+  it('should include correlations that were finished with an error', async () => {
+    try {
+      await createFinishedProcessInstance(testFixtureProvider.identities.defaultUser, errorProcessModelId);
+
+      should.fail('The expected Error was not thrown');
+    } catch (error) {
+      /**
+      * Give the persistance backend some time to persist the Correlation
+      * results.
+      */
+      await wait(500);
+    }
+
+    const correlations = await testFixtureProvider
+      .managementApiClientService
+      .getAllCorrelations(testFixtureProvider.identities.defaultUser);
+
+    should(correlations).be.instanceOf(Array);
+    should(correlations.length).be.greaterThan(0);
+
+    const oneCorrelationErrorState = correlations.some((currentCorrelation) => {
+      return currentCorrelation.state === 'error';
+    });
+
+    should(oneCorrelationErrorState).be.true('No Correlation with an error state was found.');
+
+  });
+
   it('should fail to retrieve a list of correlations, when the user is unauthorized', async () => {
     try {
       const correlationList = await testFixtureProvider
@@ -109,4 +138,11 @@ describe('Management API:   GET  ->  /correlations/all', () => {
     });
   });
 
+  async function wait(timeInMs) {
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve();
+      }, timeInMs);
+    });
+  }
 });

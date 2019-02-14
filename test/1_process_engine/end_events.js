@@ -32,7 +32,7 @@ describe('EndEvents - ', () => {
 
     return new Promise((resolve) => {
 
-      const messageName = 'Message_Test';
+      const messageName = 'MessageAutoStart_Test';
       const endMessageToWaitFor = `/processengine/process/message/${messageName}`;
 
       const evaluationCallback = (message) => {
@@ -70,7 +70,7 @@ describe('EndEvents - ', () => {
 
     return new Promise((resolve) => {
 
-      const signalName = 'Signal_Test';
+      const signalName = 'SignalAutoStart_Test';
       const endMessageToWaitFor = `/processengine/process/signal/${signalName}`;
 
       const evaluationCallback = (message) => {
