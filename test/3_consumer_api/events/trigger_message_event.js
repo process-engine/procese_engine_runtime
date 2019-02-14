@@ -79,8 +79,8 @@ describe('Consumer API: POST  ->  /messages/:message_name/trigger', () => {
 
   it('should successfully trigger the given message event.', async () => {
 
-    const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdMessageEvent);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+    const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelIdMessageEvent);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(result.correlationId);
 
     const messageEventName = 'test_message_event';
     const payload = {};
@@ -88,7 +88,7 @@ describe('Consumer API: POST  ->  /messages/:message_name/trigger', () => {
     // To ensure that all works as expected, we must intercept the EndEvent notification that gets send by the Process instance.
     // Otherwise, there is no way to know for sure that the process has actually received the event we triggered.
     return new Promise((resolve) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelIdMessageEvent, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       testFixtureProvider
         .consumerApiClientService

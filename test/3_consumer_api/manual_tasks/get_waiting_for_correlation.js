@@ -138,11 +138,11 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
   it('should return an empty Array, if the given correlation does not have any ManualTasks', async () => {
 
     return new Promise(async (resolve, reject) => {
-      const correlationId2 = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdNoManualTasks);
-      await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId2, processModelIdNoManualTasks);
+      const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelIdNoManualTasks);
+      await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(result.correlationId, processModelIdNoManualTasks);
 
       // Wait for the ProcessInstance to finish, so it won't interfere with follow-up tests.
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId2, processModelIdNoManualTasks, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       const manualTaskList = await testFixtureProvider
         .consumerApiClientService
