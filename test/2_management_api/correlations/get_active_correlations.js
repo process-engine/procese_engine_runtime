@@ -9,11 +9,12 @@ describe('Management API:   GET  ->  /correlations/active', () => {
   let processInstanceHandler;
   let testFixtureProvider;
 
-  let correlationId1;
-  let correlationId2;
   let defaultIdentity;
   let secondDefaultIdentity;
   const processModelId = 'user_task_test';
+
+  let processInstance1Data;
+  let processInstance2Data;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -26,17 +27,17 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     defaultIdentity = testFixtureProvider.identities.defaultUser;
     secondDefaultIdentity = testFixtureProvider.identities.secondDefaultUser;
 
-    correlationId1 = await createActiveCorrelations(defaultIdentity);
-    correlationId2 = await createActiveCorrelations(secondDefaultIdentity);
+    processInstance1Data = await createActiveCorrelations(defaultIdentity);
+    processInstance2Data = await createActiveCorrelations(secondDefaultIdentity);
   });
 
   after(async () => {
-    await cleanup(correlationId1, defaultIdentity);
-    await cleanup(correlationId2, secondDefaultIdentity);
+    await cleanup(processInstance1Data, defaultIdentity);
+    await cleanup(processInstance2Data, secondDefaultIdentity);
     await testFixtureProvider.tearDown();
   });
 
-  it('should return all active correlations for an user through the management api', async () => {
+  it('should return all active correlations for a user through the management api', async () => {
 
     const correlations = await testFixtureProvider
       .managementApiClientService
@@ -101,20 +102,20 @@ describe('Management API:   GET  ->  /correlations/active', () => {
   });
 
   async function createActiveCorrelations(identity) {
-    const correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, undefined, {}, identity);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
+    const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, undefined, {}, identity);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(result.correlationId, processModelId);
 
-    return correlationId;
+    return result;
   }
 
-  async function cleanup(correlationId, identity) {
+  async function cleanup(processInstanceData, identity) {
 
     await new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceData.processInstanceId, resolve);
 
       const userTaskList = await testFixtureProvider
         .managementApiClientService
-        .getUserTasksForProcessModelInCorrelation(identity, processModelId, correlationId);
+        .getUserTasksForProcessModelInCorrelation(identity, processModelId, processInstanceData.correlationId);
 
       const userTaskInput = {
         formFields: {
@@ -125,7 +126,7 @@ describe('Management API:   GET  ->  /correlations/active', () => {
       for (const userTask of userTaskList.userTasks) {
         await testFixtureProvider
           .managementApiClientService
-          .finishUserTask(identity, userTask.processInstanceId, correlationId, userTask.flowNodeInstanceId, userTaskInput);
+          .finishUserTask(identity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskInput);
       }
     });
   }

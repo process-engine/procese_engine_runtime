@@ -17,6 +17,7 @@ describe('Management API:   Get waiting Events', () => {
   const eventNameToTriggerAfterTest = 'test_signal_event';
 
   let correlationId;
+  let processInstanceId;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -27,7 +28,9 @@ describe('Management API:   Get waiting Events', () => {
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
-    correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdSignalEvent);
+    const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelIdSignalEvent);
+    correlationId = result.correlationId;
+    processInstanceId = result.processInstanceId;
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
   });
 
@@ -107,7 +110,7 @@ describe('Management API:   Get waiting Events', () => {
 
   async function cleanup() {
     return new Promise(async (resolve) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelIdSignalEvent, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       await testFixtureProvider
         .managementApiClientService

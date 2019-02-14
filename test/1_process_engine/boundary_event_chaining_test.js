@@ -5,14 +5,14 @@ const should = require('should');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs/test_setup');
 
-describe('ManualTask BoundaryEvent Chaining Tests - ', () => {
+describe('BoundaryEvent Chaining Tests - ', () => {
 
   let eventAggregator;
   let processInstanceHandler;
   let testFixtureProvider;
   let defaultIdentity;
 
-  const processModelId = 'manual_task_chained_boundary_events_test';
+  const processModelId = 'chained_boundary_events_test';
   const startEventId = 'StartEvent_1';
   const correlationId = uuid.v4();
 
@@ -37,8 +37,6 @@ describe('ManualTask BoundaryEvent Chaining Tests - ', () => {
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
 
     const manualTask = await getWaitingManualTask();
-
-    await finishManualTask(manualTask);
 
     await new Promise(async (resolve) => {
       // Wait for the confirmation message that the ManualTask was finished.

@@ -165,7 +165,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
   async function cleanup() {
     return new Promise(async (resolve, reject) => {
 
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       const userTaskList = await testFixtureProvider
         .consumerApiClientService

@@ -158,11 +158,11 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
   it('should return an empty Array, if the given correlation does not have any UserTasks', async () => {
 
     return new Promise(async (resolve, reject) => {
-      const correlationId2 = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdNoUserTasks);
-      await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId2, processModelIdNoUserTasks);
+      const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelIdNoUserTasks);
+      await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(result.correlationId, processModelIdNoUserTasks);
 
       // Wait for the ProcessInstance to finish, so it won't interfere with follow-up tests.
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId2, processModelIdNoUserTasks, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       const userTaskList = await testFixtureProvider
         .consumerApiClientService

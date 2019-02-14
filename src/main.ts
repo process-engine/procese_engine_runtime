@@ -6,7 +6,7 @@ import * as path from 'path';
 
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
 import {IIdentity} from '@essential-projects/iam_contracts';
-import {IResumeProcessService} from '@process-engine/process_engine_contracts';
+import {IAutoStartService, IResumeProcessService} from '@process-engine/process_engine_contracts';
 
 import {configureGlobalRoutes} from './global_route_configurator';
 import {migrate as executeMigrations} from './migrator';
@@ -158,6 +158,11 @@ async function startProcessEngine(): Promise<void> {
 
     logger.info('Bootstrapper started successfully.');
 
+    const autoStartService: IAutoStartService = await container.resolveAsync<IAutoStartService>('AutoStartService');
+    await autoStartService.start();
+
+    logger.info('AutoStartService started successfully.');
+
   } catch (error) {
     logger.error('Bootstrapper failed to start.', error);
   }
@@ -169,8 +174,8 @@ function loadIocModules(): Array<any> {
     '@essential-projects/bootstrapper',
     '@essential-projects/bootstrapper_node',
     '@essential-projects/event_aggregator',
+    '@essential-projects/http',
     '@essential-projects/http_extension',
-    '@essential-projects/services',
     '@essential-projects/sequelize_connection_manager',
     '@essential-projects/timing',
     '@process-engine/consumer_api_core',

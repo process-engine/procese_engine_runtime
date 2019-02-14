@@ -14,6 +14,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
   const processModelIdSignalEvent = 'test_consumer_api_signal_event';
 
   let correlationId;
+  let processInstanceId;
   let eventNameToTriggerAfterTest;
 
   before(async () => {
@@ -25,7 +26,9 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
-    correlationId = await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelIdSignalEvent);
+    const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelIdSignalEvent);
+    correlationId = result.correlationId;
+    processInstanceId = result.processInstanceId;
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
   });
 
@@ -105,7 +108,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
 
   async function cleanup() {
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelIdSignalEvent, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       await testFixtureProvider
         .consumerApiClientService

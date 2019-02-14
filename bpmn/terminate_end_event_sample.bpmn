@@ -9,14 +9,14 @@
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>TerminateEndEvent_SplitGateway</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>UnreachableScriptTask_1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>IntermediateThrowEvent_1eqvyfn</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>SampleScriptTask1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_05qk8pm</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>IntermediateTimerCatchEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>TerminateEndEvent_JoinGateway</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>BoundaryEvent_141aa5r</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>TerminateEndEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>RegularEndEvent</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_0ldaqqf</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>TerminateEndEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SampleScriptTask1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>IntermediateThrowEvent_1co8y8u</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>BoundaryEvent_141aa5r</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="StartEvent_1" name="Start">
@@ -24,7 +24,7 @@
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="ProcessInput" sourceRef="StartEvent_1" targetRef="TerminateEndEvent_SplitGateway" />
     <bpmn:sequenceFlow id="SequenceFlow_19imvxa" sourceRef="TerminateEndEvent_SplitGateway" targetRef="SampleScriptTask1" />
-    <bpmn:sequenceFlow id="SequenceFlow_0w50vbx" name="" sourceRef="BoundaryEvent_141aa5r" targetRef="Task_05qk8pm" />
+    <bpmn:sequenceFlow id="SequenceFlow_0w50vbx" name="" sourceRef="BoundaryEvent_141aa5r" targetRef="IntermediateThrowEvent_1co8y8u" />
     <bpmn:sequenceFlow id="SequenceFlow_0vuigj4" sourceRef="UnreachableScriptTask_1" targetRef="TerminateEndEvent_JoinGateway" />
     <bpmn:sequenceFlow id="StoreInput" name="" sourceRef="TerminateEndEvent_JoinGateway" targetRef="Task_0ldaqqf" />
     <bpmn:parallelGateway id="TerminateEndEvent_SplitGateway" name="">
@@ -33,39 +33,20 @@
       <bpmn:outgoing>SequenceFlow_058cjt0</bpmn:outgoing>
     </bpmn:parallelGateway>
     <bpmn:sequenceFlow id="SequenceFlow_1bnj4ce" sourceRef="SampleScriptTask1" targetRef="TerminateEndEvent_JoinGateway" />
-    <bpmn:sequenceFlow id="SequenceFlow_058cjt0" sourceRef="TerminateEndEvent_SplitGateway" targetRef="IntermediateThrowEvent_1eqvyfn" />
-    <bpmn:sequenceFlow id="SequenceFlow_1w2702e" sourceRef="IntermediateThrowEvent_1eqvyfn" targetRef="UnreachableScriptTask_1" />
+    <bpmn:sequenceFlow id="SequenceFlow_058cjt0" sourceRef="TerminateEndEvent_SplitGateway" targetRef="IntermediateTimerCatchEvent_1" />
+    <bpmn:sequenceFlow id="SequenceFlow_1w2702e" sourceRef="IntermediateTimerCatchEvent_1" targetRef="UnreachableScriptTask_1" />
     <bpmn:scriptTask id="UnreachableScriptTask_1" name="Script Task should not be called">
       <bpmn:incoming>SequenceFlow_1w2702e</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0vuigj4</bpmn:outgoing>
       <bpmn:script>console.error("ERROR: DELAYED SCRIPT TASK REACHED!");</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_1eqvyfn" name="2s Delay">
+    <bpmn:intermediateCatchEvent id="IntermediateTimerCatchEvent_1" name="5s Delay">
       <bpmn:incoming>SequenceFlow_058cjt0</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1w2702e</bpmn:outgoing>
       <bpmn:timerEventDefinition>
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P0Y0M0DT0H0M2S</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P0Y0M0DT0H0M5S</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
-    <bpmn:scriptTask id="SampleScriptTask1" name="Script Task should be called">
-      <bpmn:incoming>SequenceFlow_19imvxa</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1bnj4ce</bpmn:outgoing>
-      <bpmn:script>throw new Error("Critical error that causes termination!");</bpmn:script>
-    </bpmn:scriptTask>
-    <bpmn:boundaryEvent id="BoundaryEvent_141aa5r" name="" attachedToRef="SampleScriptTask1">
-      <bpmn:outgoing>SequenceFlow_0w50vbx</bpmn:outgoing>
-      <bpmn:errorEventDefinition />
-    </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_1jty1lg" name="" sourceRef="Task_05qk8pm" targetRef="TerminateEndEvent_1" />
-    <bpmn:scriptTask id="Task_05qk8pm" name="Return Terminate-Result">
-      <bpmn:incoming>SequenceFlow_0w50vbx</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1jty1lg</bpmn:outgoing>
-      <bpmn:script>return 'Terminated ending';</bpmn:script>
-    </bpmn:scriptTask>
-    <bpmn:endEvent id="TerminateEndEvent_1" name="Terminate everything">
-      <bpmn:incoming>SequenceFlow_1jty1lg</bpmn:incoming>
-      <bpmn:terminateEventDefinition />
-    </bpmn:endEvent>
     <bpmn:parallelGateway id="TerminateEndEvent_JoinGateway" name="">
       <bpmn:incoming>SequenceFlow_0vuigj4</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1bnj4ce</bpmn:incoming>
@@ -80,11 +61,37 @@
       <bpmn:outgoing>SequenceFlow_0l064o7</bpmn:outgoing>
       <bpmn:script>return 'Regular ending';</bpmn:script>
     </bpmn:scriptTask>
+    <bpmn:endEvent id="TerminateEndEvent_1" name="Terminate everything">
+      <bpmn:incoming>SequenceFlow_0dp4k88</bpmn:incoming>
+      <bpmn:terminateEventDefinition />
+    </bpmn:endEvent>
+    <bpmn:scriptTask id="SampleScriptTask1" name="Script Task should be called">
+      <bpmn:incoming>SequenceFlow_19imvxa</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1bnj4ce</bpmn:outgoing>
+      <bpmn:script>setTimeout(() =&gt; {})
+throw new Error("Critical error that causes termination!");</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:boundaryEvent id="BoundaryEvent_141aa5r" name="" attachedToRef="SampleScriptTask1">
+      <bpmn:outgoing>SequenceFlow_0w50vbx</bpmn:outgoing>
+      <bpmn:errorEventDefinition />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0dp4k88" sourceRef="IntermediateThrowEvent_1co8y8u" targetRef="TerminateEndEvent_1" />
+    <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_1co8y8u" name="Wait 1s">
+      <bpmn:incoming>SequenceFlow_0w50vbx</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0dp4k88</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P0Y0M0DT0H0M1S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:association id="Association_17yazgg" sourceRef="IntermediateThrowEvent_1co8y8u" targetRef="TextAnnotation_0gfb6gi" />
+    <bpmn:textAnnotation id="TextAnnotation_0gfb6gi">
+      <bpmn:text>This is to prevent a race condition with the "5s Delay" timer. Since the error is thrown in parallel to that timer, it is possible, that the timer was not yet fully persisted, when the "terminate" command arrives, which can cause the state update to fail sometimes</bpmn:text>
+    </bpmn:textAnnotation>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ProcessResult_001">
       <bpmndi:BPMNShape id="Participant_0yv4605_di" bpmnElement="DemoProcess.TerminateEndEvent">
-        <dc:Bounds x="17" y="-1" width="898" height="405" />
+        <dc:Bounds x="17" y="-1" width="968" height="405" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="98" y="209" width="36" height="36" />
@@ -143,25 +150,22 @@
       <bpmndi:BPMNEdge id="SequenceFlow_0w50vbx_di" bpmnElement="SequenceFlow_0w50vbx">
         <di:waypoint x="396" y="88" />
         <di:waypoint x="396" y="52" />
-        <di:waypoint x="479" y="52" />
+        <di:waypoint x="488" y="52" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="431" y="81" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="EndEvent_0j75qho_di" bpmnElement="TerminateEndEvent_1">
-        <dc:Bounds x="655" y="34" width="36" height="36" />
+        <dc:Bounds x="615" y="34" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="700" y="38" width="51" height="27" />
+          <dc:Bounds x="660" y="38" width="51" height="27" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ScriptTask_0ua10uk_di" bpmnElement="SampleScriptTask1">
-        <dc:Bounds x="296" y="106" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ScriptTask_1r27pwy_di" bpmnElement="UnreachableScriptTask_1">
         <dc:Bounds x="479" y="263" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_0iq41av_di" bpmnElement="Lane_0iq41av">
-        <dc:Bounds x="47" y="-1" width="868" height="405" />
+        <dc:Bounds x="47" y="-1" width="938" height="405" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BoundaryEvent_0hi1j9z_di" bpmnElement="BoundaryEvent_141aa5r">
         <dc:Bounds x="378" y="88" width="36" height="36" />
@@ -180,18 +184,11 @@
         <di:waypoint x="364" y="303" />
         <di:waypoint x="479" y="303" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="IntermediateCatchEvent_1597v4y_di" bpmnElement="IntermediateThrowEvent_1eqvyfn">
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_1597v4y_di" bpmnElement="IntermediateTimerCatchEvent_1">
         <dc:Bounds x="328" y="285" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="325" y="328" width="43" height="14" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_1jty1lg_di" bpmnElement="SequenceFlow_1jty1lg">
-        <di:waypoint x="579" y="52" />
-        <di:waypoint x="655" y="52" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ScriptTask_176u6wx_di" bpmnElement="Task_05qk8pm">
-        <dc:Bounds x="479" y="12" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0l064o7_di" bpmnElement="SequenceFlow_0l064o7">
         <di:waypoint x="799" y="227" />
@@ -200,6 +197,26 @@
       <bpmndi:BPMNShape id="ScriptTask_0q3fu31_di" bpmnElement="Task_0ldaqqf">
         <dc:Bounds x="699" y="187" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ScriptTask_0ua10uk_di" bpmnElement="SampleScriptTask1">
+        <dc:Bounds x="296" y="106" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0dp4k88_di" bpmnElement="SequenceFlow_0dp4k88">
+        <di:waypoint x="524" y="52" />
+        <di:waypoint x="615" y="52" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_1l26h18_di" bpmnElement="IntermediateThrowEvent_1co8y8u">
+        <dc:Bounds x="488" y="34" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="488" y="77" width="37" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0gfb6gi_di" bpmnElement="TextAnnotation_0gfb6gi">
+        <dc:Bounds x="649" y="91" width="316" height="84" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_17yazgg_di" bpmnElement="Association_17yazgg">
+        <di:waypoint x="523" y="57" />
+        <di:waypoint x="651" y="91" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

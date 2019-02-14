@@ -110,7 +110,7 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
   async function finishUserTaskAndWaitForProcessInstanceToEnd(userTask) {
 
     await new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(userTask.correlationId, userTask.processModelId, resolve);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTask.processInstanceId, resolve);
 
       const userTaskInput = {
         formFields: {

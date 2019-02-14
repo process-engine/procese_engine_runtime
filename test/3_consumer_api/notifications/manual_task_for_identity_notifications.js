@@ -118,7 +118,7 @@ describe('Consumer API:   Receive identity specific ManualTask Notifications', (
         }
         resolve();
       };
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, processFinishedCallback);
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTaskToFinish.processInstanceId, processFinishedCallback);
       finishWaitingManualTask();
     });
   });
