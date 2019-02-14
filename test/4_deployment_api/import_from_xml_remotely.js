@@ -37,7 +37,7 @@ describe(`Deployment API -> POST ${importRoute}`, () => {
     processModelPathNameMismatchAsXml = testFixtureProvider.readProcessModelFile(processModelIdNameMismatch);
     processModelPathTooManyProcessesAsXml = testFixtureProvider.readProcessModelFile(processModelIdTooManyProcesses);
 
-    httpClient = await testFixtureProvider.resolveAsync('HttpService');
+    httpClient = await testFixtureProvider.resolveAsync('HttpClient');
   });
 
   after(async () => {

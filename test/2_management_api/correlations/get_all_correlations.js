@@ -42,7 +42,6 @@ describe('Management API:   GET  ->  /correlations/all', () => {
       .managementApiClientService
       .startProcessInstance(identity, processModelIdToUse, startEventId, payload, returnOn);
 
-
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);
 
