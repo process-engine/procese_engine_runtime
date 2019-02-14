@@ -6,7 +6,7 @@ import * as path from 'path';
 
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
 import {IIdentity} from '@essential-projects/iam_contracts';
-import {IResumeProcessService} from '@process-engine/process_engine_contracts';
+import {IAutoStartService, IResumeProcessService} from '@process-engine/process_engine_contracts';
 
 import {configureGlobalRoutes} from './global_route_configurator';
 import {migrate as executeMigrations} from './migrator';
@@ -158,8 +158,7 @@ async function startProcessEngine(): Promise<void> {
 
     logger.info('Bootstrapper started successfully.');
 
-    // TODO: Typings can only be applied, after the ProcessEngineContracts package was published.
-    const autoStartService: any = await container.resolveAsync<any>('AutoStartService');
+    const autoStartService: IAutoStartService = await container.resolveAsync<IAutoStartService>('AutoStartService');
     await autoStartService.start();
 
     logger.info('AutoStartService started successfully.');
