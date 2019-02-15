@@ -28,6 +28,7 @@ def cleanup_docker() {
   sh(script: "docker volume prune --force");
 }
 
+@NonCPS
 def slack_send_summary(testlog, test_failed) {
   def passing_regex = /\d+ passing/;
   def failing_regex = /\d+ failing/;
@@ -171,6 +172,11 @@ pipeline {
       }
     }
     stage('publish') {
+      when {
+        expression {
+          currentBuild.result == 'SUCCESS'
+        }
+      }
       steps {
         script {
           def new_commit = env.GIT_PREVIOUS_COMMIT != GIT_COMMIT;
@@ -220,8 +226,9 @@ pipeline {
     stage('publish github release') {
       when {
         expression {
-          branch_is_master ||
-          branch_is_develop
+          currentBuild.result == 'SUCCESS' &&
+          (branch_is_master ||
+          branch_is_develop)
         }
       }
       steps {
