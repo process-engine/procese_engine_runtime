@@ -61,7 +61,7 @@ def slack_send_testlog(testlog) {
     def requestBody = [
       "token=${SLACK_TOKEN}",
       "content=${testlog}",
-      "filename=process_engine_integration_tests.txt",
+      "filename=process_engine_runtime_integration_tests.txt",
       "channels=process-engine_ci"
     ];
 
@@ -122,7 +122,7 @@ pipeline {
       steps {
         script {
           // image.inside mounts the current Workspace as the working directory in the container
-          def junit_report_path = 'JUNIT_REPORT_PATH=report.xml';
+          def junit_report_path = 'JUNIT_REPORT_PATH=process_engine_runtime_integration_tests.xml';
           def config_path = 'CONFIG_PATH=/usr/src/app/config';
           def api_access_mode = '--env API_ACCESS_TYPE=internal ';
 
@@ -135,15 +135,15 @@ pipeline {
 
           def db_environment_settings = "jenkinsDbStoragePath=${db_storage_folder_path} ${db_storage_path_correlation} ${db_storage_path_external_task} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance}";
 
-          def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test JUNIT_REPORT_PATH=report.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
+          def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test JUNIT_REPORT_PATH=process_engine_runtime_integration_tests.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
 
           docker.image("node:${NODE_VERSION_NUMBER}").inside("--env PATH=$PATH:/$WORKSPACE/node_modules/.bin") {
-            error_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > result.txt", returnStatus: true);
+            error_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > process_engine_runtime_integration_tests.txt", returnStatus: true);
           };
 
-          testresults = sh(script: "cat result.txt", returnStdout: true).trim();
+          testresults = sh(script: "cat process_engine_runtime_integration_tests.txt", returnStdout: true).trim();
 
-          junit 'report.xml'
+          junit 'process_engine_runtime_integration_tests.xml'
 
           test_failed = false;
           currentBuild.result = 'SUCCESS'
