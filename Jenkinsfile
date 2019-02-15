@@ -28,6 +28,7 @@ def cleanup_docker() {
   sh(script: "docker volume prune --force");
 }
 
+@NonCPS
 def slack_send_summary(testlog, test_failed) {
   def passing_regex = /\d+ passing/;
   def failing_regex = /\d+ failing/;
