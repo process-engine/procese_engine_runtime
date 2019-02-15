@@ -171,6 +171,11 @@ pipeline {
       }
     }
     stage('publish') {
+      when {
+        expression {
+          currentBuild.result == 'SUCCESS'
+        }
+      }
       steps {
         script {
           def new_commit = env.GIT_PREVIOUS_COMMIT != GIT_COMMIT;
@@ -220,8 +225,9 @@ pipeline {
     stage('publish github release') {
       when {
         expression {
-          branch_is_master ||
-          branch_is_develop
+          currentBuild.result == 'SUCCESS' &&
+          (branch_is_master ||
+          branch_is_develop)
         }
       }
       steps {
