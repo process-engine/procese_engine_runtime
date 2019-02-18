@@ -75,7 +75,7 @@
     "@process-engine/management_api_http": "3.1.2",
     "@process-engine/metrics_api_core": "1.0.1",
     "@process-engine/metrics.repository.file_system": "1.1.1",
-    "@process-engine/process_engine_core": "10.1.5",
+    "@process-engine/process_engine_core": "feature~fix_timer_token_evaluation",
     "@process-engine/process_model.repository.sequelize": "4.2.6",
     "@process-engine/token_history_api_http": "1.4.1",
     "@process-engine/token_history_api_core": "1.4.2",
