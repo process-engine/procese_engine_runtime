@@ -5,7 +5,7 @@
   </bpmn:collaboration>
   <bpmn:process id="timer_invalid_duration" name="timer_invalid_duration" isExecutable="true">
     <bpmn:laneSet>
-      <bpmn:lane id="Lane_1xzf0d3" name="Lane">
+      <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_0eie6q6</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>IntermediateThrowEvent_0blakxd</bpmn:flowNodeRef>
