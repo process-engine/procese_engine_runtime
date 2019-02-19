@@ -68,7 +68,6 @@ export class IamServiceMock implements IIAMService {
     }
 
     const matchingUserConfig: Array<string> = this._claimConfigs[identity.userId];
-
     if (!matchingUserConfig) {
       throw new ForbiddenError('access denied');
     }
