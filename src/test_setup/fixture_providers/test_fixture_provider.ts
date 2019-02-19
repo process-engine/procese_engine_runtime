@@ -15,11 +15,8 @@ import {IDeploymentApi} from '@process-engine/deployment_api_contracts';
 import {IExternalTaskApi} from '@process-engine/external_task_api_contracts';
 import {ExternalTaskSampleWorker} from '@process-engine/external_task_sample_worker';
 import {IManagementApi} from '@process-engine/management_api_contracts';
-import {
-  IExecuteProcessService,
-  IProcessModelService,
-  Model,
-} from '@process-engine/process_engine_contracts';
+import {IExecuteProcessService} from '@process-engine/process_engine_contracts';
+import {IProcessModelUseCases, Model} from '@process-engine/process_model.contracts';
 
 import {initializeBootstrapper} from './setup_ioc_container';
 import {migrate as executeMigrations} from './test_migrator';
@@ -46,7 +43,7 @@ export class TestFixtureProvider {
   private _externalTaskApiClientService: IExternalTaskApi;
   private _sampleExternalTaskWorker: ExternalTaskSampleWorker;
   private _managementApiClientService: IManagementApi;
-  private _processModelService: IProcessModelService;
+  private _processModelUseCases: IProcessModelUseCases;
 
   private _identities: IdentityCollection;
 
@@ -74,8 +71,8 @@ export class TestFixtureProvider {
     return this._managementApiClientService;
   }
 
-  public get processModelService(): IProcessModelService {
-    return this._processModelService;
+  public get processModelUseCases(): IProcessModelUseCases {
+    return this._processModelUseCases;
   }
 
   public async initializeAndStart(): Promise<void> {
@@ -93,7 +90,7 @@ export class TestFixtureProvider {
     this._deploymentApiService = await this.resolveAsync<IDeploymentApi>('DeploymentApiService');
     this._executeProcessService = await this.resolveAsync<IExecuteProcessService>('ExecuteProcessService');
     this._externalTaskApiClientService = await this.resolveAsync<IExternalTaskApi>('ExternalTaskApiClientService');
-    this._processModelService = await this.resolveAsync<IProcessModelService>('ProcessModelService');
+    this._processModelUseCases = await this.resolveAsync<IProcessModelUseCases>('ProcessModelUseCases');
 
     this._sampleExternalTaskWorker = await this.resolveAsync<ExternalTaskSampleWorker>('ExternalTaskSampleWorker');
     this._sampleExternalTaskWorker.start();
@@ -225,7 +222,7 @@ export class TestFixtureProvider {
 
   private async _getProcessById(processId: string): Promise<Model.Types.Process> {
 
-    const processModel: Model.Types.Process = await this.processModelService.getProcessModelById(this.identities.defaultUser, processId);
+    const processModel: Model.Types.Process = await this.processModelUseCases.getProcessModelById(this.identities.defaultUser, processId);
 
     return processModel;
   }
