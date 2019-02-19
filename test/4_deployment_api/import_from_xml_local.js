@@ -168,7 +168,7 @@ describe('Deployment API -> importBpmnFromXml', () => {
   async function assertThatImportWasSuccessful() {
 
     const existingProcessModel = await testFixtureProvider
-      .processModelService
+      .processModelUseCases
       .getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
     should.exist(existingProcessModel);
