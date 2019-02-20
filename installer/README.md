@@ -28,6 +28,12 @@ Create a windows installer for the ProcessEngine Runtime.
     This script will use `pkg` to create the `process_engine_runtime.exe`
     executable.
 
+    The following folders will be included inside the binary as asset:
+
+    - config
+    - sequelize
+    - node_modules
+
 1. Create installer with Inno Setup
 
     ```bat
