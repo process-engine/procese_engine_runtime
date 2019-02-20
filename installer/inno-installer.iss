@@ -10,6 +10,11 @@
 #define MyAppExeName "process_engine_runtime-win.exe"
 #define StartProcessEngineBat "start_process_engine_runtime.bat"
 
+#define ProcessEngineRuntimeExeSource "..\process_engine_runtime-win.exe"
+#define StartProcessEngineBatSource "..\start_process_engine_runtime.bat"
+#define ConfigSource "..\config\*"
+#define SQLite3NativesSource "..\node_modules\sqlite3\lib\*"
+
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
@@ -35,11 +40,11 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "process_engine_runtime-win.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#StartProcessEngineBat}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "config\*"; DestDir: "{userappdata}\process-engine-runtime\config"; Flags: createallsubdirs confirmoverwrite recursesubdirs uninsneveruninstall
+Source: "{#ProcessEngineRuntimeExeSource}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#StartProcessEngineBatSource}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ConfigSource}"; DestDir: "{userappdata}\process-engine-runtime\config"; Flags: createallsubdirs confirmoverwrite recursesubdirs uninsneveruninstall
 ; Copy native bindings for sqlite3.
-Source: "node_modules\sqlite3\lib\*"; DestDir: "{app}\node_modules\sqlite3\lib\"; Flags: createallsubdirs ignoreversion recursesubdirs
+Source: "{#SQLite3NativesSource}"; DestDir: "{app}\node_modules\sqlite3\lib\"; Flags: createallsubdirs ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
