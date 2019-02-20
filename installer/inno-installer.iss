@@ -53,3 +53,4 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#StartProcessEngineBat}"
 
 [Run]
 Filename: "{app}\{#StartProcessEngineBat}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{userappdata}\process_engine_runtime"; Description: "Open application data folder"; Flags: nowait postinstall shellexec skipifsilent unchecked
