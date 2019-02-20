@@ -8,8 +8,8 @@
 #define MyAppPublisher "5Minds IT-Solutions GmbH & Co. KG"
 #define MyAppURL "https:///www.process-engine.io/"
 
-#define ProcessEngineRuntimeExe "process_engine_runtime-win.exe"
-#define ProcessEngineRuntimeExeSource "..\process_engine_runtime-win.exe"
+#define ProcessEngineRuntimeExe "process_engine_runtime.exe"
+#define ProcessEngineRuntimeExeSource "..\process_engine_runtime.exe"
 
 #define StartProcessEngineBat "start_process_engine_runtime.bat"
 #define StartProcessEngineBatSource "start_process_engine_runtime.bat"
