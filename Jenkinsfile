@@ -121,7 +121,7 @@ pipeline {
 
         bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
 
-        archiveArtifacts("installer\\Output\\Install ProcessEngine Runtime v$full_release_version_string.exe")
+        archiveArtifacts("installer\\Output\\Install ProcessEngine Runtime v${full_release_version_string}.exe")
       }
     }
     stage('Process Engine Runtime Tests') {
