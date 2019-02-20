@@ -104,6 +104,26 @@ pipeline {
         archiveArtifacts('package-lock.json')
       }
     }
+    stage('Build Windows Installer') {
+      agent {
+        label 'windows'
+      }
+      steps {
+
+        nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+          bat('node --version')
+          bat('npm install')
+          bat('npm run build')
+          bat('npm rebuild')
+
+          bat('npm run create-executable-win')
+        }
+
+        bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
+
+        archiveArtifacts("installer\\Output\\Install ProcessEngine Runtime v$full_release_version_string.exe")
+      }
+    }
     stage('Process Engine Runtime Tests') {
       steps {
         script {
