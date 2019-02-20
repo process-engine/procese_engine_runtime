@@ -43,8 +43,9 @@ Create a windows installer for the ProcessEngine Runtime.
 
 ### Native Bindings
 
-Some of our dependencies use native bindings. `pkg` will not include the
-required files. Instead they must be placed manually near the executable.
+Some of our dependencies use native bindings, which `pkg` will not include in
+the executable. These files must be placed manually in the same directory as
+the executable.
 
 For example: When the native binding for `sqlite3` is not found, you will get
 the following error:
