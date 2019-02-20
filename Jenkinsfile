@@ -175,7 +175,7 @@ pipeline {
           bat('npm run build')
           bat('npm rebuild')
 
-          bat('npm run create-executable-win')
+          bat('npm run create-executable-windows')
         }
 
         bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
