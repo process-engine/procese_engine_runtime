@@ -138,11 +138,9 @@ export class TestFixtureProvider {
 
   public async executeProcess(processModelId: string, startEventId: string, correlationId: string, initialToken: any = {}): Promise<any> {
 
-    const processModel: Model.Types.Process = await this._getProcessById(processModelId);
-
     return this
       .executeProcessService
-      .startAndAwaitEndEvent(this.identities.defaultUser, processModel, startEventId, correlationId, initialToken);
+      .startAndAwaitEndEvent(this.identities.defaultUser, processModelId, startEventId, correlationId, initialToken);
   }
 
   private async _runMigrations(): Promise<void> {
@@ -218,12 +216,5 @@ export class TestFixtureProvider {
     const processName: string = path.parse(processFileName).name;
 
     await this.deploymentApiService.importBpmnFromFile(this.identities.defaultUser, processFilePath, processName, true);
-  }
-
-  private async _getProcessById(processId: string): Promise<Model.Types.Process> {
-
-    const processModel: Model.Types.Process = await this.processModelUseCases.getProcessModelById(this.identities.defaultUser, processId);
-
-    return processModel;
   }
 }
