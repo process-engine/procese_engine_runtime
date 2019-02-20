@@ -36,7 +36,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "process_engine_runtime-win.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "config\*"; DestDir: "{app}\config"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "node_modules\sqlite3\lib\binding\*\node_sqlite3.node"; DestDir: "{app}";
+; Copy native bindings for sqlite3.
+Source: "node_modules\sqlite3\lib\*"; DestDir: "{app}\node_modules\sqlite3\lib\"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
