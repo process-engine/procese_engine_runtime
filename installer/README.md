@@ -5,7 +5,7 @@ Create a windows installer for the ProcessEngine Runtime.
 ## Requirements
 
 - All requirements from [README](../README.md).
-- Windows Operating Sytem
+- Windows Operating System
   - Native dependencies will not work otherwise.
 - [Inno Setup](http://www.jrsoftware.org/isinfo.php) >= 5.6.1
 
@@ -36,7 +36,7 @@ Create a windows installer for the ProcessEngine Runtime.
 
     Replace `<TargetVersion>` with the actual version of the runtime.
 
-    By default the created installed will be placed in under
+    By default the created installer will be placed at
     `Output/Install ProcessEngine Runtime v<TargetVersion>.exe`.
 
 ## Notes
@@ -46,8 +46,8 @@ Create a windows installer for the ProcessEngine Runtime.
 Some of our dependencies use native bindings. `pkg` will not include the
 required files. Instead they must be placed manually near the executable.
 
-For example `sqlite3`: When the native binding is not found an error message
-is shown:
+For example: When the native binding for `sqlite3` is not found, you will get
+the following error:
 
 ```
 Error: Please install sqlite3 package manually
@@ -60,9 +60,9 @@ executable (See _Figure 1_). The installer will take care of this.
 
 By default the ProcessEngine Runtime stores its configuration in `./config`.
 This would result in storing the configuration inside the installation folder.
-To prevent this the `CONFIG_PATH` environment variable must be overridden.
+To prevent this the `CONFIG_PATH` environment variable must be provided.
 
-The `start_process_engine_runtime.bat` starts the `process_engine_runtime-win.exe`
+The `start_process_engine_runtime.bat` script starts `process_engine_runtime.exe`,
 using the correct `CONFIG_PATH`.
 
 ### Final Installation Layout
