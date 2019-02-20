@@ -13,21 +13,6 @@ def cleanup_workspace() {
   }
 }
 
-def cleanup_docker() {
-  sh(script: "docker rmi ${server_image_id}");
-
-  // Build stages in dockerfiles leave dangling images behind (see https://github.com/moby/moby/issues/34151).
-  // Dangling images are images that are not used anywhere and don't have a tag. It is safe to remove them (see https://stackoverflow.com/a/45143234).
-  // This removes all dangling images
-  sh(script: "docker image prune --force");
-
-  // Some Dockerfiles create volumes using the `VOLUME` command (see https://docs.docker.com/engine/reference/builder/#volume)
-  // running the speedtests creates two dangling volumes. One is from postgres (which contains data), but i don't know about the other one (which is empty)
-  // Dangling volumes are volumes that are not used anywhere. It is safe to remove them.
-  // This removes all dangling volumes
-  sh(script: "docker volume prune --force");
-}
-
 @NonCPS
 def slack_send_summary(testlog, test_failed) {
   def passing_regex = /\d+ passing/;
