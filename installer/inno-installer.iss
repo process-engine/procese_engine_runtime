@@ -2,7 +2,7 @@
 #define MyAppName "ProcessEngine Runtime"
 
 #ifndef ProcessEngineRuntimeVersion
-  #define ProcessEngineRuntimeVersion "3.123.1"
+  #define ProcessEngineRuntimeVersion "Snapshot"
 #endif
 
 #define MyAppPublisher "5Minds IT-Solutions GmbH & Co. KG"
