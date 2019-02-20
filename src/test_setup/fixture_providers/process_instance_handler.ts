@@ -5,7 +5,7 @@ import {EventReceivedCallback, IEventAggregator} from '@essential-projects/event
 import {IIdentity} from '@essential-projects/iam_contracts';
 import {DataModels} from '@process-engine/consumer_api_contracts';
 import {ExternalTask, IExternalTaskRepository} from '@process-engine/external_task_api_contracts';
-import {IFlowNodeInstanceService, Runtime} from '@process-engine/process_engine_contracts';
+import {FlowNodeInstance, IFlowNodeInstanceService} from '@process-engine/flow_node_instance.contracts';
 
 import {TestFixtureProvider} from './test_fixture_provider';
 
@@ -97,10 +97,10 @@ export class ProcessInstanceHandler {
 
       await this.wait(delayBetweenRetriesInMs);
 
-      let flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await flowNodeInstanceService.querySuspendedByCorrelation(correlationId);
+      let flowNodeInstances: Array<FlowNodeInstance> = await flowNodeInstanceService.querySuspendedByCorrelation(correlationId);
 
       if (processModelId) {
-        flowNodeInstances = flowNodeInstances.filter((fni: Runtime.Types.FlowNodeInstance) => {
+        flowNodeInstances = flowNodeInstances.filter((fni: FlowNodeInstance) => {
           return fni.tokens[0].processModelId === processModelId;
         });
       }
