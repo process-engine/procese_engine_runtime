@@ -42,7 +42,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "{#ProcessEngineRuntimeExeSource}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#StartProcessEngineBatSource}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#ConfigSource}"; DestDir: "{userappdata}\process-engine-runtime\config"; Flags: createallsubdirs confirmoverwrite recursesubdirs uninsneveruninstall
+Source: "{#ConfigSource}"; DestDir: "{userappdata}\process_engine_runtime\config"; Flags: createallsubdirs confirmoverwrite recursesubdirs uninsneveruninstall
 ; Copy native bindings for sqlite3.
 Source: "{#SQLite3NativesSource}"; DestDir: "{app}\node_modules\sqlite3\lib\"; Flags: createallsubdirs ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files

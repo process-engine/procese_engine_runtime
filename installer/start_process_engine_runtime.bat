@@ -1,7 +1,7 @@
 @echo off
 
-set CONFIG_PATH=%appdata%/process-engine-runtime
+set CONFIG_PATH=%appdata%\process_engine_runtime\config\
 
-start "process_engine_runtime-win.exe"
+process_engine_runtime-win.exe
 
 pause
