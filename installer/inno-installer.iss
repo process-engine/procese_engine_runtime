@@ -8,6 +8,7 @@
 #define MyAppPublisher "5Minds"
 #define MyAppURL "https:///www.process-engine.io/"
 #define MyAppExeName "process_engine_runtime-win.exe"
+#define StartProcessEngineBat "start_process_engine_runtime.bat"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -35,14 +36,15 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "process_engine_runtime-win.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "config\*"; DestDir: "{app}\config"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#StartProcessEngineBat}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "config\*"; DestDir: "{userappdata}\process-engine-runtime\config"; Flags: createallsubdirs confirmoverwrite recursesubdirs uninsneveruninstall
 ; Copy native bindings for sqlite3.
-Source: "node_modules\sqlite3\lib\*"; DestDir: "{app}\node_modules\sqlite3\lib\"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "node_modules\sqlite3\lib\*"; DestDir: "{app}\node_modules\sqlite3\lib\"; Flags: createallsubdirs ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{commonprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{commonprograms}\{#MyAppName}"; Filename: "{app}\{#StartProcessEngineBat}"
+Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#StartProcessEngineBat}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#StartProcessEngineBat}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
