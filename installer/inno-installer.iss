@@ -11,7 +11,7 @@
 #define StartProcessEngineBat "start_process_engine_runtime.bat"
 
 #define ProcessEngineRuntimeExeSource "..\process_engine_runtime-win.exe"
-#define StartProcessEngineBatSource "..\start_process_engine_runtime.bat"
+#define StartProcessEngineBatSource "start_process_engine_runtime.bat"
 #define ConfigSource "..\config\*"
 #define SQLite3NativesSource "..\node_modules\sqlite3\lib\*"
 
