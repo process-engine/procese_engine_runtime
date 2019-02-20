@@ -13,7 +13,7 @@
     "test-external": "cross-env API_ACCESS_TYPE=external NODE_ENV=test CONFIG_PATH=config mocha -t 15000 test/**/*.js test/**/**/*.js  --exit",
     "test-debug": "cross-env NODE_ENV=test CONFIG_PATH=config mocha --inspect-brk test/**/*.js test/**/**/*.js  --exit",
     "build": "gulp build",
-    "create-executable": "pkg ."
+    "create-executable-win": "pkg --targets windows ."
   },
   "main": "./dist/commonjs/index.js",
   "license": "MIT",
