@@ -14,8 +14,6 @@ describe('Deployment API -> Sanity checks after import', () => {
   let processModelXml;
   let processModelUpdatedXml;
 
-  let processModelService;
-
   before(async () => {
 
     testFixtureProvider = new TestFixtureProvider();
@@ -23,7 +21,6 @@ describe('Deployment API -> Sanity checks after import', () => {
 
     processModelXml = testFixtureProvider.readProcessModelFile(processModelId);
     processModelUpdatedXml = testFixtureProvider.readProcessModelFile(processModelUpdatedId);
-    processModelService = await testFixtureProvider.resolveAsync('ProcessModelService');
 
     await performImport(processModelXml);
     await performImport(processModelUpdatedXml);
@@ -35,7 +32,9 @@ describe('Deployment API -> Sanity checks after import', () => {
 
   it('should always return the most up to date version of any ProcessDefinition', async () => {
 
-    const existingProcessModel = await processModelService.getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
+    const existingProcessModel = await testFixtureProvider
+      .processModelUseCases
+      .getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
     should.exist(existingProcessModel);
     should(existingProcessModel.id).be.equal(processModelId);
@@ -54,7 +53,9 @@ describe('Deployment API -> Sanity checks after import', () => {
 
   it('should not contain outdated versions of any ProcessDefinitions, when querying all ProcessDefinitions', async () => {
 
-    const processModels = await processModelService.getProcessModels(testFixtureProvider.identities.defaultUser);
+    const processModels = await testFixtureProvider
+      .processModelUseCases
+      .getProcessModels(testFixtureProvider.identities.defaultUser);
 
     const occurencesOfTestProcessModel = processModels.filter((item) => {
       return item.id === processModelId;

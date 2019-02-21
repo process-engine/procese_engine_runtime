@@ -13,21 +13,7 @@ def cleanup_workspace() {
   }
 }
 
-def cleanup_docker() {
-  sh(script: "docker rmi ${server_image_id}");
-
-  // Build stages in dockerfiles leave dangling images behind (see https://github.com/moby/moby/issues/34151).
-  // Dangling images are images that are not used anywhere and don't have a tag. It is safe to remove them (see https://stackoverflow.com/a/45143234).
-  // This removes all dangling images
-  sh(script: "docker image prune --force");
-
-  // Some Dockerfiles create volumes using the `VOLUME` command (see https://docs.docker.com/engine/reference/builder/#volume)
-  // running the speedtests creates two dangling volumes. One is from postgres (which contains data), but i don't know about the other one (which is empty)
-  // Dangling volumes are volumes that are not used anywhere. It is safe to remove them.
-  // This removes all dangling volumes
-  sh(script: "docker volume prune --force");
-}
-
+@NonCPS
 def slack_send_summary(testlog, test_failed) {
   def passing_regex = /\d+ passing/;
   def failing_regex = /\d+ failing/;
@@ -61,7 +47,7 @@ def slack_send_testlog(testlog) {
     def requestBody = [
       "token=${SLACK_TOKEN}",
       "content=${testlog}",
-      "filename=process_engine_integration_tests.txt",
+      "filename=process_engine_runtime_integration_tests.txt",
       "channels=process-engine_ci"
     ];
 
@@ -122,7 +108,7 @@ pipeline {
       steps {
         script {
           // image.inside mounts the current Workspace as the working directory in the container
-          def junit_report_path = 'JUNIT_REPORT_PATH=report.xml';
+          def junit_report_path = 'JUNIT_REPORT_PATH=process_engine_runtime_integration_tests.xml';
           def config_path = 'CONFIG_PATH=/usr/src/app/config';
           def api_access_mode = '--env API_ACCESS_TYPE=internal ';
 
@@ -135,15 +121,15 @@ pipeline {
 
           def db_environment_settings = "jenkinsDbStoragePath=${db_storage_folder_path} ${db_storage_path_correlation} ${db_storage_path_external_task} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance}";
 
-          def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test JUNIT_REPORT_PATH=report.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
+          def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test JUNIT_REPORT_PATH=process_engine_runtime_integration_tests.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
 
           docker.image("node:${NODE_VERSION_NUMBER}").inside("--env PATH=$PATH:/$WORKSPACE/node_modules/.bin") {
-            error_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > result.txt", returnStatus: true);
+            error_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > process_engine_runtime_integration_tests.txt", returnStatus: true);
           };
 
-          testresults = sh(script: "cat result.txt", returnStdout: true).trim();
+          testresults = sh(script: "cat process_engine_runtime_integration_tests.txt", returnStdout: true).trim();
 
-          junit 'report.xml'
+          junit 'process_engine_runtime_integration_tests.xml'
 
           test_failed = false;
           currentBuild.result = 'SUCCESS'
@@ -170,7 +156,39 @@ pipeline {
         }
       }
     }
+    stage('Build Windows Installer') {
+      when {
+        expression {
+          currentBuild.result == 'SUCCESS' &&
+          (branch_is_master ||
+          branch_is_develop)
+        }
+      }
+      agent {
+        label 'windows'
+      }
+      steps {
+
+        nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+          bat('node --version')
+          bat('npm install')
+          bat('npm run build')
+          bat('npm rebuild')
+
+          bat('npm run create-executable-windows')
+        }
+
+        bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
+
+        stash(includes: "installer\\Output\\Install ProcessEngine Runtime v${full_release_version_string}.exe", name: 'windows_installer_exe')
+      }
+    }
     stage('publish') {
+      when {
+        expression {
+          currentBuild.result == 'SUCCESS'
+        }
+      }
       steps {
         script {
           def new_commit = env.GIT_PREVIOUS_COMMIT != GIT_COMMIT;
@@ -220,11 +238,15 @@ pipeline {
     stage('publish github release') {
       when {
         expression {
-          branch_is_master ||
-          branch_is_develop
+          currentBuild.result == 'SUCCESS' &&
+          (branch_is_master ||
+          branch_is_develop)
         }
       }
       steps {
+
+        unstash('windows_installer_exe')
+
         withCredentials([
           string(credentialsId: 'process-engine-ci_token', variable: 'RELEASE_GH_TOKEN')
         ]) {
@@ -236,7 +258,8 @@ pipeline {
             create_github_release_command += "${full_release_version_string} ";
             create_github_release_command += "${branch} ";
             create_github_release_command += "${release_will_be_draft} ";
-            create_github_release_command += "${!branch_is_master}";
+            create_github_release_command += "${!branch_is_master} ";
+            create_github_release_command += "installer/Output/Install\\ ProcessEngine\\ Runtime\\ v${full_release_version_string}.exe";
 
             sh(create_github_release_command);
           }

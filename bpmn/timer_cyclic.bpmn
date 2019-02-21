@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definition_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="BPMN Studio" exporterVersion="1">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definition_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.2.1">
   <bpmn:collaboration id="Collaboration_1cidyxu" name="">
-    <bpmn:participant id="Participant_0px403d" name="modell_parser_cyclic_timer_test" processRef="modell_parser_cyclic_timer_test" />
+    <bpmn:participant id="Participant_0px403d" name="timer_cyclic" processRef="timer_cyclic" />
   </bpmn:collaboration>
-  <bpmn:process id="modell_parser_cyclic_timer_test" name="modell_parser_cyclic_timer_test" isExecutable="false">
+  <bpmn:process id="timer_cyclic" name="timer_cyclic" isExecutable="true">
     <bpmn:laneSet>
-      <bpmn:lane id="Lane_1xzf0d3" name="Lane">
-        <bpmn:flowNodeRef>StartEvent_1mox3jl</bpmn:flowNodeRef>
+      <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_0eie6q6</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>IntermediateThrowEvent_0tasnib</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:startEvent id="StartEvent_1mox3jl" name="Start Event">
+    <bpmn:startEvent id="StartEvent_1" name="Start Event">
       <bpmn:outgoing>SequenceFlow_1e51499</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:endEvent id="EndEvent_0eie6q6" name="End Event">
       <bpmn:incoming>SequenceFlow_0r6apa7</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_1e51499" sourceRef="StartEvent_1mox3jl" targetRef="IntermediateThrowEvent_0tasnib" />
+    <bpmn:sequenceFlow id="SequenceFlow_1e51499" sourceRef="StartEvent_1" targetRef="IntermediateThrowEvent_0tasnib" />
     <bpmn:sequenceFlow id="SequenceFlow_0r6apa7" sourceRef="IntermediateThrowEvent_0tasnib" targetRef="EndEvent_0eie6q6" />
     <bpmn:intermediateCatchEvent id="IntermediateThrowEvent_0tasnib" name="Cyclic Timer defintion">
       <bpmn:incoming>SequenceFlow_1e51499</bpmn:incoming>
@@ -35,8 +35,11 @@
       <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3">
         <dc:Bounds x="35" y="4" width="551" height="170" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="StartEvent_1mox3jl_di" bpmnElement="StartEvent_1mox3jl">
+      <bpmndi:BPMNShape id="StartEvent_1mox3jl_di" bpmnElement="StartEvent_1">
         <dc:Bounds x="83" y="69" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="74" y="105" width="55" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_0eie6q6_di" bpmnElement="EndEvent_0eie6q6">
         <dc:Bounds x="503" y="69" width="36" height="36" />
