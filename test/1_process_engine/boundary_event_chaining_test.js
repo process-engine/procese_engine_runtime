@@ -206,6 +206,12 @@ describe('BoundaryEvent Chaining Tests - ', () => {
 
   async function triggerEventsInSequence(manualTask, eventToTriggerFirst, eventPayload) {
 
+    // TODO: There is currently a time gap in the ManualTaskHandler,
+    // resulting in it being suspended happening prior to its BoundaryEvents being initialized.
+    // This results in the messages being fired before the event handlers are actually initialized.
+    // Until this is fixed, this timeout must remain in place to get around this.
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     return new Promise(async (resolve) => {
       let manualTaskWasFinished = false;
       let messageReceived = false;

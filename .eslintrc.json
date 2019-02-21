@@ -1,6 +1,7 @@
 {
     "extends": "5minds",
     "rules": {
+      "arrow-body-style": "off",
       "max-len": [2, 150, 2, {
         "ignoreUrls": true,
         "ignoreComments": false
