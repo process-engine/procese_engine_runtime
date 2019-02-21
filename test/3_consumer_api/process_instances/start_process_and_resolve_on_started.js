@@ -133,7 +133,7 @@ describe(`Consumer API: ${testCase}`, () => {
     };
 
     const userIdentity = testFixtureProvider.identities.userWithAccessToSubLaneC;
-    const startCallbackType = StartCallbackType.CallbackOnProcessInstanceCreated;
+    const startCallbackType = StartCallbackType.CallbackOnProcessInstanceFinished;
 
     return new Promise(async (resolve, reject) => {
       processInstanceHandler.waitForProcessInstanceToEnd(payload.correlationId, processModelIdSublanes, resolve);
