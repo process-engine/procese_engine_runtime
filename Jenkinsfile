@@ -156,6 +156,33 @@ pipeline {
         }
       }
     }
+    stage('Build Windows Installer') {
+      when {
+        expression {
+          currentBuild.result == 'SUCCESS' &&
+          (branch_is_master ||
+          branch_is_develop)
+        }
+      }
+      agent {
+        label 'windows'
+      }
+      steps {
+
+        nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+          bat('node --version')
+          bat('npm install')
+          bat('npm run build')
+          bat('npm rebuild')
+
+          bat('npm run create-executable-windows')
+        }
+
+        bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
+
+        stash(includes: "installer\\Output\\Install ProcessEngine Runtime v${full_release_version_string}.exe", name: 'windows_installer_exe')
+      }
+    }
     stage('publish') {
       when {
         expression {
@@ -217,6 +244,9 @@ pipeline {
         }
       }
       steps {
+
+        unstash('windows_installer_exe')
+
         withCredentials([
           string(credentialsId: 'process-engine-ci_token', variable: 'RELEASE_GH_TOKEN')
         ]) {
@@ -228,7 +258,8 @@ pipeline {
             create_github_release_command += "${full_release_version_string} ";
             create_github_release_command += "${branch} ";
             create_github_release_command += "${release_will_be_draft} ";
-            create_github_release_command += "${!branch_is_master}";
+            create_github_release_command += "${!branch_is_master} ";
+            create_github_release_command += "installer/Output/Install\\ ProcessEngine\\ Runtime\\ v${full_release_version_string}.exe";
 
             sh(create_github_release_command);
           }
