@@ -7,7 +7,7 @@ const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/common
 
 // TODO: These tests are unstable and are frequently ruining the Jenkins Builds.
 // Until we come up with a fix, these tests are disabled.
-describe('BoundaryEvent Chaining Tests - ', () => {
+describe.skip('BoundaryEvent Chaining Tests - ', () => {
 
   let eventAggregator;
   let processInstanceHandler;
