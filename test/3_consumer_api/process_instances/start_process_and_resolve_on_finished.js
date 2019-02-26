@@ -45,7 +45,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     const result = await testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
+      .startProcessInstance(defaultIdentity, processModelId, payload, startCallbackType, startEventId);
 
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);
@@ -61,7 +61,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     const result = await testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
+      .startProcessInstance(defaultIdentity, processModelId, payload, startCallbackType, startEventId);
 
     should(result).have.property('correlationId');
   });
@@ -80,7 +80,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     const result = await testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(defaultIdentity, processModelIdSublanes, startEventId, payload, startCallbackType);
+      .startProcessInstance(defaultIdentity, processModelIdSublanes, payload, startCallbackType, startEventId);
 
     should(result).have.property('correlationId');
   });
@@ -100,7 +100,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     const result = await testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(userIdentity, processModelIdSublanes, startEventId, payload, startCallbackType);
+      .startProcessInstance(userIdentity, processModelIdSublanes, payload, startCallbackType, startEventId);
 
     should(result).have.property('correlationId');
   });

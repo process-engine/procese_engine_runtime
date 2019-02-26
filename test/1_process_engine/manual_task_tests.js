@@ -31,7 +31,7 @@ describe('Manual Tasks - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should finish two sequential manual tasks', async () => {
+  it.only('should finish two sequential manual tasks', async () => {
 
     const processModelId = 'manual_task_sequential_test';
     const correlationId = uuid.v4();
