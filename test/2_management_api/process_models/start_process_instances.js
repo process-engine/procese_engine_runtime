@@ -8,7 +8,7 @@ const TestFixtureProvider = require('../../../dist/commonjs/test_setup/fixture_p
 
 const testCase = 'Management API:   POST  ->  /process_models/:process_model_id/start?start_callback_type=1&start_event_id=:start_event_id';
 
-describe.only(`Management API: ${testCase}`, () => {
+describe(`Management API: ${testCase}`, () => {
 
   let testFixtureProvider;
   let defaultIdentity;

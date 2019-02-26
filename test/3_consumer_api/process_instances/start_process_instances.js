@@ -8,7 +8,7 @@ const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFix
 
 const testCase = 'Consumer API:   POST  ->  /process_models/:process_model_id/start?start_callback_type=1&start_event_id=:start_event_id';
 
-describe.only(`Consumer API: ${testCase}`, () => {
+describe(`Consumer API: ${testCase}`, () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
