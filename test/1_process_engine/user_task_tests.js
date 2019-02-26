@@ -224,6 +224,7 @@ describe('UserTasks - ', () => {
 
     try {
       const startEventId = 'StartEvent_2';
+
       await testFixtureProvider.executeProcess(processModelId, startEventId);
       should.fail(undefined, 'error', 'This request should have failed, because of an invalid FormField configuration!');
     } catch (error) {
