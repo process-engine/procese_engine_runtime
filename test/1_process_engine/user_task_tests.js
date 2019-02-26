@@ -12,16 +12,21 @@ describe('UserTasks - ', () => {
 
   let identity;
 
+  const processModelId = 'user_task_test';
+  const processModelUserTaskExpressionTestId = 'user_task_expression_test';
+  const processModelSequentialUserTasksId = 'user_task_sequential_test';
+  const processModelParallelUserTasksId = 'user_task_parallel_test';
+
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
     identity = testFixtureProvider.identities.defaultUser;
 
     const processDefinitionFiles = [
-      'user_task_test',
-      'user_task_expression_test',
-      'user_task_sequential_test',
-      'user_task_parallel_test',
+      processModelId,
+      processModelUserTaskExpressionTestId,
+      processModelSequentialUserTasksId,
+      processModelParallelUserTasksId,
     ];
     await testFixtureProvider.importProcessFiles(processDefinitionFiles);
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
@@ -33,13 +38,12 @@ describe('UserTasks - ', () => {
 
   it('should evaluate expressions in UserTask form fields.', async () => {
 
-    const processModelId = 'user_task_expression_test';
     const correlationId = uuid.v4();
     const initialToken = {
       inputValues: {},
     };
 
-    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, initialToken);
+    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelUserTaskExpressionTestId, correlationId, initialToken);
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     const waitingUserTasks = await processInstanceHandler.getWaitingUserTasksForCorrelationId(identity, correlationId);
@@ -67,7 +71,6 @@ describe('UserTasks - ', () => {
 
   it('should finish the UserTask.', async () => {
 
-    const processModelId = 'user_task_test';
     const correlationId = uuid.v4();
     const initialToken = {
       inputValues: {},
@@ -94,13 +97,12 @@ describe('UserTasks - ', () => {
 
   it('should finish two sequential UserTasks', async () => {
 
-    const processModelId = 'user_task_sequential_test';
     const correlationId = uuid.v4();
     const initialToken = {
       inputValues: {},
     };
 
-    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, initialToken);
+    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelSequentialUserTasksId, correlationId, initialToken);
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     let waitingUserTasks = await processInstanceHandler.getWaitingUserTasksForCorrelationId(identity, correlationId);
@@ -128,14 +130,13 @@ describe('UserTasks - ', () => {
 
   it('should finish two parallel running UserTasks', async () => {
 
-    const processModelId = 'user_task_parallel_test';
     const correlationId = uuid.v4();
     const initialToken = {
       inputValues: {},
     };
 
-    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, initialToken);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId, 2);
+    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelParallelUserTasksId, correlationId, initialToken);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelParallelUserTasksId, 2);
 
     const currentRunningUserTasks = await processInstanceHandler.getWaitingUserTasksForCorrelationId(identity, correlationId);
 
@@ -174,15 +175,14 @@ describe('UserTasks - ', () => {
         .consumerApiClientService
         .finishUserTask(identity, 'processInstanceId', correlationId, 'User_Task_1');
     } catch (error) {
-      should(error.name).be.match(errorName);
-      should(error.code).be.equal(errorCode);
       should(error.message).be.match(errorMessage);
+      should(error.code).be.equal(errorCode);
+      should(error.name).be.match(errorName);
     }
   });
 
   it('should refuse to finish a UserTask twice', async () => {
 
-    const processModelId = 'user_task_test';
     const correlationId = uuid.v4();
     const initialToken = {
       inputValues: {},
@@ -215,8 +215,40 @@ describe('UserTasks - ', () => {
         .consumerApiClientService
         .finishUserTask(identity, userTask.processInstanceId, correlationId, userTask.flowNodeInstanceId, userTaskInput);
     } catch (error) {
-      should(error.code).be.equal(errorCode);
       should(error.message).be.match(errorMessage);
+      should(error.code).be.equal(errorCode);
+    }
+  });
+
+  it('should fail to execute a UserTask containing a FormField with an invalid configuration.', async () => {
+
+    try {
+      const startEventId = 'StartEvent_2';
+      await testFixtureProvider.executeProcess(processModelId, startEventId);
+      should.fail(undefined, 'error', 'This request should have failed, because of an invalid FormField configuration!');
+    } catch (error) {
+      const errorMessage = /The configuration for FormField RandomInvalidFormField is invalid/i;
+      const errorCode = 500;
+
+      should(error.message).be.match(errorMessage);
+      should(error.code).be.equal(errorCode);
+
+      should(error).have.property('additionalInformation');
+      const details = error.additionalInformation;
+
+      const expectedValidationError = /Cannot evaluate expression.*?ProcessToken is missing some required properties/i;
+
+      // Static properties - We can assert their value here.
+      should(details.processModelId).be.equal('user_task_test');
+      should(details.userTaskId).be.equal('UserTaskWithInvalidFormFields');
+      should(details.invalidFormFieldId).be.equal('RandomInvalidFormField');
+      should(details.validationError).be.match(expectedValidationError);
+
+      // Dynamic properties - These are generated during exeuction. Their value cannot be asserted.
+      should(details).have.property('processInstanceId');
+      should(details).have.property('correlationId');
+      should(details).have.property('userTaskInstanceId');
+      should(details).have.property('currentToken');
     }
   });
 });
