@@ -51,7 +51,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
 
     const result = await testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, returnOn, endEventId);
+      .startProcessInstance(defaultIdentity, processModelId, payload, returnOn, startEventId, endEventId);
 
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);

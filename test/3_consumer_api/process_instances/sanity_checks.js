@@ -47,7 +47,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(defaultIdentity, invalidProcessModelId, startEventId, payload, startCallbackType);
+        .startProcessInstance(defaultIdentity, invalidProcessModelId, payload, startCallbackType, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
     } catch (error) {
@@ -71,7 +71,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
+        .startProcessInstance(defaultIdentity, processModelId, payload, startCallbackType, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
     } catch (error) {
@@ -96,7 +96,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType, endEventId);
+        .startProcessInstance(defaultIdentity, processModelId, payload, startCallbackType, startEventId, endEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
     } catch (error) {
@@ -120,7 +120,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(defaultIdentity, processModelIdNonExecutable, startEventId, payload, startCallbackType);
+        .startProcessInstance(defaultIdentity, processModelIdNonExecutable, payload, startCallbackType, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
     } catch (error) {
@@ -144,7 +144,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
+        .startProcessInstance(defaultIdentity, processModelId, payload, startCallbackType, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
     } catch (error) {
@@ -171,7 +171,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClientService
-        .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, startCallbackType);
+        .startProcessInstance(defaultIdentity, processModelId, payload, startCallbackType, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
     } catch (error) {
