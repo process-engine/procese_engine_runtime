@@ -15,7 +15,6 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
   const processModelId = 'test_consumer_api_usertask';
   const processModelIdNoUserTasks = 'test_consumer_api_usertask_empty';
   const processModelIdCallActivity = 'test_consumer_api_usertask_call_acvtivity';
-  const processModelIdCallActivitySubprocess = 'test_consumer_api_usertask_call_acvtivity_subprocess';
 
   let correlationId;
 
@@ -28,7 +27,6 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
       processModelId,
       processModelIdNoUserTasks,
       processModelIdCallActivity,
-      processModelIdCallActivitySubprocess,
     ]);
 
     eventAggregator = await testFixtureProvider.resolveAsync('EventAggregator');
@@ -117,7 +115,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
   it('should return a list of UserTasks from a call activity, by the given correlationId through the ConsumerAPI', async () => {
 
     const processStartResult = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelIdCallActivity);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(processStartResult.correlationId, processModelIdCallActivitySubprocess);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(processStartResult.correlationId, processModelId);
 
     const userTaskList = await testFixtureProvider
       .consumerApiClientService
