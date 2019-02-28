@@ -39,7 +39,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
 
     const result = await testFixtureProvider
       .managementApiClientService
-      .startProcessInstance(identity, processModelId, startEventId, payload, returnOn);
+      .startProcessInstance(identity, processModelId, payload, returnOn, startEventId);
 
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);

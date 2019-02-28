@@ -51,7 +51,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
 
     const result = await testFixtureProvider
       .consumerApiClientService
-      .startProcessInstance(defaultIdentity, processModelId, startEventId, payload, returnOn, endEventId);
+      .startProcessInstance(defaultIdentity, processModelId, payload, returnOn, startEventId, endEventId);
 
     should(result).have.property('correlationId');
     should(result.correlationId).be.equal(payload.correlationId);
@@ -79,9 +79,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
     should(correlationResult.tokenPayload.scriptOutput).be.match(expectedTokenPayload);
   });
 
-  // TODO: Not yet supported by the process engine,
-  // which currently requires a join gateway to be present for each split gateway.
-  it.skip('should successfully return the results for a correlation where multiple end events have been reached', async () => {
+  it('should successfully return the results for a correlation where multiple end events have been reached', async () => {
 
     const endEventToWaitFor = 'EndEvent_2';
 
@@ -109,7 +107,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
     };
 
     for (const correlationResult of correlationResults) {
-      should(correlationResult).be.equal(expectedResults[correlationResult.endEventId]);
+      should(correlationResult).be.eql(expectedResults[correlationResult.endEventId]);
     }
   });
 

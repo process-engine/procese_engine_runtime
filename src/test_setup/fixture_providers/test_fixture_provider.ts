@@ -140,7 +140,7 @@ export class TestFixtureProvider {
 
     return this
       .executeProcessService
-      .startAndAwaitEndEvent(this.identities.defaultUser, processModelId, startEventId, correlationId, initialToken);
+      .startAndAwaitEndEvent(this.identities.defaultUser, processModelId, correlationId, startEventId, initialToken);
   }
 
   private async _runMigrations(): Promise<void> {
