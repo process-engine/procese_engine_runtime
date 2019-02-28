@@ -139,15 +139,18 @@ export class ProcessInstanceHandler {
    * Returns all user tasks that are running with the given correlation id.
    *
    * @async
-   * @param   identity      The identity with which to get the UserTask.
-   * @param   correlationId The ID of the Correlation for which to get the UserTasks.
-   * @returns               A list of waiting UserTasks.
+   * @param   identity      The identity with which to get the EmptyActivity.
+   * @param   correlationId The ID of the Correlation for which to get the EmptyActivities.
+   * @returns               A list of waiting EmptyActivities.
    */
-  public async getWaitingUserTasksForCorrelationId(identity: IIdentity, correlationId: string): Promise<DataModels.UserTasks.UserTaskList> {
+  public async getWaitingEmptyActivitiesForCorrelationId(
+    identity: IIdentity,
+    correlationId: string,
+  ): Promise<DataModels.EmptyActivities.EmptyActivityList> {
 
     return this.testFixtureProvider
       .consumerApiClientService
-      .getUserTasksForCorrelation(identity, correlationId);
+      .getEmptyActivitiesForCorrelation(identity, correlationId);
   }
 
   /**
@@ -163,6 +166,45 @@ export class ProcessInstanceHandler {
     return this.testFixtureProvider
       .consumerApiClientService
       .getManualTasksForCorrelation(identity, correlationId);
+  }
+
+  /**
+   * Returns all user tasks that are running with the given correlation id.
+   *
+   * @async
+   * @param   identity      The identity with which to get the UserTask.
+   * @param   correlationId The ID of the Correlation for which to get the UserTasks.
+   * @returns               A list of waiting UserTasks.
+   */
+  public async getWaitingUserTasksForCorrelationId(identity: IIdentity, correlationId: string): Promise<DataModels.UserTasks.UserTaskList> {
+
+    return this.testFixtureProvider
+      .consumerApiClientService
+      .getUserTasksForCorrelation(identity, correlationId);
+  }
+
+  /**
+   * Finishes an EmptyActivity.
+   *
+   * @async
+   * @param   identity           The identity with which to finish the EmptyActivity.
+   * @param   correlationId      The ID of the Correlation for which to finish
+   *                             the EmptyActivity.
+   * @param   processInstanceId  The ID of the ProcessModel for which to finish
+   *                             the EmptyActivity.
+   * @param   flowNodeInstanceID The ID of the EmptyActivity to finish.
+   * @returns                    The result of the finishing operation.
+   */
+  public async finishEmptyActivityInCorrelation(
+    identity: IIdentity,
+    processModelId: string,
+    correlationId: string,
+    manualTaskId: string,
+  ): Promise<void> {
+
+    await this.testFixtureProvider
+      .consumerApiClientService
+      .finishEmptyActivity(identity, processModelId, correlationId, manualTaskId);
   }
 
   /**
