@@ -5,7 +5,7 @@ const should = require('should');
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 // NOTE:
-// The consumer api alrady contains extensive testing for this, so there is no need to cover everything here.
+// The consumer api already contains extensive testing for this, so there is no need to cover everything here.
 // We just need to ensure that all commands get passed correctly to the consumer api and leave the rest up to it.
 const testCase = 'GET  ->  /process_models/:process_model_id/correlations/:correlation_id/empty_activities';
 describe(`Management API: ${testCase}`, () => {

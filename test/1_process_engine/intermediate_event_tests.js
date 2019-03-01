@@ -24,7 +24,7 @@ describe('Intermediate Events - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('Should successfully run a ProcessModel that contains an empty event.', async () => {
+  it('should successfully run a ProcessModel that contains an empty event.', async () => {
 
     const result = await testFixtureProvider.executeProcess(processModelIdEmptyTest, startEventId);
 
