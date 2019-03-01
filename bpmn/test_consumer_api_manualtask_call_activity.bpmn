@@ -19,7 +19,7 @@
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0ybjgof" sourceRef="StartEvent_1" targetRef="Task_1yqb627" />
     <bpmn:sequenceFlow id="SequenceFlow_01vobte" sourceRef="Task_1yqb627" targetRef="EndEvent_0eie6q6" />
-    <bpmn:callActivity id="Task_1yqb627" name="Call Activity" calledElement="test_consumer_api_manualtask_call_activity_subprocess">
+    <bpmn:callActivity id="Task_1yqb627" name="Call Activity" calledElement="test_consumer_api_manualtask">
       <bpmn:incoming>SequenceFlow_0ybjgof</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_01vobte</bpmn:outgoing>
     </bpmn:callActivity>

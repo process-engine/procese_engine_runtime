@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definition_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
+  <bpmn:collaboration id="Collaboration_1cidyxu">
+    <bpmn:participant id="Participant_0px403d" name="intermediate_empty_event_test" processRef="intermediate_empty_event_test">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="" event="" />
+      </bpmn:extensionElements>
+    </bpmn:participant>
+  </bpmn:collaboration>
+  <bpmn:process id="intermediate_empty_event_test" name="intermediate_empty_event_test" isExecutable="true">
+    <bpmn:laneSet>
+      <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
+        <bpmn:extensionElements>
+          <camunda:executionListener class="" event="" />
+        </bpmn:extensionElements>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEventLink1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EmptyIntermediateEvent1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ScriptTask_GenerateSampleResult</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_1" name="Regular start">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="" event="" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_1y2odmh</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="EndEventLink1" name="End1">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="" event="" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_02j034y</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1y2odmh" sourceRef="StartEvent_1" targetRef="ScriptTask_GenerateSampleResult" />
+    <bpmn:intermediateThrowEvent id="EmptyIntermediateEvent1" name="Empty Event">
+      <bpmn:incoming>SequenceFlow_08tupk8</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_02j034y</bpmn:outgoing>
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_08tupk8" sourceRef="ScriptTask_GenerateSampleResult" targetRef="EmptyIntermediateEvent1" />
+    <bpmn:sequenceFlow id="SequenceFlow_02j034y" sourceRef="EmptyIntermediateEvent1" targetRef="EndEventLink1" />
+    <bpmn:scriptTask id="ScriptTask_GenerateSampleResult" name="Return sample result">
+      <bpmn:incoming>SequenceFlow_1y2odmh</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_08tupk8</bpmn:outgoing>
+      <bpmn:script>return 'sample result';</bpmn:script>
+    </bpmn:scriptTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1cidyxu">
+      <bpmndi:BPMNShape id="Participant_0px403d_di" bpmnElement="Participant_0px403d">
+        <dc:Bounds x="5" y="4" width="797" height="170" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="97" y="57" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="85" y="93" width="63" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3">
+        <dc:Bounds x="35" y="4" width="767" height="170" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_08xpzt2_di" bpmnElement="EndEventLink1">
+        <dc:Bounds x="728" y="57" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="733" y="104" width="26" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1y2odmh_di" bpmnElement="SequenceFlow_1y2odmh">
+        <di:waypoint x="133" y="75" />
+        <di:waypoint x="247" y="75" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateThrowEvent_003cpyq_di" bpmnElement="EmptyIntermediateEvent1">
+        <dc:Bounds x="496" y="57" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="483" y="100" width="63" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_08tupk8_di" bpmnElement="SequenceFlow_08tupk8">
+        <di:waypoint x="347" y="75" />
+        <di:waypoint x="496" y="75" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_02j034y_di" bpmnElement="SequenceFlow_02j034y">
+        <di:waypoint x="532" y="75" />
+        <di:waypoint x="728" y="75" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_0jke3gg_di" bpmnElement="ScriptTask_GenerateSampleResult">
+        <dc:Bounds x="247" y="35" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
