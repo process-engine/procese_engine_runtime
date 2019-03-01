@@ -1,10 +1,11 @@
 'use strict';
 
 const should = require('should');
+const path = require('path');
 
-const TestFixtureProvider = require('../../dist/commonjs/test_setup').TestFixtureProvider;
+const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
-describe('Deployment API -> importBpmnFromXml', () => {
+describe('Deployment API -> importBpmnFromFile', () => {
 
   let testFixtureProvider;
   let defaultIdentity;
@@ -15,10 +16,10 @@ describe('Deployment API -> importBpmnFromXml', () => {
   const processModelIdNameMismatch = 'process_model_name_mismatch';
   const processModelIdTooManyProcesses = 'process_model_too_many_processes';
 
-  let processModelAsXml;
-  let processModelNoLanesAsXml;
-  let processModelPathNameMismatchAsXml;
-  let processModelPathTooManyProcessesAsXml;
+  let processModelPath;
+  let processModelPathNoLanes;
+  let processModelPathNameMismatch;
+  let processModelPathTooManyProcesses;
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -27,10 +28,12 @@ describe('Deployment API -> importBpmnFromXml', () => {
     defaultIdentity = testFixtureProvider.identities.defaultUser;
     restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
-    processModelAsXml = testFixtureProvider.readProcessModelFile(processModelId);
-    processModelNoLanesAsXml = testFixtureProvider.readProcessModelFile(processModelIdNoLanes);
-    processModelPathNameMismatchAsXml = testFixtureProvider.readProcessModelFile(processModelIdNameMismatch);
-    processModelPathTooManyProcessesAsXml = testFixtureProvider.readProcessModelFile(processModelIdTooManyProcesses);
+    const bpmnFolderLocation = testFixtureProvider.getBpmnDirectoryPath();
+
+    processModelPath = path.join(bpmnFolderLocation, `${processModelId}.bpmn`);
+    processModelPathNoLanes = path.join(bpmnFolderLocation, `${processModelIdNoLanes}.bpmn`);
+    processModelPathNameMismatch = path.join(bpmnFolderLocation, `${processModelIdNameMismatch}.bpmn`);
+    processModelPathTooManyProcesses = path.join(bpmnFolderLocation, `${processModelIdTooManyProcesses}.bpmn`);
   });
 
   after(async () => {
@@ -38,62 +41,40 @@ describe('Deployment API -> importBpmnFromXml', () => {
   });
 
   it('should successfully import a ProcessModel', async () => {
-
-    const importPayload = {
-      name: processModelId,
-      xml: processModelAsXml,
-      overwriteExisting: true,
-    };
-
-    await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
+    await testFixtureProvider.deploymentApiService.importBpmnFromFile(defaultIdentity, processModelPath, processModelId, true);
     await assertThatImportWasSuccessful();
   });
 
   it('should successfully import a ProcessModel without any lanes', async () => {
 
-    const importPayload = {
-      name: processModelIdNoLanes,
-      xml: processModelNoLanesAsXml,
-      overwriteExisting: true,
-    };
+    const overwriteIfExists = true;
+    await testFixtureProvider
+      .deploymentApiService
+      .importBpmnFromFile(defaultIdentity, processModelPathNoLanes, processModelIdNoLanes, overwriteIfExists);
 
-    await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
     await assertThatImportWasSuccessful();
   });
 
   it('should fail to import a ProcessModel, if a process model by the same name exists, and overwriteExisting is set to false', async () => {
 
     try {
-      const importPayload = {
-        name: processModelId,
-        xml: processModelAsXml,
-        overwriteExisting: false,
-      };
-
       // Run this twice to ensure that this test case is always executable.
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
+      await testFixtureProvider.deploymentApiService.importBpmnFromFile(defaultIdentity, processModelPath, processModelId, false);
+      await testFixtureProvider.deploymentApiService.importBpmnFromFile(defaultIdentity, processModelPath, processModelId, false);
 
-      should.fail(undefined, 'error', 'This request should have failed, because the process model already exists!');
+      should.fail(undefined, 'error', 'This request should have failed, because a ProcessModel already exists!');
     } catch (error) {
       const expectedErrorCode = 409;
       const expectedErrorMessage = /already exists/i;
       should(error.code).be.eql(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
-
   });
 
   it('should fail to import a ProcessModel, when the user is not authenticated', async () => {
 
-    const importPayload = {
-      name: processModelId,
-      xml: processModelAsXml,
-      overwriteExisting: false,
-    };
-
     try {
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(undefined, importPayload);
+      await testFixtureProvider.deploymentApiService.importBpmnFromFile(undefined, processModelPath);
       should.fail({}, 'error', 'This request should have failed, due to missing user authentication!');
     } catch (error) {
       const expectedErrorCode = 401;
@@ -105,14 +86,8 @@ describe('Deployment API -> importBpmnFromXml', () => {
 
   it('should fail to import a ProcessModel, when the user is forbidden to see the process instance result', async () => {
 
-    const importPayload = {
-      name: processModelId,
-      xml: processModelAsXml,
-      overwriteExisting: false,
-    };
-
     try {
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(restrictedIdentity, importPayload);
+      await testFixtureProvider.deploymentApiService.importBpmnFromFile(restrictedIdentity, processModelPath);
       should.fail(undefined, 'error', 'This request should have failed, due to a missing claim!');
     } catch (error) {
       const expectedErrorCode = 403;
@@ -126,14 +101,11 @@ describe('Deployment API -> importBpmnFromXml', () => {
   // Otherwise the ProcessModel would not be retrievable.
   it('should fail to import a ProcessModel, when the ProcessModel name does not match the ProcessDefinition name', async () => {
 
-    const importPayload = {
-      name: processModelIdNameMismatch,
-      xml: processModelPathNameMismatchAsXml,
-      overwriteExisting: false,
-    };
-
     try {
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
+      await testFixtureProvider
+        .deploymentApiService
+        .importBpmnFromFile(defaultIdentity, processModelPathNameMismatch, processModelIdNameMismatch);
+
       should.fail(undefined, 'error', 'This request should have failed, because ProcessModel name differs from the ProcessDefinitions name!');
     } catch (error) {
       const expectedErrorMessage = /ProcessModel contained within the diagram.*?must also use the name/i;
@@ -148,14 +120,11 @@ describe('Deployment API -> importBpmnFromXml', () => {
   // Otherwise, BPMN Studio will be unable to use the Runtime at all.
   it('should fail to import a ProcessModel, when the file contains more than one Process', async () => {
 
-    const importPayload = {
-      name: processModelIdTooManyProcesses,
-      xml: processModelPathTooManyProcessesAsXml,
-      overwriteExisting: false,
-    };
-
     try {
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
+      await testFixtureProvider
+        .deploymentApiService
+        .importBpmnFromFile(defaultIdentity, processModelPathTooManyProcesses, processModelIdTooManyProcesses);
+
       should.fail(undefined, 'error', 'This request should have failed, because the ProcessDefinition has more than one model!');
     } catch (error) {
       const expectedErrorMessage = /contains more than one ProcessModel/i;
