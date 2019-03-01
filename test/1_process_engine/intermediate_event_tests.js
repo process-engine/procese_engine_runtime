@@ -8,6 +8,7 @@ describe('Intermediate Events - ', () => {
 
   let testFixtureProvider;
 
+  const processModelIdEmptyTest = 'intermediate_empty_event_test';
   const processModelIdLinkTest = 'intermediate_event_link_test';
   const processModelIdTimerTest = 'intermediate_event_timer_test';
   const startEventId = 'StartEvent_1';
@@ -16,11 +17,21 @@ describe('Intermediate Events - ', () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    await testFixtureProvider.importProcessFiles([processModelIdLinkTest, processModelIdTimerTest]);
+    await testFixtureProvider.importProcessFiles([processModelIdEmptyTest, processModelIdLinkTest, processModelIdTimerTest]);
   });
 
   after(async () => {
     await testFixtureProvider.tearDown();
+  });
+
+  it.only('Should successfully run a ProcessModel that contains an empty event.', async () => {
+
+    const result = await testFixtureProvider.executeProcess(processModelIdEmptyTest, startEventId);
+
+    const expectedResult = /sample result/i;
+
+    should(result).have.property('currentToken');
+    should(result.currentToken).be.match(expectedResult);
   });
 
   it('Should successfully move to a linked IntermediateLinkCatchEvent, after a corresponding IntermediateLinkThrowEvent was reached.', async () => {
