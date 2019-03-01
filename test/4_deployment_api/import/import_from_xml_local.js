@@ -96,10 +96,10 @@ describe('Deployment API -> importBpmnFromXml', () => {
       await testFixtureProvider.deploymentApiService.importBpmnFromXml(undefined, importPayload);
       should.fail({}, 'error', 'This request should have failed, due to missing user authentication!');
     } catch (error) {
-      const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token/i;
-      should(error.code).be.eql(expectedErrorCode);
+      const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.eql(expectedErrorCode);
     }
   });
 
@@ -115,10 +115,10 @@ describe('Deployment API -> importBpmnFromXml', () => {
       await testFixtureProvider.deploymentApiService.importBpmnFromXml(restrictedIdentity, importPayload);
       should.fail(undefined, 'error', 'This request should have failed, due to a missing claim!');
     } catch (error) {
-      const expectedErrorCode = 403;
       const expectedErrorMessage = /access denied/i;
-      should(error.code).be.eql(expectedErrorCode);
+      const expectedErrorCode = 403;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.eql(expectedErrorCode);
     }
   });
 

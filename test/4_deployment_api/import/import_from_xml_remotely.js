@@ -83,10 +83,10 @@ describe(`Deployment API -> POST ${importRoute}`, () => {
 
       should.fail(undefined, 'error', 'This request should have failed, because the process model already exists!');
     } catch (error) {
-      const expectedErrorCode = 409;
       const expectedErrorMessage = /already exists/i;
-      should(error.code).be.eql(expectedErrorCode);
+      const expectedErrorCode = 409;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.eql(expectedErrorCode);
     }
 
   });
@@ -103,10 +103,10 @@ describe(`Deployment API -> POST ${importRoute}`, () => {
       await httpClient.post(importRoute, importPayload, authHeadersUnauthenticated);
       should.fail({}, 'error', 'This request should have failed, due to missing user authentication!');
     } catch (error) {
-      const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token/i;
-      should(error.code).be.eql(expectedErrorCode);
+      const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.eql(expectedErrorCode);
     }
   });
 
@@ -122,10 +122,10 @@ describe(`Deployment API -> POST ${importRoute}`, () => {
       await httpClient.post(importRoute, importPayload, authHeadersForbidden);
       should.fail(undefined, 'error', 'This request should have failed, due to a missing claim!');
     } catch (error) {
-      const expectedErrorCode = 403;
       const expectedErrorMessage = /access denied/i;
-      should(error.code).be.eql(expectedErrorCode);
+      const expectedErrorCode = 403;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.eql(expectedErrorCode);
     }
   });
 
