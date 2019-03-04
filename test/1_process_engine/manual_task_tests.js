@@ -12,16 +12,14 @@ describe('Manual Tasks - ', () => {
 
   let identity;
 
+  const processModelId = 'manual_task_test';
+
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
     identity = testFixtureProvider.identities.defaultUser;
 
-    const processDefinitionFiles = [
-      'manual_task_test',
-      'manual_task_sequential_test',
-      'manual_task_parallel_test',
-    ];
+    const processDefinitionFiles = [processModelId];
     await testFixtureProvider.importProcessFiles(processDefinitionFiles);
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
@@ -31,68 +29,25 @@ describe('Manual Tasks - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should finish two sequential manual tasks', async () => {
+  it('should finish the ManualTask.', async () => {
 
-    const processModelId = 'manual_task_sequential_test';
     const correlationId = uuid.v4();
     const initialToken = {
       inputValues: {},
     };
 
     await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, initialToken);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId);
 
-    let waitingManualTasks = await processInstanceHandler.getWaitingManualTasksForCorrelationId(identity, correlationId);
-
-    should(waitingManualTasks.manualTasks).be.instanceOf(Array);
-    should(waitingManualTasks.manualTasks.length).be.greaterThan(0);
-
-    const manualTask1 = waitingManualTasks.manualTasks[0];
-
-    await processInstanceHandler
-      .finishManualTaskInCorrelation(identity, manualTask1.processInstanceId, correlationId, manualTask1.flowNodeInstanceId);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
-
-    waitingManualTasks = await processInstanceHandler.getWaitingManualTasksForCorrelationId(identity, correlationId);
-
-    should(waitingManualTasks.manualTasks).be.instanceOf(Array);
-    should(waitingManualTasks.manualTasks.length).be.greaterThan(0);
-
-    const manualTask2 = waitingManualTasks.manualTasks[0];
+    const waitingManualTasks = await processInstanceHandler.getWaitingManualTasksForCorrelationId(identity, correlationId);
+    const manualTask = waitingManualTasks.manualTasks[0];
 
     return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTask2.processInstanceId, resolve);
-      await processInstanceHandler
-        .finishManualTaskInCorrelation(identity, manualTask2.processInstanceId, manualTask2.correlationId, manualTask2.flowNodeInstanceId);
-    });
-  });
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTask.processInstanceId, resolve);
 
-  it('should finish two parallel running manual tasks', async () => {
-
-    const processModelId = 'manual_task_parallel_test';
-    const correlationId = uuid.v4();
-    const initialToken = {
-      inputValues: {},
-    };
-
-    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, initialToken);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId, 2);
-
-    const currentRunningManualTasks = await processInstanceHandler.getWaitingManualTasksForCorrelationId(identity, correlationId);
-
-    should(currentRunningManualTasks).have.property('manualTasks');
-    should(currentRunningManualTasks.manualTasks).have.size(2, 'There should be two waiting manual tasks');
-
-    const waitingManualsTasks = currentRunningManualTasks.manualTasks;
-
-    return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(waitingManualsTasks[0].processInstanceId, resolve);
-
-      for (const manualTask of waitingManualsTasks) {
-        await testFixtureProvider
-          .consumerApiClientService
-          .finishManualTask(identity, manualTask.processInstanceId, correlationId, manualTask.flowNodeInstanceId);
-      }
+      await testFixtureProvider
+        .consumerApiClientService
+        .finishManualTask(identity, manualTask.processInstanceId, manualTask.correlationId, manualTask.flowNodeInstanceId);
     });
   });
 
@@ -117,7 +72,6 @@ describe('Manual Tasks - ', () => {
 
   it('should refuse to finish a manual task twice', async () => {
 
-    const processModelId = 'manual_task_test';
     const correlationId = uuid.v4();
     const initialToken = {
       inputValues: {},
