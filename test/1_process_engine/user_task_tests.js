@@ -179,6 +179,10 @@ describe('UserTasks - ', () => {
       should(details).have.property('correlationId');
       should(details).have.property('userTaskInstanceId');
       should(details).have.property('currentToken');
+    } finally {
+      // This allows the backend to finish up the remaining database calls.
+      // We have no `ProcessErrorNotification` yet, so we need to work with a timeout here.
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   });
 });
