@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0p9nein" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
   <bpmn:collaboration id="Collaboration_1nztpgd">
-    <bpmn:participant id="Participant_08uh7et" name="[CA4]Nested Call Activity" processRef="call_activity_subprocess_nested" />
+    <bpmn:participant id="Participant_08uh7et" name="call_activity_subprocess_nested" processRef="call_activity_subprocess_nested" />
   </bpmn:collaboration>
   <bpmn:process id="call_activity_subprocess_nested" isExecutable="true">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_0b8n12c" name="Default_Test_Lane">
-        <bpmn:flowNodeRef>StartEvent_00rrn0z</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_1q44u8o</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_0biodng</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_1rlvyot</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:startEvent id="StartEvent_00rrn0z">
+    <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>SequenceFlow_0k8j3gi</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:scriptTask id="Task_1q44u8o" name="Increment current token value">
+    <bpmn:scriptTask id="Task_1q44u8o" name="Create some sample value">
       <bpmn:incoming>SequenceFlow_0k8j3gi</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1og0qr1</bpmn:outgoing>
-      <bpmn:script>return token.history.StartEvent_00rrn0z + 1;</bpmn:script>
+      <bpmn:script>return token.history.StartEvent_1 * 2;</bpmn:script>
     </bpmn:scriptTask>
-    <bpmn:callActivity id="Task_0biodng" name="Increment current token value with external process" calledElement="call_activity_subprocess">
+    <bpmn:callActivity id="Task_0biodng" name="Process the Token through the CallActivity" calledElement="call_activity_subprocess">
       <bpmn:incoming>SequenceFlow_1og0qr1</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0ch5tb6</bpmn:outgoing>
     </bpmn:callActivity>
-    <bpmn:sequenceFlow id="SequenceFlow_0k8j3gi" sourceRef="StartEvent_00rrn0z" targetRef="Task_1q44u8o" />
+    <bpmn:sequenceFlow id="SequenceFlow_0k8j3gi" sourceRef="StartEvent_1" targetRef="Task_1q44u8o" />
     <bpmn:sequenceFlow id="SequenceFlow_1og0qr1" sourceRef="Task_1q44u8o" targetRef="Task_0biodng" />
     <bpmn:sequenceFlow id="SequenceFlow_0ch5tb6" sourceRef="Task_0biodng" targetRef="EndEvent_1rlvyot" />
     <bpmn:endEvent id="EndEvent_1rlvyot" name="End">
@@ -36,7 +36,7 @@
       <bpmndi:BPMNShape id="Participant_08uh7et_di" bpmnElement="Participant_08uh7et">
         <dc:Bounds x="168" y="119" width="514" height="223" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="StartEvent_00rrn0z_di" bpmnElement="StartEvent_00rrn0z">
+      <bpmndi:BPMNShape id="StartEvent_00rrn0z_di" bpmnElement="StartEvent_1">
         <dc:Bounds x="231" y="226" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="249" y="265" width="0" height="13" />

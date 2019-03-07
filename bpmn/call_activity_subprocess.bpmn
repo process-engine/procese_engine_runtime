@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definition_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
   <bpmn:collaboration id="Collaboration_1cidyxu">
-    <bpmn:participant id="Participant_0px403d" name="[CA2]Called Process" processRef="call_activity_subprocess">
+    <bpmn:participant id="Participant_0px403d" name="call_activity_subprocess" processRef="call_activity_subprocess">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
       </bpmn:extensionElements>
     </bpmn:participant>
   </bpmn:collaboration>
-  <bpmn:process id="call_activity_subprocess" name="[CA2]Called Process" isExecutable="true">
+  <bpmn:process id="call_activity_subprocess" name="call_activity_subprocess" isExecutable="true">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
         <bpmn:extensionElements>
           <camunda:executionListener class="" event="" />
-
         </bpmn:extensionElements>
         <bpmn:flowNodeRef>Task_1izpajn</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
@@ -21,19 +20,19 @@
     </bpmn:laneSet>
     <bpmn:sequenceFlow id="SequenceFlow_1ncza35" sourceRef="StartEvent_1" targetRef="Task_1izpajn" />
     <bpmn:sequenceFlow id="SequenceFlow_1w64v3q" sourceRef="Task_1izpajn" targetRef="EndEvent_00hkafj" />
-    <bpmn:startEvent id="StartEvent_1" name="[CA2]Called Process">
+    <bpmn:startEvent id="StartEvent_1" name="StartEvent CallActivitySubprocess">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
       </bpmn:extensionElements>
       <bpmn:outgoing>SequenceFlow_1ncza35</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:scriptTask id="Task_1izpajn" name="Increment the current token value">
+    <bpmn:scriptTask id="Task_1izpajn" name="Double the token value">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1ncza35</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1w64v3q</bpmn:outgoing>
-      <bpmn:script>return token.history.StartEvent_1 + 1;</bpmn:script>
+      <bpmn:script>return token.history.StartEvent_1 * 2;</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:endEvent id="EndEvent_00hkafj" name="End">
       <bpmn:extensionElements>
@@ -50,7 +49,7 @@
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="77" y="65" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="66" y="101" width="59" height="25" />
+          <dc:Bounds x="66" y="101" width="59" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3">

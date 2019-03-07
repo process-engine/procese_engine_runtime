@@ -2,13 +2,18 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../dist/commonjs/test_setup').TestFixtureProvider;
+const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
-describe('Deployment API -> importBpmnFromXml', () => {
+const importRoute = 'api/deployment/v1/import_process_model';
+describe(`Deployment API -> POST ${importRoute}`, () => {
 
   let testFixtureProvider;
-  let defaultIdentity;
-  let restrictedIdentity;
+
+  let authHeadersDefault;
+  let authHeadersForbidden;
+  const authHeadersUnauthenticated = {};
+
+  let httpClient;
 
   const processModelId = 'generic_sample';
   const processModelIdNoLanes = 'process_model_without_lanes';
@@ -24,13 +29,15 @@ describe('Deployment API -> importBpmnFromXml', () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    defaultIdentity = testFixtureProvider.identities.defaultUser;
-    restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+    authHeadersDefault = createRequestAuthHeaders(testFixtureProvider.identities.defaultUser);
+    authHeadersForbidden = createRequestAuthHeaders(testFixtureProvider.identities.restrictedUser);
 
     processModelAsXml = testFixtureProvider.readProcessModelFile(processModelId);
     processModelNoLanesAsXml = testFixtureProvider.readProcessModelFile(processModelIdNoLanes);
     processModelPathNameMismatchAsXml = testFixtureProvider.readProcessModelFile(processModelIdNameMismatch);
     processModelPathTooManyProcessesAsXml = testFixtureProvider.readProcessModelFile(processModelIdTooManyProcesses);
+
+    httpClient = await testFixtureProvider.resolveAsync('HttpClient');
   });
 
   after(async () => {
@@ -45,7 +52,7 @@ describe('Deployment API -> importBpmnFromXml', () => {
       overwriteExisting: true,
     };
 
-    await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
+    await httpClient.post(importRoute, importPayload, authHeadersDefault);
     await assertThatImportWasSuccessful();
   });
 
@@ -57,7 +64,7 @@ describe('Deployment API -> importBpmnFromXml', () => {
       overwriteExisting: true,
     };
 
-    await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
+    await httpClient.post(importRoute, importPayload, authHeadersDefault);
     await assertThatImportWasSuccessful();
   });
 
@@ -71,15 +78,15 @@ describe('Deployment API -> importBpmnFromXml', () => {
       };
 
       // Run this twice to ensure that this test case is always executable.
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
+      await httpClient.post(importRoute, importPayload, authHeadersDefault);
+      await httpClient.post(importRoute, importPayload, authHeadersDefault);
 
       should.fail(undefined, 'error', 'This request should have failed, because the process model already exists!');
     } catch (error) {
-      const expectedErrorCode = 409;
       const expectedErrorMessage = /already exists/i;
-      should(error.code).be.eql(expectedErrorCode);
+      const expectedErrorCode = 409;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.eql(expectedErrorCode);
     }
 
   });
@@ -93,13 +100,13 @@ describe('Deployment API -> importBpmnFromXml', () => {
     };
 
     try {
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(undefined, importPayload);
+      await httpClient.post(importRoute, importPayload, authHeadersUnauthenticated);
       should.fail({}, 'error', 'This request should have failed, due to missing user authentication!');
     } catch (error) {
-      const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token/i;
-      should(error.code).be.eql(expectedErrorCode);
+      const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.eql(expectedErrorCode);
     }
   });
 
@@ -112,13 +119,13 @@ describe('Deployment API -> importBpmnFromXml', () => {
     };
 
     try {
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(restrictedIdentity, importPayload);
+      await httpClient.post(importRoute, importPayload, authHeadersForbidden);
       should.fail(undefined, 'error', 'This request should have failed, due to a missing claim!');
     } catch (error) {
-      const expectedErrorCode = 403;
       const expectedErrorMessage = /access denied/i;
-      should(error.code).be.eql(expectedErrorCode);
+      const expectedErrorCode = 403;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.eql(expectedErrorCode);
     }
   });
 
@@ -133,7 +140,7 @@ describe('Deployment API -> importBpmnFromXml', () => {
     };
 
     try {
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
+      await httpClient.post(importRoute, importPayload, authHeadersDefault);
       should.fail(undefined, 'error', 'This request should have failed, because ProcessModel name differs from the ProcessDefinitions name!');
     } catch (error) {
       const expectedErrorMessage = /ProcessModel contained within the diagram.*?must also use the name/i;
@@ -155,7 +162,7 @@ describe('Deployment API -> importBpmnFromXml', () => {
     };
 
     try {
-      await testFixtureProvider.deploymentApiService.importBpmnFromXml(defaultIdentity, importPayload);
+      await httpClient.post(importRoute, importPayload, authHeadersDefault);
       should.fail(undefined, 'error', 'This request should have failed, because the ProcessDefinition has more than one model!');
     } catch (error) {
       const expectedErrorMessage = /contains more than one ProcessModel/i;
@@ -172,6 +179,21 @@ describe('Deployment API -> importBpmnFromXml', () => {
       .getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
     should.exist(existingProcessModel);
+  }
+
+  function createRequestAuthHeaders(identity) {
+    const noTokenProvided = !identity || typeof identity.token !== 'string';
+    if (noTokenProvided) {
+      return {};
+    }
+
+    const requestAuthHeaders = {
+      headers: {
+        Authorization: `Bearer ${identity.token}`,
+      },
+    };
+
+    return requestAuthHeaders;
   }
 
 });

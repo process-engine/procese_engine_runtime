@@ -21,10 +21,17 @@ module.exports = {
       console.log('The database is already up to date. Nothing to do here.');
       return;
     }
+    try {
+      // Drop the table if it exists.
+      // This can happen, if a previous migration attempt failed.
+      queryInterface.dropTable('ExternalTasks_New');
+    } catch (error) {
+      // Do nothing
+    }
 
     console.log('Changing PrimaryKey column ID to integer based column');
 
-    queryInterface.createTable('ExternalTasks_New', {
+    await queryInterface.createTable('ExternalTasks_New', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -52,7 +59,7 @@ module.exports = {
       },
       processModelId: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       processInstanceId: {
         type: Sequelize.STRING,
@@ -101,19 +108,39 @@ module.exports = {
       },
     });
 
-    const updateQuery = `INSERT INTO ExternalTasks_New
-                           (externalTaskId, workerId, topic, flowNodeInstanceId, correlationId, processModelId,
-                            processInstanceId, lockExpirationTime, identity, payload, state, finishedAt,
-                            result, error, version, createdAt, updatedAt)
-                          SELECT id, workerId, topic, flowNodeInstanceId, correlationId, processModelId,
-                            processInstanceId, lockExpirationTime, identity, payload, state, finishedAt,
-                            result, error, version, createdAt, updatedAt
-                          FROM ExternalTasks;`;
+    // NOTE:
+    // Using this single query WOULD be efficient, if the SQLite adapter was able to handle it...
+    // It works like a charme with Postgres, but SQLite always crashes halfway with an "SQLITE_BUSY: database is locked" error.
+    //
+    // const updateQuery = `INSERT INTO ExternalTasks_New
+    //                        (externalTaskId, workerId, topic, flowNodeInstanceId, correlationId, processModelId,
+    //                         processInstanceId, lockExpirationTime, identity, payload, state, finishedAt,
+    //                         result, error, version, createdAt, updatedAt)
+    //                       SELECT id, workerId, topic, flowNodeInstanceId, correlationId, processModelId,
+    //                         processInstanceId, lockExpirationTime, identity, payload, state, finishedAt,
+    //                         result, error, version, createdAt, updatedAt
+    //                       FROM ExternalTasks;`;
+    //
+    // await queryInterface.sequelize.query(updateQuery);
 
-    await queryInterface.sequelize.query(updateQuery);
+    // The only way to get around this, is to copy&pase all entries single file.
+    const externalTaskData = (await queryInterface.sequelize.query('SELECT * FROM ExternalTasks'))[0];
+    for (const task of externalTaskData) {
 
-    queryInterface.dropTable('ExternalTasks');
-    queryInterface.renameTable('ExternalTasks_New', 'ExternalTasks');
+      const updateQuery = `INSERT INTO ExternalTasks_New
+                             (externalTaskId, workerId, topic, flowNodeInstanceId, correlationId, processModelId,
+                              processInstanceId, lockExpirationTime, identity, payload, state, finishedAt,
+                              result, error, version, createdAt, updatedAt)
+                            VALUES ('${task.id}', '${task.workerId}', '${task.topic}', '${task.flowNodeInstanceId}',
+                              '${task.correlationId}', '${task.processModelId}', '${task.processInstanceId}', '${task.lockExpirationTime}',
+                              '${task.identity}', '${task.payload}', '${task.state}', '${task.finishedAt}', '${task.result}', '${task.error}',
+                              '${task.version}', '${task.createdAt}', '${task.updatedAt}');`;
+
+      await queryInterface.sequelize.query(updateQuery);
+    }
+
+    await queryInterface.dropTable('ExternalTasks');
+    await queryInterface.renameTable('ExternalTasks_New', 'ExternalTasks');
 
     console.log('Migration successful.');
   },

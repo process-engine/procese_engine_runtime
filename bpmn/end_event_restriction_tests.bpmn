@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definition_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="BPMN Studio" exporterVersion="1">
+  <bpmn:collaboration id="Collaboration_10eaiww" name="">
+    <bpmn:participant id="Participant_0wpm8gk" name="end_event_restriction_tests" processRef="end_event_restriction_tests" />
+  </bpmn:collaboration>
+  <bpmn:process id="end_event_restriction_tests" name="end_event_restriction_tests" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_05dh07j">
+      <bpmn:lane id="Lane_1dxjdsl" name="Restricted_Lane">
+        <bpmn:flowNodeRef>EndEvent_0fayo2t</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_068wo40</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_02t1vcw" name="Default_Test_Lane">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_2</bpmn:flowNodeRef>
+        <bpmn:childLaneSet id="LaneSet_07wsp7q" />
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_1" name="StartEvent SendMessage">
+      <bpmn:outgoing>SequenceFlow_0lwenj1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:startEvent id="StartEvent_2" name="StartEvent SendSignal">
+      <bpmn:outgoing>SequenceFlow_1uojqcs</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1uojqcs" name="" sourceRef="StartEvent_2" targetRef="EndEvent_068wo40" />
+    <bpmn:sequenceFlow id="SequenceFlow_0lwenj1" name="" sourceRef="StartEvent_1" targetRef="EndEvent_0fayo2t" />
+    <bpmn:endEvent id="EndEvent_0fayo2t" name="Message EndEvent">
+      <bpmn:incoming>SequenceFlow_0lwenj1</bpmn:incoming>
+      <bpmn:messageEventDefinition messageRef="Message_SFGtff9X" />
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_068wo40" name="Signal EndEvent">
+      <bpmn:incoming>SequenceFlow_1uojqcs</bpmn:incoming>
+      <bpmn:signalEventDefinition signalRef="Signal_Al1sKRx9" />
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmn:message id="Message_SFGtff9X" name="TestMessage1231455" />
+  <bpmn:signal id="Signal_Al1sKRx9" name="TestSignal123512" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_10eaiww">
+      <bpmndi:BPMNShape id="Participant_0wpm8gk_di" bpmnElement="Participant_0wpm8gk">
+        <dc:Bounds x="83" y="239" width="511" height="544" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1dxjdsl_di" bpmnElement="Lane_1dxjdsl">
+        <dc:Bounds x="113" y="511" width="481" height="272" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_02t1vcw_di" bpmnElement="Lane_02t1vcw">
+        <dc:Bounds x="113" y="239" width="481" height="272" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0flimdx_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="165" y="263" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="148" y="299" width="71" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0n6r3s8_di" bpmnElement="StartEvent_2">
+        <dc:Bounds x="165" y="385" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="155" y="428" width="57" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1uojqcs_di" bpmnElement="SequenceFlow_1uojqcs">
+        <di:waypoint x="201" y="403" />
+        <di:waypoint x="339" y="403" />
+        <di:waypoint x="339" y="681" />
+        <di:waypoint x="476" y="681" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0lwenj1_di" bpmnElement="SequenceFlow_0lwenj1">
+        <di:waypoint x="201" y="281" />
+        <di:waypoint x="392" y="281" />
+        <di:waypoint x="392" y="584" />
+        <di:waypoint x="476" y="584" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0242zeq_di" bpmnElement="EndEvent_0fayo2t">
+        <dc:Bounds x="476" y="566" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="471" y="602" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1c0w829_di" bpmnElement="EndEvent_068wo40">
+        <dc:Bounds x="476" y="663" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="454" y="706" width="82" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

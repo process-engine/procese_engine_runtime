@@ -14,8 +14,6 @@ describe('UserTasks - ', () => {
 
   const processModelId = 'user_task_test';
   const processModelUserTaskExpressionTestId = 'user_task_expression_test';
-  const processModelSequentialUserTasksId = 'user_task_sequential_test';
-  const processModelParallelUserTasksId = 'user_task_parallel_test';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -25,8 +23,6 @@ describe('UserTasks - ', () => {
     const processDefinitionFiles = [
       processModelId,
       processModelUserTaskExpressionTestId,
-      processModelSequentialUserTasksId,
-      processModelParallelUserTasksId,
     ];
     await testFixtureProvider.importProcessFiles(processDefinitionFiles);
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
@@ -92,73 +88,6 @@ describe('UserTasks - ', () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTask.processInstanceId, resolve);
       await processInstanceHandler
         .finishUserTaskInCorrelation(identity, correlationId, userTask.processInstanceId, userTask.flowNodeInstanceId, userTaskInput);
-    });
-  });
-
-  it('should finish two sequential UserTasks', async () => {
-
-    const correlationId = uuid.v4();
-    const initialToken = {
-      inputValues: {},
-    };
-
-    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelSequentialUserTasksId, correlationId, initialToken);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
-
-    let waitingUserTasks = await processInstanceHandler.getWaitingUserTasksForCorrelationId(identity, correlationId);
-    const userTask1 = waitingUserTasks.userTasks[0];
-
-    const userTaskInput = {
-      formFields: {
-        Sample_Form_Field: 'Hello',
-      },
-    };
-
-    await processInstanceHandler
-      .finishUserTaskInCorrelation(identity, correlationId, userTask1.processInstanceId, userTask1.flowNodeInstanceId, userTaskInput);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
-
-    waitingUserTasks = await processInstanceHandler.getWaitingUserTasksForCorrelationId(identity, correlationId);
-    const userTask2 = waitingUserTasks.userTasks[0];
-
-    return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTask2.processInstanceId, resolve);
-      await processInstanceHandler
-        .finishUserTaskInCorrelation(identity, correlationId, userTask2.processInstanceId, userTask2.flowNodeInstanceId, userTaskInput);
-    });
-  });
-
-  it('should finish two parallel running UserTasks', async () => {
-
-    const correlationId = uuid.v4();
-    const initialToken = {
-      inputValues: {},
-    };
-
-    await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelParallelUserTasksId, correlationId, initialToken);
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelParallelUserTasksId, 2);
-
-    const currentRunningUserTasks = await processInstanceHandler.getWaitingUserTasksForCorrelationId(identity, correlationId);
-
-    should(currentRunningUserTasks).have.property('userTasks');
-    should(currentRunningUserTasks.userTasks).have.size(2, 'There should be two waiting UserTasks');
-
-    const waitingUsersTasks = currentRunningUserTasks.userTasks;
-
-    const userTaskInput = {
-      formFields: {
-        Sample_Form_Field: 'Hello',
-      },
-    };
-
-    return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(waitingUsersTasks[0].processInstanceId, resolve);
-
-      for (const userTask of waitingUsersTasks) {
-        await testFixtureProvider
-          .consumerApiClientService
-          .finishUserTask(identity, userTask.processInstanceId, correlationId, userTask.flowNodeInstanceId, userTaskInput);
-      }
     });
   });
 
@@ -250,6 +179,10 @@ describe('UserTasks - ', () => {
       should(details).have.property('correlationId');
       should(details).have.property('userTaskInstanceId');
       should(details).have.property('currentToken');
+    } finally {
+      // This allows the backend to finish up the remaining database calls.
+      // We have no `ProcessErrorNotification` yet, so we need to work with a timeout here.
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   });
 });

@@ -31,5 +31,4 @@ describe('SubProcess', () => {
     should(result).have.property('currentToken');
     should(result.currentToken).be.eql(expectedResult);
   });
-
 });

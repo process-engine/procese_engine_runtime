@@ -3,7 +3,7 @@
 const should = require('should');
 const path = require('path');
 
-const TestFixtureProvider = require('../../dist/commonjs/test_setup').TestFixtureProvider;
+const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
 describe('Deployment API -> importBpmnFromFile', () => {
 
@@ -64,10 +64,10 @@ describe('Deployment API -> importBpmnFromFile', () => {
 
       should.fail(undefined, 'error', 'This request should have failed, because a ProcessModel already exists!');
     } catch (error) {
-      const expectedErrorCode = 409;
       const expectedErrorMessage = /already exists/i;
-      should(error.code).be.eql(expectedErrorCode);
+      const expectedErrorCode = 409;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.eql(expectedErrorCode);
     }
   });
 
@@ -77,10 +77,10 @@ describe('Deployment API -> importBpmnFromFile', () => {
       await testFixtureProvider.deploymentApiService.importBpmnFromFile(undefined, processModelPath);
       should.fail({}, 'error', 'This request should have failed, due to missing user authentication!');
     } catch (error) {
-      const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token/i;
-      should(error.code).be.eql(expectedErrorCode);
+      const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.eql(expectedErrorCode);
     }
   });
 
@@ -90,10 +90,10 @@ describe('Deployment API -> importBpmnFromFile', () => {
       await testFixtureProvider.deploymentApiService.importBpmnFromFile(restrictedIdentity, processModelPath);
       should.fail(undefined, 'error', 'This request should have failed, due to a missing claim!');
     } catch (error) {
-      const expectedErrorCode = 403;
       const expectedErrorMessage = /access denied/i;
-      should(error.code).be.eql(expectedErrorCode);
+      const expectedErrorCode = 403;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.eql(expectedErrorCode);
     }
   });
 
