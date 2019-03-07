@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import {Logger} from 'loggerhythm';
 import * as os from 'os';
 import * as path from 'path';
+import * as Sequelize from 'sequelize';
 
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
 import {IIdentity} from '@essential-projects/iam_contracts';
@@ -126,8 +127,6 @@ function loadConfiguredEnvironmentOrDefault(): void {
 
 async function runMigrations(sqlitePath: string): Promise<void> {
 
-  const env: string = process.env.NODE_ENV || 'sqlite';
-
   const repositories: Array<string> = [
     'correlation',
     'external_task',
@@ -137,7 +136,7 @@ async function runMigrations(sqlitePath: string): Promise<void> {
 
   logger.info('Running migrations...');
   for (const repository of repositories) {
-    await executeMigrations(env, repository, sqlitePath);
+    await executeMigrations(repository, sqlitePath);
   }
   logger.info('Migrations successfully executed.');
 }
@@ -213,13 +212,17 @@ function loadIocModules(): Array<any> {
 
 function setDatabasePaths(sqlitePath: string): void {
 
+  const correlationRepositoryConfig: Sequelize.Options = readConfigFile('sqlite', 'correlation_repository.json');
+  const externalTaskRepositoryConfig: Sequelize.Options = readConfigFile('sqlite', 'external_task_repository.json');
+  const flowNodeInstanceRepositoryConfig: Sequelize.Options = readConfigFile('sqlite', 'flow_node_instance_repository.json');
+  const processModelRepositoryConfig: Sequelize.Options = readConfigFile('sqlite', 'process_model_repository.json');
+
   const databaseBasePath: string = getSqliteStoragePath(sqlitePath);
 
-  const correlationRepositoryStoragePath: string = path.join(databaseBasePath, 'correlation.sqlite');
-  const externalTaskRepositoryStoragePath: string = path.join(databaseBasePath, 'external_task.sqlite');
-  const processModelRepositoryStoragePath: string = path.join(databaseBasePath, 'process_model.sqlite');
-  const flowNodeRepositoryStoragePath: string = path.join(databaseBasePath, 'flow_node_instance.sqlite');
-  const timerRepositoryStoragePath: string = path.join(databaseBasePath, 'timer.sqlite');
+  const correlationRepositoryStoragePath: string = path.join(databaseBasePath, correlationRepositoryConfig.storage);
+  const externalTaskRepositoryStoragePath: string = path.join(databaseBasePath, externalTaskRepositoryConfig.storage);
+  const processModelRepositoryStoragePath: string = path.join(databaseBasePath, flowNodeInstanceRepositoryConfig.storage);
+  const flowNodeRepositoryStoragePath: string = path.join(databaseBasePath, processModelRepositoryConfig.storage);
 
   const logsStoragePath: string = path.join(databaseBasePath, 'logs');
   const metricsStoragePath: string = path.join(databaseBasePath, 'metrics');
@@ -228,7 +231,6 @@ function setDatabasePaths(sqlitePath: string): void {
   process.env.process_engine__external_task_repository__storage = externalTaskRepositoryStoragePath;
   process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
   process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
-  process.env.process_engine__timer_repository__storage = timerRepositoryStoragePath;
 
   process.env.process_engine__logging_repository__log_output_path = logsStoragePath;
   process.env.process_engine__metrics_repository__log_output_path = metricsStoragePath;
@@ -260,6 +262,17 @@ function getUserConfigFolder(): string {
     default:
       return path.join(userHomeDir, '.config');
   }
+}
+
+function readConfigFile(env: string, repositoryConfigFileName: string): Sequelize.Options {
+
+  const configFilePath: string = path.resolve(process.env.CONFIG_PATH, env, 'process_engine', repositoryConfigFileName);
+
+  const fileContent: string = fs.readFileSync(configFilePath, 'utf-8');
+
+  const parsedFileContent: Sequelize.Options = JSON.parse(fileContent) as Sequelize.Options;
+
+  return parsedFileContent;
 }
 
 async function resumeProcessInstances(): Promise<void> {

@@ -1,5 +1,6 @@
 'use strict';
 
+import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as Sequelize from 'sequelize';
@@ -10,54 +11,42 @@ import {SequelizeConnectionManager} from '@essential-projects/sequelize_connecti
 const sequelizeConnectionManager: SequelizeConnectionManager = new SequelizeConnectionManager();
 
 // Based on: https://github.com/abelnation/sequelize-migration-hello/blob/master/migrate.js
-export async function migrate(env: string, database: string, sqlitePath: string): Promise<void> {
+export async function migrate(repositoryName: string, sqlitePath: string): Promise<void> {
+
+  const env: string = process.env.NODE_ENV || 'sqlite';
 
   sqlitePath = getFullSqliteStoragePath(sqlitePath);
 
   const sequelizeInstanceConfig: Sequelize.Options = env === 'sqlite'
-    ? createSqLiteConfig(sqlitePath, database)
-    : createPostgresConfig(database);
+    ? getSQLiteConfig(sqlitePath, repositoryName)
+    : getPostgresConfig(repositoryName);
 
   const sequelizeInstance: Sequelize.Sequelize = await sequelizeConnectionManager.getConnection(sequelizeInstanceConfig);
 
-  const umzugInstance: Umzug.Umzug = await createUmzugInstance(sequelizeInstance, database);
+  const umzugInstance: Umzug.Umzug = await createUmzugInstance(sequelizeInstance, repositoryName);
   await umzugInstance.up();
 
   await sequelizeConnectionManager.destroyConnection(sequelizeInstanceConfig);
 }
 
-function createSqLiteConfig(sqlitePath: string, store: string): object {
-  const databaseFullPath: string = path.resolve(sqlitePath, store);
+function getSQLiteConfig(sqlitePath: string, repositoryName: string): object {
 
-  const sqliteConfig: object = {
-    username: null,
-    password: null,
-    database: null,
-    host: null,
-    port: null,
-    dialect: 'sqlite',
-    storage: `${databaseFullPath}.sqlite`,
-    supportBigNumbers: true,
-    resetPasswordRequestTimeToLive: 12,
-    logging: false,
-  };
+  const repositoryConfigFileName: string = `${repositoryName}_repository.json`;
+
+  const sqliteConfig: Sequelize.Options = readConfigFile('sqlite', repositoryConfigFileName);
+
+  const databaseFullPath: string = path.resolve(sqlitePath, sqliteConfig.storage);
+
+  sqliteConfig.storage = `${databaseFullPath}`;
 
   return sqliteConfig;
 }
 
-function createPostgresConfig(database: string): object {
+function getPostgresConfig(repositoryName: string): object {
 
-  const postgresConfig: object = {
-    username: 'admin',
-    password: 'admin',
-    database: `${database}`,
-    host: 'localhost',
-    port: 5432,
-    dialect: 'postgres',
-    supportBigNumbers: true,
-    resetPasswordRequestTimeToLive: 12,
-    logging: false,
-  };
+  const repositoryConfigFileName: string = `${repositoryName}_repository.json`;
+
+  const postgresConfig: Sequelize.Options = readConfigFile('postgres', repositoryConfigFileName);
 
   return postgresConfig;
 }
@@ -129,4 +118,15 @@ function getUserConfigFolder(): string {
     default:
       return path.join(userHomeDir, '.config');
   }
+}
+
+function readConfigFile(env: string, repositoryConfigFileName: string): Sequelize.Options {
+
+  const configFilePath: string = path.resolve(process.env.CONFIG_PATH, env, 'process_engine', repositoryConfigFileName);
+
+  const fileContent: string = fs.readFileSync(configFilePath, 'utf-8');
+
+  const parsedFileContent: Sequelize.Options = JSON.parse(fileContent) as Sequelize.Options;
+
+  return parsedFileContent;
 }
