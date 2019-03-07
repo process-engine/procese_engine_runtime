@@ -62,7 +62,7 @@
     "@essential-projects/http_extension": "6.5.2",
     "@essential-projects/sequelize_connection_manager": "2.1.3",
     "@essential-projects/timing": "4.1.3",
-    "@process-engine/consumer_api_core": "5.1.0",
+    "@process-engine/consumer_api_core": "5.1.1",
     "@process-engine/consumer_api_http": "4.1.0",
     "@process-engine/correlation.service": "1.1.1",
     "@process-engine/correlations.repository.sequelize": "5.0.2",
