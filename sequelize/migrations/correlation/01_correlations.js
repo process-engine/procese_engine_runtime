@@ -62,7 +62,7 @@ module.exports = {
     // Checks if the given table exists.
     const tableExists = async (tableName) => {
       try {
-        await queryInterface.describeTable('ProcessDefinitions');
+        await queryInterface.describeTable(tableName);
         return true;
       } catch (error) {
         return false;
