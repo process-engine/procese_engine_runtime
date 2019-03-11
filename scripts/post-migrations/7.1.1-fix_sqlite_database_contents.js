@@ -1,5 +1,5 @@
 /**
- * Through a misconfiguration error, we ended up with a `ProcessDefinitions` table in the `flow_node_instance.sqlite` table
+ * Through a misconfiguration error, we ended up with a `ProcessDefinitions` table in the `flow_node_instance.sqlite` database
  * and `FlowNodeInstances` and `ProcessTokens` tables in the `process_model.sqlite` database.
  *
  * After applying Hotfix v7.1.1, any correlations that make use of these wrongfully placed datas will cause errors when queried.
@@ -8,6 +8,10 @@
  *
  * If you do not store your SQLite databases in the default directory,
  * then `process.env.SQLITE_STORAGE_PATH` must contain the path to your SQLite storage files!
+ *
+ * NOTE:
+ * This issue only affected those setups that use separate SQLite databases for each data table. 
+ * Those users that store all their tables in one place are safe and do not need to run this.
  */
 'use strict';
 
