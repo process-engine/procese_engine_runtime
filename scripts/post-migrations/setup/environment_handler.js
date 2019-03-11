@@ -4,10 +4,12 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-module.exports.initialize = (sqlitePath) => {
+module.exports.initialize = () => {
+
+  const configEnvironment = process.env.NODE_ENV || 'sqlite';
 
   setConfigPath();
-  loadConfiguredEnvironmentOrDefault();
+  validateEnvironmentConfiguration(configEnvironment);
 
   const userDataFolderPath = getUserConfigFolder();
   const userDataProcessEngineFolderName = 'process_engine_runtime';
@@ -18,7 +20,11 @@ module.exports.initialize = (sqlitePath) => {
     fs.mkdirSync(workingDir);
   }
 
-  setDatabasePaths(sqlitePath);
+  const envIsSqlite = configEnvironment === 'sqlite';
+  if (envIsSqlite) {
+    const sqliteStorageLocation = getSqliteStorageLocation(process.env.SQLITE_STORAGE_PATH);
+    setSqliteDatabasePaths(sqliteStorageLocation);
+  }
 };
 
 function setConfigPath() {
@@ -38,9 +44,7 @@ function setConfigPath() {
   process.env.CONFIG_PATH = internalConfigPath;
 }
 
-function loadConfiguredEnvironmentOrDefault() {
-
-  const configEnvironment = 'sqlite';
+function validateEnvironmentConfiguration(configEnvironment) {
 
   let configDirNameNormalized = path.normalize(process.env.CONFIG_PATH);
 
@@ -63,30 +67,10 @@ function loadConfiguredEnvironmentOrDefault() {
   process.exit(1);
 }
 
-function setDatabasePaths(sqlitePath) {
+function getSqliteStorageLocation(basePath) {
 
-  const correlationRepositoryConfig = readConfigFile('sqlite', 'correlation_repository.json');
-  const externalTaskRepositoryConfig = readConfigFile('sqlite', 'external_task_repository.json');
-  const flowNodeInstanceRepositoryConfig = readConfigFile('sqlite', 'flow_node_instance_repository.json');
-  const processModelRepositoryConfig = readConfigFile('sqlite', 'process_model_repository.json');
-
-  const databaseBasePath = getSqliteStoragePath(sqlitePath);
-
-  const correlationRepositoryStoragePath = path.join(databaseBasePath, correlationRepositoryConfig.storage);
-  const externalTaskRepositoryStoragePath = path.join(databaseBasePath, externalTaskRepositoryConfig.storage);
-  const flowNodeRepositoryStoragePath = path.join(databaseBasePath, flowNodeInstanceRepositoryConfig.storage);
-  const processModelRepositoryStoragePath = path.join(databaseBasePath, processModelRepositoryConfig.storage);
-
-  process.env.process_engine__correlation_repository__storage = correlationRepositoryStoragePath;
-  process.env.process_engine__external_task_repository__storage = externalTaskRepositoryStoragePath;
-  process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
-  process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
-}
-
-function getSqliteStoragePath(sqlitePath) {
-
-  if (sqlitePath) {
-    return sqlitePath;
+  if (basePath) {
+    return basePath;
   }
 
   const userDataFolderPath = getUserConfigFolder();
@@ -96,6 +80,24 @@ function getSqliteStoragePath(sqlitePath) {
   const databaseBasePath = path.resolve(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
 
   return databaseBasePath;
+}
+
+function setSqliteDatabasePaths(sqliteStoreLocation) {
+
+  const correlationRepositoryConfig = readConfigFile('sqlite', 'correlation_repository.json');
+  const externalTaskRepositoryConfig = readConfigFile('sqlite', 'external_task_repository.json');
+  const flowNodeInstanceRepositoryConfig = readConfigFile('sqlite', 'flow_node_instance_repository.json');
+  const processModelRepositoryConfig = readConfigFile('sqlite', 'process_model_repository.json');
+
+  const correlationRepositoryStoragePath = path.join(sqliteStoreLocation, correlationRepositoryConfig.storage);
+  const externalTaskRepositoryStoragePath = path.join(sqliteStoreLocation, externalTaskRepositoryConfig.storage);
+  const flowNodeRepositoryStoragePath = path.join(sqliteStoreLocation, flowNodeInstanceRepositoryConfig.storage);
+  const processModelRepositoryStoragePath = path.join(sqliteStoreLocation, processModelRepositoryConfig.storage);
+
+  process.env.process_engine__correlation_repository__storage = correlationRepositoryStoragePath;
+  process.env.process_engine__external_task_repository__storage = externalTaskRepositoryStoragePath;
+  process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
+  process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
 }
 
 function getUserConfigFolder() {

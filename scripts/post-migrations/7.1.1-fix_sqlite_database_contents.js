@@ -10,7 +10,7 @@
  * then `process.env.SQLITE_STORAGE_PATH` must contain the path to your SQLite storage files!
  *
  * NOTE:
- * This issue only affected those setups that use separate SQLite databases for each data table. 
+ * This issue only affected those setups that use separate SQLite databases for each data table.
  * Those users that store all their tables in one place are safe and do not need to run this.
  */
 'use strict';
@@ -22,9 +22,8 @@ const environment = require('./setup/environment_handler');
 const connectionManager = new SequelizeConnectionManager();
 
 async function run() {
-  
-  const customSqlitePath = process.env.SQLITE_STORAGE_PATH;
-  environment.initialize(customSqlitePath);
+
+  environment.initialize();
 
   const pathToFlowNodeInstanceDb = process.env.process_engine__flow_node_instance_repository__storage;
   const pathToProcessModelDb = process.env.process_engine__process_model_repository__storage;
