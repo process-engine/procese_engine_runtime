@@ -18,8 +18,6 @@ module.exports.initialize = (sqlitePath) => {
     fs.mkdirSync(workingDir);
   }
 
-  process.chdir(workingDir);
-
   setDatabasePaths(sqlitePath);
 };
 
