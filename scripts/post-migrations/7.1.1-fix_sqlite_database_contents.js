@@ -35,11 +35,8 @@ async function run() {
     return;
   }
 
-  const connectionToFlowNodeInstances = await createConnection('flow_node_instance_repository.json', pathToFlowNodeInstanceDb);
-  const connectionToProcessModels = await createConnection('process_model_repository.json', pathToProcessModelDb);
-
-  const flowNodeInstanceDbQueryInterface = connectionToFlowNodeInstances.getQueryInterface();
-  const processModelDbQueryInterface = connectionToProcessModels.getQueryInterface();
+  const flowNodeInstanceDbQueryInterface = await createConnection('flow_node_instance_repository.json', pathToFlowNodeInstanceDb);
+  const processModelDbQueryInterface = await createConnection('process_model_repository.json', pathToProcessModelDb);
 
   const flowNodeInstanceDbHasProcessModels = await checkIfFixForTableIsNeeded(flowNodeInstanceDbQueryInterface, 'ProcessDefinitions');
   const processModelDbHasFlowNodeInstances = await checkIfFixForTableIsNeeded(processModelDbQueryInterface, 'FlowNodeInstances');
@@ -67,8 +64,9 @@ async function createConnection(repository, sqliteStoragePath) {
   config.storage = sqliteStoragePath;
 
   const sequelizeInstance = await connectionManager.getConnection(config);
+  const queryInterface = sequelizeInstance.getQueryInterface();
 
-  return sequelizeInstance;
+  return queryInterface;
 }
 
 async function checkIfFixForTableIsNeeded(queryInterface, tableName) {
