@@ -22,8 +22,8 @@ const environment = require('./setup/environment_handler');
 const connectionManager = new SequelizeConnectionManager();
 
 async function run() {
+  
   const customSqlitePath = process.env.SQLITE_STORAGE_PATH;
-  console.log(customSqlitePath);
   environment.initialize(customSqlitePath);
 
   const pathToFlowNodeInstanceDb = process.env.process_engine__flow_node_instance_repository__storage;
