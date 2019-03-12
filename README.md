@@ -187,6 +187,8 @@ Contained in the application files are the following folders:
 | Path         | Description           |
 | ---------    | ----------            |
 | `databases/` | SQLite database files |
+| `logs/`      | Logfiles              |
+| `metrics/`   | Recorded metrics      |
 
 ### Authors/Contact information
 
