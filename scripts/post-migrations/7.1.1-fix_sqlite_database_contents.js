@@ -92,10 +92,12 @@ async function moveProcessModelsFromFlowNodeInstanceDbToProcessModelDb(flowNodeI
 
   for (const processModel of processModelsToMove) {
 
+    const escapedXml = processModel.xml.replace(/'/gi, '"');
+
     const updateQuery = `INSERT INTO ProcessDefinitions
                           (name, xml, hash, createdAt, updatedAt)
                           VALUES ('${processModel.name}',
-                                 '${processModel.xml}',
+                                 '${escapedXml}',
                                  '${processModel.hash}',
                                  '${processModel.createdAt}',
                                  '${processModel.updatedAt}');`;
