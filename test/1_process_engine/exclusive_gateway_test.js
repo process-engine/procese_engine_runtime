@@ -57,7 +57,7 @@ describe('Exclusive Gateway - ', async () => {
     should(result.currentToken).be.match(expectedResult);
   });
 
-  it('should take the default SequenceFlow, if no condition on the SequenceFlows evaluates to true', async () => {
+  it('should take the default SequenceFlow, if no SequenceFlow has a condition that can be fulfilled', async () => {
 
     const processModelId = 'default_sequence_flow_test';
 
