@@ -92,8 +92,7 @@ async function moveProcessModelsFromFlowNodeInstanceDbToProcessModelDb(flowNodeI
 
   for (const processModel of processModelsToMove) {
 
-    // eslint-disable-next-line
-    const escapedXml = escape(processModel.xml);
+    const escapedXml = processModel.xml.replace(/'/gi, '"');
 
     const updateQuery = `INSERT INTO ProcessDefinitions
                           (name, xml, hash, createdAt, updatedAt)
