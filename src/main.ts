@@ -224,8 +224,8 @@ function setDatabasePaths(sqlitePath: string): void {
 
   const correlationRepositoryStoragePath: string = path.join(databaseBasePath, correlationRepositoryConfig.storage);
   const externalTaskRepositoryStoragePath: string = path.join(databaseBasePath, externalTaskRepositoryConfig.storage);
-  const processModelRepositoryStoragePath: string = path.join(databaseBasePath, flowNodeInstanceRepositoryConfig.storage);
-  const flowNodeRepositoryStoragePath: string = path.join(databaseBasePath, processModelRepositoryConfig.storage);
+  const flowNodeRepositoryStoragePath: string = path.join(databaseBasePath, flowNodeInstanceRepositoryConfig.storage);
+  const processModelRepositoryStoragePath: string = path.join(databaseBasePath, processModelRepositoryConfig.storage);
 
   const logsStoragePath: string = path.join(databaseBasePath, 'logs');
   const metricsStoragePath: string = path.join(databaseBasePath, 'metrics');

@@ -33,7 +33,7 @@
       <bpmn:incoming>SequenceFlow_1tksl7y</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_19wvw3n</bpmn:outgoing>
       <bpmn:script>console.log('Message TestMessage received!');
-return 'message received';</bpmn:script>
+return token.current;</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="SequenceFlow_19wvw3n" sourceRef="ScriptTask_ReturnMessageResult" targetRef="EndEvent_MessageReceived" />
     <bpmn:startEvent id="StartEvent_SignalTest" name="Start Signal test">
@@ -53,8 +53,8 @@ return 'message received';</bpmn:script>
     <bpmn:scriptTask id="ScriptTask_ReturnSignalResult" name="Return expected Signal result">
       <bpmn:incoming>SequenceFlow_0llaea1</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0wyltyt</bpmn:outgoing>
-      <bpmn:script>console.log('Message TestMessage received!');
-return 'signal received';</bpmn:script>
+      <bpmn:script>console.log('Signal TestSignal received!');
+return token.current;</bpmn:script>
     </bpmn:scriptTask>
   </bpmn:process>
   <bpmn:message id="Message_1emkdwq" name="TestMessage" />
