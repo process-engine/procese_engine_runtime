@@ -118,7 +118,8 @@ describe('Inter-process communication - ', () => {
 
       const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelIntermediateCatchEventTests}/ended`;
       const evaluationCallback = (message) => {
-        if (message.flowNodeId === endEventToWaitFor) {
+        const isExpectedEndEvent = message.flowNodeId === endEventToWaitFor;
+        if (isExpectedEndEvent) {
           should(message).have.property('currentToken');
           should(message.currentToken).be.eql(initialPayload);
           resolve();
@@ -153,7 +154,8 @@ describe('Inter-process communication - ', () => {
 
       const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelIntermediateCatchEventTests}/ended`;
       const evaluationCallback = (message) => {
-        if (message.flowNodeId === endEventToWaitFor) {
+        const isExpectedEndEvent = message.flowNodeId === endEventToWaitFor;
+        if (isExpectedEndEvent) {
           should(message).have.property('currentToken');
           should(message.currentToken).be.eql(initialPayload);
           resolve();
@@ -188,7 +190,8 @@ describe('Inter-process communication - ', () => {
 
       const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelIntermediateCatchEventTests}/ended`;
       const evaluationCallback = (message) => {
-        if (message.flowNodeId === endEventToWaitFor) {
+        const isExpectedEndEvent = message.flowNodeId === endEventToWaitFor;
+        if (isExpectedEndEvent) {
           should(message).have.property('currentToken');
           should(message.currentToken.testWrapper).be.eql(initialPayload.message);
           resolve();
@@ -223,7 +226,8 @@ describe('Inter-process communication - ', () => {
 
       const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelIntermediateCatchEventTests}/ended`;
       const evaluationCallback = (message) => {
-        if (message.flowNodeId === endEventToWaitFor) {
+        const isExpectedEndEvent = message.flowNodeId === endEventToWaitFor;
+        if (isExpectedEndEvent) {
           should(message).have.property('currentToken');
           should(message.currentToken.testWrapper).be.eql(initialPayload.signal);
           resolve();
