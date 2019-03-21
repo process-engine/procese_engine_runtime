@@ -103,7 +103,10 @@ describe('Inter-process communication - ', () => {
     const correlationId = uuid.v4();
     const endEventToWaitFor = 'EndEvent_MessageReceived';
 
-    const expectedResult = /message received/i;
+    const initialPayload = {
+      mode: 'default',
+      message: 'message triggered',
+    };
 
     // We can't await the process execution here, because that would prevent us from starting the second process.
     // As a result we must subscribe to the event that gets send when the test is done.
@@ -115,9 +118,10 @@ describe('Inter-process communication - ', () => {
 
       const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelIntermediateCatchEventTests}/ended`;
       const evaluationCallback = (message) => {
-        if (message.flowNodeId === endEventToWaitFor) {
+        const isExpectedEndEvent = message.flowNodeId === endEventToWaitFor;
+        if (isExpectedEndEvent) {
           should(message).have.property('currentToken');
-          should(message.currentToken).be.match(expectedResult);
+          should(message.currentToken).be.eql(initialPayload);
           resolve();
         }
       };
@@ -126,7 +130,7 @@ describe('Inter-process communication - ', () => {
       eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
 
       // Run the process that is supposed to publish the message.
-      testFixtureProvider.executeProcess(processModelIntermediateThrowEventTests, 'StartEvent_SendMessage', correlationId);
+      testFixtureProvider.executeProcess(processModelIntermediateThrowEventTests, 'StartEvent_SendMessage', correlationId, initialPayload);
     });
   });
 
@@ -135,7 +139,10 @@ describe('Inter-process communication - ', () => {
     const correlationId = uuid.v4();
     const endEventToWaitFor = 'EndEvent_SignalReceived';
 
-    const expectedResult = /signal received/i;
+    const initialPayload = {
+      mode: 'default',
+      signal: 'signal triggered',
+    };
 
     // We can't await the process execution here, because that would prevent us from starting the second process.
     // As a result we must subscribe to the event that gets send when the test is done.
@@ -147,9 +154,10 @@ describe('Inter-process communication - ', () => {
 
       const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelIntermediateCatchEventTests}/ended`;
       const evaluationCallback = (message) => {
-        if (message.flowNodeId === endEventToWaitFor) {
+        const isExpectedEndEvent = message.flowNodeId === endEventToWaitFor;
+        if (isExpectedEndEvent) {
           should(message).have.property('currentToken');
-          should(message.currentToken).be.match(expectedResult);
+          should(message.currentToken).be.eql(initialPayload);
           resolve();
         }
       };
@@ -158,7 +166,79 @@ describe('Inter-process communication - ', () => {
       eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
 
       // Run the process that is supposed to publish the signal.
-      testFixtureProvider.executeProcess(processModelIntermediateThrowEventTests, 'StartEvent_SendSignal', correlationId);
+      testFixtureProvider.executeProcess(processModelIntermediateThrowEventTests, 'StartEvent_SendSignal', correlationId, initialPayload);
+    });
+  });
+
+  it('should correctly use a customized payload with a MessageThrowEvent', async () => {
+
+    const correlationId = uuid.v4();
+    const endEventToWaitFor = 'EndEvent_MessageReceived';
+
+    const initialPayload = {
+      mode: 'custom',
+      message: 'message triggered',
+    };
+
+    // We can't await the process execution here, because that would prevent us from starting the second process.
+    // As a result we must subscribe to the event that gets send when the test is done.
+    testFixtureProvider.executeProcess(processModelIntermediateCatchEventTests, 'StartEvent_MessageTest', correlationId);
+
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelIntermediateCatchEventTests);
+
+    return new Promise((resolve) => {
+
+      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelIntermediateCatchEventTests}/ended`;
+      const evaluationCallback = (message) => {
+        const isExpectedEndEvent = message.flowNodeId === endEventToWaitFor;
+        if (isExpectedEndEvent) {
+          should(message).have.property('currentToken');
+          should(message.currentToken.testWrapper).be.eql(initialPayload.message);
+          resolve();
+        }
+      };
+
+      // Subscribe for the EndEvent
+      eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
+
+      // Run the process that is supposed to publish the message.
+      testFixtureProvider.executeProcess(processModelIntermediateThrowEventTests, 'StartEvent_SendMessage', correlationId, initialPayload);
+    });
+  });
+
+  it('should correctly use a customized payload with a SignalThrowEvent', async () => {
+
+    const correlationId = uuid.v4();
+    const endEventToWaitFor = 'EndEvent_SignalReceived';
+
+    const initialPayload = {
+      mode: 'custom',
+      signal: 'signal triggered',
+    };
+
+    // We can't await the process execution here, because that would prevent us from starting the second process.
+    // As a result we must subscribe to the event that gets send when the test is done.
+    testFixtureProvider.executeProcess(processModelIntermediateCatchEventTests, 'StartEvent_SignalTest', correlationId);
+
+    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelIntermediateCatchEventTests);
+
+    return new Promise((resolve) => {
+
+      const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelIntermediateCatchEventTests}/ended`;
+      const evaluationCallback = (message) => {
+        const isExpectedEndEvent = message.flowNodeId === endEventToWaitFor;
+        if (isExpectedEndEvent) {
+          should(message).have.property('currentToken');
+          should(message.currentToken.testWrapper).be.eql(initialPayload.signal);
+          resolve();
+        }
+      };
+
+      // Subscribe for the EndEvent
+      eventAggregator.subscribeOnce(endMessageToWaitFor, evaluationCallback);
+
+      // Run the process that is supposed to publish the signal.
+      testFixtureProvider.executeProcess(processModelIntermediateThrowEventTests, 'StartEvent_SendSignal', correlationId, initialPayload);
     });
   });
 
