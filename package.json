@@ -83,7 +83,7 @@
     "@process-engine/management_api_http": "4.2.0",
     "@process-engine/metrics_api_core": "1.0.2",
     "@process-engine/metrics.repository.file_system": "1.1.2",
-    "@process-engine/process_engine_core": "feature~default_sequence_flows",
+    "@process-engine/process_engine_core": "12.5.2-a7880176-b210",
     "@process-engine/process_model.repository.sequelize": "5.1.0",
     "@process-engine/process_model.service": "1.1.0",
     "@process-engine/process_model.use_case": "1.1.0",
