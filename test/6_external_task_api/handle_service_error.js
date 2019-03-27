@@ -166,7 +166,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     should(externalTask.topic).be.equal(topicName);
     should(externalTask.state).be.equal('finished');
     should(externalTask).have.property('error');
-    // should(externalTask.error.message).be.equal(errorMessage); // TODO: Due to some unknown bug, this info gets lost during serialization.
+    should(externalTask.error.message).be.match(/red alert/i);
     should(externalTask.error._additionalInformation).be.equal(errorDetails); //eslint-disable-line
 
     should(externalTask).have.property('flowNodeInstanceId');
