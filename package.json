@@ -57,6 +57,7 @@
   "dependencies": {
     "@essential-projects/bootstrapper": "3.3.2",
     "@essential-projects/bootstrapper_node": "3.2.7",
+    "@essential-projects/errors_ts": "feature~fix_error_serialization",
     "@essential-projects/event_aggregator": "4.0.3",
     "@essential-projects/http": "2.3.1",
     "@essential-projects/http_extension": "6.5.2",
