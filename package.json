@@ -99,6 +99,7 @@
     "loggerhythm": "~3.0.3",
     "moment": "~2.24.0",
     "node-uuid": "^1.4.8",
+    "pg": "^7.9.0",
     "sequelize": "~4.42.0",
     "socket.io": "~2.2.0",
     "socket.io-client": "~2.2.0",
