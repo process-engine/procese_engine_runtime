@@ -61,18 +61,18 @@ describe('Management API:   GET  ->  /correlations/all', () => {
       should(correlation).have.property('id');
       should(correlation).have.property('state');
       should(correlation).have.property('createdAt');
-      should(correlation).have.property('identity');
-      should(correlation.identity).have.property('token');
-      should(correlation).have.property('processModels');
+      should(correlation).have.property('processInstances');
 
-      correlation.processModels.forEach((processModel) => {
-        should(processModel).have.property('processDefinitionName');
-        should(processModel).have.property('processModelId');
-        should(processModel).have.property('processInstanceId');
-        should(processModel).have.property('hash');
-        should(processModel).have.property('xml');
-        should(processModel).have.property('state');
-        should(processModel).have.property('createdAt');
+      correlation.processInstances.forEach((processInstance) => {
+        should(processInstance).have.property('processDefinitionName');
+        should(processInstance).have.property('processModelId');
+        should(processInstance).have.property('processInstanceId');
+        should(processInstance).have.property('hash');
+        should(processInstance).have.property('xml');
+        should(processInstance).have.property('state');
+        should(processInstance).have.property('identity');
+        should(processInstance.identity).have.property('token');
+        should(processInstance).have.property('createdAt');
       });
     });
   });
@@ -126,7 +126,9 @@ describe('Management API:   GET  ->  /correlations/all', () => {
       .getAllCorrelations(testFixtureProvider.identities.defaultUser);
 
     correlationListDefaultUser.forEach((correlation) => {
-      should(correlation.identity.userId).be.equal(testFixtureProvider.identities.defaultUser.userId);
+      correlation.processInstances.forEach((processInstance) => {
+        should(processInstance.identity.userId).be.equal(testFixtureProvider.identities.defaultUser.userId);
+      });
     });
 
     const correlationListSecondUser = await testFixtureProvider
@@ -134,7 +136,9 @@ describe('Management API:   GET  ->  /correlations/all', () => {
       .getAllCorrelations(testFixtureProvider.identities.secondDefaultUser);
 
     correlationListSecondUser.forEach((correlation) => {
-      should(correlation.identity.userId).be.equal(testFixtureProvider.identities.secondDefaultUser.userId);
+      correlation.processInstances.forEach((processInstance) => {
+        should(processInstance.identity.userId).be.equal(testFixtureProvider.identities.secondDefaultUser.userId);
+      });
     });
   });
 

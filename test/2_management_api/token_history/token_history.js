@@ -53,7 +53,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
 
       const tokenHistory = await testFixtureProvider
         .managementApiClientService
-        .getTokensForFlowNodeInstance(defaultIdentity, correlationId, processModelId, flowNodeId);
+        .getTokensForFlowNode(defaultIdentity, correlationId, processModelId, flowNodeId);
 
       should(tokenHistory).be.an.Array();
       should(tokenHistory.length).be.equal(2, `Not all state changes were persisted for FlowNode ${flowNodeId}!`);
@@ -136,7 +136,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
     try {
       const processModelList = await testFixtureProvider
         .managementApiClientService
-        .getTokensForFlowNodeInstance({}, processModelId, correlationId, startEventId);
+        .getTokensForFlowNode({}, processModelId, correlationId, startEventId);
 
       should.fail(processModelList, undefined, 'This request should have failed!');
     } catch (error) {
@@ -152,7 +152,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
     try {
       const processTokens = await testFixtureProvider
         .managementApiClientService
-        .getTokensForFlowNodeInstance(defaultIdentity, processModelId, correlationId, notExistingTaskId);
+        .getTokensForFlowNode(defaultIdentity, processModelId, correlationId, notExistingTaskId);
 
       should.fail(processTokens, undefined, 'This request should have failed!');
     } catch (error) {
