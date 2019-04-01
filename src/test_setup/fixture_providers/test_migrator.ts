@@ -12,11 +12,11 @@ const sequelizeConnectionManager: SequelizeConnectionManager = new SequelizeConn
 // Based on: https://github.com/abelnation/sequelize-migration-hello/blob/master/migrate.js
 export async function migrate(repositoryName: string): Promise<void> {
 
-  const env: string = process.env.NODE_ENV || 'test';
+  const env: string = process.env.NODE_ENV || 'test-postgres';
 
-  const sequelizeInstanceConfig: Sequelize.Options = env === 'sqlite'
-    ? getSQLiteConfig(repositoryName)
-    : getPostgresConfig(repositoryName);
+  const sequelizeInstanceConfig: Sequelize.Options = env === 'test-postgres'
+    ? getPostgresConfig(repositoryName)
+    : getSQLiteConfig(repositoryName);
 
   const sequelizeInstance: Sequelize.Sequelize = await sequelizeConnectionManager.getConnection(sequelizeInstanceConfig);
 
@@ -30,7 +30,7 @@ function getSQLiteConfig(repositoryName: string): object {
 
   const repositoryConfigFileName: string = `${repositoryName}_repository.json`;
 
-  const sqliteConfig: Sequelize.Options = readConfigFile('sqlite', repositoryConfigFileName);
+  const sqliteConfig: Sequelize.Options = readConfigFile('test-sqlite', repositoryConfigFileName);
 
   // Jenkins stores its sqlite databases in a separate workspace folder.
   // We must account for this here.
@@ -49,7 +49,7 @@ function getPostgresConfig(repositoryName: string): object {
 
   const repositoryConfigFileName: string = `${repositoryName}_repository.json`;
 
-  const postgresConfig: Sequelize.Options = readConfigFile('postgres', repositoryConfigFileName);
+  const postgresConfig: Sequelize.Options = readConfigFile('test-postgres', repositoryConfigFileName);
 
   return postgresConfig;
 }
