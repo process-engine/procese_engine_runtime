@@ -23,7 +23,7 @@ module.exports = {
 
     console.log('Changing PrimaryKey column ID to integer based column');
 
-    queryInterface.createTable('ProcessDefinitions_New', {
+    await queryInterface.createTable('ProcessDefinitions_New', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -53,22 +53,28 @@ module.exports = {
       },
     });
 
-    const updateQuery = `INSERT INTO ProcessDefinitions_New
-                          (name,
-                           xml,
-                           hash,
-                           createdAt,
-                           updatedAt)
-                          SELECT name,
-                                 xml,
-                                 hash,
-                                 createdAt,
-                                 updatedAt FROM ProcessDefinitions;`;
+    const updateQuerySqlite =
+      `INSERT INTO ProcessDefinitions_New
+          (name, xml, hash, createdAt, updatedAt)
+        SELECT
+          name, xml, hash, createdAt, updatedAt
+        FROM ProcessDefinitions;`;
 
-    await queryInterface.sequelize.query(updateQuery);
+    const updateQueryPostgres =
+      `INSERT INTO "ProcessDefinitions_New"
+          ("name", "xml", "hash", "createdAt", "updatedAt")
+        SELECT
+        src."name", src."xml", src."hash", src."createdAt", src."updatedAt"
+        FROM public."ProcessDefinitions" AS src;`;
 
-    queryInterface.dropTable('ProcessDefinitions');
-    queryInterface.renameTable('ProcessDefinitions_New', 'ProcessDefinitions');
+    if (process.env.NODE_ENV === 'postgres') {
+      await queryInterface.sequelize.query(updateQueryPostgres);
+    } else {
+      await queryInterface.sequelize.query(updateQuerySqlite);
+    }
+
+    await queryInterface.dropTable('ProcessDefinitions');
+    await queryInterface.renameTable('ProcessDefinitions_New', 'ProcessDefinitions');
 
     console.log('Migration successful.');
   },

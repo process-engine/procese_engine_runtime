@@ -23,7 +23,7 @@ module.exports = {
 
     console.log('Changing PrimaryKey column ID to integer based column');
 
-    queryInterface.createTable('Correlations_New', {
+    await queryInterface.createTable('correlations_new', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -65,28 +65,59 @@ module.exports = {
       },
     });
 
-    const updateQuery = `INSERT INTO Correlations_New
-                          (correlationId,
-                           processInstanceId,
-                           parentProcessInstanceId,
-                           processModelId,
-                           identity,
-                           processModelHash,
-                           createdAt,
-                           updatedAt)
-                          SELECT correlationId,
-                                  processInstanceId,
-                                  parentProcessInstanceId,
-                                  processModelId,
-                                  identity,
-                                  processModelHash,
-                                  createdAt,
-                                  updatedAt FROM Correlations;`;
+    const updateQuerySqlite = `INSERT INTO correlations_new
+                                (correlationId,
+                                processInstanceId,
+                                parentProcessInstanceId,
+                                processModelId,
+                                identity,
+                                processModelHash,
+                                createdAt,
+                                updatedAt)
+                              SELECT correlationId,
+                                      processInstanceId,
+                                      parentProcessInstanceId,
+                                      processModelId,
+                                      identity,
+                                      processModelHash,
+                                      createdAt,
+                                      updatedAt
+                              FROM Correlations;`;
 
-    await queryInterface.sequelize.query(updateQuery);
+    const updateQueryPostgres = `INSERT INTO correlations_new
+                                  ("correlationId",
+                                  "processInstanceId",
+                                  "parentProcessInstanceId",
+                                  "processModelId",
+                                  "identity",
+                                  "processModelHash",
+                                  "createdAt",
+                                  "updatedAt")
+                                  SELECT src."correlationId",
+                                          src."processInstanceId",
+                                          src."parentProcessInstanceId",
+                                          src."processModelId",
+                                          src."identity",
+                                          src."processModelHash",
+                                          src."createdAt",
+                                          src."updatedAt"
+                                  FROM public."Correlations" AS src;`;
 
-    queryInterface.dropTable('Correlations');
-    queryInterface.renameTable('Correlations_New', 'Correlations');
+    console.log('TRANSFERRING DATA TO TEMP TABLE');
+
+    if (process.env.NODE_ENV === 'postgres') {
+      await queryInterface.sequelize.query(updateQueryPostgres);
+    } else {
+      await queryInterface.sequelize.query(updateQuerySqlite);
+    }
+
+    console.log('DROP OLD TABLE');
+
+    await queryInterface.dropTable('Correlations');
+
+    console.log('RENAME TEMP TABLE');
+
+    await queryInterface.renameTable('correlations_new', 'Correlations');
 
     console.log('Migration successful.');
   },
