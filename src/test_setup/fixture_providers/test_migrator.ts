@@ -38,9 +38,7 @@ function getSQLiteConfig(repositoryName: string): object {
     ? `${process.env.jenkinsDbStoragePath}/${repositoryName}.sqlite`
     : `test/sqlite_repositories/${repositoryName}.sqlite`;
 
-  const databaseFullPath: string = path.resolve(sqlitePath, sqliteConfig.storage);
-
-  sqliteConfig.storage = `${databaseFullPath}`;
+  sqliteConfig.storage = `${sqlitePath}`;
 
   return sqliteConfig;
 }
