@@ -130,7 +130,7 @@ module.exports = {
           defaultValue: 0,
         },
         error: {
-          type: Sequelize.STRING,
+          type: Sequelize.TEXT,
           allowNull: true,
         },
         eventType: {
