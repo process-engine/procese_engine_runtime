@@ -121,7 +121,7 @@ pipeline {
 
           def db_environment_settings = "jenkinsDbStoragePath=${db_storage_folder_path} ${db_storage_path_correlation} ${db_storage_path_external_task} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance}";
 
-          def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test JUNIT_REPORT_PATH=process_engine_runtime_integration_tests.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
+          def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test-sqlite JUNIT_REPORT_PATH=process_engine_runtime_integration_tests.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
 
           docker.image("node:${NODE_VERSION_NUMBER}").inside("--env PATH=$PATH:/$WORKSPACE/node_modules/.bin") {
             error_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > process_engine_runtime_integration_tests.txt", returnStatus: true);
