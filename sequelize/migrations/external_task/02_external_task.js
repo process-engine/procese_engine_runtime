@@ -17,8 +17,6 @@ module.exports = {
 
     const idHasMatchingType = externalTaskTableInfo.id.type === 'INTEGER';
 
-    const environmentIsPostrgres = process.env.NODE_ENV === 'postgres';
-
     if (idHasMatchingType) {
       console.log('The database is already up to date. Nothing to do here.');
       return;
@@ -30,6 +28,8 @@ module.exports = {
     } catch (error) {
       // Do nothing
     }
+
+    const environmentIsPostgres = process.env.NODE_ENV === 'postgres' || process.env.NODE_ENV === 'test-postgres';
 
     console.log('Changing PrimaryKey column ID to integer based column');
 
@@ -126,7 +126,7 @@ module.exports = {
     // await queryInterface.sequelize.query(updateQuery);
 
     // The only way to get around this, is to copy&pase all entries single file.
-    const selectQuery = environmentIsPostrgres
+    const selectQuery = environmentIsPostgres
       ? 'SELECT * FROM public."ExternalTasks"'
       : 'SELECT * FROM ExternalTasks';
 
@@ -170,7 +170,7 @@ module.exports = {
       //                                       src."updatedAt"
       //                               FROM public."Correlations" AS src;`;
 
-      if (environmentIsPostrgres) {
+      if (environmentIsPostgres) {
         await queryInterface.sequelize.query(updateQueryPostgres);
       } else {
         await queryInterface.sequelize.query(updateQuerySqlite);

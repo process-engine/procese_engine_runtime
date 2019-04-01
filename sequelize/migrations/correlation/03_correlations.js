@@ -21,6 +21,8 @@ module.exports = {
       return;
     }
 
+    const environmentIsPostgres = process.env.NODE_ENV === 'postgres' || process.env.NODE_ENV === 'test-postgres';
+
     console.log('Changing PrimaryKey column ID to integer based column');
 
     await queryInterface.createTable('correlations_new', {
@@ -105,7 +107,7 @@ module.exports = {
 
     console.log('TRANSFERRING DATA TO TEMP TABLE');
 
-    if (process.env.NODE_ENV === 'postgres') {
+    if (environmentIsPostgres) {
       await queryInterface.sequelize.query(updateQueryPostgres);
     } else {
       await queryInterface.sequelize.query(updateQuerySqlite);

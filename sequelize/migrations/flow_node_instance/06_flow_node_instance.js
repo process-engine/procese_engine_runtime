@@ -46,7 +46,7 @@ module.exports = {
       'FlowNodeInstances',
       'identity',
       {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: true,
       });
     await queryInterface.addColumn(

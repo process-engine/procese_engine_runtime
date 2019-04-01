@@ -18,12 +18,12 @@ module.exports = {
     const flowNodeInstanceIdHasMatchingType = flowNodeInstanceTableInfo.id.type === 'INTEGER';
     const processTokenIdHasMatchingType = processTokenTableInfo.id.type === 'INTEGER';
 
-    const environmentIsPostgres = process.env.NODE_ENV === 'postgres';
-
     if (flowNodeInstanceIdHasMatchingType && processTokenIdHasMatchingType) {
       console.log('The database is already up to date. Nothing to do here.');
       return;
     }
+
+    const environmentIsPostgres = process.env.NODE_ENV === 'postgres' || process.env.NODE_ENV === 'test-postgres';
 
     if (!processTokenIdHasMatchingType) {
       console.log('Changing PrimaryKey column ID of ProcessToken table to integer based column');

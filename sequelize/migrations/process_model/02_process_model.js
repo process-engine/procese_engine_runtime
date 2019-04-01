@@ -21,6 +21,8 @@ module.exports = {
       return;
     }
 
+    const environmentIsPostgres = process.env.NODE_ENV === 'postgres' || process.env.NODE_ENV === 'test-postgres';
+
     console.log('Changing PrimaryKey column ID to integer based column');
 
     await queryInterface.createTable('ProcessDefinitions_New', {
@@ -67,7 +69,7 @@ module.exports = {
         src."name", src."xml", src."hash", src."createdAt", src."updatedAt"
         FROM public."ProcessDefinitions" AS src;`;
 
-    if (process.env.NODE_ENV === 'postgres') {
+    if (environmentIsPostgres) {
       await queryInterface.sequelize.query(updateQueryPostgres);
     } else {
       await queryInterface.sequelize.query(updateQuerySqlite);
