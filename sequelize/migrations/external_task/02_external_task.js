@@ -111,19 +111,7 @@ module.exports = {
     });
 
     // NOTE:
-    // Using this single query WOULD be efficient, if the SQLite adapter was able to handle it...
-    // It works like a charme with Postgres, but SQLite always crashes halfway with an "SQLITE_BUSY: database is locked" error.
-    //
-    // const updateQuery = `INSERT INTO external_tasks_new
-    //                        (externalTaskId, workerId, topic, flowNodeInstanceId, correlationId, processModelId,
-    //                         processInstanceId, lockExpirationTime, identity, payload, state, finishedAt,
-    //                         result, error, version, createdAt, updatedAt)
-    //                       SELECT id, workerId, topic, flowNodeInstanceId, correlationId, processModelId,
-    //                         processInstanceId, lockExpirationTime, identity, payload, state, finishedAt,
-    //                         result, error, version, createdAt, updatedAt
-    //                       FROM ExternalTasks;`;
-    //
-    // await queryInterface.sequelize.query(updateQuery);
+    // Can't use single query with Subselect here, because the SQLite adapter will crash halfway when dealing with larger databases.
 
     // The only way to get around this, is to copy&pase all entries single file.
     const selectQuery = environmentIsPostgres
@@ -150,25 +138,6 @@ module.exports = {
                               '${task.correlationId}', '${task.processModelId}', '${task.processInstanceId}', '${task.lockExpirationTime}',
                               '${task.identity}', '${task.payload}', '${task.state}', '${task.finishedAt}', '${task.result}', '${task.error}',
                               '${task.version}', '${task.createdAt}', '${task.updatedAt}');`;
-
-      // const updateQueryPostgres2 = `INSERT INTO correlations_new
-      //                               ("correlationId",
-      //                               "processInstanceId",
-      //                               "parentProcessInstanceId",
-      //                               "processModelId",
-      //                               "identity",
-      //                               "processModelHash",
-      //                               "createdAt",
-      //                               "updatedAt")
-      //                               SELECT src."correlationId",
-      //                                       src."processInstanceId",
-      //                                       src."parentProcessInstanceId",
-      //                                       src."processModelId",
-      //                                       src."identity",
-      //                                       src."processModelHash",
-      //                                       src."createdAt",
-      //                                       src."updatedAt"
-      //                               FROM public."Correlations" AS src;`;
 
       if (environmentIsPostgres) {
         await queryInterface.sequelize.query(updateQueryPostgres);
