@@ -14,7 +14,7 @@ def cleanup_workspace() {
 }
 
 @NonCPS
-def slack_send_summary(testlog, test_failed) {
+def slack_send_summary(testlog, test_failed, database_type) {
   def passing_regex = /\d+ passing/;
   def failing_regex = /\d+ failing/;
   def pending_regex = /\d+ pending/;
@@ -29,13 +29,13 @@ def slack_send_summary(testlog, test_failed) {
 
   def color_string     =  '"color":"good"';
   def markdown_string  =  '"mrkdwn_in":["text","title"]';
-  def title_string     =  "\"title\":\":white_check_mark: Process Engine Runtime Integration Tests for ${BRANCH_NAME} Succeeded!\"";
+  def title_string     =  "\"title\":\":white_check_mark: Process Engine Runtime Integration Tests against ${database_type} for ${BRANCH_NAME} Succeeded!\"";
   def result_string    =  "\"text\":\"${passing}\\n${failing}\\n${pending}\"";
   def action_string    =  "\"actions\":[{\"name\":\"open_jenkins\",\"type\":\"button\",\"text\":\"Open this run\",\"url\":\"${RUN_DISPLAY_URL}\"}]";
 
   if (test_failed == true) {
     color_string = '"color":"danger"';
-    title_string =  "\"title\":\":boom: Process Engine Runtime Integration Tests for ${BRANCH_NAME} Failed!\"";
+    title_string =  "\"title\":\":boom: Process Engine Runtime Integration Tests against ${database_type} for ${BRANCH_NAME} Failed!\"";
   }
 
   slackSend(attachments: "[{$color_string, $title_string, $markdown_string, $result_string, $action_string}]");
@@ -102,54 +102,134 @@ pipeline {
         }
 
         archiveArtifacts('package-lock.json')
+
+        stash(includes: '*, **/**', name: 'post_build');
       }
     }
     stage('Process Engine Runtime Tests') {
+      parallel {
+        stage('SQLite') {
+          agent any
+          options {
+            skipDefaultCheckout()
+          }
+          steps {
+            unstash('post_build');
+
+            script {
+
+              // image.inside mounts the current Workspace as the working directory in the container
+              def junit_report_path = 'JUNIT_REPORT_PATH=process_engine_runtime_integration_tests.xml';
+              def config_path = 'CONFIG_PATH=/usr/src/app/config';
+              def api_access_mode = '--env API_ACCESS_TYPE=internal ';
+
+              // SQLite Config
+              def db_storage_folder_path = "$WORKSPACE/process_engine_databases";
+              def db_storage_path_correlation = "process_engine__correlation_repository__storage=$db_storage_folder_path/correlation.sqlite";
+              def db_storage_path_external_task = "process_engine__external_task_repository__storage=$db_storage_folder_path/external_task.sqlite";
+              def db_storage_path_process_model = "process_engine__process_model_repository__storage=$db_storage_folder_path/process_model.sqlite";
+              def db_storage_path_flow_node_instance = "process_engine__flow_node_instance_repository__storage=$db_storage_folder_path/flow_node_instance.sqlite";
+
+              def db_environment_settings = "jenkinsDbStoragePath=${db_storage_folder_path} ${db_storage_path_correlation} ${db_storage_path_external_task} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance}";
+
+              def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test-sqlite JUNIT_REPORT_PATH=process_engine_runtime_integration_tests.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
+
+              docker.image("node:${NODE_VERSION_NUMBER}").inside("--env PATH=$PATH:/$WORKSPACE/node_modules/.bin") {
+                sqlite_exit_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > process_engine_runtime_integration_tests.txt", returnStatus: true);
+
+                sqlite_testresults = sh(script: "cat process_engine_runtime_integration_tests.txt", returnStdout: true).trim();
+                junit 'process_engine_runtime_integration_tests.xml'
+              };
+
+              sh('cat process_engine_runtime_integration_tests.txt');
+
+              sqlite_tests_failed = sqlite_exit_code > 0;
+            }
+          }
+        }
+        stage('PostgreSQL') {
+          agent any
+          options {
+            skipDefaultCheckout()
+          }
+          steps {
+            unstash('post_build');
+
+            script {
+              // Postgres Config
+              def postgres_host = "postgres";
+              def postgres_username = "admin";
+              def postgres_password = "admin";
+              def postgres_database = "processengine";
+
+              def postgres_settings = "--env POSTGRES_USER=${postgres_username} --env POSTGRES_PASSWORD=${postgres_password} --env POSTGRES_DB=${postgres_database}";
+
+              def db_storage_path_correlation = "process_engine__correlation_repository__host=${postgres_host} process_engine__correlation_repository__username=${postgres_username} process_engine__correlation_repository__password=${postgres_password} process_engine__correlation_repository__database=${postgres_database}";
+              def db_storage_path_external_task = "process_engine__external_task_repository__host=${postgres_host} process_engine__external_task_repository__username=${postgres_username} process_engine__external_task_repository__password=${postgres_password} process_engine__external_task_repository__database=${postgres_database}";
+              def db_storage_path_process_model = "process_engine__process_model_repository__host=${postgres_host} process_engine__process_model_repository__username=${postgres_username} process_engine__process_model_repository__password=${postgres_password} process_engine__process_model_repository__database=${postgres_database}";
+              def db_storage_path_flow_node_instance = "process_engine__flow_node_instance_repository__host=${postgres_host} process_engine__flow_node_instance_repository__username=${postgres_username} process_engine__flow_node_instance_repository__password=${postgres_password} process_engine__flow_node_instance_repository__database=${postgres_database}";
+
+              def db_environment_settings = "${db_storage_path_correlation} ${db_storage_path_external_task} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance}";
+
+              def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test-postgres JUNIT_REPORT_PATH=process_engine_runtime_integration_tests.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
+
+              docker.image('postgres:11').withRun("${postgres_settings}") { c ->
+
+                docker.image('postgres:11').inside("--link ${c.id}:${postgres_host}") {
+                  sh "while ! pg_isready --host ${postgres_host} --username ${postgres_username} --dbname ${postgres_database}; do sleep 1; done"
+                };
+
+                docker.image("node:${NODE_VERSION_NUMBER}").inside("--link ${c.id}:${postgres_host} --env PATH=$PATH:/$WORKSPACE/node_modules/.bin") {
+                  postgres_exit_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > process_engine_runtime_integration_tests.txt", returnStatus: true);
+
+                  postgres_testresults = sh(script: "cat process_engine_runtime_integration_tests.txt", returnStdout: true).trim();
+                  junit 'process_engine_runtime_integration_tests.xml'
+                };
+
+              };
+
+              sh('cat process_engine_runtime_integration_tests.txt');
+
+              postgres_test_failed = postgres_exit_code > 0;
+            }
+          }
+        }
+      }
+    }
+    stage('Mark build as failed') {
+      when {
+        expression {
+          sqlite_tests_failed || postgres_test_failed
+        }
+      }
       steps {
         script {
-          // image.inside mounts the current Workspace as the working directory in the container
-          def junit_report_path = 'JUNIT_REPORT_PATH=process_engine_runtime_integration_tests.xml';
-          def config_path = 'CONFIG_PATH=/usr/src/app/config';
-          def api_access_mode = '--env API_ACCESS_TYPE=internal ';
+          currentBuild.result = 'FAILURE';
 
-          // SQLite Config
-          def db_storage_folder_path = "$WORKSPACE/process_engine_databases";
-          def db_storage_path_correlation = "process_engine__correlation_repository__storage=$db_storage_folder_path/correlation.sqlite";
-          def db_storage_path_external_task = "process_engine__external_task_repository__storage=$db_storage_folder_path/external_task.sqlite";
-          def db_storage_path_process_model = "process_engine__process_model_repository__storage=$db_storage_folder_path/process_model.sqlite";
-          def db_storage_path_flow_node_instance = "process_engine__flow_node_instance_repository__storage=$db_storage_folder_path/flow_node_instance.sqlite";
-
-          def db_environment_settings = "jenkinsDbStoragePath=${db_storage_folder_path} ${db_storage_path_correlation} ${db_storage_path_external_task} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance}";
-
-          def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test-sqlite JUNIT_REPORT_PATH=process_engine_runtime_integration_tests.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
-
-          docker.image("node:${NODE_VERSION_NUMBER}").inside("--env PATH=$PATH:/$WORKSPACE/node_modules/.bin") {
-            error_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > process_engine_runtime_integration_tests.txt", returnStatus: true);
-          };
-
-          testresults = sh(script: "cat process_engine_runtime_integration_tests.txt", returnStdout: true).trim();
-
-          junit 'process_engine_runtime_integration_tests.xml'
-
-          test_failed = false;
-          currentBuild.result = 'SUCCESS'
-          if (error_code > 0) {
-            test_failed = true;
-            currentBuild.result = 'FAILURE'
+          if (sqlite_tests_failed) {
+            echo "SQLite tests failed";
           }
-
+          if (postgres_test_failed) {
+            echo "PostgreSQL tests failed";
+          }
         }
       }
     }
     stage('Send Test Results to Slack') {
       steps {
         script {
-          // Print the result to the jobs console
-          println(testresults);
           // Failure to send the slack message should not result in build failure.
           try {
-            slack_send_summary(testresults, test_failed);
-            slack_send_testlog(testresults);
+            slack_send_summary(sqlite_testresults, sqlite_tests_failed, 'SQLite');
+            slack_send_testlog(sqlite_testresults);
+          } catch (Exception error) {
+            echo "Failed to send slack report: $error";
+          }
+
+          // Failure to send the slack message should not result in build failure.
+          try {
+            slack_send_summary(postgres_testresults, postgres_test_failed, 'PostgreSQL');
+            slack_send_testlog(postgres_testresults);
           } catch (Exception error) {
             echo "Failed to send slack report: $error";
           }
