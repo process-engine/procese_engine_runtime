@@ -49,6 +49,16 @@ function getPostgresConfig(repositoryName: string): object {
 
   const postgresConfig: Sequelize.Options = readConfigFile('test-postgres', repositoryConfigFileName);
 
+  // The postgres database used by Jenkins is stored under the hostname `postgres`, NOT `localhost`!
+  // The hostname is stored under the corresponding environment config parameter.
+  // We need to check that parameter here, or the migrations will fail.
+  const customHostName: string = process.env[`process_engine__${repositoryName}_repository__host`];
+
+  const customHostNameSet: boolean = customHostName !== undefined;
+  if (customHostNameSet) {
+    postgresConfig.host = customHostName;
+  }
+
   return postgresConfig;
 }
 
