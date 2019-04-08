@@ -196,21 +196,20 @@ pipeline {
         }
       }
     }
-    stage('Mark build as failed') {
-      when {
-        expression {
-          sqlite_tests_failed || postgres_test_failed
-        }
-      }
+    stage('Check test results') {
       steps {
         script {
-          currentBuild.result = 'FAILURE';
+          if (sqlite_tests_failed || postgres_test_failed) {
+            currentBuild.result = 'FAILURE';
 
-          if (sqlite_tests_failed) {
-            echo "SQLite tests failed";
-          }
-          if (postgres_test_failed) {
-            echo "PostgreSQL tests failed";
+            if (sqlite_tests_failed) {
+              echo "SQLite tests failed";
+            }
+            if (postgres_test_failed) {
+              echo "PostgreSQL tests failed";
+            }
+          } else {
+            echo "All tests succeeded!"
           }
         }
       }
