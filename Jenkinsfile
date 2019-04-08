@@ -211,6 +211,7 @@ pipeline {
               echo "PostgreSQL tests failed";
             }
           } else {
+            currentBuild.result = 'SUCCESS';
             echo "All tests succeeded!"
           }
         }
@@ -241,8 +242,7 @@ pipeline {
       when {
         expression {
           currentBuild.result == 'SUCCESS' &&
-          (branch_is_master ||
-          branch_is_develop)
+          (branch_is_master || branch_is_develop)
         }
       }
       agent {
@@ -320,8 +320,7 @@ pipeline {
       when {
         expression {
           currentBuild.result == 'SUCCESS' &&
-          (branch_is_master ||
-          branch_is_develop)
+          (branch_is_master || branch_is_develop)
         }
       }
       steps {
