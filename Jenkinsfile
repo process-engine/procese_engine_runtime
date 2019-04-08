@@ -148,7 +148,9 @@ pipeline {
           }
         }
         stage('PostgreSQL') {
-          agent any
+          agent {
+            label 'macos'
+          }
           options {
             skipDefaultCheckout()
           }
