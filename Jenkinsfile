@@ -164,12 +164,12 @@ pipeline {
 
               def postgres_settings = "--env POSTGRES_USER=${postgres_username} --env POSTGRES_PASSWORD=${postgres_password} --env POSTGRES_DB=${postgres_database}";
 
-              def db_storage_path_correlation = "process_engine__correlation_repository__host=${postgres_host} process_engine__correlation_repository__username=${postgres_username} process_engine__correlation_repository__password=${postgres_password} process_engine__correlation_repository__database=${postgres_database}";
-              def db_storage_path_external_task = "process_engine__external_task_repository__host=${postgres_host} process_engine__external_task_repository__username=${postgres_username} process_engine__external_task_repository__password=${postgres_password} process_engine__external_task_repository__database=${postgres_database}";
-              def db_storage_path_process_model = "process_engine__process_model_repository__host=${postgres_host} process_engine__process_model_repository__username=${postgres_username} process_engine__process_model_repository__password=${postgres_password} process_engine__process_model_repository__database=${postgres_database}";
-              def db_storage_path_flow_node_instance = "process_engine__flow_node_instance_repository__host=${postgres_host} process_engine__flow_node_instance_repository__username=${postgres_username} process_engine__flow_node_instance_repository__password=${postgres_password} process_engine__flow_node_instance_repository__database=${postgres_database}";
+              def db_database_host_correlation = "process_engine__correlation_repository__host=${postgres_host}";
+              def db_database_host_external_task = "process_engine__external_task_repository__host=${postgres_host}";
+              def db_database_host_process_model = "process_engine__process_model_repository__host=${postgres_host}";
+              def db_database_host_flow_node_instance = "process_engine__flow_node_instance_repository__host=${postgres_host}";
 
-              def db_environment_settings = "${db_storage_path_correlation} ${db_storage_path_external_task} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance}";
+              def db_environment_settings = "${db_database_host_correlation} ${db_database_host_external_task} ${db_database_host_process_model} ${db_database_host_flow_node_instance}";
 
               def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test-postgres JUNIT_REPORT_PATH=process_engine_runtime_integration_tests.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} mocha -t 200000 test/**/*.js test/**/**/*.js";
 
