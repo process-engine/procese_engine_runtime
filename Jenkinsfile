@@ -223,7 +223,9 @@ pipeline {
           // Failure to send the slack message should not result in build failure.
           try {
             slack_send_summary(sqlite_testresults, sqlite_tests_failed, 'SQLite');
-            slack_send_testlog(sqlite_testresults);
+            if (sqlite_tests_failed) {
+              slack_send_testlog(sqlite_testresults);
+            }
           } catch (Exception error) {
             echo "Failed to send slack report: $error";
           }
@@ -231,7 +233,9 @@ pipeline {
           // Failure to send the slack message should not result in build failure.
           try {
             slack_send_summary(postgres_testresults, postgres_test_failed, 'PostgreSQL');
-            slack_send_testlog(postgres_testresults);
+            if (postgres_test_failed) {
+              slack_send_testlog(postgres_testresults);
+            }
           } catch (Exception error) {
             echo "Failed to send slack report: $error";
           }
