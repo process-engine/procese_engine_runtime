@@ -1,0 +1,12 @@
+{
+  "username": "admin",
+  "password": "admin",
+  "database": "processengine",
+  "host": "localhost",
+  "port": 5432,
+  "dialect": "postgres",
+  "storage": null,
+  "supportBigNumbers": true,
+  "resetPasswordRequestTimeToLive": 12,
+  "logging": false
+}

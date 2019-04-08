@@ -54,7 +54,10 @@ function initializeEnvironment(sqlitePath: string): void {
 
   process.chdir(workingDir);
 
-  setDatabasePaths(sqlitePath);
+  const envIsSqlite: boolean = process.env.NODE_ENV === 'sqlite';
+  if (envIsSqlite) {
+    setDatabasePaths(sqlitePath);
+  }
 }
 
 function setConfigPath(): void {

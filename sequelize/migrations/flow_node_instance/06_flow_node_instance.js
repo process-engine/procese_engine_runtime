@@ -4,31 +4,96 @@
 // https://sequelize.readthedocs.io/en/latest/docs/migrations/#functions
 
 // CHANGE NOTES:
-// Changes between 5.0.0 and 6.0.0:
-// - The column previousFlowNodeInstanceId was added to store an FNIs BPMN type
+// Changes between 7.0.0 and 8.0.0:
+// - Moved the following columns from the ProcessTokenTable to the FlowNodeInstanceTable:
+//    - processInstanceId
+//    - processModelId
+//    - correlationId
+//    - identity
+//    - callerId => was renamend to "parentProcessInstanceId"
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
     console.log('Running updating migrations');
 
-    const flowNodeInstanceTableInfo = await queryInterface.describeTable('FlowNodeInstances');
+    console.log('Moving unique ID columns from ProcessTokens table to FlowNodeInstance table.');
 
-    const migrationNotRequired = flowNodeInstanceTableInfo.previousFlowNodeInstanceId !== undefined;
-
-    if (migrationNotRequired) {
-      console.log('The database is already up to date. Nothing to do here.');
-      return;
-    }
-
-    console.log('Adding new previousFlowNodeInstanceId column');
     await queryInterface.addColumn(
       'FlowNodeInstances',
-      'previousFlowNodeInstanceId',
+      'processInstanceId',
+      {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: '',
+      });
+    await queryInterface.addColumn(
+      'FlowNodeInstances',
+      'processModelId',
+      {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: '',
+      });
+    await queryInterface.addColumn(
+      'FlowNodeInstances',
+      'correlationId',
+      {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: '',
+      });
+    await queryInterface.addColumn(
+      'FlowNodeInstances',
+      'identity',
+      {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      });
+    await queryInterface.addColumn(
+      'FlowNodeInstances',
+      'parentProcessInstanceId',
       {
         type: Sequelize.STRING,
         allowNull: true,
-      }
-    );
+      });
+
+    const updateFlowNodeInstancesquery = `UPDATE "FlowNodeInstances"
+      SET
+        "processInstanceId" = (
+          SELECT "processInstanceId"
+          FROM "ProcessTokens"
+          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId"
+          LIMIT 1),
+        "processModelId" = (
+          SELECT "processModelId"
+          FROM "ProcessTokens"
+          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId"
+          LIMIT 1),
+        "correlationId" = (
+          SELECT "correlationId"
+          FROM "ProcessTokens"
+          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId"
+          LIMIT 1),
+        "identity" = (
+          SELECT "identity"
+          FROM "ProcessTokens"
+          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId"
+          LIMIT 1),
+        "parentProcessInstanceId" = (
+          SELECT "caller"
+          FROM "ProcessTokens"
+          WHERE "FlowNodeInstances"."flowNodeInstanceId" = "ProcessTokens"."flowNodeInstanceId"
+          LIMIT 1);`;
+
+    await queryInterface.sequelize.query(updateFlowNodeInstancesquery);
+
+    await queryInterface.removeColumn('ProcessTokens', 'processInstanceId');
+    await queryInterface.removeColumn('ProcessTokens', 'processModelId');
+    await queryInterface.removeColumn('ProcessTokens', 'correlationId');
+    await queryInterface.removeColumn('ProcessTokens', 'identity');
+    await queryInterface.removeColumn('ProcessTokens', 'caller');
+
+    console.log('Migration successful.');
   },
   down: async (queryInterface, Sequelize) => {
     console.log('Running reverting migrations');

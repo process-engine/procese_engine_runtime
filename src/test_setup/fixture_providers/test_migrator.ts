@@ -1,5 +1,6 @@
 'use strict';
 
+import * as fs from 'fs';
 import * as path from 'path';
 import * as Sequelize from 'sequelize';
 import * as Umzug from 'umzug';
@@ -9,40 +10,56 @@ import {SequelizeConnectionManager} from '@essential-projects/sequelize_connecti
 const sequelizeConnectionManager: SequelizeConnectionManager = new SequelizeConnectionManager();
 
 // Based on: https://github.com/abelnation/sequelize-migration-hello/blob/master/migrate.js
-export async function migrate(database: string): Promise<void> {
+export async function migrate(repositoryName: string): Promise<void> {
 
-  const sqliteConfig: any = await createSqLiteConfig(database);
+  const env: string = process.env.NODE_ENV || 'test-postgres';
 
-  const sequelizeInstance: Sequelize.Sequelize = await sequelizeConnectionManager.getConnection(sqliteConfig);
+  const sequelizeInstanceConfig: Sequelize.Options = env === 'test-postgres'
+    ? getPostgresConfig(repositoryName)
+    : getSQLiteConfig(repositoryName);
 
-  const umzugInstance: Umzug.Umzug = await createUmzugInstance(sequelizeInstance, database);
+  const sequelizeInstance: Sequelize.Sequelize = await sequelizeConnectionManager.getConnection(sequelizeInstanceConfig);
+
+  const umzugInstance: Umzug.Umzug = await createUmzugInstance(sequelizeInstance, repositoryName);
   await umzugInstance.up();
 
-  await sequelizeConnectionManager.destroyConnection(sqliteConfig);
+  await sequelizeConnectionManager.destroyConnection(sequelizeInstanceConfig);
 }
 
-function createSqLiteConfig(store: string): any {
+function getSQLiteConfig(repositoryName: string): object {
+
+  const repositoryConfigFileName: string = `${repositoryName}_repository.json`;
+
+  const sqliteConfig: Sequelize.Options = readConfigFile('test-sqlite', repositoryConfigFileName);
 
   // Jenkins stores its sqlite databases in a separate workspace folder.
   // We must account for this here.
-  const storagePath: string = process.env.jenkinsDbStoragePath
-    ? `${process.env.jenkinsDbStoragePath}/${store}.sqlite`
-    : `test/sqlite_repositories/${store}.sqlite`;
+  const sqlitePath: string = process.env.jenkinsDbStoragePath
+    ? `${process.env.jenkinsDbStoragePath}/${repositoryName}.sqlite`
+    : `test/sqlite_repositories/${repositoryName}.sqlite`;
 
-  const sqliteConfig: any = {
-    username: null,
-    password: null,
-    database: null,
-    host: null,
-    port: null,
-    dialect: 'sqlite',
-    storage: storagePath,
-    supportBigNumbers: true,
-    resetPasswordRequestTimeToLive: 12,
-    logging: false,
-  };
+  sqliteConfig.storage = `${sqlitePath}`;
 
   return sqliteConfig;
+}
+
+function getPostgresConfig(repositoryName: string): object {
+
+  const repositoryConfigFileName: string = `${repositoryName}_repository.json`;
+
+  const postgresConfig: Sequelize.Options = readConfigFile('test-postgres', repositoryConfigFileName);
+
+  // The postgres database used by Jenkins is stored under the hostname `postgres`, NOT `localhost`!
+  // The hostname is stored under the corresponding environment config parameter.
+  // We need to check that parameter here, or the migrations will fail.
+  const customHostName: string = process.env[`process_engine__${repositoryName}_repository__host`];
+
+  const customHostNameSet: boolean = customHostName !== undefined;
+  if (customHostNameSet) {
+    postgresConfig.host = customHostName;
+  }
+
+  return postgresConfig;
 }
 
 async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: string): Promise<Umzug.Umzug> {
@@ -80,4 +97,15 @@ async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: str
   });
 
   return umzug;
+}
+
+function readConfigFile(env: string, repositoryConfigFileName: string): Sequelize.Options {
+
+  const configFilePath: string = path.resolve(process.env.CONFIG_PATH, env, 'process_engine', repositoryConfigFileName);
+
+  const fileContent: string = fs.readFileSync(configFilePath, 'utf-8');
+
+  const parsedFileContent: Sequelize.Options = JSON.parse(fileContent) as Sequelize.Options;
+
+  return parsedFileContent;
 }
