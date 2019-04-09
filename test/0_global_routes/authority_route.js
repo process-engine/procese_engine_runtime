@@ -27,7 +27,7 @@ describe('Authority Route /security/authority - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it.only('Should return the address of the used authority, when an auth token is provided', async () => {
+  it('Should return the address of the used authority, when an auth token is provided', async () => {
 
     const requestHeaders = {
       headers: {
