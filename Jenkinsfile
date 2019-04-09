@@ -149,7 +149,7 @@ pipeline {
         }
         stage('PostgreSQL') {
           agent {
-            label 'macos'
+            label 'macos && any-docker'
           }
           options {
             skipDefaultCheckout()
