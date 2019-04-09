@@ -34,17 +34,12 @@ module.exports = {
         },
         state: {
           type: Sequelize.STRING,
-          allowNull: false,
-          defaultValue: 0,
+          allowNull: true,
+          defaultValue: 'finished',
         },
         error: {
           type: Sequelize.STRING,
           allowNull: true,
-        },
-        isSuspended: {
-          type: Sequelize.BOOLEAN,
-          allowNull: false,
-          defaultValue: false,
         },
         createdAt: {
           type: Sequelize.DATE,
@@ -90,6 +85,11 @@ module.exports = {
         caller: {
           type: Sequelize.STRING,
           allowNull: true,
+        },
+        type: {
+          type: Sequelize.STRING,
+          allowNull: true,
+          defaultValue: 'onExit',
         },
         payload: {
           type: Sequelize.TEXT,
