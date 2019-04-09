@@ -17,9 +17,23 @@ export async function migrate(repositoryName: string, sqlitePath: string): Promi
 
   sqlitePath = getFullSqliteStoragePath(sqlitePath);
 
-  const sequelizeInstanceConfig: Sequelize.Options = env === 'sqlite'
-    ? getSQLiteConfig(sqlitePath, repositoryName)
-    : getPostgresConfig(repositoryName);
+  const repositoryConfigFileName: string = `${repositoryName}_repository.json`;
+
+  let sequelizeInstanceConfig: Sequelize.Options;
+
+  switch (env) {
+    case 'test-mysql':
+      sequelizeInstanceConfig = getMysqlConfig(repositoryConfigFileName, repositoryName);
+      break;
+    case 'test-postgres':
+      sequelizeInstanceConfig = getPostgresConfig(repositoryConfigFileName, repositoryName);
+      break;
+    case 'test-sqlite':
+      sequelizeInstanceConfig = getSQLiteConfig(sqlitePath, repositoryConfigFileName, repositoryName);
+      break;
+    default:
+      throw new Error(`NODE_ENV '${env}' is not supported!`);
+  }
 
   const sequelizeInstance: Sequelize.Sequelize = await sequelizeConnectionManager.getConnection(sequelizeInstanceConfig);
 
@@ -29,26 +43,23 @@ export async function migrate(repositoryName: string, sqlitePath: string): Promi
   await sequelizeConnectionManager.destroyConnection(sequelizeInstanceConfig);
 }
 
-function getSQLiteConfig(sqlitePath: string, repositoryName: string): object {
+function getMysqlConfig(configFileName: string, repositoryName: string): object {
+  return readConfigFile('mysql', configFileName);
+}
 
-  const repositoryConfigFileName: string = `${repositoryName}_repository.json`;
+function getPostgresConfig(configFileName: string, repositoryName: string): object {
+  return readConfigFile('postgres', configFileName);
+}
 
-  const sqliteConfig: Sequelize.Options = readConfigFile('sqlite', repositoryConfigFileName);
+function getSQLiteConfig(sqlitePath: string, configFileName: string, repositoryName: string): object {
+
+  const sqliteConfig: Sequelize.Options = readConfigFile('sqlite', configFileName);
 
   const databaseFullPath: string = path.resolve(sqlitePath, sqliteConfig.storage);
 
   sqliteConfig.storage = `${databaseFullPath}`;
 
   return sqliteConfig;
-}
-
-function getPostgresConfig(repositoryName: string): object {
-
-  const repositoryConfigFileName: string = `${repositoryName}_repository.json`;
-
-  const postgresConfig: Sequelize.Options = readConfigFile('postgres', repositoryConfigFileName);
-
-  return postgresConfig;
 }
 
 async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: string): Promise<Umzug.Umzug> {

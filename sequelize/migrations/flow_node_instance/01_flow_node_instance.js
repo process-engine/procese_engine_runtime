@@ -4,40 +4,54 @@
 // https://sequelize.readthedocs.io/en/latest/docs/migrations/#functions
 
 // CHANGE NOTES:
-// Some of the earlier versions of the migrations apparently produced an unnamed foreign key on ProcessToken.
-// These cannot be addressed during migration and will potentially break them, when using sqlite.
-// We must therefore rebuild the ProcessTokenTable in order to remove that unnamed foreign key.
+// Changes between 5.0.0 and 6.0.0:
+// - The column eventType was added to store an FNIs BPMN EvntType (Message, Signal, etc.)
+// - The column previousFlowNodeInstanceId was added to store an FNIs BPMN type
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
-    const env = process.env.NODE_ENV || 'sqlite';
+    console.log('Running updating migrations');
 
-    // Note that this bug does not seem to affect postgres.
-    if (env !== 'sqlite') {
-      return Promise.resolve();
+    const flowNodeInstanceTableInfo = await queryInterface.describeTable('FlowNodeInstances');
+
+    const migrationNotRequired = flowNodeInstanceTableInfo.eventType !== undefined
+                              && flowNodeInstanceTableInfo.previousFlowNodeInstanceId !== undefined
+                              && flowNodeInstanceTableInfo.flowNodeType !== undefined;
+
+    if (migrationNotRequired) {
+      console.log('The database is already up to date. Nothing to do here.');
+      return;
     }
 
-    console.log('Repairing the ProcessTokenTable');
-
-    // New Column for ProcessToken
+    console.log('Adding new eventType column');
     await queryInterface.addColumn(
-      'ProcessTokens',
-      'flowNodeInstanceId_2',
+      'FlowNodeInstances',
+      'eventType',
       {
         type: Sequelize.STRING,
         allowNull: true,
       }
     );
 
-    const updateQuery = `UPDATE "ProcessTokens"
-                             SET "flowNodeInstanceId_2" = (
-                                SELECT "flowNodeInstanceId"
-                                FROM "ProcessTokens" AS "Backup"
-                                WHERE "Backup"."id" = "ProcessTokens"."id");`;
+    console.log('Adding new previousFlowNodeInstanceId column');
+    await queryInterface.addColumn(
+      'FlowNodeInstances',
+      'previousFlowNodeInstanceId',
+      {
+        type: Sequelize.STRING,
+        allowNull: true,
+      }
+    );
 
-    await queryInterface.sequelize.query(updateQuery);
-    await queryInterface.removeColumn('ProcessTokens', 'flowNodeInstanceId');
-    await queryInterface.renameColumn('ProcessTokens', 'flowNodeInstanceId_2', 'flowNodeInstanceId');
+    console.log('Adding new flowNodeType column');
+    await queryInterface.addColumn(
+      'FlowNodeInstances',
+      'flowNodeType',
+      {
+        type: Sequelize.STRING,
+        allowNull: true,
+      }
+    );
   },
   down: async (queryInterface, Sequelize) => {
     console.log('Running reverting migrations');

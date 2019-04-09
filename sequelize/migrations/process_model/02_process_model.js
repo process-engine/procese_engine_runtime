@@ -55,13 +55,6 @@ module.exports = {
       },
     });
 
-    const updateQuerySqlite =
-      `INSERT INTO ProcessDefinitions_New
-          (name, xml, hash, createdAt, updatedAt)
-        SELECT
-          name, xml, hash, createdAt, updatedAt
-        FROM ProcessDefinitions;`;
-
     const updateQueryPostgres =
       `INSERT INTO "ProcessDefinitions_New"
           ("name", "xml", "hash", "createdAt", "updatedAt")
@@ -69,10 +62,17 @@ module.exports = {
         src."name", src."xml", src."hash", src."createdAt", src."updatedAt"
         FROM public."ProcessDefinitions" AS src;`;
 
+    const updateQueryDefault =
+      `INSERT INTO ProcessDefinitions_New
+          (name, xml, hash, createdAt, updatedAt)
+        SELECT
+          name, xml, hash, createdAt, updatedAt
+        FROM ProcessDefinitions;`;
+
     if (environmentIsPostgres) {
       await queryInterface.sequelize.query(updateQueryPostgres);
     } else {
-      await queryInterface.sequelize.query(updateQuerySqlite);
+      await queryInterface.sequelize.query(updateQueryDefault);
     }
 
     await queryInterface.dropTable('ProcessDefinitions');

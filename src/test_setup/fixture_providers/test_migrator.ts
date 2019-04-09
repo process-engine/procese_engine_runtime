@@ -14,9 +14,23 @@ export async function migrate(repositoryName: string): Promise<void> {
 
   const env: string = process.env.NODE_ENV || 'test-postgres';
 
-  const sequelizeInstanceConfig: Sequelize.Options = env === 'test-postgres'
-    ? getPostgresConfig(repositoryName)
-    : getSQLiteConfig(repositoryName);
+  const repositoryConfigFileName: string = `${repositoryName}_repository.json`;
+
+  let sequelizeInstanceConfig: Sequelize.Options;
+
+  switch (env) {
+    case 'test-mysql':
+      sequelizeInstanceConfig = getMysqlConfig(repositoryConfigFileName, repositoryName);
+      break;
+    case 'test-postgres':
+      sequelizeInstanceConfig = getPostgresConfig(repositoryConfigFileName, repositoryName);
+      break;
+    case 'test-sqlite':
+      sequelizeInstanceConfig = getSQLiteConfig(repositoryConfigFileName, repositoryName);
+      break;
+    default:
+      throw new Error(`Selected NODE_ENV ${env} is not valid for integration tests!`);
+  }
 
   const sequelizeInstance: Sequelize.Sequelize = await sequelizeConnectionManager.getConnection(sequelizeInstanceConfig);
 
@@ -26,11 +40,27 @@ export async function migrate(repositoryName: string): Promise<void> {
   await sequelizeConnectionManager.destroyConnection(sequelizeInstanceConfig);
 }
 
-function getSQLiteConfig(repositoryName: string): object {
+function getMysqlConfig(configFileName: string, repositoryName: string): object {
 
-  const repositoryConfigFileName: string = `${repositoryName}_repository.json`;
+  let mysqlConfig: Sequelize.Options = readConfigFile('test-mysql', configFileName);
 
-  const sqliteConfig: Sequelize.Options = readConfigFile('test-sqlite', repositoryConfigFileName);
+  mysqlConfig = applyCustomHostNameFromEnv(mysqlConfig, repositoryName);
+
+  return mysqlConfig;
+}
+
+function getPostgresConfig(configFileName: string, repositoryName: string): object {
+
+  let postgresConfig: Sequelize.Options = readConfigFile('test-postgres', configFileName);
+
+  postgresConfig = applyCustomHostNameFromEnv(postgresConfig, repositoryName);
+
+  return postgresConfig;
+}
+
+function getSQLiteConfig(configFileName: string, repositoryName: string): object {
+
+  const sqliteConfig: Sequelize.Options = readConfigFile('test-sqlite', configFileName);
 
   // Jenkins stores its sqlite databases in a separate workspace folder.
   // We must account for this here.
@@ -43,23 +73,18 @@ function getSQLiteConfig(repositoryName: string): object {
   return sqliteConfig;
 }
 
-function getPostgresConfig(repositoryName: string): object {
+function applyCustomHostNameFromEnv(config: Sequelize.Options, repositoryName: string): Sequelize.Options {
 
-  const repositoryConfigFileName: string = `${repositoryName}_repository.json`;
-
-  const postgresConfig: Sequelize.Options = readConfigFile('test-postgres', repositoryConfigFileName);
-
-  // The postgres database used by Jenkins is stored under the hostname `postgres`, NOT `localhost`!
-  // The hostname is stored under the corresponding environment config parameter.
-  // We need to check that parameter here, or the migrations will fail.
+  // Jenkins uses customized host names for mysql and postgres. We need to account for that fact here,
+  // or the migrations will fail.
   const customHostName: string = process.env[`process_engine__${repositoryName}_repository__host`];
 
   const customHostNameSet: boolean = customHostName !== undefined;
   if (customHostNameSet) {
-    postgresConfig.host = customHostName;
+    config.host = customHostName;
   }
 
-  return postgresConfig;
+  return config;
 }
 
 async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: string): Promise<Umzug.Umzug> {
