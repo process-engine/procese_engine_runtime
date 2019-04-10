@@ -34,7 +34,7 @@ def create_summary_from_test_log(testlog, test_failed, database_type) {
   def no_tests_executed = passing == '0 passing' && failing_matcher.count == 0;
 
   if (test_failed == true) {
-    result_string =  ":boom: *Tests ${database_type} failed!*";
+    result_string =  ":boom: *${database_type} Tests failed!*";
   } else if (no_tests_executed) {
     result_string =  ":question: *No tests for ${database_type} were executed!*";
   } else {
