@@ -14,7 +14,7 @@ def cleanup_workspace() {
 }
 
 @NonCPS
-def slack_send_summary(testlog, test_failed, database_type) {
+def create_summary_from_test_log(testlog, test_failed, database_type) {
   def passing_regex = /\d+ passing/;
   def failing_regex = /\d+ failing/;
   def pending_regex = /\d+ pending/;
@@ -27,37 +27,48 @@ def slack_send_summary(testlog, test_failed, database_type) {
   def failing = failing_matcher.count > 0 ? failing_matcher[0] : '0 failing';
   def pending = pending_matcher.count > 0 ? pending_matcher[0] : '0 pending';
 
+  def result_string;
+
+  // Note that mocha will always print the amount of successful tests, even if there are 0.
+  // So this must be handled differently here.
+  def no_tests_executed = passing == '0 passing' && failing_matcher.count == 0;
+
+  if (test_failed == true) {
+    result_string =  ":boom: *Tests ${database_type} failed!*";
+  } else if (no_tests_executed) {
+    result_string =  ":question: *No tests for ${database_type} were executed!*";
+  } else {
+    result_string =  ":white_check_mark: *${database_type} Tests succeeded!*";
+  }
+
+  if (passing_matcher.count > 0) {
+    result_string += "\\n\\n${passing}";
+  }
+
+  if (failing_matcher.count > 0) {
+    result_string += "\\n${failing}";
+  }
+
+  if (pending_matcher.count > 0) {
+    result_string += "\\n${pending}";
+  }
+
+  return result_string;
+}
+
+def slack_send_summary(testlog, test_failed) {
+
   def color_string     =  '"color":"good"';
   def markdown_string  =  '"mrkdwn_in":["text","title"]';
-  def title_string     =  "\"title\":\":white_check_mark: Process Engine Runtime Integration Tests against ${database_type} for ${BRANCH_NAME} Succeeded!\"";
-  def result_string    =  "\"text\":\"${passing}\\n${failing}\\n${pending}\"";
+  def title_string     =  "\"title\":\"ProcessEngine Runtime Integration test results for branch ${BRANCH_NAME}:\"";
+  def result_string    =  "\"text\":\"${testlog}\"";
   def action_string    =  "\"actions\":[{\"name\":\"open_jenkins\",\"type\":\"button\",\"text\":\"Open this run\",\"url\":\"${RUN_DISPLAY_URL}\"}]";
 
   if (test_failed == true) {
     color_string = '"color":"danger"';
-    title_string =  "\"title\":\":boom: Process Engine Runtime Integration Tests against ${database_type} for ${BRANCH_NAME} Failed!\"";
   }
 
   slackSend(attachments: "[{$color_string, $title_string, $markdown_string, $result_string, $action_string}]");
-}
-
-def slack_send_testlog(testlog) {
-  withCredentials([string(credentialsId: 'slack-file-poster-token', variable: 'SLACK_TOKEN')]) {
-
-    def requestBody = [
-      "token=${SLACK_TOKEN}",
-      "content=${testlog}",
-      "filename=process_engine_runtime_integration_tests.txt",
-      "channels=process-engine_ci"
-    ];
-
-    httpRequest(
-      url: 'https://slack.com/api/files.upload',
-      httpMode: 'POST',
-      contentType: 'APPLICATION_FORM',
-      requestBody: requestBody.join('&')
-    );
-  }
 }
 
 pipeline {
@@ -269,20 +280,15 @@ pipeline {
         script {
           // Failure to send the slack message should not result in build failure.
           try {
-            slack_send_summary(mysql_testresults, mysql_test_failed, 'MySQL');
-            if (mysql_test_failed) {
-              slack_send_testlog(mysql_testresults);
-            }
+            def mysql_report = create_summary_from_test_log(mysql_testresults, mysql_test_failed, 'MySQL');
+            def postgres_report = create_summary_from_test_log(postgres_testresults, postgres_test_failed, 'PostgreSQL');
+            def sqlite_report = create_summary_from_test_log(sqlite_testresults, sqlite_tests_failed, 'SQLite');
 
-            slack_send_summary(postgres_testresults, postgres_test_failed, 'PostgreSQL');
-            if (postgres_test_failed) {
-              slack_send_testlog(postgres_testresults);
-            }
+            def full_report = "${mysql_report}\\n\\n${postgres_report}\\n\\n${sqlite_report}"
 
-            slack_send_summary(sqlite_testresults, sqlite_tests_failed, 'SQLite');
-            if (sqlite_tests_failed) {
-              slack_send_testlog(sqlite_testresults);
-            }
+            def some_tests_failed = mysql_test_failed || postgres_test_failed || sqlite_tests_failed
+
+            slack_send_summary(full_report, some_tests_failed)
           } catch (Exception error) {
             echo "Failed to send slack report: $error";
           }
