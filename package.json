@@ -134,6 +134,7 @@
     "mocha-jenkins-reporter": "^0.4.1",
     "pkg": "^4.3.7",
     "should": "^13.2.3",
+    "tslint": "^5.15.0",
     "typescript": "^3.1.3"
   }
 }
