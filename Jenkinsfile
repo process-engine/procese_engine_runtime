@@ -166,6 +166,13 @@ pipeline {
               mysql_test_failed = mysql_exit_code > 0;
             }
           }
+          post {
+            always {
+              script {
+                cleanup_workspace();
+              }
+            }
+          }
         }
         stage('PostgreSQL') {
           agent {
@@ -212,6 +219,13 @@ pipeline {
               sh('cat process_engine_runtime_integration_tests_postgres.txt');
 
               postgres_test_failed = postgres_exit_code > 0;
+            }
+          }
+          post {
+            always {
+              script {
+                cleanup_workspace();
+              }
             }
           }
         }
