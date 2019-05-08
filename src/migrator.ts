@@ -23,12 +23,15 @@ export async function migrate(repositoryName: string, sqlitePath: string): Promi
 
   switch (env) {
     case 'test-mysql':
+    case 'mysql':
       sequelizeInstanceConfig = getMysqlConfig(repositoryConfigFileName, repositoryName);
       break;
     case 'test-postgres':
+    case 'postgres':
       sequelizeInstanceConfig = getPostgresConfig(repositoryConfigFileName, repositoryName);
       break;
     case 'test-sqlite':
+    case 'sqlite':
       sequelizeInstanceConfig = getSQLiteConfig(sqlitePath, repositoryConfigFileName, repositoryName);
       break;
     default:
