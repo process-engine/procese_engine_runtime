@@ -309,34 +309,32 @@ pipeline {
         }
       }
     }
-    // NOTE: There are currently no windows slaves on Jenkins, so we cannot build the windows installers!
-    //
-    // stage('Build Windows Installer') {
-    //   when {
-    //     expression {
-    //       currentBuild.result == 'SUCCESS' &&
-    //       (branch_is_master || branch_is_develop)
-    //     }
-    //   }
-    //   agent {
-    //     label 'windows'
-    //   }
-    //   steps {
+    stage('Build Windows Installer') {
+      when {
+        expression {
+          currentBuild.result == 'SUCCESS' &&
+          (branch_is_master || branch_is_develop)
+        }
+      }
+      agent {
+        label 'windows'
+      }
+      steps {
 
-    //     nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-    //       bat('node --version')
-    //       bat('npm install')
-    //       bat('npm run build')
-    //       bat('npm rebuild')
+        nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+          bat('node --version')
+          bat('npm install')
+          bat('npm run build')
+          bat('npm rebuild')
 
-    //       bat('npm run create-executable-windows')
-    //     }
+          bat('npm run create-executable-windows')
+        }
 
-    //     bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
+        bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
 
-    //     stash(includes: "installer\\Output\\Install ProcessEngine Runtime v${full_release_version_string}.exe", name: 'windows_installer_exe')
-    //   }
-    // }
+        stash(includes: "installer\\Output\\Install ProcessEngine Runtime v${full_release_version_string}.exe", name: 'windows_installer_exe')
+      }
+    }
     stage('publish') {
       when {
         expression {
