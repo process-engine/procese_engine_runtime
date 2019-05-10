@@ -401,7 +401,7 @@ pipeline {
         // unstash('windows_installer_exe')
 
         withCredentials([
-          string(credentialsId: 'process-engine-ci_token', variable: 'RELEASE_GH_TOKEN')
+          string(credentialsId: 'process-engine-ci_github-token', variable: 'RELEASE_GH_TOKEN')
         ]) {
           script {
 
