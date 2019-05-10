@@ -396,7 +396,7 @@ pipeline {
       }
       steps {
 
-        // unstash('windows_installer_exe')
+        unstash('windows_installer_exe')
 
         withCredentials([
           string(credentialsId: 'process-engine-ci_github-token', variable: 'RELEASE_GH_TOKEN')
@@ -410,7 +410,7 @@ pipeline {
             create_github_release_command += "${branch} ";
             create_github_release_command += "${release_will_be_draft} ";
             create_github_release_command += "${!branch_is_master} ";
-            // create_github_release_command += "installer/Output/Install\\ ProcessEngine\\ Runtime\\ v${full_release_version_string}.exe";
+            create_github_release_command += "installer/Output/Install\\ ProcessEngine\\ Runtime\\ v${full_release_version_string}.exe";
 
             sh(create_github_release_command);
           }
