@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-naming */
 import * as fs from 'fs';
 import * as jsonwebtoken from 'jsonwebtoken';
 import * as path from 'path';
@@ -5,7 +6,6 @@ import * as path from 'path';
 import {InvocationContainer} from 'addict-ioc';
 
 import {Logger} from 'loggerhythm';
-const logger: Logger = Logger.createLogger('test:bootstrapper');
 
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
 import {IIdentity, TokenBody} from '@essential-projects/iam_contracts';
@@ -16,16 +16,18 @@ import {IExternalTaskApi} from '@process-engine/external_task_api_contracts';
 import {ExternalTaskSampleWorker} from '@process-engine/external_task_sample_worker';
 import {IManagementApi} from '@process-engine/management_api_contracts';
 import {IExecuteProcessService} from '@process-engine/process_engine_contracts';
-import {IProcessModelUseCases, Model} from '@process-engine/process_model.contracts';
+import {IProcessModelUseCases} from '@process-engine/process_model.contracts';
 
 import {initializeBootstrapper} from './setup_ioc_container';
 import {migrate as executeMigrations} from './test_migrator';
 
 import {configureGlobalRoutes} from '../../global_route_configurator';
 
+const logger: Logger = Logger.createLogger('test:bootstrapper');
+
 export type IdentityCollection = {
   defaultUser: IIdentity;
-  secondDefaultUser: IIdentity,
+  secondDefaultUser: IIdentity;
   restrictedUser: IIdentity;
   userWithAccessToSubLaneC: IIdentity;
   userWithAccessToLaneA: IIdentity;
@@ -77,12 +79,12 @@ export class TestFixtureProvider {
 
   public async initializeAndStart(): Promise<void> {
 
-    await this._runMigrations();
-    await this._initializeBootstrapper();
+    await this.runMigrations();
+    await this.initializeBootstrapper();
     await this.bootstrapper.start();
     await configureGlobalRoutes(this.container);
 
-    await this._createMockIdentities();
+    await this.createMockIdentities();
 
     this._consumerApiClientService = await this.resolveAsync<IConsumerApi>('ConsumerApiClientService');
     this._managementApiClientService = await this.resolveAsync<IManagementApi>('ManagementApiClientService');
@@ -103,18 +105,18 @@ export class TestFixtureProvider {
     await this.bootstrapper.stop();
   }
 
-  public resolve<T>(moduleName: string, args?: any): T {
-    return this.container.resolve<T>(moduleName, args);
+  public resolve<TModule>(moduleName: string, args?: any): TModule {
+    return this.container.resolve<TModule>(moduleName, args);
   }
 
-  public async resolveAsync<T>(moduleName: string, args?: any): Promise<T> {
-    return this.container.resolveAsync<T>(moduleName, args);
+  public async resolveAsync<TModule>(moduleName: string, args?: any): Promise<TModule> {
+    return this.container.resolveAsync<TModule>(moduleName, args);
   }
 
   public async importProcessFiles(processFileNames: Array<string>): Promise<void> {
 
     for (const processFileName of processFileNames) {
-      await this._registerProcess(processFileName);
+      await this.registerProcess(processFileName);
     }
   }
 
@@ -130,8 +132,8 @@ export class TestFixtureProvider {
 
   public getBpmnDirectoryPath(): string {
 
-    const bpmnDirectoryName: string = 'bpmn';
-    const rootDirPath: string = process.cwd();
+    const bpmnDirectoryName = 'bpmn';
+    const rootDirPath = process.cwd();
 
     return path.join(rootDirPath, bpmnDirectoryName);
   }
@@ -143,10 +145,10 @@ export class TestFixtureProvider {
       .startAndAwaitEndEvent(this.identities.defaultUser, processModelId, correlationId, startEventId, initialToken);
   }
 
-  private async _runMigrations(): Promise<void> {
+  private async runMigrations(): Promise<void> {
 
     logger.info('Running migrations....');
-    const repositories: Array<string> = [
+    const repositories = [
       'correlation',
       'external_task',
       'flow_node_instance',
@@ -159,12 +161,12 @@ export class TestFixtureProvider {
     logger.info('Migrations successfully finished!');
   }
 
-  private async _initializeBootstrapper(): Promise<void> {
+  private async initializeBootstrapper(): Promise<void> {
 
     try {
       this.container = await initializeBootstrapper();
 
-      const appPath: string = path.resolve(__dirname);
+      const appPath = path.resolve(__dirname);
       this.bootstrapper = await this.container.resolveAsync<AppBootstrapper>('AppBootstrapper', [appPath]);
 
       logger.info('Bootstrapper started.');
@@ -174,22 +176,22 @@ export class TestFixtureProvider {
     }
   }
 
-  private async _createMockIdentities(): Promise<void> {
+  private async createMockIdentities(): Promise<void> {
 
     this._identities = {
       // all access user
-      defaultUser: await this._createIdentity('defaultUser'),
-      secondDefaultUser: await this._createIdentity('secondDefaultUser'),
+      defaultUser: await this.createIdentity('defaultUser'),
+      secondDefaultUser: await this.createIdentity('secondDefaultUser'),
       // no access user
-      restrictedUser: await this._createIdentity('restrictedUser'),
+      restrictedUser: await this.createIdentity('restrictedUser'),
       // partially restricted users
-      userWithAccessToSubLaneC: await this._createIdentity('userWithAccessToSubLaneC'),
-      userWithAccessToLaneA: await this._createIdentity('userWithAccessToLaneA'),
-      userWithNoAccessToLaneA: await this._createIdentity('userWithNoAccessToLaneA'),
+      userWithAccessToSubLaneC: await this.createIdentity('userWithAccessToSubLaneC'),
+      userWithAccessToLaneA: await this.createIdentity('userWithAccessToLaneA'),
+      userWithNoAccessToLaneA: await this.createIdentity('userWithNoAccessToLaneA'),
     };
   }
 
-  private async _createIdentity(userId: string): Promise<IIdentity> {
+  private async createIdentity(userId: string): Promise<IIdentity> {
 
     const tokenBody: TokenBody = {
       sub: userId,
@@ -202,13 +204,13 @@ export class TestFixtureProvider {
 
     const encodedToken: string = jsonwebtoken.sign(tokenBody, 'randomkey', signOptions);
 
-    return <IIdentity> {
+    return {
       token: encodedToken,
       userId: userId,
     };
   }
 
-  private async _registerProcess(processFileName: string): Promise<void> {
+  private async registerProcess(processFileName: string): Promise<void> {
 
     const bpmnDirectoryPath: string = this.getBpmnDirectoryPath();
     const processFilePath: string = path.join(bpmnDirectoryPath, `${processFileName}.bpmn`);
@@ -217,4 +219,5 @@ export class TestFixtureProvider {
 
     await this.deploymentApiService.importBpmnFromFile(this.identities.defaultUser, processFilePath, processName, true);
   }
+
 }

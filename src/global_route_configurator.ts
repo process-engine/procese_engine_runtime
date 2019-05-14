@@ -7,8 +7,8 @@ import {IHttpExtension} from '@essential-projects/http_contracts';
 
 let httpExtension: IHttpExtension;
 
-const httpStatusCodeSuccess: number = 200;
-const authorityRoute: string = '/security/authority';
+const httpStatusCodeSuccess = 200;
+const authorityRoute = '/security/authority';
 
 interface IApplicationInfo {
   name: string;
@@ -35,7 +35,7 @@ function configureRootRoute(): void {
   // tslint:disable-next-line:no-magic-numbers
   const formattedResponse: string = JSON.stringify(packageInfo, null, 2);
 
-  httpExtension.app.get('/', (request: Request, response: Response) => {
+  httpExtension.app.get('/', (request: Request, response: Response): void => {
     response
       .status(httpStatusCodeSuccess)
       .header('Content-Type', 'application/json')
@@ -53,7 +53,7 @@ function configureAuthorityRoute(): void {
   // tslint:disable-next-line:no-magic-numbers
   const formattedResponse: string = JSON.stringify(responseBody, null, 2);
 
-  httpExtension.app.get(authorityRoute, (request: Request, response: Response) => {
+  httpExtension.app.get(authorityRoute, (request: Request, response: Response): void => {
     response
       .status(httpStatusCodeSuccess)
       .header('Content-Type', 'application/json')
@@ -69,6 +69,7 @@ function loadConfig(configDirName: string, configFileName: string): any {
 
   const configPath: string = path.join(baseConfigPath, process.env.NODE_ENV, configDirName, `${configFileName}.json`);
 
+  // eslint-disable-next-line
   const loadedConfig: any = require(configPath);
 
   return loadedConfig;
