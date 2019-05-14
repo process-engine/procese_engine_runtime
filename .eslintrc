@@ -1,0 +1,6 @@
+{
+  "extends": "@essential-projects/eslint-config",
+  "rules": {
+    "no-plusplus": ["off"]
+  }
+}

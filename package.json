@@ -117,7 +117,7 @@
     "umzug": "~2.2.0"
   },
   "devDependencies": {
-    "@essential-projects/tslint-config": "^1.1.5",
+    "@essential-projects/eslint-config": "^1.0.0",
     "@process-engine/consumer_api_client": "^5.0.0",
     "@process-engine/external_task_api_client": "^1.0.6",
     "@process-engine/external_task_sample_worker": "^1.1.10",
