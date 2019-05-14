@@ -88,7 +88,7 @@
     "@process-engine/management_api_http": "4.3.0",
     "@process-engine/metrics_api_core": "1.0.2",
     "@process-engine/metrics.repository.file_system": "1.1.2",
-    "@process-engine/process_engine_core": "12.7.0-9d25eeb9-b216",
+    "@process-engine/process_engine_core": "feature~fix_timer_start_event_handling",
     "@process-engine/process_model.repository.sequelize": "6.0.0-a2be7ad0-b8",
     "@process-engine/process_model.service": "1.1.0",
     "@process-engine/process_model.use_case": "1.2.0",
