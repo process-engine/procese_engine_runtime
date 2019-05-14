@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import {InvocationContainer} from 'addict-ioc';
 import * as fs from 'fs';
 import {Logger} from 'loggerhythm';
@@ -14,9 +15,9 @@ import {migrate as executeMigrations} from './migrator';
 
 const logger: Logger = Logger.createLogger('processengine:runtime:startup');
 
-process.on('unhandledRejection', (err: any) => {
-  logger.error('-- An unhandled exception was caught! Error: --');
-  logger.error(err);
+process.on('unhandledRejection', (err: Error): void => {
+  logger.error('-- An unhandled exception was caught! --');
+  logger.error('Error: ', err);
   logger.error('-- end of unhandled exception stack trace --');
 });
 
@@ -44,7 +45,7 @@ function initializeEnvironment(sqlitePath: string): void {
 
   // set current working directory
   const userDataFolderPath: string = getUserConfigFolder();
-  const userDataProcessEngineFolderName: string = 'process_engine_runtime';
+  const userDataProcessEngineFolderName = 'process_engine_runtime';
 
   const workingDir: string = path.join(userDataFolderPath, userDataProcessEngineFolderName);
 
@@ -76,7 +77,7 @@ function setConfigPath(): void {
     logger.warn('Falling back to default internal config.');
   }
 
-  const internalConfigFolderName: string = 'config';
+  const internalConfigFolderName = 'config';
   const internalConfigPath: string = path.join(__dirname, '..', '..', internalConfigFolderName);
 
   ensureConfigPathExists(internalConfigPath);
@@ -86,7 +87,7 @@ function setConfigPath(): void {
 
 function ensureConfigPathExists(configPath: string): void {
 
-  const configPathNotFound: boolean = !fs.existsSync(configPath);
+  const configPathNotFound = !fs.existsSync(configPath);
   if (configPathNotFound) {
     logger.error('Specified configuration folder not found!');
     logger.error(`Please make sure the folder ${configPath} exists!`);
@@ -98,7 +99,7 @@ function loadConfiguredEnvironmentOrDefault(): void {
 
   const selectedEnvironment: string = process.env.NODE_ENV;
 
-  const defaultEnvironment: string = 'sqlite';
+  const defaultEnvironment = 'sqlite';
 
   if (!selectedEnvironment) {
     process.env.NODE_ENV = defaultEnvironment;
@@ -207,6 +208,7 @@ function loadIocModules(): Array<any> {
   ];
 
   const iocModules: Array<any> = iocModuleNames.map((moduleName: string): any => {
+    // eslint-disable-next-line
     return require(`${moduleName}/ioc_module`);
   });
 
@@ -246,8 +248,8 @@ function getSqliteStoragePath(sqlitePath?: string): string {
   }
 
   const userDataFolderPath: string = getUserConfigFolder();
-  const userDataProcessEngineFolderName: string = 'process_engine_runtime';
-  const processEngineDatabaseFolderName: string = 'databases';
+  const userDataProcessEngineFolderName = 'process_engine_runtime';
+  const processEngineDatabaseFolderName = 'databases';
 
   const databaseBasePath: string = path.resolve(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
 

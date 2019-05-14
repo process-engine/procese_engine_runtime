@@ -17,23 +17,12 @@ import {TestFixtureProvider} from './test_fixture_provider';
  */
 export class ProcessInstanceHandler {
 
-  private _eventAggregator: IEventAggregator;
-  private _testFixtureProvider: TestFixtureProvider;
+  private testFixtureProvider: TestFixtureProvider;
+  private eventAggregator: IEventAggregator;
 
   constructor(testFixtureProvider: TestFixtureProvider) {
-    this._testFixtureProvider = testFixtureProvider;
-  }
-
-  private get eventAggregator(): IEventAggregator {
-    if (!this._eventAggregator) {
-      this._eventAggregator = this.testFixtureProvider.resolve<IEventAggregator>('EventAggregator');
-    }
-
-    return this._eventAggregator;
-  }
-
-  private get testFixtureProvider(): TestFixtureProvider {
-    return this._testFixtureProvider;
+    this.testFixtureProvider = testFixtureProvider;
+    this.eventAggregator = this.testFixtureProvider.resolve<IEventAggregator>('EventAggregator');
   }
 
   public async startProcessInstanceAndReturnCorrelationId(
@@ -43,16 +32,16 @@ export class ProcessInstanceHandler {
     identity?: IIdentity,
   ): Promise<string> {
 
-    const startEventId: string = 'StartEvent_1';
-    const startCallbackType: DataModels.ProcessModels.StartCallbackType = DataModels.ProcessModels.StartCallbackType.CallbackOnProcessInstanceCreated;
+    const startEventId = 'StartEvent_1';
+    const startCallbackType = DataModels.ProcessModels.StartCallbackType.CallbackOnProcessInstanceCreated;
     const payload: DataModels.ProcessModels.ProcessStartRequestPayload = {
       correlationId: correlationId || uuid.v4(),
       inputValues: inputValues || {},
     };
 
-    const identityToUse: IIdentity = identity || this.testFixtureProvider.identities.defaultUser;
+    const identityToUse = identity || this.testFixtureProvider.identities.defaultUser;
 
-    const result: DataModels.ProcessModels.ProcessStartResponsePayload = await this.testFixtureProvider
+    const result = await this.testFixtureProvider
       .consumerApiClientService
       .startProcessInstance(identityToUse, processModelId, payload, startCallbackType, startEventId);
 
@@ -66,16 +55,16 @@ export class ProcessInstanceHandler {
     identity?: IIdentity,
   ): Promise<DataModels.ProcessModels.ProcessStartResponsePayload> {
 
-    const startEventId: string = 'StartEvent_1';
-    const startCallbackType: DataModels.ProcessModels.StartCallbackType = DataModels.ProcessModels.StartCallbackType.CallbackOnProcessInstanceCreated;
+    const startEventId = 'StartEvent_1';
+    const startCallbackType = DataModels.ProcessModels.StartCallbackType.CallbackOnProcessInstanceCreated;
     const payload: DataModels.ProcessModels.ProcessStartRequestPayload = {
       correlationId: correlationId || uuid.v4(),
       inputValues: inputValues || {},
     };
 
-    const identityToUse: IIdentity = identity || this.testFixtureProvider.identities.defaultUser;
+    const identityToUse = identity || this.testFixtureProvider.identities.defaultUser;
 
-    const result: DataModels.ProcessModels.ProcessStartResponsePayload = await this.testFixtureProvider
+    const result = await this.testFixtureProvider
       .consumerApiClientService
       .startProcessInstance(identityToUse, processModelId, payload, startCallbackType, startEventId);
 
@@ -88,19 +77,19 @@ export class ProcessInstanceHandler {
     expectedNumberOfWaitingTasks: number = 1,
   ): Promise<void> {
 
-    const maxNumberOfRetries: number = 60;
-    const delayBetweenRetriesInMs: number = 200;
+    const maxNumberOfRetries = 60;
+    const delayBetweenRetriesInMs = 200;
 
     const flowNodeInstanceService: IFlowNodeInstanceService = this.testFixtureProvider.resolve<IFlowNodeInstanceService>('FlowNodeInstanceService');
 
-    for (let i: number = 0; i < maxNumberOfRetries; i++) {
+    for (let i = 0; i < maxNumberOfRetries; i++) {
 
       await this.wait(delayBetweenRetriesInMs);
 
       let flowNodeInstances: Array<FlowNodeInstance> = await flowNodeInstanceService.querySuspendedByCorrelation(correlationId);
 
       if (processModelId) {
-        flowNodeInstances = flowNodeInstances.filter((fni: FlowNodeInstance) => {
+        flowNodeInstances = flowNodeInstances.filter((fni: FlowNodeInstance): boolean => {
           return fni.tokens[0].processModelId === processModelId;
         });
       }
@@ -116,12 +105,12 @@ export class ProcessInstanceHandler {
 
   public async waitForExternalTaskToBeCreated(topicName: string, maxTask: number = 100): Promise<void> {
 
-    const maxNumberOfRetries: number = 60;
-    const delayBetweenRetriesInMs: number = 200;
+    const maxNumberOfRetries = 60;
+    const delayBetweenRetriesInMs = 200;
 
-    const externalTaskRepository: IExternalTaskRepository = this.testFixtureProvider.resolve<IExternalTaskRepository>('ExternalTaskRepository');
+    const externalTaskRepository = this.testFixtureProvider.resolve<IExternalTaskRepository>('ExternalTaskRepository');
 
-    for (let i: number = 0; i < maxNumberOfRetries; i++) {
+    for (let i = 0; i < maxNumberOfRetries; i++) {
 
       await this.wait(delayBetweenRetriesInMs);
 
@@ -220,14 +209,16 @@ export class ProcessInstanceHandler {
    * @param   manualTaskInput      The input data with which to finish the ManualTask.
    * @returns                    The result of the finishing operation.
    */
-  public async finishManualTaskInCorrelation(identity: IIdentity,
-                                             processInstanceId: string,
-                                             correlationId: string,
-                                             manualTaskInstanceId: string): Promise<void> {
+  public async finishManualTaskInCorrelation(
+    identity: IIdentity,
+    processInstanceId: string,
+    correlationId: string,
+    manualTaskInstanceId: string,
+  ): Promise<void> {
 
     await this.testFixtureProvider
-       .consumerApiClientService
-       .finishManualTask(identity, processInstanceId, correlationId, manualTaskInstanceId);
+      .consumerApiClientService
+      .finishManualTask(identity, processInstanceId, correlationId, manualTaskInstanceId);
   }
 
   /**
@@ -243,22 +234,24 @@ export class ProcessInstanceHandler {
    * @param   userTaskInput      The input data with which to finish the UserTask.
    * @returns                    The result of the finishing operation.
    */
-  public async finishUserTaskInCorrelation(identity: IIdentity,
-                                           correlationId: string,
-                                           processInstanceId: string,
-                                           userTaskInstanceId: string,
-                                           userTaskInput: any): Promise<any> {
+  public async finishUserTaskInCorrelation(
+    identity: IIdentity,
+    correlationId: string,
+    processInstanceId: string,
+    userTaskInstanceId: string,
+    userTaskInput: any,
+  ): Promise<any> {
 
-    const waitingUserTasks: DataModels.UserTasks.UserTaskList = await this.getWaitingUserTasksForCorrelationId(identity, correlationId);
+    const waitingUserTasks = await this.getWaitingUserTasksForCorrelationId(identity, correlationId);
 
     should(waitingUserTasks).have.property('userTasks');
     should(waitingUserTasks.userTasks.length).be.equal(1, 'The process should have one waiting user task');
 
-    const waitingUserTask: DataModels.UserTasks.UserTask = waitingUserTasks.userTasks[0];
+    const waitingUserTask = waitingUserTasks.userTasks[0];
 
     should(waitingUserTask.flowNodeInstanceId).be.equal(userTaskInstanceId);
 
-    const userTaskResult: any =
+    const userTaskResult =
       await this.testFixtureProvider
         .consumerApiClientService
         .finishUserTask(identity, processInstanceId, correlationId, userTaskInstanceId, userTaskInput);
@@ -281,18 +274,18 @@ export class ProcessInstanceHandler {
    * @param resolveFunc    The function to call when the process was finished.
    */
   public waitForProcessInstanceToEnd(correlationId: string, processModelId: string, resolveFunc: EventReceivedCallback): void {
-    const endMessageToWaitFor: string = `/processengine/correlation/${correlationId}/processmodel/${processModelId}/ended`;
+    const endMessageToWaitFor = `/processengine/correlation/${correlationId}/processmodel/${processModelId}/ended`;
     this.eventAggregator.subscribeOnce(endMessageToWaitFor, resolveFunc);
   }
 
   public waitForProcessWithInstanceIdToEnd(processInstanceId: string, resolveFunc: EventReceivedCallback): void {
-    const endMessageToWaitFor: string = `/processengine/process/${processInstanceId}/ended`;
+    const endMessageToWaitFor = `/processengine/process/${processInstanceId}/ended`;
     this.eventAggregator.subscribeOnce(endMessageToWaitFor, resolveFunc);
   }
 
   public async wait(delayTimeInMs: number): Promise<void> {
     await new Promise((resolve: Function): void => {
-      setTimeout(() => {
+      setTimeout((): void => {
         resolve();
       }, delayTimeInMs);
     });
