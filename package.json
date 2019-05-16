@@ -72,7 +72,7 @@
     "@essential-projects/http": "2.4.0",
     "@essential-projects/http_extension": "6.6.1",
     "@essential-projects/timing": "4.2.0",
-    "@process-engine/consumer_api_core": "5.3.0",
+    "@process-engine/consumer_api_core": "feature~add_events_for_call-activities_and_intermediate-events",
     "@process-engine/consumer_api_http": "4.2.0",
     "@process-engine/correlation.service": "1.3.0",
     "@process-engine/correlations.repository.sequelize": "6.1.0",
