@@ -107,7 +107,7 @@ pipeline {
         nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
           sh('node --version')
           sh('npm install')
-          sh('npm run just-build')
+          sh('npm run build')
           sh('npm rebuild')
         }
 
@@ -324,7 +324,7 @@ pipeline {
         nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
           bat('node --version')
           bat('npm install')
-          bat('npm run just-build')
+          bat('npm run build')
           bat('npm rebuild')
 
           bat('npm run create-executable-windows')
