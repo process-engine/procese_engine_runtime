@@ -9,7 +9,7 @@
     "reinstall": "./reinstall.sh",
     "start": "node ./bin/index.js",
     "clean": "rm -rf dist",
-    "build": "npm run clean && npm run build-commonjs && npm run build-amd",
+    "build": "npm run clean && npm run just-build",
     "build-commonjs": "tsc",
     "build-amd": "tsc --module amd --outDir ./dist/amd",
     "lint": "eslint  src/**/**/*.ts src/**/*.ts src/*.ts",
@@ -23,7 +23,8 @@
     "test": "npm run test-sqlite",
     "test-all": "npm run test-sqlite && npm run test-postgres",
     "test-debug": "cross-env NODE_ENV=test-sqlite CONFIG_PATH=config mocha --inspect-brk test/**/*.js test/**/**/*.js  --exit",
-    "create-executable-windows": "pkg --targets windows ."
+    "create-executable-windows": "pkg --targets windows .",
+    "just-build": "npm run build-commonjs && npm run build-amd"
   },
   "main": "./dist/commonjs/index.js",
   "license": "MIT",
