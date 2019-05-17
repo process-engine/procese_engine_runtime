@@ -71,7 +71,6 @@
     "@essential-projects/event_aggregator": "feature~change_to_eslint_and_tsc",
     "@essential-projects/http": "feature~change_to_eslint_and_tsc",
     "@essential-projects/http_extension": "feature~change_to_eslint_and_tsc",
-    "@essential-projects/sequelize_connection_manager": "feature~change_to_eslint_and_tsc",
     "@essential-projects/timing": "feature~change_to_eslint_and_tsc",
     "@process-engine/consumer_api_core": "5.2.0",
     "@process-engine/consumer_api_http": "4.1.0",
