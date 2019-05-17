@@ -155,5 +155,7 @@ describe('Start Events - ', () => {
     should(result).have.property('currentToken');
     should(result.currentToken).be.match(expectedResult);
     should(duration).be.greaterThan(expectedTimerRuntime);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 });
