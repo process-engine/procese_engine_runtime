@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definition_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="BPMN Studio" exporterVersion="1">
+  <bpmn:collaboration id="Collaboration_1cidyxu" name="">
+    <bpmn:participant id="Participant_0px403d" name="test_management_api_intermediateevent" processRef="test_management_api_intermediateevent" />
+  </bpmn:collaboration>
+  <bpmn:process id="test_management_api_intermediateevent" name="test_management_api_intermediateevent" isExecutable="true">
+    <bpmn:laneSet>
+      <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_0eie6q6</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>IntermediateEvent_1</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_1" name="Start Event">
+      <bpmn:outgoing>SequenceFlow_1jdocur</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1jdocur" sourceRef="StartEvent_1" targetRef="IntermediateEvent_1" />
+    <bpmn:endEvent id="EndEvent_0eie6q6" name="End Event">
+      <bpmn:incoming>SequenceFlow_0weekeq</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0weekeq" sourceRef="IntermediateEvent_1" targetRef="EndEvent_0eie6q6" />
+    <bpmn:intermediateCatchEvent id="IntermediateEvent_1" name="">
+      <bpmn:incoming>SequenceFlow_1jdocur</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0weekeq</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT2S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1cidyxu">
+      <bpmndi:BPMNShape id="Participant_0px403d_di" bpmnElement="Participant_0px403d">
+        <dc:Bounds x="5" y="4" width="581" height="170" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3">
+        <dc:Bounds x="35" y="4" width="551" height="170" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1mox3jl_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="83" y="69" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="74" y="105" width="55" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0eie6q6_di" bpmnElement="EndEvent_0eie6q6">
+        <dc:Bounds x="503" y="69" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="495" y="45" width="51" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1jdocur_di" bpmnElement="SequenceFlow_1jdocur">
+        <di:waypoint x="119" y="87" />
+        <di:waypoint x="284" y="87" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0weekeq_di" bpmnElement="SequenceFlow_0weekeq">
+        <di:waypoint x="320" y="87" />
+        <di:waypoint x="503" y="87" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_0fbjzom_di" bpmnElement="IntermediateEvent_1">
+        <dc:Bounds x="284" y="69" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
