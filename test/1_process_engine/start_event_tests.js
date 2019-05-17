@@ -29,8 +29,13 @@ describe('Start Events - ', () => {
   });
 
   after(async () => {
-    await autoStartService.stop();
-    await testFixtureProvider.tearDown();
+    try {
+      await autoStartService.stop();
+      await testFixtureProvider.tearDown();
+    } catch (error) {
+      console.log('FAILED TO SHUTDOWN CORRECTLY');
+      console.log(error);
+    }
   });
 
   it('should start the process automatically, after a message was received.', async () => {
