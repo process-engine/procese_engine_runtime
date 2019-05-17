@@ -29,13 +29,8 @@ describe('Start Events - ', () => {
   });
 
   after(async () => {
-    try {
-      await autoStartService.stop();
-      await testFixtureProvider.tearDown();
-    } catch (error) {
-      console.log('FAILED TO SHUTDOWN CORRECTLY');
-      console.log(error);
-    }
+    await autoStartService.stop();
+    await testFixtureProvider.tearDown();
   });
 
   it('should start the process automatically, after a message was received.', async () => {
@@ -156,6 +151,10 @@ describe('Start Events - ', () => {
     should(result.currentToken).be.match(expectedResult);
     should(duration).be.greaterThan(expectedTimerRuntime);
 
+    // NOTE: For some reason, the SQLite Adapter remains busy for some time after this test is done.
+    // Until we know why, using a timeout here will help us avoid fatal disposal errors, which, apparently,
+    // cannot be intercepted with try/catch.
+    // This behavior has only been observed with SQLite; Postgres and Mysql do not appear to be affected.
     await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 });
