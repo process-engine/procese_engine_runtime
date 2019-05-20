@@ -93,7 +93,7 @@
     "@process-engine/management_api_http": "4.3.0-7637a656-b3",
     "@process-engine/metrics_api_core": "1.0.2",
     "@process-engine/metrics.repository.file_system": "1.1.2",
-    "@process-engine/process_engine_core": "12.7.0-0fd5dccd-b4",
+    "@process-engine/process_engine_core": "12.7.0-30a51938-b6",
     "@process-engine/process_model.repository.sequelize": "6.0.0-3eec0ab5-b10",
     "@process-engine/process_model.service": "1.1.0",
     "@process-engine/process_model.use_case": "1.2.0",
