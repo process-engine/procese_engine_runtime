@@ -126,7 +126,7 @@
     "@process-engine/consumer_api_client": "^5.0.0",
     "@process-engine/external_task_api_client": "^1.0.6",
     "@process-engine/external_task_sample_worker": "^1.1.10",
-    "@process-engine/management_api_client": "5.0.0-a0a3e316-b3",
+    "@process-engine/management_api_client": "5.0.0-8d3611fd-b4",
     "@types/bluebird-global": "^3.5.9",
     "@types/express": "^4.16.0",
     "@types/node": "^10.12.10",
