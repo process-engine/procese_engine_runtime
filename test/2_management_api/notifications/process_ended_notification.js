@@ -93,7 +93,7 @@ describe('Management API:   Receive ProcessEnded Notification', () => {
       const expectedErrorMessage = /no auth token/i;
       const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 

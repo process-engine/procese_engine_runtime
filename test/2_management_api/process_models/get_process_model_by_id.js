@@ -64,7 +64,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id', () => {
       const expectedErrorMessage = /not found/i;
       const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 
@@ -80,7 +80,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id', () => {
       const expectedErrorMessage = /no auth token provided/i;
       const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 
@@ -96,7 +96,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id', () => {
       const expectedErrorMessage = /access denied/i;
       const expectedErrorCode = 403;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 

@@ -70,7 +70,7 @@ describe('ManagementAPI:   POST  ->  /process_models/:process_model_id/update', 
       const expectedErrorMessage = /already exists/i;
       const expectedErrorCode = 409;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 
@@ -91,7 +91,7 @@ describe('ManagementAPI:   POST  ->  /process_models/:process_model_id/update', 
       const expectedErrorMessage = /no auth token provided/i;
       const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 
@@ -112,7 +112,7 @@ describe('ManagementAPI:   POST  ->  /process_models/:process_model_id/update', 
       const expectedErrorMessage = /access denied/i;
       const expectedErrorCode = 403;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 

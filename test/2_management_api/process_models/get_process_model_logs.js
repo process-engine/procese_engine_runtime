@@ -109,7 +109,7 @@ describe('ManagementAPI:   GET  ->  /process_model/:process_model_id/logs', () =
     } catch (error) {
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });

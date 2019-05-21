@@ -128,10 +128,10 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
 
       should.fail(correlationList, undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 404;
       const expectedErrorMessage = /No correlations.*?found/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 
@@ -143,10 +143,10 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
 
       should.fail(correlationList, undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
-      should(error.code).be.match(expectedErrorCode);
+      const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 });

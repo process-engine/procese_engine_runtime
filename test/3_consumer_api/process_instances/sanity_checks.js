@@ -53,7 +53,7 @@ describe(`Consumer API: ${testCase}`, () => {
     } catch (error) {
       const expectedErrorCode = 404;
       const expectedErrorMessage = /not found/i;
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
@@ -77,7 +77,7 @@ describe(`Consumer API: ${testCase}`, () => {
     } catch (error) {
       const expectedErrorCode = 404;
       const expectedErrorMessage = /startevent.*?not found/i;
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
@@ -102,7 +102,7 @@ describe(`Consumer API: ${testCase}`, () => {
     } catch (error) {
       const expectedErrorCode = 404;
       const expectedErrorMessage = /endevent.*?not found/i;
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
@@ -126,7 +126,7 @@ describe(`Consumer API: ${testCase}`, () => {
     } catch (error) {
       const expectedErrorCode = 400;
       const expectedErrorMessage = /not executable/i;
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
@@ -150,7 +150,7 @@ describe(`Consumer API: ${testCase}`, () => {
     } catch (error) {
       const expectedErrorCode = 400;
       const expectedErrorMessage = /not a valid return option/i;
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
@@ -178,7 +178,7 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorCode = 500;
       const expectedErrorMessage = /critical error/i;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 });

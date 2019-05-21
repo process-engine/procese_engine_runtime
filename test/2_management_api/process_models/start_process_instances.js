@@ -89,7 +89,7 @@ describe(`ManagementAPI: ${testCase}`, () => {
       const expectedErrorMessage = /start.*event.*not found/i;
 
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 
@@ -109,7 +109,7 @@ describe(`ManagementAPI: ${testCase}`, () => {
       const expectedErrorMessage = /multiple.*start.*events/i;
 
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 });

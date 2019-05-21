@@ -68,7 +68,7 @@ describe('ManagementAPI:   GET  -> /process_instance/:process_instance_id/proces
       const expectedErrorMessage = /No.*?ProcessInstance.*?found./i;
       const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 
@@ -84,7 +84,7 @@ describe('ManagementAPI:   GET  -> /process_instance/:process_instance_id/proces
       const expectedErrorMessage = /no auth token provided/i;
       const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 
@@ -100,7 +100,7 @@ describe('ManagementAPI:   GET  -> /process_instance/:process_instance_id/proces
       const expectedErrorMessage = /access denied/i;
       const expectedErrorCode = 403;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 
