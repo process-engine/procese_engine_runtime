@@ -74,6 +74,50 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
     });
   });
 
+  it('should return another users Correlation through the Management API, if the requesting user is a SuperAdmin', async () => {
+
+    const correlation = await testFixtureProvider
+      .managementApiClientService
+      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.defaultUser, processInstanceId1);
+
+    should(correlation).have.property('id');
+    should(correlation).have.property('state');
+    should(correlation).have.property('createdAt');
+    should(correlation).have.property('processInstances');
+
+    correlation.processInstances.forEach((processInstance) => {
+      should(processInstance).have.property('processDefinitionName');
+      should(processInstance).have.property('processModelId');
+      should(processInstance.processModelId).be.equal(processModelId);
+      should(processInstance).have.property('processInstanceId');
+      should(processInstance).have.property('hash');
+      should(processInstance).have.property('xml');
+      should(processInstance).have.property('state');
+      should(processInstance).have.property('identity');
+      should(processInstance.identity).have.property('token');
+      should(processInstance).have.property('createdAt');
+    });
+  });
+
+  it('should filter out another user\'s Correlations, if the requesting user is a regular user', async () => {
+    const correlationDefaultUser = await testFixtureProvider
+      .managementApiClientService
+      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.defaultUser, processInstanceId1);
+
+    correlationDefaultUser.processInstances.forEach((processInstance) => {
+      should(processInstance.identity.userId).be.equal(testFixtureProvider.identities.defaultUser.userId);
+    });
+
+    const correlationSecondUser = await testFixtureProvider
+      .managementApiClientService
+      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.secondDefaultUser, processInstanceId2);
+
+    correlationSecondUser.processInstances.forEach((processInstance) => {
+      should(processInstance.identity.userId).be.equal(testFixtureProvider.identities.secondDefaultUser.userId);
+    });
+
+  });
+
   it('should fail to retrieve the Correlation, if no Correlation for the given ProcessInstanceId exists', async () => {
     const invalidProcessInstanceId = 'invalid_id';
 
@@ -104,24 +148,5 @@ describe('Management API:   GET  ->  /correlations/process_instance/:process_ins
       should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
-  });
-
-  it('should only return correlations by ProcessInstanceId for a specific user', async () => {
-    const correlationDefaultUser = await testFixtureProvider
-      .managementApiClientService
-      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.defaultUser, processInstanceId1);
-
-    correlationDefaultUser.processInstances.forEach((processInstance) => {
-      should(processInstance.identity.userId).be.equal(testFixtureProvider.identities.defaultUser.userId);
-    });
-
-    const correlationSecondUser = await testFixtureProvider
-      .managementApiClientService
-      .getCorrelationByProcessInstanceId(testFixtureProvider.identities.secondDefaultUser, processInstanceId2);
-
-    correlationSecondUser.processInstances.forEach((processInstance) => {
-      should(processInstance.identity.userId).be.equal(testFixtureProvider.identities.secondDefaultUser.userId);
-    });
-
   });
 });

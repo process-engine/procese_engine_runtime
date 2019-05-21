@@ -77,6 +77,57 @@ describe('Management API:   GET  ->  /correlations/all', () => {
     });
   });
 
+  it('should return all correlations for a super admin through the management api', async () => {
+
+    const correlations = await testFixtureProvider
+      .managementApiClientService
+      .getAllCorrelations(testFixtureProvider.identities.superAdmin);
+
+    should(correlations).be.instanceOf(Array);
+    should(correlations.length).be.greaterThan(0);
+
+    correlations.forEach((correlation) => {
+      should(correlation).have.property('id');
+      should(correlation).have.property('state');
+      should(correlation).have.property('createdAt');
+      should(correlation).have.property('processInstances');
+
+      correlation.processInstances.forEach((processInstance) => {
+        should(processInstance).have.property('processDefinitionName');
+        should(processInstance).have.property('processModelId');
+        should(processInstance).have.property('processInstanceId');
+        should(processInstance).have.property('hash');
+        should(processInstance).have.property('xml');
+        should(processInstance).have.property('state');
+        should(processInstance).have.property('identity');
+        should(processInstance.identity).have.property('token');
+        should(processInstance).have.property('createdAt');
+      });
+    });
+  });
+
+  it('should filter out another user\'s Correlations, if the requesting user is a regular user', async () => {
+    const correlationListDefaultUser = await testFixtureProvider
+      .managementApiClientService
+      .getAllCorrelations(testFixtureProvider.identities.defaultUser);
+
+    correlationListDefaultUser.forEach((correlation) => {
+      correlation.processInstances.forEach((processInstance) => {
+        should(processInstance.identity.userId).be.equal(testFixtureProvider.identities.defaultUser.userId);
+      });
+    });
+
+    const correlationListSecondUser = await testFixtureProvider
+      .managementApiClientService
+      .getAllCorrelations(testFixtureProvider.identities.secondDefaultUser);
+
+    correlationListSecondUser.forEach((correlation) => {
+      correlation.processInstances.forEach((processInstance) => {
+        should(processInstance.identity.userId).be.equal(testFixtureProvider.identities.secondDefaultUser.userId);
+      });
+    });
+  });
+
   it('should include correlations that were finished with an error', async () => {
     try {
       await createFinishedProcessInstance(testFixtureProvider.identities.defaultUser, errorProcessModelId);
@@ -118,28 +169,6 @@ describe('Management API:   GET  ->  /correlations/all', () => {
       should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
-  });
-
-  it('should only return all correlations of a specific user', async () => {
-    const correlationListDefaultUser = await testFixtureProvider
-      .managementApiClientService
-      .getAllCorrelations(testFixtureProvider.identities.defaultUser);
-
-    correlationListDefaultUser.forEach((correlation) => {
-      correlation.processInstances.forEach((processInstance) => {
-        should(processInstance.identity.userId).be.equal(testFixtureProvider.identities.defaultUser.userId);
-      });
-    });
-
-    const correlationListSecondUser = await testFixtureProvider
-      .managementApiClientService
-      .getAllCorrelations(testFixtureProvider.identities.secondDefaultUser);
-
-    correlationListSecondUser.forEach((correlation) => {
-      correlation.processInstances.forEach((processInstance) => {
-        should(processInstance.identity.userId).be.equal(testFixtureProvider.identities.secondDefaultUser.userId);
-      });
-    });
   });
 
   async function wait(timeInMs) {

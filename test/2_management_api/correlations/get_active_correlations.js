@@ -68,22 +68,38 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     });
   });
 
-  it('should fail to retrieve a list of correlations, when the user is unauthorized', async () => {
-    try {
-      const correlationList = await testFixtureProvider
-        .managementApiClientService
-        .getActiveCorrelations({});
+  it('should return all active correlations for a super admin through the management api', async () => {
 
-      should.fail(correlationList, undefined, 'This request should have failed!');
-    } catch (error) {
-      const expectedErrorCode = 401;
-      const expectedErrorMessage = /no auth token provided/i;
-      should(error.code).be.match(expectedErrorCode);
-      should(error.message).be.match(expectedErrorMessage);
-    }
+    const correlations = await testFixtureProvider
+      .managementApiClientService
+      .getActiveCorrelations(testFixtureProvider.identities.superAdmin);
+
+    should(correlations).be.instanceOf(Array);
+    should(correlations.length).be.greaterThan(0);
+
+    correlations.forEach((correlation) => {
+      should(correlation).have.property('id');
+      should(correlation).have.property('state');
+      should(correlation.state).be.equal('running');
+      should(correlation).have.property('createdAt');
+      should(correlation).have.property('processInstances');
+
+      correlation.processInstances.forEach((processInstance) => {
+        should(processInstance).have.property('processDefinitionName');
+        should(processInstance).have.property('processModelId');
+        should(processInstance).have.property('processInstanceId');
+        should(processInstance).have.property('hash');
+        should(processInstance).have.property('xml');
+        should(processInstance).have.property('state');
+        should(processInstance.state).be.equal('running');
+        should(processInstance).have.property('identity');
+        should(processInstance.identity).have.property('token');
+        should(processInstance).have.property('createdAt');
+      });
+    });
   });
 
-  it('should only return active correlations of a specific user', async () => {
+  it('should filter out another user\'s Correlations, if the requesting user is a regular user', async () => {
     const correlationListDefaultUser = await testFixtureProvider
       .managementApiClientService
       .getActiveCorrelations(defaultIdentity);
@@ -103,6 +119,21 @@ describe('Management API:   GET  ->  /correlations/active', () => {
         should(processInstance.identity.userId).be.equal(testFixtureProvider.identities.secondDefaultUser.userId);
       });
     });
+  });
+
+  it('should fail to retrieve a list of correlations, when the user is unauthorized', async () => {
+    try {
+      const correlationList = await testFixtureProvider
+        .managementApiClientService
+        .getActiveCorrelations({});
+
+      should.fail(correlationList, undefined, 'This request should have failed!');
+    } catch (error) {
+      const expectedErrorCode = 401;
+      const expectedErrorMessage = /no auth token provided/i;
+      should(error.code).be.match(expectedErrorCode);
+      should(error.message).be.match(expectedErrorMessage);
+    }
   });
 
   async function createActiveCorrelations(identity) {
