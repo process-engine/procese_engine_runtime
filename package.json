@@ -89,7 +89,7 @@
     "@process-engine/logging_api_http": "1.0.3",
     "@process-engine/logging_api_core": "1.0.3",
     "@process-engine/logging.repository.file_system": "1.1.2",
-    "@process-engine/management_api_core": "5.3.0-86189f5e-b4",
+    "@process-engine/management_api_core": "feature~add_admin_claim_check",
     "@process-engine/management_api_http": "4.3.0-7637a656-b3",
     "@process-engine/metrics_api_core": "1.0.2",
     "@process-engine/metrics.repository.file_system": "1.1.2",
