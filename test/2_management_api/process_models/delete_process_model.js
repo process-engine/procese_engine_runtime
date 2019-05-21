@@ -4,7 +4,7 @@ const should = require('should');
 
 const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
-describe('Management API:   GET  ->  /process_models/:process_model_id/delete', () => {
+describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/delete', () => {
 
   let testFixtureProvider;
 
@@ -21,14 +21,14 @@ describe('Management API:   GET  ->  /process_models/:process_model_id/delete', 
     await testFixtureProvider.tearDown();
   });
 
-  it('should allow the user to delete a ProcessModel by its ID through the Management API, if he has the required claim', async () => {
+  it('should allow the user to delete a ProcessModel by its ID through the ManagementAPI, if he has the required claim', async () => {
 
     await testFixtureProvider
       .managementApiClientService
       .deleteProcessDefinitionsByProcessModelId(testFixtureProvider.identities.defaultUser, processModelId);
   });
 
-  it('should allow the user to delete a ProcessModel by its ID through the Management API, if he has the SuperAdmin claim', async () => {
+  it('should allow the user to delete a ProcessModel by its ID through the ManagementAPI, if he has the SuperAdmin claim', async () => {
 
     await testFixtureProvider
       .managementApiClientService

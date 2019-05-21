@@ -4,7 +4,7 @@ const should = require('should');
 
 const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
-describe('ManagementAPI:   GET  ->  /process_models/:process_model_id', () => {
+describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/events', () => {
 
   let testFixtureProvider;
 
@@ -22,46 +22,46 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should return a ProcessModel by its ProcessModelId through the ManagementAPI, if the User has all required LaneClaims', async () => {
+  it('should return a ProcessModel\'s StartEvents by its ProcessModelId through the ManagementAPI, if the user has all required LaneClaims', async () => {
 
     const processModel = await testFixtureProvider
       .managementApiClientService
-      .getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
+      .getStartEventsForProcessModel(testFixtureProvider.identities.defaultUser, processModelId);
 
-    should(processModel).have.property('id');
-    should(processModel).have.property('xml');
-    should(processModel).have.property('startEvents');
-    should(processModel).have.property('endEvents');
-    should(processModel.startEvents.length).be.greaterThan(0);
-    should(processModel.endEvents.length).be.greaterThan(0);
+    should(processModel).have.property('events');
+    should(processModel.events).be.instanceof(Array);
+    should(processModel.events.length).be.greaterThan(0);
+
+    for (const event of processModel.events) {
+      should(event).have.property('id');
+    }
   });
 
-  it('should return a ProcessModel by its ProcessModelId through the ManagementAPI, if the User is a SuperAdmin', async () => {
+  it('should return a ProcessMode\'s StartEvents by its ProcessModelId through the ManagementAPI, if the user is a SuperAdmin', async () => {
 
     const processModel = await testFixtureProvider
       .managementApiClientService
-      .getProcessModelById(testFixtureProvider.identities.superAdmin, processModelId);
+      .getStartEventsForProcessModel(testFixtureProvider.identities.superAdmin, processModelId);
 
-    should(processModel).have.property('id');
-    should(processModel).have.property('xml');
-    should(processModel).have.property('startEvents');
-    should(processModel).have.property('endEvents');
-    should(processModel.startEvents.length).be.greaterThan(0);
-    should(processModel.endEvents.length).be.greaterThan(0);
+    should(processModel).have.property('events');
+    should(processModel.events).be.instanceof(Array);
+    should(processModel.events.length).be.greaterThan(0);
+
+    for (const event of processModel.events) {
+      should(event).have.property('id');
+    }
   });
 
-  it('should fail to retrieve the ProcessModel, if the ProcessModelId does not exist', async () => {
-
-    const invalidProcessModelId = 'invalidProcessModelId';
+  it('should fail to retrieve the ProcessModel, when the ProcessModel does not exist', async () => {
 
     try {
       const processModel = await testFixtureProvider
         .managementApiClientService
-        .getProcessModelById(testFixtureProvider.identities.defaultUser, invalidProcessModelId);
+        .getStartEventsForProcessModel(testFixtureProvider.identities.defaultUser, 'SomeInvalidProcessModelId');
 
       should.fail(processModel, undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorMessage = /not found/i;
+      const expectedErrorMessage = /Not found./i;
       const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
       should(error.code).be.match(expectedErrorCode);
@@ -73,7 +73,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id', () => {
     try {
       const processModel = await testFixtureProvider
         .managementApiClientService
-        .getProcessModelById({}, processModelId);
+        .getStartEventsForProcessModel({}, processModelId);
 
       should.fail(processModel, undefined, 'This request should have failed!');
     } catch (error) {
@@ -89,7 +89,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id', () => {
     try {
       const processModel = await testFixtureProvider
         .managementApiClientService
-        .getProcessModelById(testFixtureProvider.identities.restrictedUser, processModelIdRestricted);
+        .getStartEventsForProcessModel(testFixtureProvider.identities.restrictedUser, processModelIdRestricted);
 
       should.fail(processModel, undefined, 'This request should have failed!');
     } catch (error) {

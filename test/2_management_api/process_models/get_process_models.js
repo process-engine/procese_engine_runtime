@@ -4,7 +4,7 @@ const should = require('should');
 
 const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
-describe('Management API:   GET  ->  /processModels', () => {
+describe('ManagementAPI:   GET  ->  /processModels', () => {
 
   let testFixtureProvider;
 
@@ -21,7 +21,7 @@ describe('Management API:   GET  ->  /processModels', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should return process models through the management api', async () => {
+  it('should return ProcessModels through the ManagementAPI', async () => {
 
     const processModelList = await testFixtureProvider
       .managementApiClientService
@@ -42,7 +42,7 @@ describe('Management API:   GET  ->  /processModels', () => {
     });
   });
 
-  it('should fail to retrieve a list of process models, when the user is unauthorized', async () => {
+  it('should fail to retrieve a list of ProcessModels, when the user is unauthorized', async () => {
     try {
       const processModelList = await testFixtureProvider
         .managementApiClientService
