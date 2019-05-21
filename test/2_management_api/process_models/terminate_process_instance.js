@@ -6,9 +6,7 @@ const StartCallbackType = require('@process-engine/management_api_contracts').Da
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-const testCase = 'ManagementAPI:   POST  ->  /process_instance/:process_instance_id/terminate';
-
-describe(`ManagementAPI: ${testCase}`, () => {
+describe(`ManagementAPI: POST  ->  /process_instance/:process_instance_id/terminate`, () => {
 
   let testFixtureProvider;
   let processInstanceHandler;
