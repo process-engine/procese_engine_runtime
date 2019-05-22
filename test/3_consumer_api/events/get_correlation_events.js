@@ -101,7 +101,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
     } catch (error) {
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });

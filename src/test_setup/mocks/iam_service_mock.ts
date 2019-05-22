@@ -54,6 +54,10 @@ export class IamServiceMock implements IIAMService {
       'LaneB',
       'LaneC',
     ],
+    // Super Admin - Can see all ProcessModels, Tasks and Correlations
+    superAdmin: [
+      'can_manage_process_instances',
+    ],
   };
 
   public async ensureHasClaim(identity: IIdentity, claimName: string): Promise<void> {

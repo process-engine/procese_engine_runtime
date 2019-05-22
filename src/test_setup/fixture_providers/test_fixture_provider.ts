@@ -25,14 +25,7 @@ import {configureGlobalRoutes} from '../../global_route_configurator';
 
 const logger: Logger = Logger.createLogger('test:bootstrapper');
 
-export type IdentityCollection = {
-  defaultUser: IIdentity;
-  secondDefaultUser: IIdentity;
-  restrictedUser: IIdentity;
-  userWithAccessToSubLaneC: IIdentity;
-  userWithAccessToLaneA: IIdentity;
-  userWithNoAccessToLaneA: IIdentity;
-};
+export type IdentityCollection = {[userName: string]: IIdentity};
 
 export class TestFixtureProvider {
 
@@ -188,6 +181,7 @@ export class TestFixtureProvider {
       userWithAccessToSubLaneC: await this.createIdentity('userWithAccessToSubLaneC'),
       userWithAccessToLaneA: await this.createIdentity('userWithAccessToLaneA'),
       userWithNoAccessToLaneA: await this.createIdentity('userWithNoAccessToLaneA'),
+      superAdmin: await this.createIdentity('superAdmin'),
     };
   }
 

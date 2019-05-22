@@ -104,7 +104,7 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
       should(error).have.properties('code', 'message');
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
