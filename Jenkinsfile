@@ -120,7 +120,7 @@ pipeline {
       parallel {
         stage('MySQL') {
           agent {
-            label 'linux && any-docker'
+            label 'linux && any-docker && process-engine-tests'
           }
           options {
             skipDefaultCheckout()
@@ -176,7 +176,7 @@ pipeline {
         }
         stage('PostgreSQL') {
           agent {
-            label 'linux && any-docker'
+            label 'linux && any-docker && process-engine-tests'
           }
           options {
             skipDefaultCheckout()
@@ -231,7 +231,7 @@ pipeline {
         }
         stage('SQLite') {
           agent {
-            label 'macos'
+            label 'macos && process-engine-tests'
           }
           options {
             skipDefaultCheckout()
