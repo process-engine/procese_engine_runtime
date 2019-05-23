@@ -4,87 +4,182 @@
 // https://sequelize.readthedocs.io/en/latest/docs/migrations/#functions
 
 // CHANGE NOTES:
-// Changes between 4.2.0 and 4.3.0:
-// - New Field: ProcessToken.type: Determines when the ProcessToken was recored (OnEnter/OnExit/OnSuspend/OnResume)
-// - ForeignKey between ProcessToken and FlowNodeInstance ID was changed from FlowNodeInstance.PrimaryKey to FlowNodeInstance.flowNodeInstanceId
+// Changes between 6.0.0 and 7.0.0:
+// - Remove custom definition for primaryKey column "id" for ProcessTokens and FlowNodeInstances
+// - Use a column based on what Sequelize auto-generates for both tables
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
     console.log('Running updating migrations');
 
+    const flowNodeInstanceTableInfo = await queryInterface.describeTable('FlowNodeInstances');
     const processTokenTableInfo = await queryInterface.describeTable('ProcessTokens');
 
-    const migrationNotRequired = processTokenTableInfo.flowNodeInstanceForeignKey === undefined
-      && processTokenTableInfo.type !== undefined;
+    const flowNodeInstanceIdHasMatchingType = flowNodeInstanceTableInfo.id.type === 'INTEGER';
+    const processTokenIdHasMatchingType = processTokenTableInfo.id.type === 'INTEGER';
 
-    if (migrationNotRequired) {
+    if (flowNodeInstanceIdHasMatchingType && processTokenIdHasMatchingType) {
       console.log('The database is already up to date. Nothing to do here.');
       return;
     }
 
-    // New Column for ProcessToken
-    await queryInterface.addColumn(
-      'ProcessTokens',
-      'type',
-      {
-        type: Sequelize.STRING,
-        allowNull: true,
+    const environmentIsPostgres = process.env.NODE_ENV === 'postgres' || process.env.NODE_ENV === 'test-postgres';
+
+    if (!processTokenIdHasMatchingType) {
+      console.log('Changing PrimaryKey column ID of ProcessToken table to integer based column');
+
+      await queryInterface.createTable('processtokens_new', {
+        id: {
+          type: Sequelize.INTEGER,
+          autoIncrement: true,
+          primaryKey: true,
+        },
+        processInstanceId: {
+          type: Sequelize.STRING,
+          allowNull: false,
+        },
+        processModelId: {
+          type: Sequelize.STRING,
+          allowNull: false,
+        },
+        correlationId: {
+          type: Sequelize.STRING,
+          allowNull: false,
+        },
+        identity: {
+          type: Sequelize.TEXT,
+          allowNull: false,
+        },
+        caller: {
+          type: Sequelize.STRING,
+          allowNull: true,
+        },
+        type: {
+          type: Sequelize.STRING,
+          allowNull: true,
+        },
+        payload: {
+          type: Sequelize.TEXT,
+          allowNull: true,
+        },
+        flowNodeInstanceId: {
+          type: Sequelize.STRING,
+          allowNull: false,
+        },
+        createdAt: {
+          type: Sequelize.DATE,
+          allowNull: true,
+          defaultValue: new Date(),
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          allowNull: true,
+          defaultValue: new Date(),
+        },
+      });
+
+      const updateQueryDefault = `INSERT INTO processtokens_new
+                                    (processInstanceId, processModelId, correlationId, identity, caller,
+                                    type, payload, flowNodeInstanceId, createdAt, updatedAt)
+                                  SELECT processInstanceId, processModelId, correlationId, identity, caller,
+                                      type, payload, flowNodeInstanceId, createdAt, updatedAt
+                                  FROM ProcessTokens;`;
+
+      const updateQueryPostgres = `INSERT INTO processtokens_new
+                                    ("processInstanceId", "processModelId", "correlationId", "identity", "caller",
+                                    "type", "payload", "flowNodeInstanceId", "createdAt", "updatedAt")
+                                  SELECT src."processInstanceId", src."processModelId", src."correlationId", src."identity", src."caller",
+                                         src."type", src."payload", src."flowNodeInstanceId", src."createdAt", src."updatedAt"
+                                  FROM public."ProcessTokens" AS src;`;
+
+      if (environmentIsPostgres) {
+        await queryInterface.sequelize.query(updateQueryPostgres);
+      } else {
+        await queryInterface.sequelize.query(updateQueryDefault);
       }
-    );
 
-    // Since this is a new column and the previous system only stored the onExit token,
-    // we can safely set this to "onExit".
-    //
-    // NOTE:
-    // Models are not available during migrations.
-    // So if we want to manipulate data, raw queries are the only way.
-    await queryInterface.sequelize.query('UPDATE "ProcessTokens" SET type = \'onExit\'');
-
-    // Migrating the ForeignKey for ProcessToken / FlowNodeInstanceId.
-    //
-    // The property flowNodeInstanceId actually existed already, so we have to:
-
-    // 1. Get all stored ProcessTokens
-    const queryResult = await queryInterface.sequelize.query('SELECT "id", "flowNodeInstanceForeignKey" FROM "ProcessTokens"');
-    // The result looks something like this:
-    // [ [ { id: 1,flowNodeInstanceForeignKey: 1 },
-    //   { id: 2, flowNodeInstanceForeignKey: 2 } ],
-    // Statement { sql: 'SELECT flowNodeInstanceForeignKey FROM ProcessTokens' } ]
-    const processTokens = queryResult[0];
-
-    console.log('Removing old foreignKey column');
-    await queryInterface.removeColumn('ProcessTokens', 'flowNodeInstanceForeignKey');
-
-    console.log('Updating ProcessTokens.flowNodeInstanceId type to VARCHAR(255) to match the type of FlowNodeInstances.flowNodeInstanceId');
-    await queryInterface.changeColumn(
-      'ProcessTokens',
-      'flowNodeInstanceId',
-      {
-        type: Sequelize.STRING,
-        allowNull: false,
-      }
-    );
-    console.log('Add unique-constraint to FlowNodeInstances.flowNodeInstanceId');
-    await queryInterface.addConstraint('FlowNodeInstances', ['flowNodeInstanceId'], {
-      type: 'unique',
-      name: 'flowNodeInstanceIdUniqueConstraint',
-    });
-
-    console.log('Updating existing foreign key data');
-    for (const processToken of processTokens) {
-
-      const selectFniIdQuery = `SELECT "flowNodeInstanceId" FROM "FlowNodeInstances" WHERE id = '${processToken.flowNodeInstanceForeignKey}'`;
-
-      const flowNodeInstanceIdQueryResult = await queryInterface.sequelize.query(selectFniIdQuery);
-
-      const flowNodeInstanceId = flowNodeInstanceIdQueryResult[0][0].flowNodeInstanceId;
-
-      const updateProcessTokenQuery = `UPDATE "ProcessTokens" SET "flowNodeInstanceId" = '${flowNodeInstanceId}' WHERE id = '${processToken.id}'`;
-      console.log('executing: ', updateProcessTokenQuery);
-      await queryInterface.sequelize.query(updateProcessTokenQuery);
+      await queryInterface.dropTable('ProcessTokens');
+      await queryInterface.renameTable('processtokens_new', 'ProcessTokens');
     }
 
-    console.log('Migration successful!');
+    if (!flowNodeInstanceIdHasMatchingType) {
+      console.log('Changing PrimaryKey column ID of FlowNodeInstance table to integer based column');
+
+      await queryInterface.createTable('FlowNodeInstances_New', {
+        id: {
+          type: Sequelize.INTEGER,
+          autoIncrement: true,
+          primaryKey: true,
+        },
+        flowNodeInstanceId: {
+          type: Sequelize.STRING,
+          allowNull: false,
+          unique: true,
+        },
+        flowNodeId: {
+          type: Sequelize.STRING,
+          allowNull: false,
+        },
+        flowNodeType: {
+          type: Sequelize.STRING,
+          allowNull: true,
+        },
+        state: {
+          type: Sequelize.STRING,
+          allowNull: false,
+          defaultValue: 0,
+        },
+        error: {
+          type: Sequelize.TEXT,
+          allowNull: true,
+        },
+        eventType: {
+          type: Sequelize.STRING,
+          allowNull: true,
+        },
+        previousFlowNodeInstanceId: {
+          type: Sequelize.STRING,
+          allowNull: true,
+        },
+        createdAt: {
+          type: Sequelize.DATE,
+          allowNull: true,
+          defaultValue: new Date(),
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          allowNull: true,
+          defaultValue: new Date(),
+        },
+      });
+
+      const updateQuerySqlite =
+        `INSERT INTO FlowNodeInstances_New
+            (flowNodeInstanceId, flowNodeId, flowNodeType, state, error, eventType, previousFlowNodeInstanceId, createdAt, updatedAt)
+          SELECT
+            flowNodeInstanceId, flowNodeId, flowNodeType, state, error, eventType, previousFlowNodeInstanceId, createdAt, updatedAt
+          FROM FlowNodeInstances;`;
+
+      const updateQueryPostgres =
+        `INSERT INTO "FlowNodeInstances_New"
+            ("flowNodeInstanceId", "flowNodeId", "flowNodeType", "state", "error",
+            "eventType", "previousFlowNodeInstanceId", "createdAt", "updatedAt")
+          SELECT
+            src."flowNodeInstanceId", src."flowNodeId", src."flowNodeType", src."state", src."error",
+            src."eventType", src."previousFlowNodeInstanceId", src."createdAt", src."updatedAt"
+          FROM public."FlowNodeInstances" AS src;`;
+
+      if (environmentIsPostgres) {
+        await queryInterface.sequelize.query(updateQueryPostgres);
+      } else {
+        await queryInterface.sequelize.query(updateQuerySqlite);
+      }
+
+      await queryInterface.dropTable('FlowNodeInstances');
+      await queryInterface.renameTable('FlowNodeInstances_New', 'FlowNodeInstances');
+    }
+
+    console.log('Migration successful.');
   },
   down: async (queryInterface, Sequelize) => {
     console.log('Running reverting migrations');

@@ -55,7 +55,7 @@ describe('Intermediate Events - ', () => {
       const expectedMessage = /No IntermediateCatchEvent.*?exists/i;
       const expectedCode = 404;
       should(error.message).be.match(expectedMessage);
-      should(error.code).be.match(expectedCode);
+      should(error.code).be.equal(expectedCode);
     }
   });
 
@@ -70,7 +70,7 @@ describe('Intermediate Events - ', () => {
       const expectedMessage = /too many/i;
       const expectedCode = 400;
       should(error.message).be.match(expectedMessage);
-      should(error.code).be.match(expectedCode);
+      should(error.code).be.equal(expectedCode);
     }
   });
 

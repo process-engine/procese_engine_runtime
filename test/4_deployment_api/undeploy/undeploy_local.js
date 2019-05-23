@@ -84,7 +84,7 @@ describe('Deployment API -> undeploy', () => {
       const expectedErrorMessage = /not found/i;
       const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   }
 });

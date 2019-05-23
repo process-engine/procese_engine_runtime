@@ -1,11 +1,4 @@
-'use strict';
-
 import {InvocationContainer} from 'addict-ioc';
-
-import {
-  ParallelGatewayTestService,
-  ServiceTaskTestService,
-} from '../test_services/index';
 
 import {
   ConsumerApiClientService,
@@ -20,16 +13,21 @@ import {
 } from '@process-engine/external_task_api_client';
 
 import {
+  ManagementApiClientService,
   ExternalAccessor as ManagementApiExternalAccessor,
   InternalAccessor as ManagementApiInternalAccessor,
-  ManagementApiClientService,
 } from '@process-engine/management_api_client';
 
 import {IamServiceMock} from '../mocks/index';
 
+import {
+  ParallelGatewayTestService,
+  ServiceTaskTestService,
+} from '../test_services/index';
+
 export function registerInContainer(container: InvocationContainer): void {
 
-  const accessApisInternally: boolean = process.env.API_ACCESS_TYPE === 'internal';
+  const accessApisInternally = process.env.API_ACCESS_TYPE === 'internal';
 
   if (accessApisInternally) {
     registerApisWithInternalAccessors(container);

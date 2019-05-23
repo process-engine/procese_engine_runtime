@@ -1,11 +1,11 @@
 import {Logger} from 'loggerhythm';
 
-const logger: any = Logger.createLogger('parallel_gateway:parallel_gateway_test_service');
+const logger: Logger = Logger.createLogger('parallel_gateway:parallel_gateway_test_service');
 
 export class ParallelGatewayTestService {
 
   public async currentTokenTestPart1(): Promise<string> {
-    const currentTokenValue: string = 'current token test value';
+    const currentTokenValue = 'current token test value';
     logger.info(`Setting the expected token.current value to: ${currentTokenValue}`);
 
     return currentTokenValue;
@@ -18,7 +18,7 @@ export class ParallelGatewayTestService {
   }
 
   public async longRunningFunction(): Promise<string> {
-    const timeout: number = 1000;
+    const timeout = 1000;
     await this.wait(timeout);
     logger.info('longRunningFunction has finished');
 
@@ -26,7 +26,7 @@ export class ParallelGatewayTestService {
   }
 
   public async veryLongRunningFunction(): Promise<string> {
-    const timeout: number = 3000;
+    const timeout = 3000;
     await this.wait(timeout);
     logger.info('veryLongRunningFunction has finished');
 
@@ -35,7 +35,7 @@ export class ParallelGatewayTestService {
   }
 
   public async secondVeryLongRunningFunction(): Promise<string> {
-    const timeout: number = 3000;
+    const timeout = 3000;
     await this.wait(timeout);
     logger.info('secondVeryLongRunningFunction has finished');
 
@@ -43,17 +43,17 @@ export class ParallelGatewayTestService {
   }
 
   public async sequenceTestPart2UpdateToken(currentToken: string): Promise<string> {
-    const timeout: number = 500;
+    const timeout = 500;
     await this.wait(timeout);
     logger.info(`sequenceTestPart2UpdateToken has received current token: ${currentToken}`);
-    const updatedToken: string = `UPDATED ${currentToken}`;
+    const updatedToken = `UPDATED ${currentToken}`;
     logger.info(`updated token: ${updatedToken}`);
 
     return updatedToken;
   }
 
   public async sequenceTestPart3Delay(currentToken: string): Promise<string> {
-    const timeout: number = 1700;
+    const timeout = 1700;
     await this.wait(timeout);
     logger.info('sequenceTestPart3Delay has finished');
 
@@ -62,9 +62,10 @@ export class ParallelGatewayTestService {
 
   private wait(milliseconds: number): Promise<void> {
     return new Promise((resolve: Function): void => {
-      setTimeout(() => {
+      setTimeout((): void => {
         resolve();
       }, milliseconds);
     });
   }
+
 }

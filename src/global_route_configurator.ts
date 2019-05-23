@@ -7,8 +7,8 @@ import {IHttpExtension} from '@essential-projects/http_contracts';
 
 let httpExtension: IHttpExtension;
 
-const httpStatusCodeSuccess: number = 200;
-const authorityRoute: string = '/security/authority';
+const httpStatusCodeSuccess = 200;
+const authorityRoute = '/security/authority';
 
 interface IApplicationInfo {
   name: string;
@@ -30,12 +30,11 @@ export async function configureGlobalRoutes(container: InvocationContainer): Pro
 }
 
 function configureRootRoute(): void {
-  const packageInfo: IApplicationInfo = getInfosFromPackageJson();
+  const packageInfo = getInfosFromPackageJson();
 
-  // tslint:disable-next-line:no-magic-numbers
-  const formattedResponse: string = JSON.stringify(packageInfo, null, 2);
+  const formattedResponse = JSON.stringify(packageInfo, undefined, 2);
 
-  httpExtension.app.get('/', (request: Request, response: Response) => {
+  httpExtension.app.get('/', (request: Request, response: Response): void => {
     response
       .status(httpStatusCodeSuccess)
       .header('Content-Type', 'application/json')
@@ -44,16 +43,15 @@ function configureRootRoute(): void {
 }
 
 function configureAuthorityRoute(): void {
-  const iamConfig: any = loadConfig('iam', 'iam_service');
+  const iamConfig = loadConfig('iam', 'iam_service');
 
-  const responseBody: any = {
-    authority: iamConfig.basePath,
+  const responseBody = {
+    authority: process.env.iam__iam_service__basePath || iamConfig.basePath,
   };
 
-  // tslint:disable-next-line:no-magic-numbers
-  const formattedResponse: string = JSON.stringify(responseBody, null, 2);
+  const formattedResponse = JSON.stringify(responseBody, undefined, 2);
 
-  httpExtension.app.get(authorityRoute, (request: Request, response: Response) => {
+  httpExtension.app.get(authorityRoute, (request: Request, response: Response): void => {
     response
       .status(httpStatusCodeSuccess)
       .header('Content-Type', 'application/json')
@@ -63,23 +61,24 @@ function configureAuthorityRoute(): void {
 
 function loadConfig(configDirName: string, configFileName: string): any {
 
-  const baseConfigPath: string = process.env.CONFIG_PATH && path.isAbsolute(process.env.CONFIG_PATH)
+  const baseConfigPath = process.env.CONFIG_PATH && path.isAbsolute(process.env.CONFIG_PATH)
     ? process.env.CONFIG_PATH
     : path.join(process.cwd(), 'config');
 
-  const configPath: string = path.join(baseConfigPath, process.env.NODE_ENV, configDirName, `${configFileName}.json`);
+  const configPath = path.join(baseConfigPath, process.env.NODE_ENV, configDirName, `${configFileName}.json`);
 
-  const loadedConfig: any = require(configPath);
+  // eslint-disable-next-line
+  const loadedConfig = require(configPath);
 
   return loadedConfig;
 }
 
 function getInfosFromPackageJson(): IApplicationInfo {
 
-  const pathToPackageJson: string = path.join(__dirname, '..', '..', 'package.json');
-  const packageJsonAsString: string = fs.readFileSync(pathToPackageJson, 'utf-8');
+  const pathToPackageJson = path.join(__dirname, '..', '..', 'package.json');
+  const packageJsonAsString = fs.readFileSync(pathToPackageJson, 'utf-8');
 
-  const packageJson: IApplicationInfo = JSON.parse(packageJsonAsString);
+  const packageJson = JSON.parse(packageJsonAsString);
 
   const {
     name,
@@ -93,7 +92,7 @@ function getInfosFromPackageJson(): IApplicationInfo {
     bugs,
   } = packageJson;
 
-  const applicationInfo: IApplicationInfo = {
+  const applicationInfo = {
     name: name,
     version: version,
     description: description,

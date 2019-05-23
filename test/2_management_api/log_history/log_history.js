@@ -1,41 +1,32 @@
 'use strict';
 
 const should = require('should');
-const uuid = require('node-uuid');
 
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
+const {TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 describe('Management API: GET -> /process_model/:processModelId/logs?correlationId=value', () => {
 
-  let processInstanceHandler;
   let testFixtureProvider;
 
   let defaultIdentity;
 
-  let processInstanceId;
-
-  const processModelId = 'test_management_api_logging_simple_process';
-  const correlationId = uuid.v4();
+  // Taken from test logfile at `test/logs/integration_test_sample_log.log`
+  const processModelId = 'integration_test_sample_log';
+  const processInstanceId = 'f936a62c-38d3-453e-bd06-ae26e31649c0';
+  const correlationId = 'sample_correlation';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
-
     defaultIdentity = testFixtureProvider.identities.defaultUser;
-
-    await testFixtureProvider.importProcessFiles([processModelId]);
-    const startResponse = await executeSampleProcess(correlationId);
-
-    processInstanceId = startResponse.processInstanceId;
   });
 
   after(async () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should sucessfully get an array which contains all logs for a given correlation', async () => {
+  it('should sucessfully get an array which contains all logs for a given Correlation', async () => {
     const logs = await testFixtureProvider
       .managementApiClientService
       .getProcessModelLog(defaultIdentity, processModelId, correlationId);
@@ -50,14 +41,14 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
     ];
 
     should(logs).be.an.Array();
-    should(logs).have.length(8);
+    should(logs).have.length(14);
 
     for (const currentLogEntry of logs) {
       should(currentLogEntry).have.properties(...expectedProperties);
     }
   });
 
-  it('should sucessfully get an array which contains all logs for a given process instance', async () => {
+  it('should sucessfully get an array which contains all logs for a given ProcessInstance', async () => {
     const logs = await testFixtureProvider
       .managementApiClientService
       .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId);
@@ -72,16 +63,14 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
     ];
 
     should(logs).be.an.Array();
-    should(logs).have.length(8);
+    should(logs).have.length(14);
 
     for (const currentLogEntry of logs) {
       should(currentLogEntry).have.properties(...expectedProperties);
     }
   });
 
-  it('should sucessfully get an array which contains all logs', async () => {
-    const customCorrelationId = uuid.v4();
-    await executeSampleProcess(customCorrelationId);
+  it('should sucessfully get an array which contains all logs for every ProcessInstance of a ProcessModel', async () => {
 
     const logs = await testFixtureProvider
       .managementApiClientService
@@ -97,7 +86,7 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
     ];
 
     should(logs).be.an.Array();
-    should(logs.length).be.greaterThan(8);
+    should(logs).have.length(28);
 
     for (const currentLogEntry of logs) {
       should(currentLogEntry).have.properties(...expectedProperties);
@@ -106,7 +95,7 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
 
   it('should throw a 401 error when no auth token is provided', async () => {
     try {
-      const logs = await testFixtureProvider
+      await testFixtureProvider
         .managementApiClientService
         .getProcessModelLog({}, processModelId, correlationId);
 
@@ -115,7 +104,7 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
       should(error).have.properties('code', 'message');
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
@@ -139,16 +128,4 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
     should(logs).be.an.Array();
     should(logs).be.empty();
   });
-
-  async function executeSampleProcess(usedCorrelationId) {
-    return new Promise(async (resolve) => {
-
-      const payload = {
-        user_task: false,
-      };
-
-      const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, usedCorrelationId, payload);
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
-    });
-  }
 });

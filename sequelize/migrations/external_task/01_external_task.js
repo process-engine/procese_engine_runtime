@@ -5,6 +5,8 @@
 
 // CHANGE NOTES:
 // Added the "identity" column.
+// Added the "version" column.
+// Added the "processModelId" column.
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
@@ -19,7 +21,6 @@ module.exports = {
       return;
     }
 
-    // New Column for ExternalTasks
     await queryInterface.addColumn(
       'ExternalTasks',
       'identity',
@@ -27,6 +28,24 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
         defaultValue: '',
+      }
+    );
+
+    await queryInterface.addColumn(
+      'ExternalTasks',
+      'version',
+      {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      }
+    );
+
+    await queryInterface.addColumn(
+      'ExternalTasks',
+      'processModelId',
+      {
+        type: Sequelize.STRING,
+        allowNull: true,
       }
     );
 

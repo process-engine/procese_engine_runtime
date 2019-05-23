@@ -79,7 +79,7 @@ The path in `CONFIG_PATH` must be absolute.
 
 Also, each environment must have its own configuration folder.
 
-See [here](https://github.com/process-engine/process_engine_runtime/tree/develop/config/test) for an example on how a config must be structured.
+See [here](https://github.com/process-engine/process_engine_runtime/tree/develop/config/sqlite) for an example on how a config must be structured.
 
 **Make sure you provide settings to _all_ config sections listed there!**
 

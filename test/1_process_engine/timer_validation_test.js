@@ -31,7 +31,7 @@ describe('Timer Event validation - ', () => {
       const expectedErrorMessage = /given date.*?not in ISO8601 format/i;
       const expectedErrorCode = 422;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 
@@ -43,7 +43,7 @@ describe('Timer Event validation - ', () => {
       const expectedErrorMessage = /given duration.*?not in ISO8601 format/i;
       const expectedErrorCode = 422;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 
@@ -55,7 +55,7 @@ describe('Timer Event validation - ', () => {
       const expectedErrorMessage = /not supported/i;
       const expectedErrorCode = 422;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
+      should(error.code).be.equal(expectedErrorCode);
     }
   });
 });

@@ -1,5 +1,4 @@
-'use strict';
-
+import * as fs from 'fs';
 import * as path from 'path';
 import * as Sequelize from 'sequelize';
 import * as Umzug from 'umzug';
@@ -9,54 +8,96 @@ import {SequelizeConnectionManager} from '@essential-projects/sequelize_connecti
 const sequelizeConnectionManager: SequelizeConnectionManager = new SequelizeConnectionManager();
 
 // Based on: https://github.com/abelnation/sequelize-migration-hello/blob/master/migrate.js
-export async function migrate(database: string): Promise<void> {
+export async function migrate(repositoryName: string): Promise<void> {
 
-  const sqliteConfig: any = await createSqLiteConfig(database);
+  const env = process.env.NODE_ENV || 'test-postgres';
 
-  const sequelizeInstance: Sequelize.Sequelize = await sequelizeConnectionManager.getConnection(sqliteConfig);
+  const repositoryConfigFileName = `${repositoryName}_repository.json`;
 
-  const umzugInstance: Umzug.Umzug = await createUmzugInstance(sequelizeInstance, database);
+  let sequelizeInstanceConfig: Sequelize.Options;
+
+  switch (env) {
+    case 'test-mysql':
+      sequelizeInstanceConfig = getMysqlConfig(repositoryConfigFileName, repositoryName);
+      break;
+    case 'test-postgres':
+      sequelizeInstanceConfig = getPostgresConfig(repositoryConfigFileName, repositoryName);
+      break;
+    case 'test-sqlite':
+      sequelizeInstanceConfig = getSQLiteConfig(repositoryConfigFileName, repositoryName);
+      break;
+    default:
+      throw new Error(`Selected NODE_ENV ${env} is not valid for integration tests!`);
+  }
+
+  const sequelizeInstance = await sequelizeConnectionManager.getConnection(sequelizeInstanceConfig);
+
+  const umzugInstance = await createUmzugInstance(sequelizeInstance, repositoryName);
   await umzugInstance.up();
 
-  await sequelizeConnectionManager.destroyConnection(sqliteConfig);
+  await sequelizeConnectionManager.destroyConnection(sequelizeInstanceConfig);
 }
 
-function createSqLiteConfig(store: string): any {
+function getMysqlConfig(configFileName: string, repositoryName: string): Sequelize.Options {
+
+  let mysqlConfig = readConfigFile('test-mysql', configFileName);
+
+  mysqlConfig = applyCustomHostNameFromEnv(mysqlConfig, repositoryName);
+
+  return mysqlConfig;
+}
+
+function getPostgresConfig(configFileName: string, repositoryName: string): Sequelize.Options {
+
+  let postgresConfig = readConfigFile('test-postgres', configFileName);
+
+  postgresConfig = applyCustomHostNameFromEnv(postgresConfig, repositoryName);
+
+  return postgresConfig;
+}
+
+function getSQLiteConfig(configFileName: string, repositoryName: string): Sequelize.Options {
+
+  const sqliteConfig = readConfigFile('test-sqlite', configFileName);
 
   // Jenkins stores its sqlite databases in a separate workspace folder.
   // We must account for this here.
-  const storagePath: string = process.env.jenkinsDbStoragePath
-    ? `${process.env.jenkinsDbStoragePath}/${store}.sqlite`
-    : `test/sqlite_repositories/${store}.sqlite`;
+  const sqlitePath = process.env.jenkinsDbStoragePath
+    ? `${process.env.jenkinsDbStoragePath}/${repositoryName}.sqlite`
+    : `test/sqlite_repositories/${repositoryName}.sqlite`;
 
-  const sqliteConfig: any = {
-    username: null,
-    password: null,
-    database: null,
-    host: null,
-    port: null,
-    dialect: 'sqlite',
-    storage: storagePath,
-    supportBigNumbers: true,
-    resetPasswordRequestTimeToLive: 12,
-    logging: false,
-  };
+  sqliteConfig.storage = `${sqlitePath}`;
 
   return sqliteConfig;
 }
 
+function applyCustomHostNameFromEnv(config: Sequelize.Options, repositoryName: string): Sequelize.Options {
+
+  // Jenkins uses customized host names for mysql and postgres. We need to account for that fact here,
+  // or the migrations will fail.
+  const customHostName = process.env[`process_engine__${repositoryName}_repository__host`];
+
+  const customHostNameSet = customHostName !== undefined;
+  if (customHostNameSet) {
+    // eslint-disable-next-line
+    config.host = customHostName;
+  }
+
+  return config;
+}
+
 async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: string): Promise<Umzug.Umzug> {
 
-  let dirNameNormalized: string = path.normalize(process.cwd());
-  const appAsarPathPart: string = path.normalize(path.join('.', 'app.asar'));
+  let dirNameNormalized = path.normalize(process.cwd());
+  const appAsarPathPart = path.normalize(path.join('.', 'app.asar'));
 
   if (dirNameNormalized.indexOf('app.asar') > -1) {
     dirNameNormalized = dirNameNormalized.replace(appAsarPathPart, '');
   }
 
-  const migrationsPath: string = path.join(dirNameNormalized, 'sequelize', 'migrations', database);
+  const migrationsPath = path.join(dirNameNormalized, 'sequelize', 'migrations', database);
 
-  const umzug: Umzug.Umzug = new Umzug({
+  const umzug = new Umzug({
     storage: 'sequelize',
     storageOptions: {
       sequelize: sequelize,
@@ -74,10 +115,20 @@ async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: str
       pattern: /\.js$/,
     },
     logging: (args: any): void => {
-      // tslint:disable-next-line:no-console
       console.log(args);
     },
   });
 
   return umzug;
+}
+
+function readConfigFile(env: string, repositoryConfigFileName: string): Sequelize.Options {
+
+  const configFilePath = path.resolve(process.env.CONFIG_PATH, env, 'process_engine', repositoryConfigFileName);
+
+  const fileContent = fs.readFileSync(configFilePath, 'utf-8');
+
+  const parsedFileContent = JSON.parse(fileContent) as Sequelize.Options;
+
+  return parsedFileContent;
 }

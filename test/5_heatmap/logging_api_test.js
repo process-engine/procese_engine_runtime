@@ -40,7 +40,7 @@ describe('Logging API Tests - ', () => {
   async function assertProcessModelLogs(logEntries) {
 
     should(logEntries).be.an.Array();
-    should(logEntries.length).be.equal(14);
+    should(logEntries.length).be.equal(28);
 
     const expectedLogMessages = [
       /Process started/i,
@@ -72,7 +72,7 @@ describe('Logging API Tests - ', () => {
   async function assertFlowNodeInstanceLogs(logEntries) {
 
     should(logEntries).be.an.Array();
-    should(logEntries.length).be.equal(14);
+    should(logEntries.length).be.equal(28);
 
     const expectedLogMessageTypes = [
       /FlowNodeInstance Log Message/i,

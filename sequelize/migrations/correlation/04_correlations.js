@@ -55,9 +55,9 @@ module.exports = {
 
     const updateStateForId = async (id, updatedState) => {
       const updateStatement =
-        `UPDATE Correlations
-         SET state = '${updatedState}'
-         WHERE id = ${id}`;
+        `UPDATE "Correlations"
+         SET "state" = '${updatedState}'
+         WHERE "id" = ${id}`;
 
       try {
         await queryInterface.sequelize.query(updateStatement);
@@ -76,9 +76,9 @@ module.exports = {
       for (const currentCorrelationEntry of allCorrelations) {
         const currentProcessInstanceId = currentCorrelationEntry.processInstanceId;
         const queryActiveFlowNodes =
-          `SELECT state
-          FROM FlowNodeInstances
-          WHERE processInstanceId = '${currentProcessInstanceId}' AND (state = 'running' OR state = 'suspended')`;
+          `SELECT "state"
+          FROM "FlowNodeInstances"
+          WHERE "processInstanceId" = '${currentProcessInstanceId}' AND ("state" = 'running' OR state = 'suspended')`;
 
         const activeFlowNodeInstancesforProcessInstance = (await queryInterface.sequelize.query(queryActiveFlowNodes))[0];
         const processInstanceIsActive = activeFlowNodeInstancesforProcessInstance.length > 0;
@@ -98,9 +98,9 @@ module.exports = {
         }
 
         const queryErroneousFlowNodes =
-        `SELECT state
-        FROM FlowNodeInstances
-        WHERE processInstanceId = '${currentProcessInstanceId}' AND (state = 'error' OR state = 'terminated')`;
+        `SELECT "state"
+        FROM "FlowNodeInstances"
+        WHERE "processInstanceId" = '${currentProcessInstanceId}' AND ("state" = 'error' OR state = 'terminated')`;
 
         const erroneousFlowNodeInstancesforProcessInstance = (await queryInterface.sequelize.query(queryErroneousFlowNodes))[0];
         const processInstanceHasErrored = erroneousFlowNodeInstancesforProcessInstance.length > 0;
