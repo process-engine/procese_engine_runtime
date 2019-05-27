@@ -3,7 +3,7 @@ const uuid = require('node-uuid');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API:   Receive global IntermediateEvent Notifications', () => {
+describe('Management API:   Receive global IntermediateEvent notifications', () => {
 
   let eventAggregator;
   let processInstanceHandler;
