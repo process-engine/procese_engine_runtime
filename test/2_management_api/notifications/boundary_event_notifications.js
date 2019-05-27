@@ -17,8 +17,6 @@ describe('Management API:   Receive global BoundaryEvent Notifications', () => {
 
   let correlationId;
 
-  let boundaryEventToFinish;
-
   const noopCallback = () => {};
 
   const boundaryEventTriggeredMessagePath = 'boundary_event_triggered';
@@ -59,9 +57,6 @@ describe('Management API:   Receive global BoundaryEvent Notifications', () => {
       const notificationReceivedCallback = async (boundaryEventTriggeredMessage) => {
 
         should.exist(boundaryEventTriggeredMessage);
-
-        // Store this for use in the second test, where we wait for the boundaryEventFinished notification.
-        boundaryEventToFinish = boundaryEventTriggeredMessage;
 
         const messageIsAboutCorrectBoundaryEvent = boundaryEventTriggeredMessage.flowNodeId === sampleBoundaryEventMessage.flowNodeId;
 
