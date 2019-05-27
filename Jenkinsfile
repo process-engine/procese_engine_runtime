@@ -106,6 +106,7 @@ pipeline {
         }
         nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
           sh('node --version')
+          sh('npm cache clear --force')
           sh('npm install')
           sh('npm run build')
           sh('npm rebuild')
