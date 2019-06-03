@@ -3,7 +3,7 @@ const uuid = require('node-uuid');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API:   Receive global IntermediateEvent notifications', () => {
+describe('Management API:   Receive global IntermediateCatchEvent Notifications', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -11,21 +11,21 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
 
   let defaultIdentity;
 
-  const processModelId = 'test_management_api_intermediateevent';
+  const processModelId = 'test_management_api_intermediate-catch-event';
 
   let correlationId;
 
-  let intermediateEventToFinish;
+  let intermediateCatchEventToFinish;
 
   const noopCallback = () => {};
 
-  const intermediateEventTriggeredMessagePath = 'intermediate_event_triggered';
+  const intermediateCatchEventReachedMessagePath = 'intermediate_catch_event_reached';
   const intermediateCatchEventFinishedMessagePath = 'intermediate_catch_event_finished';
-  const sampleIntermediateEventMessage = {
+  const sampleIntermediateCatchEventMessage = {
     correlationId: uuid.v4(),
     processModelId: 'processModelId',
     processInstanceId: uuid.v4(),
-    flowNodeId: 'IntermediateEvent_1',
+    flowNodeId: 'IntermediateCatchEvent_1',
     flowNodeInstanceId: uuid.v4(),
     processInstanceOwner: undefined, // Can only be set after the TestFixtureProvider was initialized.
     payload: {},
@@ -36,7 +36,7 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
     await testFixtureProvider.initializeAndStart();
     defaultIdentity = testFixtureProvider.identities.defaultUser;
 
-    sampleIntermediateEventMessage.processInstanceOwner = defaultIdentity;
+    sampleIntermediateCatchEventMessage.processInstanceOwner = defaultIdentity;
 
     const processModelsToImport = [processModelId];
     await testFixtureProvider.importProcessFiles(processModelsToImport);
@@ -49,22 +49,23 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
     await testFixtureProvider.tearDown();
   });
 
-  it('should send a notification via socket when IntermediateEvent is suspended', async () => {
+  it('should send a notification via socket when an IntermediateCatchEvent is suspended', async () => {
 
     correlationId = uuid.v4();
 
     return new Promise(async (resolve, reject) => {
 
-      const notificationReceivedCallback = async (intermediateEventTriggeredMessage) => {
+      const notificationReceivedCallback = async (intermediateCatchEventReachedMessage) => {
 
-        should.exist(intermediateEventTriggeredMessage);
+        should.exist(intermediateCatchEventReachedMessage);
 
         // Store this for use in the second test, where we wait for the intermediateCatchEventFinished notification.
-        intermediateEventToFinish = intermediateEventTriggeredMessage;
+        intermediateCatchEventToFinish = intermediateCatchEventReachedMessage;
 
-        const messageIsAboutCorrectIntermediateEvent = intermediateEventTriggeredMessage.flowNodeId === sampleIntermediateEventMessage.flowNodeId;
+        const messageIsAboutCorrectIntermediateCatchEvent =
+          intermediateCatchEventReachedMessage.flowNodeId === sampleIntermediateCatchEventMessage.flowNodeId;
 
-        should(messageIsAboutCorrectIntermediateEvent).be.true();
+        should(messageIsAboutCorrectIntermediateCatchEvent).be.true();
 
         const processInstanceFinished = (() => {
           resolve();
@@ -76,13 +77,13 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
       const subscribeOnce = true;
       await testFixtureProvider
         .managementApiClientService
-        .onIntermediateEventTriggered(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+        .onIntermediateCatchEventReached(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
     });
   });
 
-  it('should send a notification via socket when a IntermediateEvent is finished', async () => {
+  it('should send a notification via socket when a IntermediateCatchEvent is finished', async () => {
 
     return new Promise(async (resolve, reject) => {
 
@@ -90,9 +91,9 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
 
       const notificationReceivedCallback = async (intermediateCatchEventFinishedMessage) => {
         should(intermediateCatchEventFinishedMessage).not.be.undefined();
-        should(intermediateCatchEventFinishedMessage.flowNodeId).be.equal(intermediateEventToFinish.flowNodeId);
-        should(intermediateCatchEventFinishedMessage.processModelId).be.equal(intermediateEventToFinish.processModelId);
-        should(intermediateCatchEventFinishedMessage.correlationId).be.equal(intermediateEventToFinish.correlationId);
+        should(intermediateCatchEventFinishedMessage.flowNodeId).be.equal(intermediateCatchEventToFinish.flowNodeId);
+        should(intermediateCatchEventFinishedMessage.processModelId).be.equal(intermediateCatchEventToFinish.processModelId);
+        should(intermediateCatchEventFinishedMessage.correlationId).be.equal(intermediateCatchEventToFinish.correlationId);
 
         notificationReceived = true;
       };
@@ -105,7 +106,7 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
       const processFinishedCallback = () => {
 
         if (!notificationReceived) {
-          throw new Error('Did not receive the expected notification about the finished IntermediateEvent!');
+          throw new Error('Did not receive the expected notification about the finished IntermediateCatchEvent!');
         }
 
         resolve();
@@ -116,12 +117,12 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
     });
   });
 
-  it('should fail to subscribe for the IntermediateEventTriggered notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the IntermediateCatchEventReached notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
         .managementApiClientService
-        .onIntermediateEventTriggered({}, noopCallback, subscribeOnce);
+        .onIntermediateCatchEventReached({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
       const expectedErrorMessage = /no auth token/i;
@@ -158,10 +159,10 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
       .managementApiClientService
-      .onIntermediateEventTriggered(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+      .onIntermediateCatchEventReached(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
-    eventAggregator.publish(intermediateEventTriggeredMessagePath, sampleIntermediateEventMessage);
+    eventAggregator.publish(intermediateCatchEventReachedMessagePath, sampleIntermediateCatchEventMessage);
 
     // Wait some time before removing the subscription, or we risk it being destroyed
     // before the first notification is received.
@@ -173,8 +174,8 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
-    eventAggregator.publish(intermediateEventTriggeredMessagePath, sampleIntermediateEventMessage);
-    eventAggregator.publish(intermediateEventTriggeredMessagePath, sampleIntermediateEventMessage);
+    eventAggregator.publish(intermediateCatchEventReachedMessagePath, sampleIntermediateCatchEventMessage);
+    eventAggregator.publish(intermediateCatchEventReachedMessagePath, sampleIntermediateCatchEventMessage);
 
     const expectedReceivedAmountOfNotifications = 1;
     should(receivedNotifications).be.equal(expectedReceivedAmountOfNotifications);
@@ -195,7 +196,7 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
       .onIntermediateCatchEventFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
-    eventAggregator.publish(intermediateCatchEventFinishedMessagePath, sampleIntermediateEventMessage);
+    eventAggregator.publish(intermediateCatchEventFinishedMessagePath, sampleIntermediateCatchEventMessage);
 
     // Wait some time before removing the subscription, or we risk it being destroyed
     // before the first notification is received.
@@ -207,14 +208,14 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
-    eventAggregator.publish(intermediateCatchEventFinishedMessagePath, sampleIntermediateEventMessage);
-    eventAggregator.publish(intermediateCatchEventFinishedMessagePath, sampleIntermediateEventMessage);
+    eventAggregator.publish(intermediateCatchEventFinishedMessagePath, sampleIntermediateCatchEventMessage);
+    eventAggregator.publish(intermediateCatchEventFinishedMessagePath, sampleIntermediateCatchEventMessage);
 
     const expectedReceivedAmountOfNotifications = 1;
     should(receivedNotifications).be.equal(expectedReceivedAmountOfNotifications);
   });
 
-  it('should continuously receive IntermediateEventTriggered notifications, if subscribeOnce is set to "false"', async () => {
+  it('should continuously receive IntermediateCatchEventReached notifications, if subscribeOnce is set to "false"', async () => {
 
     return new Promise(async (resolve, reject) => {
       let receivedNotifications = 0;
@@ -237,11 +238,11 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
         .managementApiClientService
-        .onIntermediateEventTriggered(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+        .onIntermediateCatchEventReached(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
-      eventAggregator.publish(intermediateEventTriggeredMessagePath, sampleIntermediateEventMessage);
-      eventAggregator.publish(intermediateEventTriggeredMessagePath, sampleIntermediateEventMessage);
+      eventAggregator.publish(intermediateCatchEventReachedMessagePath, sampleIntermediateCatchEventMessage);
+      eventAggregator.publish(intermediateCatchEventReachedMessagePath, sampleIntermediateCatchEventMessage);
     });
   });
 
@@ -271,12 +272,12 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
         .onIntermediateCatchEventFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
-      eventAggregator.publish(intermediateCatchEventFinishedMessagePath, sampleIntermediateEventMessage);
-      eventAggregator.publish(intermediateCatchEventFinishedMessagePath, sampleIntermediateEventMessage);
+      eventAggregator.publish(intermediateCatchEventFinishedMessagePath, sampleIntermediateCatchEventMessage);
+      eventAggregator.publish(intermediateCatchEventFinishedMessagePath, sampleIntermediateCatchEventMessage);
     });
   });
 
-  it('should only receive one IntermediateEventTriggered notification, if subscribeOnce is set to "true"', async () => {
+  it('should only receive one IntermediateCatchEventReached notification, if subscribeOnce is set to "true"', async () => {
     let receivedNotifications = 0;
 
     const notificationReceivedCallback = async (message) => {
@@ -287,16 +288,16 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
     const subscribeOnce = true;
     await testFixtureProvider
       .managementApiClientService
-      .onIntermediateEventTriggered(defaultIdentity, notificationReceivedCallback, subscribeOnce);
+      .onIntermediateCatchEventReached(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
-    eventAggregator.publish(intermediateEventTriggeredMessagePath, sampleIntermediateEventMessage);
+    eventAggregator.publish(intermediateCatchEventReachedMessagePath, sampleIntermediateCatchEventMessage);
 
     // Wait some time before publishing another event, or we risk the subscription being removed
     // before the first notification is received.
     await processInstanceHandler.wait(500);
 
-    eventAggregator.publish(intermediateEventTriggeredMessagePath, sampleIntermediateEventMessage);
+    eventAggregator.publish(intermediateCatchEventReachedMessagePath, sampleIntermediateCatchEventMessage);
 
     const expectedReceivedAmountOfNotifications = 1;
     should(receivedNotifications).be.equal(expectedReceivedAmountOfNotifications);
@@ -316,13 +317,13 @@ describe('Management API:   Receive global IntermediateEvent notifications', () 
       .onIntermediateCatchEventFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
-    eventAggregator.publish(intermediateCatchEventFinishedMessagePath, sampleIntermediateEventMessage);
+    eventAggregator.publish(intermediateCatchEventFinishedMessagePath, sampleIntermediateCatchEventMessage);
 
     // Wait some time before publishing another event, or we risk the subscription being removed
     // before the first notification is received.
     await processInstanceHandler.wait(500);
 
-    eventAggregator.publish(intermediateCatchEventFinishedMessagePath, sampleIntermediateEventMessage);
+    eventAggregator.publish(intermediateCatchEventFinishedMessagePath, sampleIntermediateCatchEventMessage);
 
     const expectedReceivedAmountOfNotifications = 1;
     should(receivedNotifications).be.equal(expectedReceivedAmountOfNotifications);
