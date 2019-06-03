@@ -48,7 +48,7 @@ describe('Management API:   Receive global BoundaryEvent notifications', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should send a notification via socket when BoundaryEvent is suspended', async () => {
+  it('should send a notification via socket when a BoundaryEvent is triggered', async () => {
 
     correlationId = uuid.v4();
 
@@ -78,7 +78,7 @@ describe('Management API:   Receive global BoundaryEvent notifications', () => {
     });
   });
 
-  it('should fail to subscribe for the BoundaryEventWaiting notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the BoundaryEventTriggered notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
@@ -93,7 +93,7 @@ describe('Management API:   Receive global BoundaryEvent notifications', () => {
     }
   });
 
-  it('should no longer receive BoundaryEventWaiting notifications, after the subscription was removed', async () => {
+  it('should no longer receive BoundaryEventTriggered notifications, after the subscription was removed', async () => {
 
     let receivedNotifications = 0;
 
@@ -127,7 +127,7 @@ describe('Management API:   Receive global BoundaryEvent notifications', () => {
     should(receivedNotifications).be.equal(expectedReceivedAmountOfNotifications);
   });
 
-  it('should continuously receive BoundaryEventWaiting notifications, if subscribeOnce is set to "false"', async () => {
+  it('should continuously receive BoundaryEventTriggered notifications, if subscribeOnce is set to "false"', async () => {
 
     return new Promise(async (resolve, reject) => {
       let receivedNotifications = 0;
@@ -158,7 +158,7 @@ describe('Management API:   Receive global BoundaryEvent notifications', () => {
     });
   });
 
-  it('should only receive one BoundaryEventWaiting notification, if subscribeOnce is set to "true"', async () => {
+  it('should only receive one BoundaryEventTriggered notification, if subscribeOnce is set to "true"', async () => {
     let receivedNotifications = 0;
 
     const notificationReceivedCallback = async (message) => {

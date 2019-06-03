@@ -52,7 +52,7 @@ describe('Management API:   Receive global CallActivity notifications', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should send a notification via socket when CallActivity is suspended', async () => {
+  it('should send a notification via socket when a CallActivity is suspended', async () => {
 
     correlationId = uuid.v4();
 
