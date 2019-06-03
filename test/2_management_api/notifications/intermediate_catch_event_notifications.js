@@ -83,7 +83,7 @@ describe('Management API:   Receive global IntermediateCatchEvent Notifications'
     });
   });
 
-  it('should send a notification via socket when a IntermediateCatchEvent is finished', async () => {
+  it('should send a notification via socket when an IntermediateCatchEvent is finished', async () => {
 
     return new Promise(async (resolve, reject) => {
 
