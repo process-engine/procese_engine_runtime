@@ -15,6 +15,8 @@
         <bpmn:flowNodeRef>EndEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ExclusiveGateway_0b8lvl7</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_0wty57x</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_1yybdxh</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_1mfuwgl</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:sequenceFlow id="SequenceFlow_17bud3g" sourceRef="StartEvent_1" targetRef="ExclusiveGateway_0yrh56c" />
@@ -29,21 +31,19 @@
     <bpmn:sequenceFlow id="SequenceFlow_13vh5qz" sourceRef="ServiceTask_Misconfigured" targetRef="ExclusiveGateway_0b8lvl7" />
     <bpmn:serviceTask id="ExternalServiceTask_1" name="Do external stuff" camunda:type="external" camunda:topic="service_task_external_test_topic">
       <bpmn:extensionElements>
-        <camunda:properties>
-          <camunda:property name="url" value="http://localhost:46465/api/consumer/v1/process_models" />
-          <camunda:property name="method" value="get" />
-          <camunda:property name="headers" value="{&#34;Authorization&#34;: &#34;Bearer defaultUser&#34;}" />
-        </camunda:properties>
+        <camunda:properties />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0ialu44</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1ewtmwi</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:exclusiveGateway id="ExclusiveGateway_0yrh56c">
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0yrh56c" name="">
       <bpmn:incoming>SequenceFlow_17bud3g</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0ialu44</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_1gf38k0</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_14lm7ix</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_1j5xweo</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0jw7n3i</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_14wmkzd</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:serviceTask id="ServiceTask_Misconfigured" name="Misconfigured external task" camunda:type="external" camunda:topic="service_task_external_test_topic">
       <bpmn:extensionElements>
@@ -65,7 +65,7 @@
       <bpmn:incoming>SequenceFlow_14lm7ix</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1o05can</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:startEvent id="StartEvent_1" name="order received">
+    <bpmn:startEvent id="StartEvent_1" name="start">
       <bpmn:outgoing>SequenceFlow_17bud3g</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="SequenceFlow_14lm7ix" name="misconfigured internal" sourceRef="ExclusiveGateway_0yrh56c" targetRef="ServiceTask_1bvov1a">
@@ -75,7 +75,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_1j5xweo" name="invalid token reference" sourceRef="ExclusiveGateway_0yrh56c" targetRef="Task_0cay4uf">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">token.current.test_type === 'invalid_token_payload'</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:serviceTask id="Task_0cay4uf" name="Invalid token payload reference" camunda:type="external" camunda:topic="i_am_a_wookie">
+    <bpmn:serviceTask id="Task_0cay4uf" name="Invalid token reference in payload" camunda:type="external" camunda:topic="i_am_a_wookie">
       <bpmn:extensionElements>
         <camunda:properties>
           <camunda:property name="payload" value="{ currentToken: token.bla.iwantyoutocrash }" />
@@ -88,11 +88,13 @@
     <bpmn:endEvent id="EndEvent_1">
       <bpmn:incoming>SequenceFlow_1nuyt4j</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:exclusiveGateway id="ExclusiveGateway_0b8lvl7">
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0b8lvl7" name="">
       <bpmn:incoming>SequenceFlow_1ewtmwi</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_13vh5qz</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_1pc27bk</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_05b1uxt</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0j3vfqa</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_10miwhv</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1nuyt4j</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="SequenceFlow_05b1uxt" sourceRef="Task_0wty57x" targetRef="ExclusiveGateway_0b8lvl7" />
@@ -101,6 +103,30 @@
       <bpmn:outgoing>SequenceFlow_05b1uxt</bpmn:outgoing>
       <bpmn:script>return 'successfully executed service task';</bpmn:script>
     </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="SequenceFlow_0jw7n3i" name="" sourceRef="ExclusiveGateway_0yrh56c" targetRef="Task_1yybdxh">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">token.current.test_type === 'invalid_token_topic'</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0j3vfqa" sourceRef="Task_1yybdxh" targetRef="ExclusiveGateway_0b8lvl7" />
+    <bpmn:serviceTask id="Task_1yybdxh" name="Invalid token reference in topic" camunda:type="external" camunda:topic="token.bla.bla.bla">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="payload" value="{}" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0jw7n3i</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0j3vfqa</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_14wmkzd" name="" sourceRef="ExclusiveGateway_0yrh56c" targetRef="Task_1mfuwgl">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">token.current.test_type === 'topic_from_token'</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="Task_1mfuwgl" name="Do external stuff with topic from token" camunda:type="external" camunda:topic="token.history.StartEvent_1.topic">
+      <bpmn:extensionElements>
+        <camunda:properties />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_14wmkzd</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_10miwhv</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_10miwhv" sourceRef="Task_1mfuwgl" targetRef="ExclusiveGateway_0b8lvl7" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1mhjr91">
@@ -108,7 +134,7 @@
         <dc:Bounds x="798" y="262" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Participant_0x6mua5_di" bpmnElement="Participant_0x6mua5">
-        <dc:Bounds x="450" y="188" width="792" height="597" />
+        <dc:Bounds x="450" y="34" width="791" height="857" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_00asnpf_di" bpmnElement="EndEvent_1">
         <dc:Bounds x="1185" y="388" width="36" height="36" />
@@ -117,12 +143,12 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Default_Test_Lane_di" bpmnElement="Default_Test_Lane">
-        <dc:Bounds x="480" y="188" width="762" height="597" />
+        <dc:Bounds x="480" y="34" width="761" height="857" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="StartEvent_1qjlwrk_di" bpmnElement="StartEvent_1">
         <dc:Bounds x="567" y="388" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="550" y="424" width="71" height="14" />
+          <dc:Bounds x="575" y="424" width="22" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_17bud3g_di" bpmnElement="SequenceFlow_17bud3g">
@@ -142,7 +168,7 @@
         <di:waypoint x="695" y="302" />
         <di:waypoint x="798" y="302" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="678" y="282" width="34" height="14" />
+          <dc:Bounds x="653" y="327" width="34" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ExclusiveGateway_0b8lvl7_di" bpmnElement="ExclusiveGateway_0b8lvl7" isMarkerVisible="true">
@@ -205,6 +231,32 @@
       <bpmndi:BPMNShape id="ScriptTask_1mehs17_di" bpmnElement="Task_0wty57x">
         <dc:Bounds x="936" y="366" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0jw7n3i_di" bpmnElement="SequenceFlow_0jw7n3i">
+        <di:waypoint x="695" y="431" />
+        <di:waypoint x="695" y="769" />
+        <di:waypoint x="798" y="769" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0j3vfqa_di" bpmnElement="SequenceFlow_0j3vfqa">
+        <di:waypoint x="898" y="769" />
+        <di:waypoint x="1117" y="769" />
+        <di:waypoint x="1117" y="431" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1v08o3g_di" bpmnElement="Task_1yybdxh">
+        <dc:Bounds x="798" y="729" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_14wmkzd_di" bpmnElement="SequenceFlow_14wmkzd">
+        <di:waypoint x="695" y="381" />
+        <di:waypoint x="695" y="173" />
+        <di:waypoint x="798" y="173" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_006xb3o_di" bpmnElement="Task_1mfuwgl">
+        <dc:Bounds x="798" y="133" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_10miwhv_di" bpmnElement="SequenceFlow_10miwhv">
+        <di:waypoint x="898" y="173" />
+        <di:waypoint x="1117" y="173" />
+        <di:waypoint x="1117" y="381" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
