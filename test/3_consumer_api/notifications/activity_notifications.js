@@ -1,11 +1,9 @@
-
-
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs');
 
-describe('Management API:   Receive global Activity Notifications', () => {
+describe('Consumer API:   Receive global Activity Notifications', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -22,7 +20,7 @@ describe('Management API:   Receive global Activity Notifications', () => {
 
   const noopCallback = () => {};
 
-  const activityWaitingMessagePath = 'activity_reached';
+  const activityReachedMessagePath = 'activity_reached';
   const activityFinishedMessagePath = 'activity_finished';
   const sampleActivityMessage = {
     correlationId: uuid.v4(),
@@ -52,20 +50,20 @@ describe('Management API:   Receive global Activity Notifications', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should send a notification via socket when an Activity is reached', async () => {
+  it('should send a notification via socket when an Activity is suspended', async () => {
 
     correlationId = uuid.v4();
 
     return new Promise(async (resolve, reject) => {
 
-      const notificationReceivedCallback = async (activityWaitingMessage) => {
+      const notificationReceivedCallback = async (activityReachedMessage) => {
 
-        should.exist(activityWaitingMessage);
+        should.exist(activityReachedMessage);
 
-        // Store this for use in the second test, where we wait for the ActivityFinished notification.
-        activityToFinish = activityWaitingMessage;
+        // Store this for use in the second test, where we wait for the activityFinished notification.
+        activityToFinish = activityReachedMessage;
 
-        const messageIsAboutCorrectActivity = activityWaitingMessage.flowNodeId === sampleActivityMessage.flowNodeId;
+        const messageIsAboutCorrectActivity = activityReachedMessage.flowNodeId === sampleActivityMessage.flowNodeId;
 
         should(messageIsAboutCorrectActivity).be.true();
 
@@ -74,7 +72,7 @@ describe('Management API:   Receive global Activity Notifications', () => {
 
       const subscribeOnce = true;
       await testFixtureProvider
-        .managementApiClientService
+        .consumerApiClientService
         .onActivityReached(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
@@ -97,7 +95,7 @@ describe('Management API:   Receive global Activity Notifications', () => {
 
       const subscribeOnce = true;
       await testFixtureProvider
-        .managementApiClientService
+        .consumerApiClientService
         .onActivityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       const processFinishedCallback = () => {
@@ -110,11 +108,11 @@ describe('Management API:   Receive global Activity Notifications', () => {
     });
   });
 
-  it('should fail to subscribe for the ActivityReached notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the ActivityWaiting notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .managementApiClientService
+        .consumerApiClientService
         .onActivityReached({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
@@ -129,7 +127,7 @@ describe('Management API:   Receive global Activity Notifications', () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .managementApiClientService
+        .consumerApiClientService
         .onActivityFinished({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
@@ -140,7 +138,7 @@ describe('Management API:   Receive global Activity Notifications', () => {
     }
   });
 
-  it('should no longer receive ActivityReached notifications, after the subscription was removed', async () => {
+  it('should no longer receive ActivityWaiting notifications, after the subscription was removed', async () => {
 
     let receivedNotifications = 0;
 
@@ -151,11 +149,11 @@ describe('Management API:   Receive global Activity Notifications', () => {
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .managementApiClientService
+      .consumerApiClientService
       .onActivityReached(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
-    eventAggregator.publish(activityWaitingMessagePath, sampleActivityMessage);
+    eventAggregator.publish(activityReachedMessagePath, sampleActivityMessage);
 
     // Wait some time before removing the subscription, or we risk it being destroyed
     // before the first notification is received.
@@ -163,12 +161,12 @@ describe('Management API:   Receive global Activity Notifications', () => {
 
     // Remove the subscription
     await testFixtureProvider
-      .managementApiClientService
+      .consumerApiClientService
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
-    eventAggregator.publish(activityWaitingMessagePath, sampleActivityMessage);
-    eventAggregator.publish(activityWaitingMessagePath, sampleActivityMessage);
+    eventAggregator.publish(activityReachedMessagePath, sampleActivityMessage);
+    eventAggregator.publish(activityReachedMessagePath, sampleActivityMessage);
 
     const expectedReceivedAmountOfNotifications = 1;
     should(receivedNotifications).be.equal(expectedReceivedAmountOfNotifications);
@@ -185,7 +183,7 @@ describe('Management API:   Receive global Activity Notifications', () => {
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .managementApiClientService
+      .consumerApiClientService
       .onActivityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
@@ -197,7 +195,7 @@ describe('Management API:   Receive global Activity Notifications', () => {
 
     // Remove the subscription
     await testFixtureProvider
-      .managementApiClientService
+      .consumerApiClientService
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
@@ -208,7 +206,7 @@ describe('Management API:   Receive global Activity Notifications', () => {
     should(receivedNotifications).be.equal(expectedReceivedAmountOfNotifications);
   });
 
-  it('should continuously receive ActivityReached notifications, if subscribeOnce is set to "false"', async () => {
+  it('should continuously receive ActivityWaiting notifications, if subscribeOnce is set to "false"', async () => {
 
     return new Promise(async (resolve, reject) => {
       let receivedNotifications = 0;
@@ -220,7 +218,7 @@ describe('Management API:   Receive global Activity Notifications', () => {
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .managementApiClientService
+            .consumerApiClientService
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -230,12 +228,12 @@ describe('Management API:   Receive global Activity Notifications', () => {
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .managementApiClientService
+        .consumerApiClientService
         .onActivityReached(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
-      eventAggregator.publish(activityWaitingMessagePath, sampleActivityMessage);
-      eventAggregator.publish(activityWaitingMessagePath, sampleActivityMessage);
+      eventAggregator.publish(activityReachedMessagePath, sampleActivityMessage);
+      eventAggregator.publish(activityReachedMessagePath, sampleActivityMessage);
     });
   });
 
@@ -251,7 +249,7 @@ describe('Management API:   Receive global Activity Notifications', () => {
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .managementApiClientService
+            .consumerApiClientService
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -261,7 +259,7 @@ describe('Management API:   Receive global Activity Notifications', () => {
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .managementApiClientService
+        .consumerApiClientService
         .onActivityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
@@ -270,7 +268,7 @@ describe('Management API:   Receive global Activity Notifications', () => {
     });
   });
 
-  it('should only receive one ActivityReached notification, if subscribeOnce is set to "true"', async () => {
+  it('should only receive one ActivityWaiting notification, if subscribeOnce is set to "true"', async () => {
     let receivedNotifications = 0;
 
     const notificationReceivedCallback = async (message) => {
@@ -280,17 +278,17 @@ describe('Management API:   Receive global Activity Notifications', () => {
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .managementApiClientService
+      .consumerApiClientService
       .onActivityReached(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
-    eventAggregator.publish(activityWaitingMessagePath, sampleActivityMessage);
+    eventAggregator.publish(activityReachedMessagePath, sampleActivityMessage);
 
     // Wait some time before publishing another event, or we risk the subscription being removed
     // before the first notification is received.
     await processInstanceHandler.wait(500);
 
-    eventAggregator.publish(activityWaitingMessagePath, sampleActivityMessage);
+    eventAggregator.publish(activityReachedMessagePath, sampleActivityMessage);
 
     const expectedReceivedAmountOfNotifications = 1;
     should(receivedNotifications).be.equal(expectedReceivedAmountOfNotifications);
@@ -306,7 +304,7 @@ describe('Management API:   Receive global Activity Notifications', () => {
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .managementApiClientService
+      .consumerApiClientService
       .onActivityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
