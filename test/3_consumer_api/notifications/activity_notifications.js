@@ -1,7 +1,7 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 describe('Consumer API:   Receive global Activity Notifications', () => {
 
