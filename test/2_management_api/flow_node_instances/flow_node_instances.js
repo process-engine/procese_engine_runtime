@@ -12,7 +12,7 @@ describe(`Management API: ${testCase}`, () => {
 
   let correlationId;
 
-  const processModelId = 'test_management_api_usertask';
+  const processModelId = '2sek_test';
   let processInstanceId;
 
   before(async () => {
@@ -27,7 +27,9 @@ describe(`Management API: ${testCase}`, () => {
     correlationId = result.correlationId;
     processInstanceId = result.processInstanceId;
 
-    await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+    await new Promise((resolve) => {
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
+    });
   });
 
   after(async () => {
