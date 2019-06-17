@@ -49,9 +49,25 @@ describe(`Management API: ${testCase}`, () => {
     should(flowNodeInstances).be.instanceOf(Array);
     should(flowNodeInstances.length).be.greaterThan(0);
 
-    const firstFlowNodeInstance = flowNodeInstances[0];
+    for (const flowNodeInstance of flowNodeInstances) {
+      should(flowNodeInstance).have.property('id');
+      should(flowNodeInstance).have.property('flowNodeId');
+      should(flowNodeInstance).have.property('flowNodeType');
+      should(flowNodeInstance).have.property('correlationId');
+      should(flowNodeInstance).have.property('processModelId');
+      should(flowNodeInstance).have.property('processInstanceId');
+      should(flowNodeInstance).have.property('tokens');
+      should(flowNodeInstance).have.property('state');
+      should(flowNodeInstance).have.property('owner');
 
-    should(firstFlowNodeInstance).have.property('processInstanceId');
+      should(flowNodeInstance.processModelId).be.equal(processModelId);
+
+      const hasOnEnterToken = flowNodeInstance.tokens.some((token) => token.type === 'onEnter');
+      const hasOnExitToken = flowNodeInstance.tokens.some((token) => token.type === 'onExit');
+
+      should(hasOnEnterToken).be.true();
+      should(hasOnExitToken).be.true();
+    }
   }
 
 });
