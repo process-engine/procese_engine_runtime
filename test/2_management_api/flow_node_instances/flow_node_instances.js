@@ -11,9 +11,8 @@ describe(`Management API: ${testCase}`, () => {
   let testFixtureProvider;
 
   let correlationId;
-
-  const processModelId = '2sek_test';
   let processInstanceId;
+  const processModelId = 'test_management_api_multiple_start_events';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -23,13 +22,7 @@ describe(`Management API: ${testCase}`, () => {
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
-    const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId);
-    correlationId = result.correlationId;
-    processInstanceId = result.processInstanceId;
-
-    await new Promise((resolve) => {
-      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, resolve);
-    });
+    await createFinishedProcessInstance();
   });
 
   after(async () => {
@@ -44,6 +37,17 @@ describe(`Management API: ${testCase}`, () => {
 
     assertFlowNodeInstances(flowNodeInstances);
   });
+
+  async function createFinishedProcessInstance() {
+
+    await new Promise(async (resolve) => {
+      const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId);
+      processInstanceId = result.processInstanceId;
+      correlationId = result.correlationId;
+
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
+    });
+  }
 
   function assertFlowNodeInstances(flowNodeInstances) {
     should(flowNodeInstances).be.instanceOf(Array);
@@ -60,7 +64,9 @@ describe(`Management API: ${testCase}`, () => {
       should(flowNodeInstance).have.property('state');
       should(flowNodeInstance).have.property('owner');
 
+      should(flowNodeInstance.correlationId).be.equal(correlationId);
       should(flowNodeInstance.processModelId).be.equal(processModelId);
+      should(flowNodeInstance.processInstanceId).be.equal(processInstanceId);
 
       const hasOnEnterToken = flowNodeInstance.tokens.some((token) => token.type === 'onEnter');
       const hasOnExitToken = flowNodeInstance.tokens.some((token) => token.type === 'onExit');
