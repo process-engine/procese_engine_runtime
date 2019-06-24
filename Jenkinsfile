@@ -71,6 +71,8 @@ def slack_send_summary(testlog, test_failed) {
   slackSend(attachments: "[{$color_string, $title_string, $markdown_string, $result_string, $action_string}]");
 }
 
+def npm_install_command = 'npm install --ignore-scripts';
+
 pipeline {
   agent any
   tools {
@@ -102,11 +104,16 @@ pipeline {
           // When building a non master or develop branch the release will be a draft.
           release_will_be_draft = !branch_is_master && !branch_is_develop;
 
+          def run_clean_install = branch_is_master || branch_is_develop;
+          if (run_clean_install) {
+            npm_install_command = 'npm ci --ignore-scripts'
+          }
+
           echo("Branch is '${branch}'")
         }
         nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
           sh('node --version')
-          sh('npm install')
+          sh(npm_install_command)
           sh('npm run build')
           sh('npm rebuild')
         }
