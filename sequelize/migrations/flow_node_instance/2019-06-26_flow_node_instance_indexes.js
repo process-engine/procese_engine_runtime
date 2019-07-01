@@ -16,12 +16,13 @@ module.exports = {
     await queryInterface.addIndex('FlowNodeInstances', ['processModelId']);
     await queryInterface.addIndex('FlowNodeInstances', ['processInstanceId']);
     await queryInterface.addIndex('FlowNodeInstances', ['state']);
-    await queryInterface.addIndex('FlowNodeInstances', ['correlationId', 'processModelId']);
-    await queryInterface.addIndex('FlowNodeInstances', ['correlationId', 'processModelId', 'flowNodeId']);
-    await queryInterface.addIndex('FlowNodeInstances', ['correlationId', 'processModelId', 'state']);
+    // NOTE: Mysql has a limit on the length of index names, so we must shorten those that use many columns.
+    await queryInterface.addIndex('FlowNodeInstances', ['correlationId', 'processModelId'], {name: 'FlowNodeInstances_cId_pmId_Index'});
+    await queryInterface.addIndex('FlowNodeInstances', ['correlationId', 'processModelId', 'flowNodeId'], {name: 'FlowNodeInstances_cId_pmId_fnId_Index'});
+    await queryInterface.addIndex('FlowNodeInstances', ['correlationId', 'processModelId', 'state'], {name: 'FlowNodeInstances_cId_pmId_state_Index'});
     await queryInterface.addIndex('FlowNodeInstances', ['correlationId', 'state']);
     await queryInterface.addIndex('FlowNodeInstances', ['processModelId', 'state']);
-    await queryInterface.addIndex('FlowNodeInstances', ['processInstanceId', 'flowNodeId']);
+    await queryInterface.addIndex('FlowNodeInstances', ['processInstanceId', 'flowNodeId'], {name: 'FlowNodeInstances_piId_fnId_Index'});
     await queryInterface.addIndex('FlowNodeInstances', ['processInstanceId', 'state']);
 
     await queryInterface.addIndex('ProcessTokens', ['flowNodeInstanceId']);
