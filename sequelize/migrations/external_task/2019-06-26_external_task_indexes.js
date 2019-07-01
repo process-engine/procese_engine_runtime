@@ -11,7 +11,7 @@ module.exports = {
     console.log('Adding indexes to ExternalTask table for each commonly used query operation');
 
     await queryInterface.addIndex('ExternalTasks', ['externalTaskId'], {name: 'ExternalTasks_externalTaskId_Index'});
-    await queryInterface.addIndex('ExternalTasks', ['correlationId', 'processInstanceId', 'flowNodeInstanceId']);
+    await queryInterface.addIndex('ExternalTasks', ['correlationId', 'processInstanceId', 'flowNodeInstanceId'], {name: 'ExternalTasks_piId_cId_fniId_Index'});
     await queryInterface.addIndex('ExternalTasks', ['topic', 'state', 'lockExpirationTime']);
     await queryInterface.addIndex('ExternalTasks', ['processModelId']);
   },
