@@ -25,7 +25,6 @@ module.exports = {
       }
     );
 
-
     await queryInterface.addIndex('ProcessDefinitions', ['name']);
     await queryInterface.addIndex('ProcessDefinitions', ['hash']);
   },
