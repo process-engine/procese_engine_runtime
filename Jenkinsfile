@@ -161,7 +161,7 @@ pipeline {
                 }
 
                 docker.image("node:${NODE_VERSION_NUMBER}").inside("--link ${c.id}:${mysql_host} --env HOME=${WORKSPACE} --env ConnectionStrings__StatePersistence='${mysql_connection_string}'") {
-                  mysql_exit_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit | tee process_engine_runtime_integration_tests_mysql.txt", returnStatus: true);
+                  mysql_exit_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > process_engine_runtime_integration_tests_mysql.txt", returnStatus: true);
 
                   mysql_testresults = sh(script: "cat process_engine_runtime_integration_tests_mysql.txt", returnStdout: true).trim();
                   junit 'process_engine_runtime_integration_tests_mysql.xml'
