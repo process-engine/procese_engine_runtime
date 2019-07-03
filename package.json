@@ -93,6 +93,7 @@
     "@process-engine/management_api_http": "4.6.0",
     "@process-engine/metrics_api_core": "1.1.0",
     "@process-engine/metrics.repository.file_system": "1.2.0",
+    "@process-engine/process_engine_contracts": "feature~cyclic_timer_start_events",
     "@process-engine/process_engine_core": "feature~cyclic_timer_start_events",
     "@process-engine/process_model.repository.sequelize": "6.0.1",
     "@process-engine/process_model.service": "1.2.0",
