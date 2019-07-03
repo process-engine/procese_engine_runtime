@@ -34,6 +34,7 @@ export async function startRuntime(sqlitePath: string): Promise<void> {
   initializeEnvironment(sqlitePath);
   await runMigrations(sqlitePath);
   await startProcessEngine();
+  await startServices();
   await configureGlobalRoutes(container);
   await resumeProcessInstances();
 }
@@ -161,17 +162,24 @@ async function startProcessEngine(): Promise<void> {
 
     logger.info('Bootstrapper started successfully.');
 
-    const autoStartService = await container.resolveAsync<IAutoStartService>('AutoStartService');
-    await autoStartService.start();
-
-    const cronjobService = await container.resolveAsync<ICronjobService>('CronjobService');
-    await cronjobService.start();
-
-    logger.info('AutoStartService started successfully.');
-
   } catch (error) {
     logger.error('Bootstrapper failed to start.', error);
   }
+}
+
+async function startServices(): Promise<void> {
+
+  logger.info('Starting Services...');
+
+  const autoStartService = await container.resolveAsync<IAutoStartService>('AutoStartService');
+  await autoStartService.start();
+
+  logger.info('AutoStartService started.');
+
+  const cronjobService = await container.resolveAsync<ICronjobService>('CronjobService');
+  await cronjobService.start();
+
+  logger.info('CronjobService started.');
 }
 
 function loadIocModules(): Array<any> {
