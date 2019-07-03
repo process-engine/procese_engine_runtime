@@ -47,15 +47,15 @@ describe('Timer Event validation - ', () => {
     }
   });
 
-  it('should throw an error if attempting to execute a timer with a cyclic timer definition.', async () => {
+  it('should throw an error if attempting to execute an intermediate timer with a cyclic timer definition.', async () => {
     try {
       const result = await testFixtureProvider.executeProcess(processModelIdCyclic, startEventId);
       should.fail(result, 'error', 'This should have failed because of the use of unsupported cyclic timers!');
     } catch (error) {
-      const expectedErrorMessage = /not supported/i;
+      const expectedErrorMessage = /only allowed for TimerStartEvents/i;
       const expectedErrorCode = 422;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
-  });
+});
 });
