@@ -7,9 +7,9 @@ describe('Timer Event validation - ', () => {
 
   let testFixtureProvider;
 
-  const processModelIdDuration = 'timer_invalid_duration';
-  const processModelIdDate = 'timer_invalid_date';
-  const processModelIdCyclic = 'timer_cyclic';
+  const processModelIdDuration = 'intermediate_timer_invalid_duration';
+  const processModelIdDate = 'intermediate_timer_invalid_date';
+  const processModelIdCyclic = 'intermediate_timer_cyclic';
   const startEventId = 'StartEvent_1';
 
   before(async () => {
@@ -31,7 +31,7 @@ describe('Timer Event validation - ', () => {
       const expectedErrorMessage = /given date.*?not in ISO8601 format/i;
       const expectedErrorCode = 422;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -43,7 +43,7 @@ describe('Timer Event validation - ', () => {
       const expectedErrorMessage = /given duration.*?not in ISO8601 format/i;
       const expectedErrorCode = 422;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -57,5 +57,5 @@ describe('Timer Event validation - ', () => {
       should(error.message).be.match(expectedErrorMessage);
       should(error.code).be.match(expectedErrorCode);
     }
-});
+  });
 });
