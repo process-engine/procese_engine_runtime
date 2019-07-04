@@ -83,7 +83,7 @@
     "@process-engine/external_task.repository.sequelize": "3.0.1",
     "@process-engine/flow_node_instance.repository.sequelize": "10.1.0",
     "@process-engine/flow_node_instance.service": "1.1.0",
-    "@process-engine/iam": "1.5.0",
+    "@process-engine/iam": "1.6.0-afee79fe-b7",
     "@process-engine/kpi_api_http": "1.4.0",
     "@process-engine/kpi_api_core": "2.1.0",
     "@process-engine/logging_api_http": "1.1.0",
