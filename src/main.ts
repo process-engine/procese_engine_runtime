@@ -8,12 +8,12 @@ import * as Sequelize from 'sequelize';
 
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
 import {IIdentity} from '@essential-projects/iam_contracts';
-import {IAutoStartService, IResumeProcessService} from '@process-engine/process_engine_contracts';
+import {IAutoStartService, ICronjobService, IResumeProcessService} from '@process-engine/process_engine_contracts';
 
 import {configureGlobalRoutes} from './global_route_configurator';
 import {migrate as executeMigrations} from './migrator';
 
-const logger: Logger = Logger.createLogger('processengine:runtime:startup');
+const logger = Logger.createLogger('processengine:runtime:startup');
 
 process.on('unhandledRejection', (err: Error): void => {
   logger.error('-- An unhandled exception was caught! --');
@@ -21,7 +21,7 @@ process.on('unhandledRejection', (err: Error): void => {
   logger.error('-- end of unhandled exception stack trace --');
 });
 
-const container: InvocationContainer = new InvocationContainer({
+const container = new InvocationContainer({
   defaults: {
     conventionCalls: ['initialize'],
   },
@@ -34,6 +34,7 @@ export async function startRuntime(sqlitePath: string): Promise<void> {
   initializeEnvironment(sqlitePath);
   await runMigrations(sqlitePath);
   await startProcessEngine();
+  await startServices();
   await configureGlobalRoutes(container);
   await resumeProcessInstances();
 }
@@ -44,10 +45,10 @@ function initializeEnvironment(sqlitePath: string): void {
   loadConfiguredEnvironmentOrDefault();
 
   // set current working directory
-  const userDataFolderPath: string = getUserConfigFolder();
+  const userDataFolderPath = getUserConfigFolder();
   const userDataProcessEngineFolderName = 'process_engine_runtime';
 
-  const workingDir: string = path.join(userDataFolderPath, userDataProcessEngineFolderName);
+  const workingDir = path.join(userDataFolderPath, userDataProcessEngineFolderName);
 
   if (!fs.existsSync(workingDir)) {
     fs.mkdirSync(workingDir);
@@ -55,7 +56,7 @@ function initializeEnvironment(sqlitePath: string): void {
 
   process.chdir(workingDir);
 
-  const envIsSqlite: boolean = process.env.NODE_ENV === 'sqlite';
+  const envIsSqlite = process.env.NODE_ENV === 'sqlite';
   if (envIsSqlite) {
     setDatabasePaths(sqlitePath);
   }
@@ -63,10 +64,10 @@ function initializeEnvironment(sqlitePath: string): void {
 
 function setConfigPath(): void {
 
-  const configPathProvided: boolean = process.env.CONFIG_PATH !== undefined;
+  const configPathProvided = process.env.CONFIG_PATH !== undefined;
   if (configPathProvided) {
 
-    const configPathIsAbsolute: boolean = path.isAbsolute(process.env.CONFIG_PATH);
+    const configPathIsAbsolute = path.isAbsolute(process.env.CONFIG_PATH);
     if (configPathIsAbsolute) {
       ensureConfigPathExists(process.env.CONFIG_PATH);
 
@@ -78,7 +79,7 @@ function setConfigPath(): void {
   }
 
   const internalConfigFolderName = 'config';
-  const internalConfigPath: string = path.join(__dirname, '..', '..', internalConfigFolderName);
+  const internalConfigPath = path.join(__dirname, '..', '..', internalConfigFolderName);
 
   ensureConfigPathExists(internalConfigPath);
 
@@ -97,7 +98,7 @@ function ensureConfigPathExists(configPath: string): void {
 
 function loadConfiguredEnvironmentOrDefault(): void {
 
-  const selectedEnvironment: string = process.env.NODE_ENV;
+  const selectedEnvironment = process.env.NODE_ENV;
 
   const defaultEnvironment = 'sqlite';
 
@@ -107,19 +108,19 @@ function loadConfiguredEnvironmentOrDefault(): void {
     return;
   }
 
-  let configDirNameNormalized: string = path.normalize(process.env.CONFIG_PATH);
+  let configDirNameNormalized = path.normalize(process.env.CONFIG_PATH);
 
   // If the runtime is run within the BPMN studio, electron will place it in `app.asar`.
   // We must account for that fact here, or we won't be able to correctly initialize the runtimes environment.
-  const appAsarPathPart: string = path.normalize(path.join('.', 'app.asar'));
+  const appAsarPathPart = path.normalize(path.join('.', 'app.asar'));
 
   if (configDirNameNormalized.includes('app.asar')) {
     configDirNameNormalized = configDirNameNormalized.replace(appAsarPathPart, '');
   }
 
-  const configPath: string = path.join(configDirNameNormalized, selectedEnvironment);
+  const configPath = path.join(configDirNameNormalized, selectedEnvironment);
 
-  const isEnvironmentAvailable: boolean = fs.existsSync(configPath);
+  const isEnvironmentAvailable = fs.existsSync(configPath);
   if (isEnvironmentAvailable) {
     return;
   }
@@ -131,7 +132,7 @@ function loadConfiguredEnvironmentOrDefault(): void {
 
 async function runMigrations(sqlitePath: string): Promise<void> {
 
-  const repositories: Array<string> = [
+  const repositories = [
     'correlation',
     'external_task',
     'flow_node_instance',
@@ -147,7 +148,7 @@ async function runMigrations(sqlitePath: string): Promise<void> {
 
 async function startProcessEngine(): Promise<void> {
 
-  const iocModules: Array<any> = loadIocModules();
+  const iocModules = loadIocModules();
 
   for (const iocModule of iocModules) {
     iocModule.registerInContainer(container);
@@ -156,24 +157,34 @@ async function startProcessEngine(): Promise<void> {
   container.validateDependencies();
 
   try {
-    const bootstrapper: AppBootstrapper = await container.resolveAsync<AppBootstrapper>('AppBootstrapper');
+    const bootstrapper = await container.resolveAsync<AppBootstrapper>('AppBootstrapper');
     await bootstrapper.start();
 
     logger.info('Bootstrapper started successfully.');
-
-    const autoStartService: IAutoStartService = await container.resolveAsync<IAutoStartService>('AutoStartService');
-    await autoStartService.start();
-
-    logger.info('AutoStartService started successfully.');
 
   } catch (error) {
     logger.error('Bootstrapper failed to start.', error);
   }
 }
 
+async function startServices(): Promise<void> {
+
+  logger.info('Starting Services...');
+
+  const autoStartService = await container.resolveAsync<IAutoStartService>('AutoStartService');
+  await autoStartService.start();
+
+  logger.info('AutoStartService started.');
+
+  const cronjobService = await container.resolveAsync<ICronjobService>('CronjobService');
+  await cronjobService.start();
+
+  logger.info('CronjobService started.');
+}
+
 function loadIocModules(): Array<any> {
 
-  const iocModuleNames: Array<string> = [
+  const iocModuleNames = [
     '@essential-projects/bootstrapper',
     '@essential-projects/bootstrapper_node',
     '@essential-projects/event_aggregator',
@@ -207,7 +218,7 @@ function loadIocModules(): Array<any> {
     '@process-engine/token_history_api_core',
   ];
 
-  const iocModules: Array<any> = iocModuleNames.map((moduleName: string): any => {
+  const iocModules = iocModuleNames.map((moduleName: string): any => {
     // eslint-disable-next-line
     return require(`${moduleName}/ioc_module`);
   });
@@ -217,20 +228,20 @@ function loadIocModules(): Array<any> {
 
 function setDatabasePaths(sqlitePath: string): void {
 
-  const correlationRepositoryConfig: Sequelize.Options = readConfigFile('sqlite', 'correlation_repository.json');
-  const externalTaskRepositoryConfig: Sequelize.Options = readConfigFile('sqlite', 'external_task_repository.json');
-  const flowNodeInstanceRepositoryConfig: Sequelize.Options = readConfigFile('sqlite', 'flow_node_instance_repository.json');
-  const processModelRepositoryConfig: Sequelize.Options = readConfigFile('sqlite', 'process_model_repository.json');
+  const correlationRepositoryConfig = readConfigFile('sqlite', 'correlation_repository.json');
+  const externalTaskRepositoryConfig = readConfigFile('sqlite', 'external_task_repository.json');
+  const flowNodeInstanceRepositoryConfig = readConfigFile('sqlite', 'flow_node_instance_repository.json');
+  const processModelRepositoryConfig = readConfigFile('sqlite', 'process_model_repository.json');
 
-  const databaseBasePath: string = getSqliteStoragePath(sqlitePath);
+  const databaseBasePath = getSqliteStoragePath(sqlitePath);
 
-  const correlationRepositoryStoragePath: string = path.join(databaseBasePath, correlationRepositoryConfig.storage);
-  const externalTaskRepositoryStoragePath: string = path.join(databaseBasePath, externalTaskRepositoryConfig.storage);
-  const flowNodeRepositoryStoragePath: string = path.join(databaseBasePath, flowNodeInstanceRepositoryConfig.storage);
-  const processModelRepositoryStoragePath: string = path.join(databaseBasePath, processModelRepositoryConfig.storage);
+  const correlationRepositoryStoragePath = path.join(databaseBasePath, correlationRepositoryConfig.storage);
+  const externalTaskRepositoryStoragePath = path.join(databaseBasePath, externalTaskRepositoryConfig.storage);
+  const flowNodeRepositoryStoragePath = path.join(databaseBasePath, flowNodeInstanceRepositoryConfig.storage);
+  const processModelRepositoryStoragePath = path.join(databaseBasePath, processModelRepositoryConfig.storage);
 
-  const logsStoragePath: string = path.join(databaseBasePath, 'logs');
-  const metricsStoragePath: string = path.join(databaseBasePath, 'metrics');
+  const logsStoragePath = path.join(databaseBasePath, 'logs');
+  const metricsStoragePath = path.join(databaseBasePath, 'metrics');
 
   process.env.process_engine__correlation_repository__storage = correlationRepositoryStoragePath;
   process.env.process_engine__external_task_repository__storage = externalTaskRepositoryStoragePath;
@@ -247,18 +258,18 @@ function getSqliteStoragePath(sqlitePath?: string): string {
     return sqlitePath;
   }
 
-  const userDataFolderPath: string = getUserConfigFolder();
+  const userDataFolderPath = getUserConfigFolder();
   const userDataProcessEngineFolderName = 'process_engine_runtime';
   const processEngineDatabaseFolderName = 'databases';
 
-  const databaseBasePath: string = path.resolve(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
+  const databaseBasePath = path.resolve(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
 
   return databaseBasePath;
 }
 
 function getUserConfigFolder(): string {
 
-  const userHomeDir: string = os.homedir();
+  const userHomeDir = os.homedir();
   switch (process.platform) {
     case 'darwin':
       return path.join(userHomeDir, 'Library', 'Application Support');
@@ -271,11 +282,11 @@ function getUserConfigFolder(): string {
 
 function readConfigFile(env: string, repositoryConfigFileName: string): Sequelize.Options {
 
-  const configFilePath: string = path.resolve(process.env.CONFIG_PATH, env, 'process_engine', repositoryConfigFileName);
+  const configFilePath = path.resolve(process.env.CONFIG_PATH, env, 'process_engine', repositoryConfigFileName);
 
-  const fileContent: string = fs.readFileSync(configFilePath, 'utf-8');
+  const fileContent = fs.readFileSync(configFilePath, 'utf-8');
 
-  const parsedFileContent: Sequelize.Options = JSON.parse(fileContent) as Sequelize.Options;
+  const parsedFileContent = JSON.parse(fileContent) as Sequelize.Options;
 
   return parsedFileContent;
 }
@@ -284,11 +295,11 @@ async function resumeProcessInstances(): Promise<void> {
 
   const dummyIdentity: IIdentity = {
     token: 'ZHVtbXlfdG9rZW4=',
-    userId: 'system',
+    userId: 'dummy_token',
   };
 
   logger.info('Resuming previously interrupted ProcessInstances...');
-  const resumeProcessService: IResumeProcessService = await container.resolveAsync<IResumeProcessService>('ResumeProcessService');
+  const resumeProcessService = await container.resolveAsync<IResumeProcessService>('ResumeProcessService');
   await resumeProcessService.findAndResumeInterruptedProcessInstances(dummyIdentity);
   logger.info('Done.');
 }
