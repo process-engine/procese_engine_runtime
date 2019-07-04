@@ -44,7 +44,7 @@ describe('StartEvents with Cronjobs - ', () => {
   it('should automatically start a ProcessModel when a matching Cronjob expires', async () => {
 
     return new Promise(async (resolve, reject) => {
-      const correlationId = `started_by_cronjob */2 * * * * *`;
+      const correlationId = 'started_by_cronjob';
 
       processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId, async() => {
         await cronjobService.stop();
@@ -60,7 +60,7 @@ describe('StartEvents with Cronjobs - ', () => {
   it('should be able to add crontabs from ProcessModels \'on the fly\'', async () => {
 
     return new Promise(async (resolve, reject) => {
-      const correlationId = `started_by_cronjob */3 * * * * *`;
+      const correlationId = 'started_by_cronjob';
 
       processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelId2, async() => {
         await cronjobService.stop();
