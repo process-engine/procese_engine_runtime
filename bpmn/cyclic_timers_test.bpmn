@@ -24,6 +24,11 @@
 return 'Success';</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:startEvent id="TimerStartEvent_1" name="Timer with Crontab">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="enabled" value="true" />
+        </camunda:properties>
+      </bpmn:extensionElements>
       <bpmn:outgoing>SequenceFlow_0x9ie3k</bpmn:outgoing>
       <bpmn:timerEventDefinition>
         <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">*/2 * * * * *</bpmn:timeCycle>

@@ -12,12 +12,13 @@ describe('StartEvents with Cronjobs - ', () => {
 
   const processModelId = 'cyclic_timers_test';
   const processModelId2 = 'cyclic_timers_test_2';
+  const processModelIdDisabled = 'cyclic_timers_disabled';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
 
-    await testFixtureProvider.importProcessFiles([processModelId]);
+    await testFixtureProvider.importProcessFiles([processModelId, processModelIdDisabled]);
 
     cronjobService = await testFixtureProvider.resolveAsync('CronjobService');
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
@@ -30,13 +31,24 @@ describe('StartEvents with Cronjobs - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should be able to manually start a ProcessModel with a cyclic TimerStartEvent.', async () => {
+  it('should be able to manually start a ProcessModel with an enabled cyclic TimerStartEvent.', async () => {
 
     const messageStartEventId = 'TimerStartEvent_1';
 
     const result = await testFixtureProvider.executeProcess(processModelId, messageStartEventId);
 
     const expectedResult = /success/i;
+    should(result).have.property('currentToken');
+    should(result.currentToken).be.match(expectedResult);
+  });
+
+  it('should be able to manually start a ProcessModel with a disabled cyclic TimerStartEvent.', async () => {
+
+    const messageStartEventId = 'DisabledTimerStartEvent_1';
+
+    const result = await testFixtureProvider.executeProcess(processModelIdDisabled, messageStartEventId);
+
+    const expectedResult = /disabled.*?success/i;
     should(result).have.property('currentToken');
     should(result.currentToken).be.match(expectedResult);
   });
@@ -87,6 +99,17 @@ describe('StartEvents with Cronjobs - ', () => {
     should.not.exist(cronjobService.cronjobDictionary[processModelIdToDelete]);
 
     await cronjobService.stop();
+  });
+
+  it('should not create cronjobs for disabled cyclic TimerStartEvents', async () => {
+
+    await testFixtureProvider.importProcessFiles([processModelIdDisabled]);
+    await cronjobService.start();
+
+    should.not.exist(cronjobService.cronjobDictionary[processModelIdDisabled]);
+
+    await cronjobService.stop();
+    await disposeProcessModel(processModelIdDisabled);
   });
 
   it('should not create cronjobs for a ProcessModel that doesn\'t have any', async () => {
