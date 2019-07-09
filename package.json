@@ -76,6 +76,8 @@
     "@process-engine/consumer_api_http": "4.4.0",
     "@process-engine/correlation.service": "1.3.0",
     "@process-engine/correlations.repository.sequelize": "6.1.0",
+    "@process-engine/cronjob_history.service": "feature~initial_implementation",
+    "@process-engine/cronjob_history.repository.sequelize": "feature~initial_implementation",
     "@process-engine/deployment_api_core": "2.3.0",
     "@process-engine/deployment_api_http": "1.3.0",
     "@process-engine/external_task_api_core": "1.3.0",

@@ -196,6 +196,8 @@ function loadIocModules(): Array<any> {
     '@process-engine/consumer_api_http',
     '@process-engine/correlation.service',
     '@process-engine/correlations.repository.sequelize',
+    '@process-engine/cronjob_history.service',
+    '@process-engine/cronjob_history.repository.sequelize',
     '@process-engine/external_task_api_core',
     '@process-engine/external_task_api_http',
     '@process-engine/external_task.repository.sequelize',
