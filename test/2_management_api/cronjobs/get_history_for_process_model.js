@@ -14,8 +14,8 @@ describe('Management API:   GET  ->  /cronjobs/history/process_model/:process_mo
   let superAdmin;
   let restrictedIdentity;
 
-  const processModelId = 'test_management_api_cyclic_timers';
-  const processModelId2 = 'test_management_api_cyclic_timers_2';
+  const processModelId = 'dummy_process_model_id_1';
+  const processModelId2 = 'dummy_process_model_id_2';
 
   const fixtures = [{
     processModelId: processModelId,
@@ -42,8 +42,6 @@ describe('Management API:   GET  ->  /cronjobs/history/process_model/:process_mo
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
-
-    await testFixtureProvider.importProcessFiles([processModelId]);
 
     defaultIdentity = testFixtureProvider.identities.defaultUser;
     superAdmin = testFixtureProvider.identities.superAdmin;
