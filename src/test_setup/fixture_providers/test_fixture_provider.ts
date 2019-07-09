@@ -143,6 +143,7 @@ export class TestFixtureProvider {
     logger.info('Running migrations....');
     const repositories = [
       'correlation',
+      'cronjob_history',
       'external_task',
       'flow_node_instance',
       'process_model',

@@ -127,7 +127,7 @@ pipeline {
       parallel {
         stage('MySQL') {
           agent {
-            label 'linux && any-docker && process-engine-tests'
+            label 'any-docker && process-engine-tests'
           }
           options {
             skipDefaultCheckout()
@@ -143,11 +143,12 @@ pipeline {
               def mysql_password = "admin";
 
               def db_database_host_correlation = "process_engine__correlation_repository__host=${mysql_host}";
+              def db_database_host_cronjob_history = "process_engine__cronjob_history_repository__host=${mysql_host}";
               def db_database_host_external_task = "process_engine__external_task_repository__host=${mysql_host}";
               def db_database_host_process_model = "process_engine__process_model_repository__host=${mysql_host}";
               def db_database_host_flow_node_instance = "process_engine__flow_node_instance_repository__host=${mysql_host}";
 
-              def db_environment_settings = "${db_database_host_correlation} ${db_database_host_external_task} ${db_database_host_process_model} ${db_database_host_flow_node_instance}";
+              def db_environment_settings = "${db_database_host_correlation} ${db_database_host_cronjob_history} ${db_database_host_external_task} ${db_database_host_process_model} ${db_database_host_flow_node_instance}";
 
               def mysql_settings = "--env MYSQL_HOST=${mysql_host} --env MYSQL_ROOT_PASSWORD=${mysql_root_password} --env MYSQL_DATABASE=${mysql_database} --env MYSQL_USER=${mysql_user} --env MYSQL_PASSWORD=${mysql_password} --volume $WORKSPACE/mysql:/docker-entrypoint-initdb.d/";
 
@@ -183,7 +184,7 @@ pipeline {
         }
         stage('PostgreSQL') {
           agent {
-            label 'linux && any-docker && process-engine-tests'
+            label 'any-docker && process-engine-tests'
           }
           options {
             skipDefaultCheckout()
@@ -200,11 +201,12 @@ pipeline {
               def postgres_settings = "--env POSTGRES_USER=${postgres_username} --env POSTGRES_PASSWORD=${postgres_password} --env POSTGRES_DB=${postgres_database}";
 
               def db_database_host_correlation = "process_engine__correlation_repository__host=${postgres_host}";
+              def db_database_host_cronjob_history = "process_engine__cronjob_history_repository__host=${postgres_host}";
               def db_database_host_external_task = "process_engine__external_task_repository__host=${postgres_host}";
               def db_database_host_process_model = "process_engine__process_model_repository__host=${postgres_host}";
               def db_database_host_flow_node_instance = "process_engine__flow_node_instance_repository__host=${postgres_host}";
 
-              def db_environment_settings = "${db_database_host_correlation} ${db_database_host_external_task} ${db_database_host_process_model} ${db_database_host_flow_node_instance}";
+              def db_environment_settings = "${db_database_host_correlation} ${db_database_host_cronjob_history} ${db_database_host_external_task} ${db_database_host_process_model} ${db_database_host_flow_node_instance}";
 
               def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test-postgres JUNIT_REPORT_PATH=process_engine_runtime_integration_tests_postgres.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} ./node_modules/.bin/mocha -t 20000 test/**/*.js test/**/**/*.js";
 
@@ -238,7 +240,7 @@ pipeline {
         }
         stage('SQLite') {
           agent {
-            label 'macos && process-engine-tests'
+            label 'any-docker && process-engine-tests'
           }
           options {
             skipDefaultCheckout()
@@ -253,11 +255,12 @@ pipeline {
 
               def db_storage_folder_path = "$WORKSPACE/process_engine_databases";
               def db_storage_path_correlation = "process_engine__correlation_repository__storage=$db_storage_folder_path/correlation.sqlite";
+              def db_storage_path_cronjob_history = "process_engine__cronjob_history_repository__storage=$db_storage_folder_path/cronjob_history.sqlite";
               def db_storage_path_external_task = "process_engine__external_task_repository__storage=$db_storage_folder_path/external_task.sqlite";
               def db_storage_path_process_model = "process_engine__process_model_repository__storage=$db_storage_folder_path/process_model.sqlite";
               def db_storage_path_flow_node_instance = "process_engine__flow_node_instance_repository__storage=$db_storage_folder_path/flow_node_instance.sqlite";
 
-              def db_environment_settings = "jenkinsDbStoragePath=${db_storage_folder_path} ${db_storage_path_correlation} ${db_storage_path_external_task} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance}";
+              def db_environment_settings = "jenkinsDbStoragePath=${db_storage_folder_path} ${db_storage_path_cronjob_history} ${db_storage_path_correlation} ${db_storage_path_external_task} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance}";
 
               def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test-sqlite JUNIT_REPORT_PATH=process_engine_runtime_integration_tests_sqlite.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} ./node_modules/.bin/mocha -t 20000 test/**/*.js test/**/**/*.js";
 
