@@ -134,6 +134,7 @@ async function runMigrations(sqlitePath: string): Promise<void> {
 
   const repositories = [
     'correlation',
+    'cronjob_history',
     'external_task',
     'flow_node_instance',
     'process_model',
