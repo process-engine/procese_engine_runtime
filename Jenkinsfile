@@ -240,7 +240,7 @@ pipeline {
         }
         stage('SQLite') {
           agent {
-            label 'macos && process-engine-tests'
+            label 'any-docker && process-engine-tests'
           }
           options {
             skipDefaultCheckout()
