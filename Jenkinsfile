@@ -13,6 +13,32 @@ def cleanup_workspace() {
   }
 }
 
+def find_available_version_for_publish() {
+
+  def availableVersionFound = false;
+
+  def additionalIndex = 0;
+
+  while (!availableVersionFound) {
+
+    def first_seven_digits_of_git_hash = env.GIT_COMMIT.substring(0, 8);
+    def publish_version = "${package_version}-${first_seven_digits_of_git_hash}-b${env.BUILD_NUMBER}-${additionalIndex}";
+
+    try {
+      echo "Attempting to use version ${publish_version} for publish";
+
+      nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
+        sh('node --version')
+        sh("npm version ${publish_version} --no-git-tag-version")
+      }
+
+      availableVersionFound = true;
+    } catch (Exception error) {
+      echo "Version ${publish_version} already exists";
+    }
+  }
+}
+
 @NonCPS
 def create_summary_from_test_log(testlog, test_failed, database_type) {
   def passing_regex = /\d+ passing/;
@@ -392,13 +418,12 @@ pipeline {
               // when not on master, publish a prerelease based on the package version, the
               // current git commit and the build number.
               // the published version gets tagged as the branch name.
-              def first_seven_digits_of_git_hash = GIT_COMMIT.substring(0, 8);
-              def publish_version = "${package_version}-${first_seven_digits_of_git_hash}-b${BUILD_NUMBER}";
               def publish_tag = branch.replace("/", "~");
+
+              find_available_version_for_publish();
 
               nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
                 sh('node --version')
-                sh("npm version ${publish_version} --allow-same-version --force --no-git-tag-version ")
                 sh("npm publish --tag ${publish_tag} --ignore-scripts")
               }
             }
