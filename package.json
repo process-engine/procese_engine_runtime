@@ -71,7 +71,7 @@
     "@essential-projects/event_aggregator": "4.1.0",
     "@essential-projects/http": "2.4.0",
     "@essential-projects/http_extension": "6.6.1",
-    "@essential-projects/timing": "~5.0.0",
+    "@essential-projects/timing": "5.0.0",
     "@process-engine/consumer_api_core": "5.5.1",
     "@process-engine/consumer_api_http": "4.4.0",
     "@process-engine/correlation.service": "1.3.0",
