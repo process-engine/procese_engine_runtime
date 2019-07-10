@@ -13,6 +13,33 @@ def cleanup_workspace() {
   }
 }
 
+def find_available_version_for_publish() {
+
+  def availableVersionFound = false;
+
+  def additionalIndex = 0;
+
+  while (!availableVersionFound) {
+
+    def first_seven_digits_of_git_hash = env.GIT_COMMIT.substring(0, 8);
+    def publish_version = "${package_version}-${first_seven_digits_of_git_hash}-b${env.BUILD_NUMBER}-${additionalIndex}";
+
+    try {
+      echo "Attempting to use version ${publish_version} for publish";
+
+      nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
+        sh('node --version')
+        sh("npm version ${publish_version} --no-git-tag-version")
+      }
+
+      availableVersionFound = true;
+    } catch (Exception error) {
+      additionalIndex++
+      echo "Version ${publish_version} already exists";
+    }
+  }
+}
+
 @NonCPS
 def create_summary_from_test_log(testlog, test_failed, database_type) {
   def passing_regex = /\d+ passing/;
@@ -127,7 +154,7 @@ pipeline {
       parallel {
         stage('MySQL') {
           agent {
-            label 'linux && any-docker && process-engine-tests'
+            label 'any-docker && process-engine-tests'
           }
           options {
             skipDefaultCheckout()
@@ -143,11 +170,12 @@ pipeline {
               def mysql_password = "admin";
 
               def db_database_host_correlation = "process_engine__correlation_repository__host=${mysql_host}";
+              def db_database_host_cronjob_history = "process_engine__cronjob_history_repository__host=${mysql_host}";
               def db_database_host_external_task = "process_engine__external_task_repository__host=${mysql_host}";
               def db_database_host_process_model = "process_engine__process_model_repository__host=${mysql_host}";
               def db_database_host_flow_node_instance = "process_engine__flow_node_instance_repository__host=${mysql_host}";
 
-              def db_environment_settings = "${db_database_host_correlation} ${db_database_host_external_task} ${db_database_host_process_model} ${db_database_host_flow_node_instance}";
+              def db_environment_settings = "${db_database_host_correlation} ${db_database_host_cronjob_history} ${db_database_host_external_task} ${db_database_host_process_model} ${db_database_host_flow_node_instance}";
 
               def mysql_settings = "--env MYSQL_HOST=${mysql_host} --env MYSQL_ROOT_PASSWORD=${mysql_root_password} --env MYSQL_DATABASE=${mysql_database} --env MYSQL_USER=${mysql_user} --env MYSQL_PASSWORD=${mysql_password} --volume $WORKSPACE/mysql:/docker-entrypoint-initdb.d/";
 
@@ -183,7 +211,7 @@ pipeline {
         }
         stage('PostgreSQL') {
           agent {
-            label 'linux && any-docker && process-engine-tests'
+            label 'any-docker && process-engine-tests'
           }
           options {
             skipDefaultCheckout()
@@ -200,11 +228,12 @@ pipeline {
               def postgres_settings = "--env POSTGRES_USER=${postgres_username} --env POSTGRES_PASSWORD=${postgres_password} --env POSTGRES_DB=${postgres_database}";
 
               def db_database_host_correlation = "process_engine__correlation_repository__host=${postgres_host}";
+              def db_database_host_cronjob_history = "process_engine__cronjob_history_repository__host=${postgres_host}";
               def db_database_host_external_task = "process_engine__external_task_repository__host=${postgres_host}";
               def db_database_host_process_model = "process_engine__process_model_repository__host=${postgres_host}";
               def db_database_host_flow_node_instance = "process_engine__flow_node_instance_repository__host=${postgres_host}";
 
-              def db_environment_settings = "${db_database_host_correlation} ${db_database_host_external_task} ${db_database_host_process_model} ${db_database_host_flow_node_instance}";
+              def db_environment_settings = "${db_database_host_correlation} ${db_database_host_cronjob_history} ${db_database_host_external_task} ${db_database_host_process_model} ${db_database_host_flow_node_instance}";
 
               def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test-postgres JUNIT_REPORT_PATH=process_engine_runtime_integration_tests_postgres.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} ./node_modules/.bin/mocha -t 20000 test/**/*.js test/**/**/*.js";
 
@@ -238,7 +267,7 @@ pipeline {
         }
         stage('SQLite') {
           agent {
-            label 'macos && process-engine-tests'
+            label 'any-docker && process-engine-tests'
           }
           options {
             skipDefaultCheckout()
@@ -253,11 +282,12 @@ pipeline {
 
               def db_storage_folder_path = "$WORKSPACE/process_engine_databases";
               def db_storage_path_correlation = "process_engine__correlation_repository__storage=$db_storage_folder_path/correlation.sqlite";
+              def db_storage_path_cronjob_history = "process_engine__cronjob_history_repository__storage=$db_storage_folder_path/cronjob_history.sqlite";
               def db_storage_path_external_task = "process_engine__external_task_repository__storage=$db_storage_folder_path/external_task.sqlite";
               def db_storage_path_process_model = "process_engine__process_model_repository__storage=$db_storage_folder_path/process_model.sqlite";
               def db_storage_path_flow_node_instance = "process_engine__flow_node_instance_repository__storage=$db_storage_folder_path/flow_node_instance.sqlite";
 
-              def db_environment_settings = "jenkinsDbStoragePath=${db_storage_folder_path} ${db_storage_path_correlation} ${db_storage_path_external_task} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance}";
+              def db_environment_settings = "jenkinsDbStoragePath=${db_storage_folder_path} ${db_storage_path_cronjob_history} ${db_storage_path_correlation} ${db_storage_path_external_task} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance}";
 
               def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test-sqlite JUNIT_REPORT_PATH=process_engine_runtime_integration_tests_sqlite.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} ./node_modules/.bin/mocha -t 20000 test/**/*.js test/**/**/*.js";
 
@@ -354,8 +384,16 @@ pipeline {
         script {
           def new_commit = env.GIT_PREVIOUS_COMMIT != GIT_COMMIT;
 
-          if (branch_is_master) {
-            if (new_commit) {
+          def previous_build = currentBuild.getPreviousBuild();
+          def previous_build_status = previous_build == null ? null : previous_build.result;
+
+          def should_publish_to_npm = new_commit || previous_build_status != 'SUCCESS';
+
+          echo("Require npm release: ${should_publish_to_npm}")
+
+          if (should_publish_to_npm) {
+            if (branch_is_master) {
+
               script {
                 // let the build fail if the version does not match normal semver
                 def semver_matcher = package_version =~ /\d+\.\d+\.\d+/;
@@ -377,20 +415,18 @@ pipeline {
               } else {
                 println 'Skipping publish for this version. Version unchanged.'
               }
-            }
+            } else {
+              // when not on master, publish a prerelease based on the package version, the
+              // current git commit and the build number.
+              // the published version gets tagged as the branch name.
+              def publish_tag = branch.replace("/", "~");
 
-          } else {
-            // when not on master, publish a prerelease based on the package version, the
-            // current git commit and the build number.
-            // the published version gets tagged as the branch name.
-            def first_seven_digits_of_git_hash = GIT_COMMIT.substring(0, 8);
-            def publish_version = "${package_version}-${first_seven_digits_of_git_hash}-b${BUILD_NUMBER}";
-            def publish_tag = branch.replace("/", "~");
+              find_available_version_for_publish();
 
-            nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-              sh('node --version')
-              sh("npm version ${publish_version} --allow-same-version --force --no-git-tag-version ")
-              sh("npm publish --tag ${publish_tag} --ignore-scripts")
+              nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                sh('node --version')
+                sh("npm publish --tag ${publish_tag} --ignore-scripts")
+              }
             }
           }
         }
@@ -404,24 +440,36 @@ pipeline {
         }
       }
       steps {
+        script {
+          def new_commit = env.GIT_PREVIOUS_COMMIT != GIT_COMMIT;
 
-        unstash('windows_installer_exe')
+          def previous_build = currentBuild.getPreviousBuild();
+          def previous_build_status = previous_build == null ? null : previous_build.result;
 
-        withCredentials([
-          usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'RELEASE_GH_TOKEN', usernameVariable: 'RELEASE_GH_USER')
-        ]) {
-          script {
+          def should_publish_to_github = new_commit || previous_build_status != 'SUCCESS';
 
-            def create_github_release_command = 'create-github-release ';
-            create_github_release_command += 'process-engine ';
-            create_github_release_command += 'process_engine_runtime ';
-            create_github_release_command += "${full_release_version_string} ";
-            create_github_release_command += "${branch} ";
-            create_github_release_command += "${release_will_be_draft} ";
-            create_github_release_command += "${!branch_is_master} ";
-            create_github_release_command += "installer/Output/Install\\ ProcessEngine\\ Runtime\\ v${full_release_version_string}.exe";
+          echo("Require github release: ${should_publish_to_github}")
 
-            sh(create_github_release_command);
+          if (should_publish_to_github) {
+            unstash('windows_installer_exe')
+
+            withCredentials([
+              usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'RELEASE_GH_TOKEN', usernameVariable: 'RELEASE_GH_USER')
+            ]) {
+              script {
+
+                def create_github_release_command = 'create-github-release ';
+                create_github_release_command += 'process-engine ';
+                create_github_release_command += 'process_engine_runtime ';
+                create_github_release_command += "${full_release_version_string} ";
+                create_github_release_command += "${branch} ";
+                create_github_release_command += "${release_will_be_draft} ";
+                create_github_release_command += "${!branch_is_master} ";
+                create_github_release_command += "installer/Output/Install\\ ProcessEngine\\ Runtime\\ v${full_release_version_string}.exe";
+
+                sh(create_github_release_command);
+              }
+            }
           }
         }
       }
