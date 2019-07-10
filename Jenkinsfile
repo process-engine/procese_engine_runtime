@@ -357,8 +357,16 @@ pipeline {
         script {
           def new_commit = env.GIT_PREVIOUS_COMMIT != GIT_COMMIT;
 
-          if (branch_is_master) {
-            if (new_commit) {
+          def previous_build = currentBuild.getPreviousBuild();
+          def previous_build_status = previous_build == null ? null : previous_build.result;
+
+          def should_publish_to_npm = new_commit || previous_build_status != 'SUCCESS';
+
+          echo("Require npm release: ${should_publish_to_npm}")
+
+          if (should_publish_to_npm) {
+            if (branch_is_master) {
+
               script {
                 // let the build fail if the version does not match normal semver
                 def semver_matcher = package_version =~ /\d+\.\d+\.\d+/;
@@ -380,20 +388,19 @@ pipeline {
               } else {
                 println 'Skipping publish for this version. Version unchanged.'
               }
-            }
+            } else {
+              // when not on master, publish a prerelease based on the package version, the
+              // current git commit and the build number.
+              // the published version gets tagged as the branch name.
+              def first_seven_digits_of_git_hash = GIT_COMMIT.substring(0, 8);
+              def publish_version = "${package_version}-${first_seven_digits_of_git_hash}-b${BUILD_NUMBER}";
+              def publish_tag = branch.replace("/", "~");
 
-          } else {
-            // when not on master, publish a prerelease based on the package version, the
-            // current git commit and the build number.
-            // the published version gets tagged as the branch name.
-            def first_seven_digits_of_git_hash = GIT_COMMIT.substring(0, 8);
-            def publish_version = "${package_version}-${first_seven_digits_of_git_hash}-b${BUILD_NUMBER}";
-            def publish_tag = branch.replace("/", "~");
-
-            nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-              sh('node --version')
-              sh("npm version ${publish_version} --allow-same-version --force --no-git-tag-version ")
-              sh("npm publish --tag ${publish_tag} --ignore-scripts")
+              nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                sh('node --version')
+                sh("npm version ${publish_version} --allow-same-version --force --no-git-tag-version ")
+                sh("npm publish --tag ${publish_tag} --ignore-scripts")
+              }
             }
           }
         }
@@ -407,24 +414,36 @@ pipeline {
         }
       }
       steps {
+        script {
+          def new_commit = env.GIT_PREVIOUS_COMMIT != GIT_COMMIT;
 
-        unstash('windows_installer_exe')
+          def previous_build = currentBuild.getPreviousBuild();
+          def previous_build_status = previous_build == null ? null : previous_build.result;
 
-        withCredentials([
-          usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'RELEASE_GH_TOKEN', usernameVariable: 'RELEASE_GH_USER')
-        ]) {
-          script {
+          def should_publish_to_github = new_commit || previous_build_status != 'SUCCESS';
 
-            def create_github_release_command = 'create-github-release ';
-            create_github_release_command += 'process-engine ';
-            create_github_release_command += 'process_engine_runtime ';
-            create_github_release_command += "${full_release_version_string} ";
-            create_github_release_command += "${branch} ";
-            create_github_release_command += "${release_will_be_draft} ";
-            create_github_release_command += "${!branch_is_master} ";
-            create_github_release_command += "installer/Output/Install\\ ProcessEngine\\ Runtime\\ v${full_release_version_string}.exe";
+          echo("Require github release: ${should_publish_to_github}")
 
-            sh(create_github_release_command);
+          if (should_publish_to_github) {
+            unstash('windows_installer_exe')
+
+            withCredentials([
+              usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'RELEASE_GH_TOKEN', usernameVariable: 'RELEASE_GH_USER')
+            ]) {
+              script {
+
+                def create_github_release_command = 'create-github-release ';
+                create_github_release_command += 'process-engine ';
+                create_github_release_command += 'process_engine_runtime ';
+                create_github_release_command += "${full_release_version_string} ";
+                create_github_release_command += "${branch} ";
+                create_github_release_command += "${release_will_be_draft} ";
+                create_github_release_command += "${!branch_is_master} ";
+                create_github_release_command += "installer/Output/Install\\ ProcessEngine\\ Runtime\\ v${full_release_version_string}.exe";
+
+                sh(create_github_release_command);
+              }
+            }
           }
         }
       }
