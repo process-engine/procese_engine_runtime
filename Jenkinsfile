@@ -34,6 +34,7 @@ def find_available_version_for_publish() {
 
       availableVersionFound = true;
     } catch (Exception error) {
+      additionalIndex++
       echo "Version ${publish_version} already exists";
     }
   }
