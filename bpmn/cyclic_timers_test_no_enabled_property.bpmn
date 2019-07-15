@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_019scie" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
+  <bpmn:collaboration id="Collaboration_1dwnbx6">
+    <bpmn:participant id="Participant_1ndejx1" name="cyclic_timers_test_no_enabled_property" processRef="cyclic_timers_test_no_enabled_property" />
+  </bpmn:collaboration>
+  <bpmn:process id="cyclic_timers_test_no_enabled_property" name="cyclic_timers_test_no_enabled_property" isExecutable="true">
+    <bpmn:laneSet>
+      <bpmn:lane id="Lane_1jhpx27" name="Default_Test_Lane">
+        <bpmn:flowNodeRef>EndEvent_TimerTest</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ScriptTaskTimerEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>TimerStartEvent_1</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:sequenceFlow id="SequenceFlow_0x9ie3k" sourceRef="TimerStartEvent_1" targetRef="ScriptTaskTimerEvent_1" />
+    <bpmn:sequenceFlow id="SequenceFlow_07eg0vm" sourceRef="ScriptTaskTimerEvent_1" targetRef="EndEvent_TimerTest" />
+    <bpmn:endEvent id="EndEvent_TimerTest" name="End">
+      <bpmn:incoming>SequenceFlow_07eg0vm</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:scriptTask id="ScriptTaskTimerEvent_1" name="Return sample result">
+      <bpmn:incoming>SequenceFlow_0x9ie3k</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_07eg0vm</bpmn:outgoing>
+      <bpmn:script>console.log('Process with cronjob started!');
+
+return 'Success';</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:startEvent id="TimerStartEvent_1" name="Timer with Crontab">
+      <bpmn:extensionElements>
+        <camunda:properties>
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_0x9ie3k</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">*/2 * * * * *</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:startEvent>
+  </bpmn:process>
+  <bpmn:message id="Message_18zwda3" name="MessageAutoStart_Test" />
+  <bpmn:signal id="Signal_1gmrdgn" name="SignalAutoStart_Test" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1dwnbx6">
+      <bpmndi:BPMNShape id="Participant_1ndejx1_di" bpmnElement="Participant_1ndejx1">
+        <dc:Bounds x="111" y="23" width="427" height="186" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0x9ie3k_di" bpmnElement="SequenceFlow_0x9ie3k">
+        <di:waypoint x="234" y="104" />
+        <di:waypoint x="311" y="104" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="233" y="189.5" width="0" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0bw7vw9_di" bpmnElement="EndEvent_TimerTest">
+        <dc:Bounds x="481" y="86" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="489" y="125" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1jhpx27_di" bpmnElement="Lane_1jhpx27">
+        <dc:Bounds x="141" y="23" width="397" height="186" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_07eg0vm_di" bpmnElement="SequenceFlow_07eg0vm">
+        <di:waypoint x="411" y="104" />
+        <di:waypoint x="481" y="104" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_18ruani_di" bpmnElement="ScriptTaskTimerEvent_1">
+        <dc:Bounds x="311" y="64" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_01qhzro_di" bpmnElement="TimerStartEvent_1">
+        <dc:Bounds x="198" y="86" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="191" y="125" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
