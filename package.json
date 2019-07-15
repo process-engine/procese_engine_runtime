@@ -1,6 +1,6 @@
 {
   "name": "@process-engine/process_engine_runtime",
-  "version": "8.4.0",
+  "version": "8.4.1",
   "description": "Standalone application that provides access to the .TS implementation of the ProcessEngine.",
   "bin": {
     "process-engine": "./bin/index.js"
@@ -95,7 +95,7 @@
     "@process-engine/management_api_http": "4.7.0",
     "@process-engine/metrics_api_core": "2.0.0",
     "@process-engine/metrics.repository.file_system": "2.0.0",
-    "@process-engine/process_engine_core": "12.10.0",
+    "@process-engine/process_engine_core": "12.10.1",
     "@process-engine/process_model.repository.sequelize": "6.0.1",
     "@process-engine/process_model.service": "1.2.0",
     "@process-engine/process_model.use_case": "1.3.0",
