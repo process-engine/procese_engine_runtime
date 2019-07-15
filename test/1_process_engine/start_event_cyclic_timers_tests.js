@@ -12,6 +12,7 @@ describe('StartEvents with Cronjobs - ', () => {
 
   const processModelId = 'cyclic_timers_test';
   const processModelId2 = 'cyclic_timers_test_2';
+  const processModelIdMissingCamundaProperty = 'cyclic_timers_test_no_enabled_property';
   const processModelIdDisabled = 'cyclic_timers_disabled';
 
   before(async () => {
@@ -27,6 +28,7 @@ describe('StartEvents with Cronjobs - ', () => {
   after(async () => {
     await disposeProcessModel(processModelId);
     await disposeProcessModel(processModelId2);
+    await disposeProcessModel(processModelIdMissingCamundaProperty);
 
     await testFixtureProvider.tearDown();
   });
@@ -84,6 +86,24 @@ describe('StartEvents with Cronjobs - ', () => {
       const parsedProcessModel2 = await getParsedProcessModel(processModelId2);
 
       await cronjobService.addOrUpdate(parsedProcessModel2);
+    });
+  });
+
+  it('should assume a TimerStartEvent to be enabled by default, if no CamundaProperty \'enabled\' exists.', async () => {
+
+    return new Promise(async (resolve, reject) => {
+      const correlationId = 'started_by_cronjob';
+
+      processInstanceHandler.waitForProcessInstanceToEnd(correlationId, processModelIdMissingCamundaProperty, async() => {
+        await cronjobService.stop();
+        resolve();
+      });
+
+      await cronjobService.start();
+
+      const parsedProcessModel = await getParsedProcessModel(processModelIdMissingCamundaProperty);
+
+      await cronjobService.addOrUpdate(parsedProcessModel);
     });
   });
 
