@@ -12,6 +12,8 @@ import {
   ExternalTaskApiInternalAccessor,
 } from '@process-engine/external_task_api_client';
 
+import {ExternalTaskSampleWorker} from '@process-engine/external_task_sample_worker';
+
 import {
   ManagementApiClientService,
   ExternalAccessor as ManagementApiExternalAccessor,
@@ -28,6 +30,11 @@ import {
 export function registerInContainer(container: InvocationContainer): void {
 
   const accessApisInternally = process.env.API_ACCESS_TYPE === 'internal';
+
+  container.register('ExternalTaskSampleWorker', ExternalTaskSampleWorker)
+    .dependencies('ExternalTaskApiClientService', 'IdentityService')
+    .configure('external_task:sample_worker')
+    .singleton();
 
   if (accessApisInternally) {
     registerApisWithInternalAccessors(container);
