@@ -1,7 +1,7 @@
 import {InvocationContainer} from 'addict-ioc';
 
 import {
-  ConsumerApiClientService,
+  ConsumerApiClient,
   ExternalAccessor as ConsumerApiExternalAccessor,
   InternalAccessor as ConsumerApiInternalAccessor,
 } from '@process-engine/consumer_api_client';
@@ -45,21 +45,28 @@ export function registerInContainer(container: InvocationContainer): void {
 function registerApisWithInternalAccessors(container: InvocationContainer): void {
 
   container.register('ConsumerApiInternalAccessor', ConsumerApiInternalAccessor)
-    .dependencies('ConsumerApiService');
+    .dependencies(
+      'ConsumerApiEmptyActivityService',
+      'ConsumerApiEventService',
+      'ConsumerApiManualTaskService',
+      'ConsumerApiNotificationService',
+      'ConsumerApiProcessModelService',
+      'ConsumerApiUserTaskService',
+    );
 
-  container.register('ConsumerApiClientService', ConsumerApiClientService)
+  container.register('ConsumerApiClient', ConsumerApiClient)
     .dependencies('ConsumerApiInternalAccessor');
 
   container.register('ExternalTaskApiInternalAccessor', ExternalTaskApiInternalAccessor)
     .dependencies('ExternalTaskApiService');
 
-  container.register('ExternalTaskApiClientService', ExternalTaskApiClientService)
+  container.register('ExternalTaskApiClient', ExternalTaskApiClientService)
     .dependencies('ExternalTaskApiInternalAccessor');
 
   container.register('ManagementApiInternalAccessor', ManagementApiInternalAccessor)
     .dependencies('ManagementApiService');
 
-  container.register('ManagementApiClientService', ManagementApiClientService)
+  container.register('ManagementApiClient', ManagementApiClientService)
     .dependencies('ManagementApiInternalAccessor');
 }
 
@@ -69,20 +76,20 @@ function registerWithExternalAccessors(container: InvocationContainer): void {
     .dependencies('HttpClient')
     .configure('consumer_api:external_accessor');
 
-  container.register('ConsumerApiClientService', ConsumerApiClientService)
+  container.register('ConsumerApiClient', ConsumerApiClient)
     .dependencies('ConsumerApiExternalAccessor');
 
   container.register('ExternalTaskApiExternalAccessor', ExternalTaskApiExternalAccessor)
     .dependencies('HttpClient');
 
-  container.register('ExternalTaskApiClientService', ExternalTaskApiClientService)
+  container.register('ExternalTaskApiClient', ExternalTaskApiClientService)
     .dependencies('ExternalTaskApiExternalAccessor');
 
   container.register('ManagementApiExternalAccessor', ManagementApiExternalAccessor)
     .dependencies('HttpClient')
     .configure('management_api:external_accessor');
 
-  container.register('ManagementApiClientService', ManagementApiClientService)
+  container.register('ManagementApiClient', ManagementApiClientService)
     .dependencies('ManagementApiExternalAccessor');
 
 }
