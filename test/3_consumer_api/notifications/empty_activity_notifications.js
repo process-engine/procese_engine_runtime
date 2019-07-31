@@ -62,7 +62,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
         emptyActivityToFinish = emptyActivityWaitingMessage;
 
         const emptyActivityList = await testFixtureProvider
-          .consumerApiClientService
+          .consumerApiClient
           .getEmptyActivitiesForProcessModel(defaultIdentity, processModelId);
 
         const listContainsEmptyActivityIdFromMessage = emptyActivityList.emptyActivities.some((emptyActivity) => {
@@ -76,7 +76,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
 
       const subscribeOnce = true;
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onEmptyActivityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
@@ -99,7 +99,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
 
       const subscribeOnce = true;
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onEmptyActivityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       const processFinishedCallback = () => {
@@ -117,7 +117,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onEmptyActivityWaiting({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
@@ -132,7 +132,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onEmptyActivityFinished({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
@@ -154,7 +154,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onEmptyActivityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
@@ -166,7 +166,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
 
     // Remove the subscription
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
@@ -188,7 +188,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onEmptyActivityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
@@ -200,7 +200,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
 
     // Remove the subscription
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
@@ -223,7 +223,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .consumerApiClientService
+            .consumerApiClient
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -233,7 +233,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onEmptyActivityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
@@ -254,7 +254,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .consumerApiClientService
+            .consumerApiClient
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -264,7 +264,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onEmptyActivityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
@@ -283,7 +283,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onEmptyActivityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
@@ -309,7 +309,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onEmptyActivityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
@@ -331,7 +331,7 @@ describe('Consumer API:   Receive global EmptyActivity Notifications', () => {
     const emptyActivityInstanceId = emptyActivityToFinish.flowNodeInstanceId;
 
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .finishEmptyActivity(defaultIdentity, processInstanceId, emptyActivityToFinish.correlationId, emptyActivityInstanceId);
   }
 });

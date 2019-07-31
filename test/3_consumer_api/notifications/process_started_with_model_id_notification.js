@@ -83,13 +83,13 @@ describe('Consumer API:   Receive ProcessWithProcessModelIdStarted Notifications
 
       const subscribeOnce = false;
       const notificationSubscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onProcessWithProcessModelIdStarted(defaultIdentity, notificationReceivedCallback, processModelId, subscribeOnce);
 
       // We must await the end of the ProcessInstance to avoid messed up entries in the database.
       const processFinishedCallback = async () => {
         await testFixtureProvider
-          .consumerApiClientService
+          .consumerApiClient
           .removeSubscription(defaultIdentity, notificationSubscription);
 
         if (!notificationReceived) {
@@ -107,7 +107,7 @@ describe('Consumer API:   Receive ProcessWithProcessModelIdStarted Notifications
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onProcessWithProcessModelIdStarted({}, noopCallback, processModelId, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
@@ -129,7 +129,7 @@ describe('Consumer API:   Receive ProcessWithProcessModelIdStarted Notifications
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onProcessWithProcessModelIdStarted(defaultIdentity, notificationReceivedCallback, processModelId, subscribeOnce);
 
     // Publish the first notification
@@ -141,7 +141,7 @@ describe('Consumer API:   Receive ProcessWithProcessModelIdStarted Notifications
 
     // Remove the subscription
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
@@ -164,7 +164,7 @@ describe('Consumer API:   Receive ProcessWithProcessModelIdStarted Notifications
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .consumerApiClientService
+            .consumerApiClient
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -174,7 +174,7 @@ describe('Consumer API:   Receive ProcessWithProcessModelIdStarted Notifications
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onProcessWithProcessModelIdStarted(defaultIdentity, notificationReceivedCallback, processModelId, subscribeOnce);
 
       // Publish a number of events
@@ -193,7 +193,7 @@ describe('Consumer API:   Receive ProcessWithProcessModelIdStarted Notifications
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onProcessWithProcessModelIdStarted(defaultIdentity, notificationReceivedCallback, processModelId, subscribeOnce);
 
     // Publish a number of events for various process models
@@ -205,7 +205,7 @@ describe('Consumer API:   Receive ProcessWithProcessModelIdStarted Notifications
     await processInstanceHandler.wait(500);
 
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     const expectedReceivedAmountOfNotifications = 1;
@@ -222,7 +222,7 @@ describe('Consumer API:   Receive ProcessWithProcessModelIdStarted Notifications
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onProcessWithProcessModelIdStarted(defaultIdentity, notificationReceivedCallback, processModelId, subscribeOnce);
 
     // Publish a number of events

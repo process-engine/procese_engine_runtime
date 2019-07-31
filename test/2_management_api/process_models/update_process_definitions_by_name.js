@@ -33,7 +33,7 @@ describe('ManagementAPI:   POST  ->  /process_models/:process_model_id/update', 
     };
 
     await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .updateProcessDefinitionsByName(testFixtureProvider.identities.defaultUser, processModelId, importPayload);
 
     await assertThatImportWasSuccessful();
@@ -47,7 +47,7 @@ describe('ManagementAPI:   POST  ->  /process_models/:process_model_id/update', 
     };
 
     await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .updateProcessDefinitionsByName(testFixtureProvider.identities.superAdmin, processModelId, importPayload);
 
     await assertThatImportWasSuccessful();
@@ -62,7 +62,7 @@ describe('ManagementAPI:   POST  ->  /process_models/:process_model_id/update', 
 
     try {
       await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .updateProcessDefinitionsByName(testFixtureProvider.identities.defaultUser, processModelId, importPayload);
 
       should.fail(processModel, undefined, 'This request should have failed!');
@@ -83,7 +83,7 @@ describe('ManagementAPI:   POST  ->  /process_models/:process_model_id/update', 
 
     try {
       const processModel = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .updateProcessDefinitionsByName({}, processModelId, importPayload);
 
       should.fail(processModel, undefined, 'This request should have failed!');
@@ -104,7 +104,7 @@ describe('ManagementAPI:   POST  ->  /process_models/:process_model_id/update', 
 
     try {
       const processModel = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .updateProcessDefinitionsByName(testFixtureProvider.identities.restrictedUser, processModelId, importPayload);
 
       should.fail(processModel, undefined, 'This request should have failed!');

@@ -168,7 +168,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       const userTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getUserTasksForCorrelation(testFixtureProvider.identities.defaultUser, correlationId);
 
       for (const userTask of userTaskList.userTasks) {
@@ -177,7 +177,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
         const userTaskResult = {};
 
         await testFixtureProvider
-          .consumerApiClientService
+          .consumerApiClient
           .finishUserTask(testFixtureProvider.identities.defaultUser, userTaskProcessInstanceId, correlationId, userTaskInstanceId, userTaskResult);
       }
     });

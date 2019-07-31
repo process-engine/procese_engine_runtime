@@ -40,16 +40,16 @@ describe(`ManagementAPI: POST  ->  /process_instance/:process_instance_id/termin
     const payload = {};
 
     const startResult = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .startProcessInstance(defaultIdentity, processModelId, payload, returnOn);
 
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(startResult.correlationId);
 
-    await testFixtureProvider.managementApiClientService.terminateProcessInstance(defaultIdentity, startResult.processInstanceId);
+    await testFixtureProvider.managementApiClient.terminateProcessInstance(defaultIdentity, startResult.processInstanceId);
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const list = await testFixtureProvider.managementApiClientService.getUserTasksForProcessInstance(defaultIdentity, startResult.processInstanceId);
+    const list = await testFixtureProvider.managementApiClient.getUserTasksForProcessInstance(defaultIdentity, startResult.processInstanceId);
 
     should(list.userTasks.length).be.eql(0);
   });
@@ -59,16 +59,16 @@ describe(`ManagementAPI: POST  ->  /process_instance/:process_instance_id/termin
     const payload = {};
 
     const startResult = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .startProcessInstance(defaultIdentity, processModelId, payload, returnOn);
 
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(startResult.correlationId);
 
-    await testFixtureProvider.managementApiClientService.terminateProcessInstance(superAdmin, startResult.processInstanceId);
+    await testFixtureProvider.managementApiClient.terminateProcessInstance(superAdmin, startResult.processInstanceId);
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const list = await testFixtureProvider.managementApiClientService.getUserTasksForProcessInstance(superAdmin, startResult.processInstanceId);
+    const list = await testFixtureProvider.managementApiClient.getUserTasksForProcessInstance(superAdmin, startResult.processInstanceId);
 
     should(list.userTasks.length).be.eql(0);
   });
@@ -79,7 +79,7 @@ describe(`ManagementAPI: POST  ->  /process_instance/:process_instance_id/termin
       // It doesn't matter if the ProcessInstance actually exists at this point.
       // If the user is not authorized, he shouldn't be able to call the route in the first place.
       await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .terminateProcessInstance({}, 'processInstanceId');
 
       should.fail('processModel', undefined, 'This request should have failed!');
@@ -97,7 +97,7 @@ describe(`ManagementAPI: POST  ->  /process_instance/:process_instance_id/termin
       // It doesn't matter if the ProcessInstance actually exists at this point.
       // If the user doesn't have the correct claim, he will not be able to run this request at any rate.
       await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .terminateProcessInstance(testFixtureProvider.identities.restrictedUser, 'processInstanceId');
 
       should.fail('processModel', undefined, 'This request should have failed!');

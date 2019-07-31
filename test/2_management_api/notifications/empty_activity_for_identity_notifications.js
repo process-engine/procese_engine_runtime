@@ -72,7 +72,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
         emptyActivityToFinish = emptyActivityWaitingMessage;
 
         const emptyActivityList = await testFixtureProvider
-          .managementApiClientService
+          .managementApiClient
           .getEmptyActivitiesForProcessModel(defaultIdentity, processModelId);
 
         const listContainsEmptyActivityIdFromMessage = emptyActivityList.emptyActivities.some((emptyActivity) => {
@@ -86,7 +86,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
 
       const subscribeOnce = true;
       await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .onEmptyActivityForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
@@ -109,7 +109,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
 
       const subscribeOnce = true;
       await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .onEmptyActivityForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       const processFinishedCallback = () => {
@@ -127,7 +127,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .onEmptyActivityForIdentityWaiting({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
@@ -142,7 +142,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .onEmptyActivityForIdentityFinished({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
@@ -164,7 +164,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .onEmptyActivityForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
@@ -176,7 +176,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
 
     // Remove the subscription
     await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
@@ -198,7 +198,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .onEmptyActivityForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
@@ -210,7 +210,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
 
     // Remove the subscription
     await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
@@ -233,7 +233,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .managementApiClientService
+            .managementApiClient
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -243,7 +243,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .onEmptyActivityForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
@@ -264,7 +264,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .managementApiClientService
+            .managementApiClient
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -274,7 +274,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .onEmptyActivityForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
@@ -294,7 +294,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .onEmptyActivityForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
@@ -306,7 +306,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
     await processInstanceHandler.wait(500);
 
     await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     const expectedReceivedAmountOfNotifications = 1;
@@ -324,7 +324,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .onEmptyActivityForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
@@ -336,7 +336,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
     await processInstanceHandler.wait(500);
 
     await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     const expectedReceivedAmountOfNotifications = 1;
@@ -353,7 +353,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .onEmptyActivityForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
@@ -379,7 +379,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .onEmptyActivityForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
@@ -401,7 +401,7 @@ describe('Management API:   Receive identity specific EmptyActivity Notification
     const emptyActivityInstanceId = emptyActivityToFinish.flowNodeInstanceId;
 
     await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .finishEmptyActivity(defaultIdentity, processInstanceId, emptyActivityToFinish.correlationId, emptyActivityInstanceId);
   }
 });

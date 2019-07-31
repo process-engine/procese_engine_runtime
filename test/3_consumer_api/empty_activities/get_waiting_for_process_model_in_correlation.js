@@ -43,7 +43,7 @@ describe(`Consumer API: ${testCase}`, () => {
   it('should return a list of EmptyActivities for a given process model in a given correlation', async () => {
 
     const emptyActivityList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEmptyActivitiesForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
 
     should(emptyActivityList).have.property('emptyActivities');
@@ -76,7 +76,7 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       const emptyActivityList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getEmptyActivitiesForProcessModel(defaultIdentity, processModelIdNoEmptyActivities);
 
       should(emptyActivityList).have.property('emptyActivities');
@@ -92,7 +92,7 @@ describe(`Consumer API: ${testCase}`, () => {
     const invalidProcessModelId = 'invalidProcessModelId';
 
     const emptyActivityList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEmptyActivitiesForProcessModelInCorrelation(defaultIdentity, invalidProcessModelId, correlationId);
 
     should(emptyActivityList).have.property('emptyActivities');
@@ -105,7 +105,7 @@ describe(`Consumer API: ${testCase}`, () => {
     const invalidCorrelationId = 'invalidCorrelationId';
 
     const emptyActivityList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEmptyActivitiesForProcessModelInCorrelation(defaultIdentity, processModelId, invalidCorrelationId);
 
     should(emptyActivityList).have.property('emptyActivities');
@@ -117,7 +117,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const emptyActivityList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getEmptyActivitiesForProcessModelInCorrelation({}, processModelId, correlationId);
 
       should.fail(emptyActivityList, undefined, 'This request should have failed!');
@@ -135,7 +135,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const emptyActivityList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getEmptyActivitiesForProcessModelInCorrelation(restrictedIdentity, processModelId, correlationId);
 
       should.fail(emptyActivityList, undefined, 'This request should have failed!');
@@ -155,7 +155,7 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(emptyActivityToFinishAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(defaultIdentity, processInstanceId, emptyActivityToFinishAfterTest.correlationId, userTaskId);
     });
   }

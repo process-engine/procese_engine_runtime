@@ -38,7 +38,7 @@ describe(`ManagementAPI: POST  ->  /process_models/:process_model_id/start?start
     };
 
     const result = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .startProcessInstance(defaultIdentity, processModelId, payload, returnOn);
 
     should(result.tokenPayload).be.eql('process instance started');
@@ -52,7 +52,7 @@ describe(`ManagementAPI: POST  ->  /process_models/:process_model_id/start?start
     };
 
     const result = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .startProcessInstance(defaultIdentity, processModelId, payload, returnOn, startEventId);
 
     should(result.tokenPayload).be.eql('process instance started');
@@ -64,7 +64,7 @@ describe(`ManagementAPI: POST  ->  /process_models/:process_model_id/start?start
     const payload = {};
 
     const result = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .startProcessInstance(defaultIdentity, processModelMultipleStartEventsId, payload, returnOn, startEventId);
 
     should(result.tokenPayload).be.eql(2);
@@ -77,7 +77,7 @@ describe(`ManagementAPI: POST  ->  /process_models/:process_model_id/start?start
 
     try {
       const result = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .startProcessInstance(defaultIdentity, processModelMultipleStartEventsId, payload, returnOn, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
@@ -97,7 +97,7 @@ describe(`ManagementAPI: POST  ->  /process_models/:process_model_id/start?start
 
     try {
       const result = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .startProcessInstance(defaultIdentity, processModelMultipleStartEventsId, payload, returnOn);
 
       should.fail(result, undefined, 'The Process should not have been executed.');

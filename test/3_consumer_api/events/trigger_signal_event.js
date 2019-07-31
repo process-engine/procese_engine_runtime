@@ -34,7 +34,7 @@ describe('Consumer API: POST  ->  /signals/:signal_name/trigger', () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .triggerSignalEvent({}, signalEventName, payload);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
@@ -55,7 +55,7 @@ describe('Consumer API: POST  ->  /signals/:signal_name/trigger', () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .triggerSignalEvent(restrictedIdentity, signalEventName, payload);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
@@ -73,7 +73,7 @@ describe('Consumer API: POST  ->  /signals/:signal_name/trigger', () => {
     const payload = {};
 
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .triggerSignalEvent(defaultIdentity, signalEventName, payload);
   });
 
@@ -91,7 +91,7 @@ describe('Consumer API: POST  ->  /signals/:signal_name/trigger', () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .triggerSignalEvent(defaultIdentity, signalEventName, payload);
     });
   });

@@ -40,7 +40,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
   it('should return a correlation\'s events by its correlation_id through the consumer api', async () => {
 
     const eventList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEventsForCorrelation(defaultIdentity, correlationId);
 
     should(eventList).have.property('events');
@@ -66,7 +66,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
     const invalidCorrelationId = 'invalidCorrelationId';
 
     const eventList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEventsForCorrelation(defaultIdentity, invalidCorrelationId);
 
     should(eventList).have.property('events');
@@ -82,7 +82,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
     const invalidCorrelationId = 'invalidCorrelationId';
 
     const eventList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEventsForCorrelation(restrictedIdentity, invalidCorrelationId);
 
     should(eventList).have.property('events');
@@ -95,7 +95,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
   it('should fail to retrieve the correlation\'s events, when the user is unauthorized', async () => {
 
     try {
-      await testFixtureProvider.consumerApiClientService.getEventsForCorrelation({}, correlationId);
+      await testFixtureProvider.consumerApiClient.getEventsForCorrelation({}, correlationId);
 
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
     } catch (error) {
@@ -111,7 +111,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .triggerSignalEvent(defaultIdentity, eventNameToTriggerAfterTest, {});
     });
   }

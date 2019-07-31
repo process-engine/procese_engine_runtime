@@ -44,7 +44,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
 
     try {
       const manualTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getManualTasksForCorrelation({}, correlationId);
 
       should.fail(manualTaskList, undefined, 'This request should have failed!');
@@ -62,7 +62,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
 
     try {
       const manualTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getManualTasksForCorrelation(restrictedIdentity, correlationId);
 
       should.fail(manualTaskList, undefined, 'This request should have failed!');
@@ -77,7 +77,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
   it('should return a Correlation\'s ManualTasks by its CorrelationId through the ConsumerAPI', async () => {
 
     const manualTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getManualTasksForCorrelation(defaultIdentity, correlationId);
 
     should(manualTaskList).have.property('manualTasks');
@@ -106,7 +106,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(processStartResult.correlationId, processModelId);
 
     const manualTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getManualTasksForCorrelation(defaultIdentity, processStartResult.correlationId);
 
     should(manualTaskList).have.property('manualTasks');
@@ -128,7 +128,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(processStartResult.processInstanceId, resolve);
 
       testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishManualTask(defaultIdentity, manualTask.processInstanceId, manualTask.correlationId, manualTask.flowNodeInstanceId);
     });
   });
@@ -143,7 +143,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       const manualTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getManualTasksForCorrelation(defaultIdentity, processModelIdNoManualTasks);
 
       should(manualTaskList).have.property('manualTasks');
@@ -159,7 +159,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
     const invalidCorrelationId = 'invalidCorrelationId';
 
     const manualTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getManualTasksForCorrelation(defaultIdentity, invalidCorrelationId);
 
     should(manualTaskList).have.property('manualTasks');
@@ -175,7 +175,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTask.processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishManualTask(defaultIdentity, processInstanceId, manualTask.correlationId, manualTaskId);
     });
   }

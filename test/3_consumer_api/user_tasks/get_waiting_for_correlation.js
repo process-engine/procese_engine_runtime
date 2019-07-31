@@ -44,7 +44,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
 
     try {
       const userTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getUserTasksForCorrelation({}, correlationId);
 
       should.fail(userTaskList, undefined, 'This request should have failed!');
@@ -62,7 +62,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
 
     try {
       const userTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getUserTasksForCorrelation(restrictedIdentity, correlationId);
 
       should.fail(userTaskList, undefined, 'This request should have failed!');
@@ -77,7 +77,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
   it('should return a Correlation\'s UserTasks by its CorrelationId through the ConsumerAPI', async () => {
 
     const userTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getUserTasksForCorrelation(defaultIdentity, correlationId);
 
     should(userTaskList).have.property('userTasks');
@@ -118,7 +118,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(processStartResult.correlationId, processModelId);
 
     const userTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getUserTasksForCorrelation(defaultIdentity, processStartResult.correlationId);
 
     should(userTaskList).have.property('userTasks');
@@ -148,7 +148,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(processStartResult.processInstanceId, resolve);
 
       testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId);
     });
   });
@@ -163,7 +163,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       const userTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getUserTasksForCorrelation(defaultIdentity, correlationId);
 
       should(userTaskList).have.property('userTasks');
@@ -179,7 +179,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
     const invalidCorrelationId = 'invalidCorrelationId';
 
     const userTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getUserTasksForCorrelation(defaultIdentity, invalidCorrelationId);
 
     should(userTaskList).have.property('userTasks');
@@ -201,7 +201,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskToFinishAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, processInstanceId, userTaskToFinishAfterTest.correlationId, userTaskId, userTaskResult);
     });
   }

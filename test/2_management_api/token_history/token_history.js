@@ -52,7 +52,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
     for (const flowNodeId of expectedFlowNodeNames) {
 
       const tokenHistory = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getTokensForFlowNode(defaultIdentity, correlationId, processModelId, flowNodeId);
 
       should(tokenHistory).be.an.Array();
@@ -98,7 +98,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
     ];
 
     const tokenHistoryGroup = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getTokensForProcessInstance(defaultIdentity, processInstanceId);
 
     should(tokenHistoryGroup).be.an.Object();
@@ -135,7 +135,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
   it('should fail to retrieve the token history, when the user is unauthorized', async () => {
     try {
       const processModelList = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getTokensForFlowNode({}, processModelId, correlationId, startEventId);
 
       should.fail(processModelList, undefined, 'This request should have failed!');
@@ -151,7 +151,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
     const notExistingTaskId = 'not_existing_task';
     try {
       const processTokens = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getTokensForFlowNode(defaultIdentity, processModelId, correlationId, notExistingTaskId);
 
       should.fail(processTokens, undefined, 'This request should have failed!');
@@ -180,7 +180,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
     ];
 
     const tokenHistories = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId);
 
     for (const expectedFlowNodeName of expectedFlowNodeNames) {
@@ -215,7 +215,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
   it('should fail to retrieve the token history, when the user is unauthorized', async () => {
     try {
       const processModelList = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getTokensForCorrelationAndProcessModel({}, correlationId, processModelId);
 
       should.fail(processModelList, undefined, 'This request should have failed!');
@@ -239,7 +239,7 @@ describe('Management API: GET  ->  /correlation/:correlationId/process_model/:pr
     const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
 
     const startResponse = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .startProcessInstance(defaultIdentity, processModelId, payload, returnOn, startEventId);
 
     return startResponse;

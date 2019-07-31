@@ -41,7 +41,7 @@ describe(`Consumer API: ${testCase}`, () => {
     };
 
     const result = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .startProcessInstance(defaultIdentity, processModelId, payload, returnOn);
 
     should(result.tokenPayload).be.eql('process instance started');
@@ -55,7 +55,7 @@ describe(`Consumer API: ${testCase}`, () => {
     };
 
     const result = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .startProcessInstance(defaultIdentity, processModelId, payload, returnOn, startEventId);
 
     should(result.tokenPayload).be.eql('process instance started');
@@ -67,7 +67,7 @@ describe(`Consumer API: ${testCase}`, () => {
     const payload = {};
 
     const result = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .startProcessInstance(defaultIdentity, processModelMultipleStartEventsId, payload, returnOn, startEventId);
 
     should(result.tokenPayload).be.eql(2);
@@ -80,7 +80,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(defaultIdentity, processModelMultipleStartEventsId, payload, returnOn, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
@@ -98,7 +98,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(defaultIdentity, processModelMultipleStartEventsId, payload, returnOn);
 
       should.fail(result, undefined, 'The Process should not have been executed.');

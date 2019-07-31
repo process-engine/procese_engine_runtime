@@ -25,7 +25,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/events', (
   it('should return a ProcessModel\'s StartEvents by its ProcessModelId through the ManagementAPI, if the user has all required LaneClaims', async () => {
 
     const processModel = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getStartEventsForProcessModel(testFixtureProvider.identities.defaultUser, processModelId);
 
     should(processModel).have.property('events');
@@ -40,7 +40,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/events', (
   it('should return a ProcessMode\'s StartEvents by its ProcessModelId through the ManagementAPI, if the user is a SuperAdmin', async () => {
 
     const processModel = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getStartEventsForProcessModel(testFixtureProvider.identities.superAdmin, processModelId);
 
     should(processModel).have.property('events');
@@ -56,7 +56,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/events', (
 
     try {
       const processModel = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getStartEventsForProcessModel(testFixtureProvider.identities.defaultUser, 'SomeInvalidProcessModelId');
 
       should.fail(processModel, undefined, 'This request should have failed!');
@@ -72,7 +72,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/events', (
 
     try {
       const processModel = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getStartEventsForProcessModel({}, processModelId);
 
       should.fail(processModel, undefined, 'This request should have failed!');
@@ -88,7 +88,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/events', (
 
     try {
       const processModel = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getStartEventsForProcessModel(testFixtureProvider.identities.restrictedUser, processModelIdRestricted);
 
       should.fail(processModel, undefined, 'This request should have failed!');

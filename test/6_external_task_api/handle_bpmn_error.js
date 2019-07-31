@@ -44,7 +44,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
   it('should successfully abort the given ExternalTask with a BPMN Error', async () => {
 
     await testFixtureProvider
-      .externalTaskApiClientService
+      .externalTaskApiClient
       .handleBpmnError(defaultIdentity, workerId, externalTaskHappyPathTest.id, errorCode);
 
     await assertThatErrorHandlingWasSuccessful(externalTaskHappyPathTest.id, errorCode);
@@ -54,7 +54,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .handleBpmnError(defaultIdentity, workerId, externalTaskHappyPathTest.id, errorCode);
 
       should.fail(externalTaskHappyPathTest.id, undefined, 'This request should have failed!');
@@ -73,7 +73,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .handleBpmnError(defaultIdentity, workerId, invalidExternalTaskId, errorCode);
 
       should.fail(invalidExternalTaskId, undefined, 'This request should have failed!');
@@ -91,7 +91,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .handleBpmnError(defaultIdentity, invalidworkerId, externalTaskBadPathTests.id, errorCode);
 
       should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
@@ -107,7 +107,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .handleBpmnError({}, workerId, externalTaskBadPathTests.id, errorCode);
 
       should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
@@ -123,7 +123,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .handleBpmnError(restrictedIdentity, workerId, externalTaskBadPathTests.id, errorCode);
 
       should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
@@ -144,7 +144,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     await processInstanceHandler.waitForExternalTaskToBeCreated(topicName);
 
     const availableExternalTasks = await testFixtureProvider
-      .externalTaskApiClientService
+      .externalTaskApiClient
       .fetchAndLockExternalTasks(defaultIdentity, workerId, topicName, 1, 0, 10000);
 
     should(availableExternalTasks).be.an.Array();
@@ -179,7 +179,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(externalTaskBadPathTests.processInstanceId, resolve);
 
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .finishExternalTask(defaultIdentity, workerId, externalTaskBadPathTests.id, {});
     });
   }

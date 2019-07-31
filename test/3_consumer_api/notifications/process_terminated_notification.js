@@ -65,7 +65,7 @@ describe('Consumer API:   Receive ProcessTerminated Notification', () => {
 
       const subscribeOnce = true;
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onProcessTerminated(defaultIdentity, messageReceivedCallback, subscribeOnce);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
@@ -76,7 +76,7 @@ describe('Consumer API:   Receive ProcessTerminated Notification', () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onProcessTerminated({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
@@ -98,7 +98,7 @@ describe('Consumer API:   Receive ProcessTerminated Notification', () => {
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onProcessTerminated(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
@@ -110,7 +110,7 @@ describe('Consumer API:   Receive ProcessTerminated Notification', () => {
 
     // Remove the subscription
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
@@ -133,7 +133,7 @@ describe('Consumer API:   Receive ProcessTerminated Notification', () => {
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .consumerApiClientService
+            .consumerApiClient
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -143,7 +143,7 @@ describe('Consumer API:   Receive ProcessTerminated Notification', () => {
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onProcessTerminated(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
@@ -162,7 +162,7 @@ describe('Consumer API:   Receive ProcessTerminated Notification', () => {
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onProcessTerminated(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events

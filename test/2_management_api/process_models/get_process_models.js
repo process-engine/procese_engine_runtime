@@ -24,7 +24,7 @@ describe('ManagementAPI:   GET  ->  /processModels', () => {
   it('should return ProcessModels through the ManagementAPI', async () => {
 
     const processModelList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getProcessModels(testFixtureProvider.identities.defaultUser);
 
     should(processModelList).have.property('processModels');
@@ -45,7 +45,7 @@ describe('ManagementAPI:   GET  ->  /processModels', () => {
   it('should fail to retrieve a list of ProcessModels, when the user is unauthorized', async () => {
     try {
       const processModelList = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getProcessModels({});
 
       should.fail(processModelList, undefined, 'This request should have failed!');

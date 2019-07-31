@@ -42,7 +42,7 @@ describe(`Management API: ${testCase}`, () => {
   it('should return a correlation\'s ManualTasks by its correlationId through the consumer api', async () => {
 
     const manualTaskList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getManualTasksForCorrelation(testFixtureProvider.identities.defaultUser, correlationId);
 
     assertmanualTaskList(manualTaskList);
@@ -51,7 +51,7 @@ describe(`Management API: ${testCase}`, () => {
   it('should return a process model\'s ManualTasks by its process_model_id through the consumer api', async () => {
 
     const manualTaskList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getManualTasksForProcessModel(testFixtureProvider.identities.defaultUser, processModelId);
 
     assertmanualTaskList(manualTaskList);
@@ -60,7 +60,7 @@ describe(`Management API: ${testCase}`, () => {
   it('should return a process model\'s ManualTasks by its process_instance_id through the consumer api', async () => {
 
     const manualTaskList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getManualTasksForProcessInstance(testFixtureProvider.identities.defaultUser, processInstanceId);
 
     assertmanualTaskList(manualTaskList);
@@ -69,7 +69,7 @@ describe(`Management API: ${testCase}`, () => {
   it('should return a list of ManualTasks for a given process model in a given correlation', async () => {
 
     const manualTaskList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getManualTasksForProcessModelInCorrelation(testFixtureProvider.identities.defaultUser, processModelId, correlationId);
 
     manualTaskToFinish = manualTaskList.manualTasks[0];
@@ -87,7 +87,7 @@ describe(`Management API: ${testCase}`, () => {
 
       // Now finish the ManualTask.
       await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .finishManualTask(
           testFixtureProvider.identities.defaultUser,
           manualTaskToFinish.processInstanceId,

@@ -59,7 +59,7 @@ describe('Empty Activity - ', () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(identity, 'processInstanceId', correlationId, 'EmptyActivityBob');
     } catch (error) {
       should(error.name).be.match(errorName);
@@ -89,7 +89,7 @@ describe('Empty Activity - ', () => {
     await new Promise(async (resolve, reject) => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(emptyActivity.processInstanceId, resolve);
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(identity, emptyActivity.processInstanceId, correlationId, emptyActivity.flowNodeInstanceId);
     });
 
@@ -98,7 +98,7 @@ describe('Empty Activity - ', () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(identity, emptyActivity.processInstanceId, correlationId, emptyActivity.flowNodeInstanceId);
     } catch (error) {
       should(error.code).be.equal(errorCode);

@@ -42,7 +42,7 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
   it('should return a Users ProcessInstances by his identity', async () => {
 
     const processInstances = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getProcessInstancesByIdentity(defaultIdentity);
 
     should(processInstances).be.instanceOf(Array);
@@ -63,7 +63,7 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
   it('should filter out ProcessInstances that belong to a different User', async () => {
 
     const processInstances = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getProcessInstancesByIdentity(someOtherIdentity);
 
     should(processInstances).be.instanceOf(Array);
@@ -73,7 +73,7 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
   it('should return an empty Array, if no accessible running ProcessInstances were found', async () => {
 
     const processInstances = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getProcessInstancesByIdentity(restrictedIdentity);
 
     should(processInstances).be.instanceOf(Array);
@@ -84,7 +84,7 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
 
     try {
       const processInstances = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getProcessInstancesByIdentity({});
 
       should.fail(processInstances, undefined, 'This request should have failed!');
@@ -99,7 +99,7 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
   async function cleanup() {
 
     const userTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
 
     for (const userTask of userTaskList.userTasks) {
@@ -119,7 +119,7 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
       };
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskInput);
     });
   }

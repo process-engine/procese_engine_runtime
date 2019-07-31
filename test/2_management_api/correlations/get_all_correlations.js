@@ -39,7 +39,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
     const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
 
     const result = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .startProcessInstance(identity, processModelIdToUse, payload, returnOn, startEventId);
 
     should(result).have.property('correlationId');
@@ -51,7 +51,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
   it('should return all correlations for an user through the management api', async () => {
 
     const correlations = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getAllCorrelations(testFixtureProvider.identities.defaultUser);
 
     should(correlations).be.instanceOf(Array);
@@ -80,7 +80,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
   it('should return all correlations for a super admin through the management api', async () => {
 
     const correlations = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getAllCorrelations(testFixtureProvider.identities.superAdmin);
 
     should(correlations).be.instanceOf(Array);
@@ -108,7 +108,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
 
   it('should filter out another user\'s Correlations, if the requesting user is a regular user', async () => {
     const correlationListDefaultUser = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getAllCorrelations(testFixtureProvider.identities.defaultUser);
 
     correlationListDefaultUser.forEach((correlation) => {
@@ -118,7 +118,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
     });
 
     const correlationListSecondUser = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getAllCorrelations(testFixtureProvider.identities.secondDefaultUser);
 
     correlationListSecondUser.forEach((correlation) => {
@@ -142,7 +142,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
     }
 
     const correlations = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getAllCorrelations(testFixtureProvider.identities.defaultUser);
 
     should(correlations).be.instanceOf(Array);
@@ -159,7 +159,7 @@ describe('Management API:   GET  ->  /correlations/all', () => {
   it('should fail to retrieve a list of correlations, when the user is unauthorized', async () => {
     try {
       const correlationList = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getAllCorrelations({});
 
       should.fail(correlationList, undefined, 'This request should have failed!');

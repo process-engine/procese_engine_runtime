@@ -24,21 +24,21 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/delete', (
   it('should allow the user to delete a ProcessModel by its ID through the ManagementAPI, if he has the required claim', async () => {
 
     await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .deleteProcessDefinitionsByProcessModelId(testFixtureProvider.identities.defaultUser, processModelId);
   });
 
   it('should allow the user to delete a ProcessModel by its ID through the ManagementAPI, if he has the SuperAdmin claim', async () => {
 
     await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .deleteProcessDefinitionsByProcessModelId(testFixtureProvider.identities.superAdmin, processModelId);
   });
 
   it('should fail to retrieve the ProcessModel, after its been deleted', async () => {
     try {
       const processModel = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
       should.fail(processModel, undefined, 'This request should have failed!');
@@ -54,7 +54,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/delete', (
 
     try {
       const processModel = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .deleteProcessDefinitionsByProcessModelId({}, processModelId);
 
       should.fail(processModel, undefined, 'This request should have failed!');
@@ -70,7 +70,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/delete', (
 
     try {
       const processModel = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .deleteProcessDefinitionsByProcessModelId(testFixtureProvider.identities.restrictedUser, processModelId);
 
       should.fail(processModel, undefined, 'This request should have failed!');

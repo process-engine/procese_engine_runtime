@@ -47,7 +47,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
   it('should return a ProcessModel\'s UserTasks by its ProcessModelId through the consumer api', async () => {
 
     const userTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getUserTasksForProcessModel(defaultIdentity, processModelId);
 
     should(userTaskList).have.property('userTasks');
@@ -99,7 +99,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       const userTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getUserTasksForProcessModel(defaultIdentity, processModelIdNoUserTasks);
 
       should(userTaskList).have.property('userTasks');
@@ -115,7 +115,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
     const invalidprocessModelId = 'invalidprocessModelId';
 
     const userTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getUserTasksForProcessModel(defaultIdentity, invalidprocessModelId);
 
     should(userTaskList).have.property('userTasks');
@@ -127,7 +127,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
 
     try {
       const userTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getUserTasksForProcessModel({}, processModelId);
 
       should.fail(userTaskList, undefined, 'This request should have failed!');
@@ -145,7 +145,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
 
     try {
       const userTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getUserTasksForProcessModel(restrictedIdentity, processModelId);
 
       should.fail(userTaskList, undefined, 'This request should have failed!');
@@ -171,7 +171,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskToFinishAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, processInstanceId, userTaskToFinishAfterTest.correlationId, userTaskId, userTaskResult);
     });
   }

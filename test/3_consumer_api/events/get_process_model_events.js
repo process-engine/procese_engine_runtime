@@ -40,7 +40,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/events', ()
   it('should return a process models events by its process_model_id through the consumer api', async () => {
 
     const eventList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEventsForProcessModel(defaultIdentity, processModelIdSignalEvent);
 
     should(eventList).have.property('events');
@@ -66,7 +66,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/events', ()
     const invalidprocessModelId = 'invalidprocessModelId';
 
     const eventList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEventsForProcessModel(defaultIdentity, invalidprocessModelId);
 
     should(eventList).have.property('events');
@@ -81,7 +81,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/events', ()
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getEventsForProcessModel({}, processModelId);
 
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
@@ -99,7 +99,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/events', ()
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getEventsForProcessModel(restrictedIdentity, processModelIdSignalEvent);
 
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
@@ -116,7 +116,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/events', ()
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .triggerSignalEvent(defaultIdentity, eventNameToTriggerAfterTest, {});
     });
   }

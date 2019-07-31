@@ -44,7 +44,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/empty_activities
 
     try {
       const emptyActivityList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getEmptyActivitiesForCorrelation({}, correlationId);
 
       should.fail(emptyActivityList, undefined, 'This request should have failed!');
@@ -62,7 +62,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/empty_activities
 
     try {
       const emptyActivityList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getEmptyActivitiesForCorrelation(restrictedIdentity, correlationId);
 
       should.fail(emptyActivityList, undefined, 'This request should have failed!');
@@ -77,7 +77,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/empty_activities
   it('should return a Correlation\'s EmptyActivities by its CorrelationId through the ConsumerAPI', async () => {
 
     const emptyActivityList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEmptyActivitiesForCorrelation(defaultIdentity, correlationId);
 
     should(emptyActivityList).have.property('emptyActivities');
@@ -106,7 +106,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/empty_activities
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(processStartResult.correlationId, processModelId);
 
     const emptyActivityList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEmptyActivitiesForCorrelation(defaultIdentity, processStartResult.correlationId);
 
     should(emptyActivityList).have.property('emptyActivities');
@@ -128,7 +128,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/empty_activities
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(processStartResult.processInstanceId, resolve);
 
       testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(defaultIdentity, emptyActivity.processInstanceId, emptyActivity.correlationId, emptyActivity.flowNodeInstanceId);
     });
   });
@@ -143,7 +143,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/empty_activities
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       const emptyActivityList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getEmptyActivitiesForCorrelation(defaultIdentity, processModelIdNoEmptyActivities);
 
       should(emptyActivityList).have.property('emptyActivities');
@@ -159,7 +159,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/empty_activities
     const invalidCorrelationId = 'invalidCorrelationId';
 
     const emptyActivityList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEmptyActivitiesForCorrelation(defaultIdentity, invalidCorrelationId);
 
     should(emptyActivityList).have.property('emptyActivities');
@@ -175,7 +175,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/empty_activities
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(emptyActivity.processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(defaultIdentity, processInstanceId, emptyActivity.correlationId, emptyActivityId);
     });
   }

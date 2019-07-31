@@ -46,7 +46,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(defaultIdentity, invalidProcessModelId, payload, startCallbackType, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
@@ -70,7 +70,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(defaultIdentity, processModelId, payload, startCallbackType, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
@@ -95,7 +95,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(defaultIdentity, processModelId, payload, startCallbackType, startEventId, endEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
@@ -119,7 +119,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(defaultIdentity, processModelIdNonExecutable, payload, startCallbackType, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
@@ -143,7 +143,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(defaultIdentity, processModelId, payload, startCallbackType, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
@@ -170,7 +170,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(defaultIdentity, processModelId, payload, startCallbackType, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');

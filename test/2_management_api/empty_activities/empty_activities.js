@@ -42,7 +42,7 @@ describe(`Management API: ${testCase}`, () => {
   it('should return a correlation\'s EmptyActivities by its correlationId through the consumer api', async () => {
 
     const emptyActivityList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getEmptyActivitiesForCorrelation(testFixtureProvider.identities.defaultUser, correlationId);
 
     assertemptyActivityList(emptyActivityList);
@@ -51,7 +51,7 @@ describe(`Management API: ${testCase}`, () => {
   it('should return a process model\'s EmptyActivities by its process_model_id through the consumer api', async () => {
 
     const emptyActivityList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getEmptyActivitiesForProcessModel(testFixtureProvider.identities.defaultUser, processModelId);
 
     assertemptyActivityList(emptyActivityList);
@@ -60,7 +60,7 @@ describe(`Management API: ${testCase}`, () => {
   it('should return a process model\'s EmptyActivities by its process_instance_id through the consumer api', async () => {
 
     const emptyActivityList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getEmptyActivitiesForProcessInstance(testFixtureProvider.identities.defaultUser, processInstanceId);
 
     assertemptyActivityList(emptyActivityList);
@@ -69,7 +69,7 @@ describe(`Management API: ${testCase}`, () => {
   it('should return a list of EmptyActivities for a given process model in a given correlation', async () => {
 
     const emptyActivityList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getEmptyActivitiesForProcessModelInCorrelation(testFixtureProvider.identities.defaultUser, processModelId, correlationId);
 
     emptyActivityToFinish = emptyActivityList.emptyActivities[0];
@@ -87,7 +87,7 @@ describe(`Management API: ${testCase}`, () => {
 
       // Now finish the EmptyActivity.
       await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .finishEmptyActivity(
           testFixtureProvider.identities.defaultUser,
           emptyActivityToFinish.processInstanceId,

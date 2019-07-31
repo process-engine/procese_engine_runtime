@@ -72,7 +72,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
 
       const subscribeOnce = true;
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onActivityReached(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
@@ -95,7 +95,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
 
       const subscribeOnce = true;
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onActivityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       const processFinishedCallback = () => {
@@ -112,7 +112,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onActivityReached({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
@@ -127,7 +127,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onActivityFinished({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
@@ -149,7 +149,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onActivityReached(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
@@ -161,7 +161,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
 
     // Remove the subscription
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
@@ -183,7 +183,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onActivityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
@@ -195,7 +195,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
 
     // Remove the subscription
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
@@ -218,7 +218,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .consumerApiClientService
+            .consumerApiClient
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -228,7 +228,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onActivityReached(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
@@ -249,7 +249,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .consumerApiClientService
+            .consumerApiClient
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -259,7 +259,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onActivityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
@@ -278,7 +278,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onActivityReached(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
@@ -304,7 +304,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onActivityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events

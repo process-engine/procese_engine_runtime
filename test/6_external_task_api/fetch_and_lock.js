@@ -38,7 +38,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
   it('should successfully return an empty Array, if no ExternalTask is available for Processing', async () => {
 
     const availableExternalTasks = await testFixtureProvider
-      .externalTaskApiClientService
+      .externalTaskApiClient
       .fetchAndLockExternalTasks(defaultIdentity, workerId, topicName, 1, 0, 10000);
 
     should(availableExternalTasks).be.an.Array();
@@ -50,7 +50,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
     await createWaitingExternalTask('without_payload', topicName);
 
     const availableExternalTasks = await testFixtureProvider
-      .externalTaskApiClientService
+      .externalTaskApiClient
       .fetchAndLockExternalTasks(defaultIdentity, workerId, topicName, 1, 0, 10000);
 
     should(availableExternalTasks).be.an.Array();
@@ -84,7 +84,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
     await createWaitingExternalTask('with_payload', topicNameWithPayload);
 
     const availableExternalTasks = await testFixtureProvider
-      .externalTaskApiClientService
+      .externalTaskApiClient
       .fetchAndLockExternalTasks(defaultIdentity, workerId, topicNameWithPayload, 1, 0, 10000);
 
     should(availableExternalTasks).be.an.Array();
@@ -104,7 +104,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .fetchAndLockExternalTasks({}, workerId, topicName, 1, 0, 10000);
 
       should.fail('externalTask', undefined, 'This request should have failed, because no token was supplied!');
@@ -120,7 +120,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .fetchAndLockExternalTasks(restrictedIdentity, workerId, topicName, 1, 0, 10000);
 
       should.fail('externalTask', undefined, 'This request should have failed, because the user has no right to see ExternalTasks!');
@@ -146,7 +146,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(externalTask.processInstanceId, resolve);
 
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .finishExternalTask(defaultIdentity, workerId, externalTask.id, {});
     });
   }

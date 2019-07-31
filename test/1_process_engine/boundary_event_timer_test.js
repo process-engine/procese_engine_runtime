@@ -47,7 +47,7 @@ describe('Timer Boundary Event - ', () => {
   it('should no longer list the task as active, after it was interrupted', async () => {
 
     const userTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
 
     should(userTaskList.userTasks).be.an.Array();
@@ -79,7 +79,7 @@ describe('Timer Boundary Event - ', () => {
       const onTimerExpiredCallback = async () => {
 
         const userTaskList = await testFixtureProvider
-          .consumerApiClientService
+          .consumerApiClient
           .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
 
         should(userTaskList.userTasks).be.an.Array();
@@ -88,7 +88,7 @@ describe('Timer Boundary Event - ', () => {
         const userTask = userTaskList.userTasks[0];
 
         await testFixtureProvider
-          .consumerApiClientService
+          .consumerApiClient
           .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, {});
       };
 
