@@ -29,6 +29,7 @@ def find_available_version_for_publish() {
 
       nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
         sh('node --version')
+        sh('node cache clean --force')
         sh("npm version ${publish_version} --no-git-tag-version")
       }
 
