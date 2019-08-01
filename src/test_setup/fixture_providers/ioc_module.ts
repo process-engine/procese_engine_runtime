@@ -31,16 +31,16 @@ export function registerInContainer(container: InvocationContainer): void {
 
   const accessApisInternally = process.env.API_ACCESS_TYPE === 'internal';
 
-  container.register('ExternalTaskSampleWorker', ExternalTaskSampleWorker)
-    .dependencies('ExternalTaskApiClientService', 'IdentityService')
-    .configure('external_task:sample_worker')
-    .singleton();
-
   if (accessApisInternally) {
     registerApisWithInternalAccessors(container);
   } else {
     registerWithExternalAccessors(container);
   }
+
+  container.register('ExternalTaskSampleWorker', ExternalTaskSampleWorker)
+    .dependencies('ExternalTaskApiClient', 'IdentityService')
+    .configure('external_task:sample_worker')
+    .singleton();
 
   container.register('ParallelGatewayTestService', ParallelGatewayTestService);
   container.register('ServiceTaskTestService', ServiceTaskTestService);
@@ -71,7 +71,20 @@ function registerApisWithInternalAccessors(container: InvocationContainer): void
     .dependencies('ExternalTaskApiInternalAccessor');
 
   container.register('ManagementApiInternalAccessor', ManagementApiInternalAccessor)
-    .dependencies('ManagementApiService');
+    .dependencies(
+      'ManagementApiCorrelationService',
+      'ManagementApiCronjobService',
+      'ManagementApiEmptyActivityService',
+      'ManagementApiEventService',
+      'ManagementApiFlowNodeInstanceService',
+      'ManagementApiKpiService',
+      'ManagementApiLoggingService',
+      'ManagementApiManualTaskService',
+      'ManagementApiNotificationService',
+      'ManagementApiProcessModelService',
+      'ManagementApiTokenHistoryService',
+      'ManagementApiUserTaskService',
+    );
 
   container.register('ManagementApiClient', ManagementApiClientService)
     .dependencies('ManagementApiInternalAccessor');
