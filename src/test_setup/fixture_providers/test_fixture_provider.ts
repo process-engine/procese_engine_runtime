@@ -14,7 +14,7 @@ import {IConsumerApiClient} from '@process-engine/consumer_api_contracts';
 import {IDeploymentApi} from '@process-engine/deployment_api_contracts';
 import {IExternalTaskApi} from '@process-engine/external_task_api_contracts';
 import {ExternalTaskSampleWorker} from '@process-engine/external_task_sample_worker';
-import {IManagementApi} from '@process-engine/management_api_contracts';
+import {IManagementApiClient} from '@process-engine/management_api_contracts';
 import {IExecuteProcessService} from '@process-engine/process_engine_contracts';
 import {IProcessModelUseCases} from '@process-engine/process_model.contracts';
 
@@ -37,7 +37,7 @@ export class TestFixtureProvider {
   private _executeProcessService: IExecuteProcessService;
   private _externalTaskApiClient: IExternalTaskApi;
   private _sampleExternalTaskWorker: ExternalTaskSampleWorker;
-  private _managementApiClient: IManagementApi;
+  private _managementApiClient: IManagementApiClient;
   private _processModelUseCases: IProcessModelUseCases;
 
   private _identities: IdentityCollection;
@@ -54,7 +54,7 @@ export class TestFixtureProvider {
     return this._externalTaskApiClient;
   }
 
-  public get managementApiClient(): IManagementApi {
+  public get managementApiClient(): IManagementApiClient {
     return this._managementApiClient;
   }
 
@@ -81,7 +81,7 @@ export class TestFixtureProvider {
 
     this._consumerApiClient = await this.resolveAsync<IConsumerApiClient>('ConsumerApiClient');
     this._externalTaskApiClient = await this.resolveAsync<IExternalTaskApi>('ExternalTaskApiClient');
-    this._managementApiClient = await this.resolveAsync<IManagementApi>('ManagementApiClient');
+    this._managementApiClient = await this.resolveAsync<IManagementApiClient>('ManagementApiClient');
 
     this._deploymentApiService = await this.resolveAsync<IDeploymentApi>('DeploymentApiService');
     this._executeProcessService = await this.resolveAsync<IExecuteProcessService>('ExecuteProcessService');
