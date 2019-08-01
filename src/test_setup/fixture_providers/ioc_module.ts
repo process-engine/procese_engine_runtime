@@ -15,7 +15,7 @@ import {
 import {ExternalTaskSampleWorker} from '@process-engine/external_task_sample_worker';
 
 import {
-  ManagementApiClientService,
+  ManagementApiClient,
   ExternalAccessor as ManagementApiExternalAccessor,
   InternalAccessor as ManagementApiInternalAccessor,
 } from '@process-engine/management_api_client';
@@ -86,7 +86,7 @@ function registerApisWithInternalAccessors(container: InvocationContainer): void
       'ManagementApiUserTaskService',
     );
 
-  container.register('ManagementApiClient', ManagementApiClientService)
+  container.register('ManagementApiClient', ManagementApiClient)
     .dependencies('ManagementApiInternalAccessor');
 }
 
@@ -109,7 +109,7 @@ function registerWithExternalAccessors(container: InvocationContainer): void {
     .dependencies('HttpClient')
     .configure('management_api:external_accessor');
 
-  container.register('ManagementApiClient', ManagementApiClientService)
+  container.register('ManagementApiClient', ManagementApiClient)
     .dependencies('ManagementApiExternalAccessor');
 
 }
