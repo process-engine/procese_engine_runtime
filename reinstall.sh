@@ -18,6 +18,6 @@ fi
 
 # build all packages
 echo "Building solution"
-npm run build
+npm run clean-build
 
 echo "done"

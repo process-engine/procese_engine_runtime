@@ -43,7 +43,7 @@ describe(`Consumer API: ${testCase}`, () => {
   it('should return a list of UserTasks for a given process model in a given correlation', async () => {
 
     const userTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
 
     should(userTaskList).have.property('userTasks');
@@ -88,7 +88,7 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       const userTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelIdNoUserTasks, correlationId);
 
       should(userTaskList).have.property('userTasks');
@@ -104,7 +104,7 @@ describe(`Consumer API: ${testCase}`, () => {
     const invalidProcessModelId = 'invalidProcessModelId';
 
     const userTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getUserTasksForProcessModelInCorrelation(defaultIdentity, invalidProcessModelId, correlationId);
 
     should(userTaskList).have.property('userTasks');
@@ -117,7 +117,7 @@ describe(`Consumer API: ${testCase}`, () => {
     const invalidCorrelationId = 'invalidCorrelationId';
 
     const userTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, invalidCorrelationId);
 
     should(userTaskList).have.property('userTasks');
@@ -129,7 +129,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const userTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getUserTasksForProcessModelInCorrelation({}, processModelId, correlationId);
 
       should.fail(userTaskList, undefined, 'This request should have failed!');
@@ -147,7 +147,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const userTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getUserTasksForProcessModelInCorrelation(restrictedIdentity, processModelId, correlationId);
 
       should.fail(userTaskList, undefined, 'This request should have failed!');
@@ -173,7 +173,7 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskToFinishAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, processInstanceId, userTaskToFinishAfterTest.correlationId, userTaskId, userTaskResult);
     });
   }

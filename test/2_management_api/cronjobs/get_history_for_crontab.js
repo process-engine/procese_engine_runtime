@@ -61,7 +61,7 @@ describe('Management API:   GET  ->  /cronjobs/history/crontab/:crontab', () => 
     const crontab = '* * 1 1 1';
 
     const cronjobHistory = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab);
 
     should(cronjobHistory).have.length(2);
@@ -73,7 +73,7 @@ describe('Management API:   GET  ->  /cronjobs/history/crontab/:crontab', () => 
     const crontab = '* * 1 1 1';
 
     const cronjobHistory = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getCronjobExecutionHistoryForCrontab(superAdmin, crontab);
 
     should(cronjobHistory).have.length(2);
@@ -84,7 +84,7 @@ describe('Management API:   GET  ->  /cronjobs/history/crontab/:crontab', () => 
   it('should fail to retrieve a list of cronjobs, when the user is unauthorized', async () => {
     try {
       const results = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getCronjobExecutionHistoryForCrontab({});
 
       should.fail(results, undefined, 'This request should have failed!');
@@ -99,7 +99,7 @@ describe('Management API:   GET  ->  /cronjobs/history/crontab/:crontab', () => 
   it('should fail to retrieve a list of cronjobs, when the user is forbidden to do so', async () => {
     try {
       const results = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getCronjobExecutionHistoryForCrontab(restrictedIdentity, processModelId);
 
       should.fail(results, undefined, 'This request should have failed!');

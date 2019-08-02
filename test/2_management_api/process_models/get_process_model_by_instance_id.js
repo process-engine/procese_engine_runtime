@@ -31,7 +31,7 @@ describe('ManagementAPI:   GET  -> /process_instance/:process_instance_id/proces
   it('should return a ProcessModel by its ProcessInstanceId through the ManagementAPI, if the user has all required LaneClaims', async () => {
 
     const processModel = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getProcessModelByProcessInstanceId(testFixtureProvider.identities.defaultUser, processInstanceId);
 
     should(processModel).have.property('id');
@@ -45,7 +45,7 @@ describe('ManagementAPI:   GET  -> /process_instance/:process_instance_id/proces
   it('should return a ProcessModel by its ProcessInstanceId through the ManagementAPI, if the user is a SuperAdmin', async () => {
 
     const processModel = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getProcessModelByProcessInstanceId(testFixtureProvider.identities.superAdmin, processInstanceId);
 
     should(processModel).have.property('id');
@@ -60,7 +60,7 @@ describe('ManagementAPI:   GET  -> /process_instance/:process_instance_id/proces
 
     try {
       const processModel = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getProcessModelByProcessInstanceId(testFixtureProvider.identities.defaultUser, 'SomeInvalidProcessInstanceId');
 
       should.fail(processModel, undefined, 'This request should have failed!');
@@ -76,7 +76,7 @@ describe('ManagementAPI:   GET  -> /process_instance/:process_instance_id/proces
 
     try {
       const processModel = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getProcessModelByProcessInstanceId({}, processInstanceId);
 
       should.fail(processModel, undefined, 'This request should have failed!');
@@ -92,7 +92,7 @@ describe('ManagementAPI:   GET  -> /process_instance/:process_instance_id/proces
 
     try {
       const processModel = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getProcessModelByProcessInstanceId(testFixtureProvider.identities.restrictedUser, processInstanceId);
 
       should.fail(processModel, undefined, 'This request should have failed!');

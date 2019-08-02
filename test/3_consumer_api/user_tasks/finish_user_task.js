@@ -38,7 +38,7 @@ describe(`Consumer API: ${testCase}`, () => {
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     const userTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
 
     return userTaskList.userTasks[0];
@@ -60,7 +60,7 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, processInstanceId, correlationId, flowNodeInstanceId, userTaskResult);
     });
   });
@@ -77,7 +77,7 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, processInstanceId, correlationId, flowNodeInstanceId, userTaskResult);
     });
   });
@@ -98,13 +98,13 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, processInstanceId, correlationId, flowNodeInstanceId, userTaskResult);
     });
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
@@ -131,7 +131,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, invalidprocessInstanceId, correlationId, userTaskInstanceId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
@@ -158,7 +158,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, processInstanceId, invalidCorrelationId, userTaskInstanceId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
@@ -184,7 +184,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, processInstanceId, correlationId, invalidUserTaskId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
@@ -208,7 +208,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
@@ -232,7 +232,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
@@ -258,7 +258,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask({}, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
@@ -286,7 +286,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(restrictedIdentity, processInstanceId, correlationId, userTaskInstanceId, userTaskResult);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
@@ -312,7 +312,7 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskForBadPathTests.processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, processInstanceId, userTaskForBadPathTests.correlationId, userTaskId, userTaskResult);
     });
   }

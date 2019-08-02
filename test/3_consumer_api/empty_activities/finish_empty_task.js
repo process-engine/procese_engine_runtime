@@ -38,7 +38,7 @@ describe(`Consumer API: ${testCase}`, () => {
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
 
     const emptyActivityList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEmptyActivitiesForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
 
     return emptyActivityList.emptyActivities[0];
@@ -53,7 +53,7 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(defaultIdentity, processInstanceId, correlationId, flowNodeInstanceId);
     });
   });
@@ -67,13 +67,13 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(defaultIdentity, processInstanceId, correlationId, flowNodeInstanceId);
     });
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(defaultIdentity, processInstanceId, correlationId, flowNodeInstanceId);
 
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
@@ -92,7 +92,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(defaultIdentity, invalidprocessInstanceId, correlationId, emptyActivityInstanceId);
 
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
@@ -113,7 +113,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(defaultIdentity, processInstanceId, invalidCorrelationId, emptyActivityInstanceId);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
@@ -134,7 +134,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(defaultIdentity, processInstanceId, correlationId, invalidManualTaskId);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
@@ -154,7 +154,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity({}, processInstanceId, correlationId, emptyActivityInstanceId);
 
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
@@ -176,7 +176,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(restrictedIdentity, processInstanceId, correlationId, flowNodeInstanceId);
 
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
@@ -197,7 +197,7 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(emptyActivityForBadPathTests.processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(defaultIdentity, processInstanceId, emptyActivityForBadPathTests.correlationId, emptyActivityId);
     });
   }

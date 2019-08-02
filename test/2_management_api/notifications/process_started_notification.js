@@ -73,13 +73,13 @@ describe('Management API:   Receive Process Started Notification', () => {
       };
 
       const notificationSubscription = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .onProcessStarted(defaultIdentity, notificationReceivedCallback);
 
       // We must await the end of the ProcessInstance to avoid messed up entries in the database.
       const processFinishedCallback = async () => {
         await testFixtureProvider
-          .managementApiClientService
+          .managementApiClient
           .removeSubscription(defaultIdentity, notificationSubscription);
 
         if (!notificationReceived) {
@@ -97,7 +97,7 @@ describe('Management API:   Receive Process Started Notification', () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .onProcessStarted({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
@@ -119,7 +119,7 @@ describe('Management API:   Receive Process Started Notification', () => {
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .onProcessStarted(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
@@ -131,7 +131,7 @@ describe('Management API:   Receive Process Started Notification', () => {
 
     // Remove the subscription
     await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
@@ -154,7 +154,7 @@ describe('Management API:   Receive Process Started Notification', () => {
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .managementApiClientService
+            .managementApiClient
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -164,7 +164,7 @@ describe('Management API:   Receive Process Started Notification', () => {
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .onProcessStarted(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
@@ -183,7 +183,7 @@ describe('Management API:   Receive Process Started Notification', () => {
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .onProcessStarted(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events

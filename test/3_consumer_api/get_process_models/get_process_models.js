@@ -29,7 +29,7 @@ describe('Consumer API:   GET  ->  /processModels', () => {
   it('should return process models through the consumer api', async () => {
 
     const processModelList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getProcessModels(defaultIdentity);
 
     should(processModelList).have.property('processModels');
@@ -51,7 +51,7 @@ describe('Consumer API:   GET  ->  /processModels', () => {
     const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     const processModelList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getProcessModels(restrictedIdentity);
 
     should(processModelList).have.property('processModels');
@@ -71,7 +71,7 @@ describe('Consumer API:   GET  ->  /processModels', () => {
   it('should not return any start events for processes which are not marked as executable', async () => {
 
     const processModelList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getProcessModels(defaultIdentity);
 
     should(processModelList).have.property('processModels');
@@ -95,7 +95,7 @@ describe('Consumer API:   GET  ->  /processModels', () => {
   it('should fail to retrieve a list of process models, when the user is unauthorized', async () => {
     try {
       const processModelList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getProcessModels({});
 
       should.fail(processModelList, undefined, 'This request should have failed!');

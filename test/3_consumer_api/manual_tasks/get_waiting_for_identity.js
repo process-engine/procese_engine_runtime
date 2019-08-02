@@ -39,7 +39,7 @@ describe('ConsumerAPI:   GET  ->  /manual_tasks/own', () => {
   it('should return a Users ManualTasks by his identity', async () => {
 
     const manualTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getWaitingManualTasksByIdentity(defaultIdentity);
 
     should(manualTaskList).have.property('manualTasks');
@@ -66,7 +66,7 @@ describe('ConsumerAPI:   GET  ->  /manual_tasks/own', () => {
     await processInstanceHandler.wait(500);
 
     const manualTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getWaitingManualTasksByIdentity(restrictedIdentity);
 
     should(manualTaskList).have.property('manualTasks');
@@ -78,7 +78,7 @@ describe('ConsumerAPI:   GET  ->  /manual_tasks/own', () => {
 
     try {
       const manualTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getWaitingManualTasksByIdentity({});
 
       should.fail(manualTaskList, undefined, 'This request should have failed!');
@@ -99,7 +99,7 @@ describe('ConsumerAPI:   GET  ->  /manual_tasks/own', () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTaskToCleanupAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishManualTask(defaultIdentity, processInstanceId, manualTaskCorrelation, manualTaskId);
     });
   }

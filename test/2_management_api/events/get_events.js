@@ -42,7 +42,7 @@ describe('Management API:   Get waiting Events', () => {
   it('should return a correlation\'s events by its correlation_id through the consumer api', async () => {
 
     const eventList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getWaitingEventsForCorrelation(defaultIdentity, correlationId);
 
     should(eventList).have.property('events');
@@ -65,7 +65,7 @@ describe('Management API:   Get waiting Events', () => {
   it('should return a list of events for a given process model in a given correlation', async () => {
 
     const eventList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getWaitingEventsForProcessModelInCorrelation(defaultIdentity, processModelIdSignalEvent, correlationId);
 
     should(eventList).have.property('events');
@@ -88,7 +88,7 @@ describe('Management API:   Get waiting Events', () => {
   it('should return a process models events by its process_model_id through the consumer api', async () => {
 
     const eventList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getWaitingEventsForProcessModel(defaultIdentity, processModelIdSignalEvent);
 
     should(eventList).have.property('events');
@@ -113,7 +113,7 @@ describe('Management API:   Get waiting Events', () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .triggerSignalEvent(defaultIdentity, eventNameToTriggerAfterTest, {});
     });
   }

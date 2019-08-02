@@ -45,7 +45,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
   it('should successfully extend the lockout time for the given ExternalTask by five minutes', async () => {
 
     await testFixtureProvider
-      .externalTaskApiClientService
+      .externalTaskApiClient
       .extendLock(defaultIdentity, workerId, externalTask.id, additionalLockTimeInMs);
 
     await assertThatExtensionWasSuccessful(externalTask.id, additionalLockTimeInMs);
@@ -58,7 +58,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .extendLock(defaultIdentity, workerId, invalidExternalTaskId, additionalLockTimeInMs);
 
       should.fail(invalidExternalTaskId, undefined, 'This request should have failed!');
@@ -76,7 +76,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .extendLock(defaultIdentity, invalidworkerId, externalTask.id, additionalLockTimeInMs);
 
       should.fail(externalTask.id, undefined, 'This request should have failed!');
@@ -92,7 +92,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .extendLock({}, workerId, externalTask.id, additionalLockTimeInMs);
 
       should.fail(externalTask.id, undefined, 'This request should have failed!');
@@ -108,7 +108,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .extendLock(restrictedIdentity, workerId, externalTask.id, additionalLockTimeInMs);
 
       should.fail(externalTask.id, undefined, 'This request should have failed!');
@@ -129,7 +129,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     await processInstanceHandler.waitForExternalTaskToBeCreated(topicName);
 
     const availableExternalTasks = await testFixtureProvider
-      .externalTaskApiClientService
+      .externalTaskApiClient
       .fetchAndLockExternalTasks(defaultIdentity, workerId, topicName, 1, 0, baseLockDurationInMs);
 
     should(availableExternalTasks).be.an.Array();
@@ -178,7 +178,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(externalTask.processInstanceId, resolve);
 
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .finishExternalTask(defaultIdentity, workerId, externalTask.id, {});
     });
   }

@@ -32,7 +32,7 @@ describe(`Management API: ${testCase}`, () => {
   it('should return a list of flow node instances', async () => {
 
     const flowNodeInstances = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getFlowNodeInstancesForProcessInstance(testFixtureProvider.identities.defaultUser, processInstanceId);
 
     assertFlowNodeInstances(flowNodeInstances);

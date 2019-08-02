@@ -38,7 +38,7 @@ describe('ManagementAPI:   GET  ->  /process_model/:process_model_id/logs', () =
     const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
 
     const result = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelId, payload, returnOn, startEventId);
 
     should(result).have.property('correlationId');
@@ -50,7 +50,7 @@ describe('ManagementAPI:   GET  ->  /process_model/:process_model_id/logs', () =
   it('should successfully return the logs for a ProcessModel by its processModelId through the ManagementApi.', async () => {
 
     const logs = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getProcessModelLog(testFixtureProvider.identities.defaultUser, processModelId);
 
     should(logs).be.an.Array();
@@ -69,7 +69,7 @@ describe('ManagementAPI:   GET  ->  /process_model/:process_model_id/logs', () =
   it('should successfully return logs for a ProcessModel that match a specific Correlation, if correlationId is provided.', async () => {
 
     const logs = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getProcessModelLog(testFixtureProvider.identities.defaultUser, processModelId, correlationId);
 
     should(logs).be.an.Array();
@@ -91,7 +91,7 @@ describe('ManagementAPI:   GET  ->  /process_model/:process_model_id/logs', () =
     const invalidProcessModelId = 'invalidProcessModelId';
 
     const logs = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getProcessModelLog(testFixtureProvider.identities.defaultUser, invalidProcessModelId);
 
     should(logs).be.an.Array();
@@ -102,7 +102,7 @@ describe('ManagementAPI:   GET  ->  /process_model/:process_model_id/logs', () =
 
     try {
       const logs = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getProcessModelLog({}, processModelId);
 
       should.fail(processModelId, undefined, 'This request should have failed!');

@@ -72,7 +72,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
         userTaskToFinish = userTaskWaitingMessage;
 
         const userTaskList = await testFixtureProvider
-          .consumerApiClientService
+          .consumerApiClient
           .getUserTasksForProcessModel(defaultIdentity, processModelId);
 
         const listContainsUserTaskIdFromMessage = userTaskList.userTasks.some((userTask) => {
@@ -86,7 +86,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
 
       const subscribeOnce = true;
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onUserTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
@@ -109,7 +109,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
 
       const subscribeOnce = true;
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onUserTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       const processFinishedCallback = () => {
@@ -127,7 +127,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onUserTaskForIdentityWaiting({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
@@ -142,7 +142,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onUserTaskForIdentityFinished({}, noopCallback, subscribeOnce);
       should.fail(subscription, undefined, 'This should not have been possible, because the user is unauthorized!');
     } catch (error) {
@@ -164,7 +164,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onUserTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
@@ -176,7 +176,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
 
     // Remove the subscription
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
@@ -198,7 +198,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onUserTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish the first notification
@@ -210,7 +210,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
 
     // Remove the subscription
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     // Publish more events
@@ -233,7 +233,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .consumerApiClientService
+            .consumerApiClient
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -243,7 +243,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onUserTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
@@ -264,7 +264,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
         // after receiving multiple events, this test was successful.
         if (receivedNotifications === 2) {
           await testFixtureProvider
-            .consumerApiClientService
+            .consumerApiClient
             .removeSubscription(defaultIdentity, subscription);
 
           resolve();
@@ -274,7 +274,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
       // Create the subscription
       const subscribeOnce = false;
       const subscription = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .onUserTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
       // Publish a number of events
@@ -294,7 +294,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onUserTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
@@ -306,7 +306,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
     await processInstanceHandler.wait(500);
 
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     const expectedReceivedAmountOfNotifications = 1;
@@ -324,7 +324,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
     // Create the subscription
     const subscribeOnce = false;
     const subscription = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onUserTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
@@ -336,7 +336,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
     await processInstanceHandler.wait(500);
 
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .removeSubscription(defaultIdentity, subscription);
 
     const expectedReceivedAmountOfNotifications = 1;
@@ -353,7 +353,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onUserTaskForIdentityWaiting(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
@@ -379,7 +379,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
     // Create the subscription
     const subscribeOnce = true;
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .onUserTaskForIdentityFinished(defaultIdentity, notificationReceivedCallback, subscribeOnce);
 
     // Publish a number of events
@@ -406,7 +406,7 @@ describe('Consumer API:   Receive identity specific UserTask Notifications', () 
     const userTaskInstanceId = userTaskToFinish.flowNodeInstanceId;
 
     await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .finishUserTask(defaultIdentity, processInstanceId, userTaskToFinish.correlationId, userTaskInstanceId, userTaskResult);
   }
 });

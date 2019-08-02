@@ -42,7 +42,7 @@ describe('Management API: Trigger Messages and Signals', () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .triggerSignalEvent(defaultIdentity, signalEventName, payload);
     });
   });
@@ -61,7 +61,7 @@ describe('Management API: Trigger Messages and Signals', () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .triggerMessageEvent(defaultIdentity, messageEventName, payload);
     });
 

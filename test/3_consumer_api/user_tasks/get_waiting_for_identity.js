@@ -39,7 +39,7 @@ describe('ConsumerAPI:   GET  ->  /user_tasks/own', () => {
   it('should return a Users UserTasks by his identity', async () => {
 
     const userTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getWaitingUserTasksByIdentity(defaultIdentity);
 
     should(userTaskList).have.property('userTasks');
@@ -66,7 +66,7 @@ describe('ConsumerAPI:   GET  ->  /user_tasks/own', () => {
     await processInstanceHandler.wait(500);
 
     const userTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getWaitingUserTasksByIdentity(restrictedIdentity);
 
     should(userTaskList).have.property('userTasks');
@@ -78,7 +78,7 @@ describe('ConsumerAPI:   GET  ->  /user_tasks/own', () => {
 
     try {
       const userTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getWaitingUserTasksByIdentity({});
 
       should.fail(userTaskList, undefined, 'This request should have failed!');
@@ -98,7 +98,7 @@ describe('ConsumerAPI:   GET  ->  /user_tasks/own', () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskToCleanupAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(defaultIdentity, processInstanceId, correlationId, userTaskId);
     });
   }

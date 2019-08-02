@@ -101,7 +101,7 @@ describe('UserTasks - ', () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(identity, 'processInstanceId', correlationId, 'User_Task_1');
     } catch (error) {
       should(error.message).be.match(errorMessage);
@@ -135,13 +135,13 @@ describe('UserTasks - ', () => {
     await new Promise(async (resolve, reject) => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTask.processInstanceId, resolve);
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(identity, userTask.processInstanceId, correlationId, userTask.flowNodeInstanceId, userTaskInput);
     });
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(identity, userTask.processInstanceId, correlationId, userTask.flowNodeInstanceId, userTaskInput);
     } catch (error) {
       should(error.message).be.match(errorMessage);

@@ -53,7 +53,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
       });
 
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .finishExternalTask(defaultIdentity, workerId, externalTaskHappyPathTest.id, samplePayload);
     });
   });
@@ -62,7 +62,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .finishExternalTask(defaultIdentity, workerId, externalTaskHappyPathTest.id, samplePayload);
 
       should.fail(externalTaskHappyPathTest.id, undefined, 'This request should have failed!');
@@ -81,7 +81,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .finishExternalTask(defaultIdentity, workerId, invalidExternalTaskId, samplePayload);
 
       should.fail(invalidExternalTaskId, undefined, 'This request should have failed!');
@@ -99,7 +99,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .finishExternalTask(defaultIdentity, invalidworkerId, externalTaskBadPathTests.id, samplePayload);
 
       should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
@@ -115,7 +115,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .finishExternalTask({}, workerId, externalTaskBadPathTests.id, samplePayload);
 
       should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
@@ -131,7 +131,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .finishExternalTask(restrictedIdentity, workerId, externalTaskBadPathTests.id, samplePayload);
 
       should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
@@ -152,7 +152,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     await processInstanceHandler.waitForExternalTaskToBeCreated(topicName);
 
     const availableExternalTasks = await testFixtureProvider
-      .externalTaskApiClientService
+      .externalTaskApiClient
       .fetchAndLockExternalTasks(defaultIdentity, workerId, topicName, 1, 0, 10000);
 
     should(availableExternalTasks).be.an.Array();
@@ -187,7 +187,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(externalTaskBadPathTests.processInstanceId, resolve);
 
       await testFixtureProvider
-        .externalTaskApiClientService
+        .externalTaskApiClient
         .finishExternalTask(defaultIdentity, workerId, externalTaskBadPathTests.id, samplePayload);
     });
   }

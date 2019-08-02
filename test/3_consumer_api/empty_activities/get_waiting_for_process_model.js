@@ -47,7 +47,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/empty_activ
   it('should return a ProcessModel\'s EmptyActivities by its ProcessModelId through the consumer api', async () => {
 
     const emptyActivityList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEmptyActivitiesForProcessModel(defaultIdentity, processModelId);
 
     should(emptyActivityList).have.property('emptyActivities');
@@ -82,7 +82,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/empty_activ
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       const emptyActivityList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getEmptyActivitiesForProcessModel(defaultIdentity, processModelIdNoEmptyActivities);
 
       should(emptyActivityList).have.property('emptyActivities');
@@ -98,7 +98,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/empty_activ
     const invalidprocessModelId = 'invalidprocessModelId';
 
     const emptyActivityList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEmptyActivitiesForProcessModel(defaultIdentity, invalidprocessModelId);
 
     should(emptyActivityList).have.property('emptyActivities');
@@ -110,7 +110,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/empty_activ
 
     try {
       const emptyActivityList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getEmptyActivitiesForProcessModel({}, processModelId);
 
       should.fail(emptyActivityList, undefined, 'This request should have failed!');
@@ -128,7 +128,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/empty_activ
 
     try {
       const emptyActivityList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getEmptyActivitiesForProcessModel(restrictedIdentity, processModelId);
 
       should.fail(emptyActivityList, undefined, 'This request should have failed!');
@@ -148,7 +148,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/empty_activ
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(emptyActivityToFinishAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(defaultIdentity, processInstanceId, emptyActivityToFinishAfterTest.correlationId, emptyActivityId);
     });
   }

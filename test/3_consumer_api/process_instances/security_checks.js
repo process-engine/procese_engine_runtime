@@ -47,7 +47,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance({}, processModelId, payload, startCallbackType, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
@@ -75,7 +75,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(restrictedIdentity, processModelId, payload, startCallbackType, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
@@ -104,7 +104,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(userIdentity, processModelIdSublanes, payload, startCallbackType, startEventId, endEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
@@ -133,7 +133,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(userIdentity, processModelIdSublanes, payload, startCallbackType, startEventId);
 
       should.fail(result, undefined, 'The user can execute the process even if he has no access rights to the parent lane.');
@@ -163,7 +163,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     try {
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(userIdentity, processModelIdSublanes, payload, startCallbackType, startEventId, endEventId);
 
       should.fail(result, undefined, 'The restricted user should not be able to execute the process inside the sublane');

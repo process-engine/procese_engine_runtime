@@ -47,7 +47,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/manual_task
   it('should return a ProcessModel\'s ManualTasks by its ProcessModelId through the consumer api', async () => {
 
     const manualTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getManualTasksForProcessModel(defaultIdentity, processModelId);
 
     should(manualTaskList).have.property('manualTasks');
@@ -82,7 +82,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/manual_task
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       const manualTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getManualTasksForProcessModel(defaultIdentity, processModelIdNoManualTasks);
 
       should(manualTaskList).have.property('manualTasks');
@@ -98,7 +98,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/manual_task
     const invalidprocessModelId = 'invalidprocessModelId';
 
     const manualTaskList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getManualTasksForProcessModel(defaultIdentity, invalidprocessModelId);
 
     should(manualTaskList).have.property('manualTasks');
@@ -110,7 +110,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/manual_task
 
     try {
       const manualTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getManualTasksForProcessModel({}, processModelId);
 
       should.fail(manualTaskList, undefined, 'This request should have failed!');
@@ -128,7 +128,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/manual_task
 
     try {
       const manualTaskList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getManualTasksForProcessModel(restrictedIdentity, processModelId);
 
       should.fail(manualTaskList, undefined, 'This request should have failed!');
@@ -148,7 +148,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/manual_task
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTaskToFinishAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishManualTask(defaultIdentity, processInstanceId, manualTaskToFinishAfterTest.correlationId, manualTaskId);
     });
   }

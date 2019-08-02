@@ -42,7 +42,7 @@ describe(`Management API: ${testCase}`, () => {
   it('should return a correlation\'s user tasks by its correlationId through the consumer api', async () => {
 
     const userTaskList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getUserTasksForCorrelation(testFixtureProvider.identities.defaultUser, correlationId);
 
     assertUserTaskList(userTaskList);
@@ -51,7 +51,7 @@ describe(`Management API: ${testCase}`, () => {
   it('should return a process model\'s user tasks by its process_model_id through the consumer api', async () => {
 
     const userTaskList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getUserTasksForProcessModel(testFixtureProvider.identities.defaultUser, processModelId);
 
     assertUserTaskList(userTaskList);
@@ -60,7 +60,7 @@ describe(`Management API: ${testCase}`, () => {
   it('should return a process model\'s user tasks by its process_instance_id through the consumer api', async () => {
 
     const userTaskList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getUserTasksForProcessInstance(testFixtureProvider.identities.defaultUser, processInstanceId);
 
     assertUserTaskList(userTaskList);
@@ -69,7 +69,7 @@ describe(`Management API: ${testCase}`, () => {
   it('should return a list of user tasks for a given process model in a given correlation', async () => {
 
     const userTaskList = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getUserTasksForProcessModelInCorrelation(testFixtureProvider.identities.defaultUser, processModelId, correlationId);
 
     userTaskToFinish = userTaskList.userTasks[0];
@@ -93,7 +93,7 @@ describe(`Management API: ${testCase}`, () => {
 
       // Now finish the UserTask.
       await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .finishUserTask(
           testFixtureProvider.identities.defaultUser,
           userTaskToFinish.processInstanceId,

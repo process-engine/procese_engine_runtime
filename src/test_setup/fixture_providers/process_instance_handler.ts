@@ -42,7 +42,7 @@ export class ProcessInstanceHandler {
     const identityToUse = identity || this.testFixtureProvider.identities.defaultUser;
 
     const result = await this.testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .startProcessInstance(identityToUse, processModelId, payload, startCallbackType, startEventId);
 
     return result.correlationId;
@@ -65,7 +65,7 @@ export class ProcessInstanceHandler {
     const identityToUse = identity || this.testFixtureProvider.identities.defaultUser;
 
     const result = await this.testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .startProcessInstance(identityToUse, processModelId, payload, startCallbackType, startEventId);
 
     return result;
@@ -138,7 +138,7 @@ export class ProcessInstanceHandler {
   ): Promise<DataModels.EmptyActivities.EmptyActivityList> {
 
     return this.testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getEmptyActivitiesForCorrelation(identity, correlationId);
   }
 
@@ -153,7 +153,7 @@ export class ProcessInstanceHandler {
   public async getWaitingManualTasksForCorrelationId(identity: IIdentity, correlationId: string): Promise<DataModels.ManualTasks.ManualTaskList> {
 
     return this.testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getManualTasksForCorrelation(identity, correlationId);
   }
 
@@ -168,7 +168,7 @@ export class ProcessInstanceHandler {
   public async getWaitingUserTasksForCorrelationId(identity: IIdentity, correlationId: string): Promise<DataModels.UserTasks.UserTaskList> {
 
     return this.testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getUserTasksForCorrelation(identity, correlationId);
   }
 
@@ -192,7 +192,7 @@ export class ProcessInstanceHandler {
   ): Promise<void> {
 
     await this.testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .finishEmptyActivity(identity, processModelId, correlationId, manualTaskId);
   }
 
@@ -217,7 +217,7 @@ export class ProcessInstanceHandler {
   ): Promise<void> {
 
     await this.testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .finishManualTask(identity, processInstanceId, correlationId, manualTaskInstanceId);
   }
 
@@ -253,7 +253,7 @@ export class ProcessInstanceHandler {
 
     const userTaskResult =
       await this.testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishUserTask(identity, processInstanceId, correlationId, userTaskInstanceId, userTaskInput);
 
     return userTaskResult;

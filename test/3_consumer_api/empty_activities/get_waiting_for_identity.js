@@ -39,7 +39,7 @@ describe('ConsumerAPI:   GET  ->  /empty_activities/own', () => {
   it('should return a Users EmptyActivities by his identity', async () => {
 
     const emptyActivityList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getWaitingEmptyActivitiesByIdentity(defaultIdentity);
 
     should(emptyActivityList).have.property('emptyActivities');
@@ -66,7 +66,7 @@ describe('ConsumerAPI:   GET  ->  /empty_activities/own', () => {
     await processInstanceHandler.wait(500);
 
     const emptyActivityList = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getWaitingEmptyActivitiesByIdentity(restrictedIdentity);
 
     should(emptyActivityList).have.property('emptyActivities');
@@ -78,7 +78,7 @@ describe('ConsumerAPI:   GET  ->  /empty_activities/own', () => {
 
     try {
       const emptyActivityList = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getWaitingEmptyActivitiesByIdentity({});
 
       should.fail(emptyActivityList, undefined, 'This request should have failed!');
@@ -99,7 +99,7 @@ describe('ConsumerAPI:   GET  ->  /empty_activities/own', () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(emptyActivityToCleanupAfterTest.processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishEmptyActivity(defaultIdentity, processInstanceId, emptyActivityCorrelation, emptyActivityId);
     });
   }

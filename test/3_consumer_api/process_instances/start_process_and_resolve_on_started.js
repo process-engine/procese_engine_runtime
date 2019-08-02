@@ -49,7 +49,7 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessInstanceToEnd(payload.correlationId, processModelId, resolve);
 
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(defaultIdentity, processModelId, payload, startCallbackType, startEventId);
 
       should(result).have.property('correlationId');
@@ -67,7 +67,7 @@ describe(`Consumer API: ${testCase}`, () => {
 
     return new Promise(async (resolve, reject) => {
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(defaultIdentity, processModelId, payload, startCallbackType, startEventId);
 
       should(result).have.property('correlationId');
@@ -88,7 +88,7 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessInstanceToEnd(payload.correlationId, processModelId, resolve);
 
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(defaultIdentity, processModelId, payload);
 
       should(re, startEventIdsult).have.property('correlationId');
@@ -113,7 +113,7 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessInstanceToEnd(payload.correlationId, processModelIdSublanes, resolve);
 
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(defaultIdentity, processModelIdSublanes, payload, startCallbackType, startEventId);
 
       should(result).have.property('correlationId');
@@ -139,7 +139,7 @@ describe(`Consumer API: ${testCase}`, () => {
       processInstanceHandler.waitForProcessInstanceToEnd(payload.correlationId, processModelIdSublanes, resolve);
 
       const result = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .startProcessInstance(userIdentity, processModelIdSublanes, payload, startCallbackType, startEventId);
 
       should(result).have.property('correlationId');

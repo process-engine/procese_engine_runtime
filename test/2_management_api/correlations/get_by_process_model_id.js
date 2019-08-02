@@ -38,7 +38,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
     const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
 
     const result = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .startProcessInstance(identity, processModelId, payload, returnOn, startEventId);
 
     should(result).have.property('correlationId');
@@ -50,7 +50,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
   it('should return a correlation by its id for a user through the Management API', async () => {
 
     const correlations = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getCorrelationsByProcessModelId(testFixtureProvider.identities.defaultUser, processModelId);
 
     should(correlations).be.an.Array();
@@ -81,7 +81,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
   it('should return all correlations for a super admin through the management api', async () => {
 
     const correlations = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getCorrelationsByProcessModelId(testFixtureProvider.identities.defaultUser, processModelId);
 
     should(correlations).be.an.Array();
@@ -111,7 +111,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
 
   it('should filter out another user\'s Correlations, if the requesting user is a regular user', async () => {
     const correlationListDefaultUser = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getCorrelationsByProcessModelId(testFixtureProvider.identities.defaultUser, processModelId);
 
     correlationListDefaultUser.forEach((correlation) => {
@@ -121,7 +121,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
     });
 
     const correlationListSecondUser = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getCorrelationsByProcessModelId(testFixtureProvider.identities.secondDefaultUser, processModelId);
 
     correlationListSecondUser.forEach((correlation) => {
@@ -136,7 +136,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
 
     try {
       const correlationList = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getCorrelationsByProcessModelId(testFixtureProvider.identities.defaultUser, invalidProcessModelId);
 
       should.fail(correlationList, undefined, 'This request should have failed!');
@@ -151,7 +151,7 @@ describe('Management API:   GET  ->  /correlations/process_model/:process_model_
   it('should fail to retrieve the Correlations, if the user is unauthorized', async () => {
     try {
       const correlationList = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getCorrelationsByProcessModelId({}, processModelId);
 
       should.fail(correlationList, undefined, 'This request should have failed!');

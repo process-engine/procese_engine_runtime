@@ -32,7 +32,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
   it('should return a process model by its process_model_id through the consumer api', async () => {
 
     const processModel = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getProcessModelById(defaultIdentity, processModelId);
 
     should(processModel).have.property('id');
@@ -45,7 +45,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
   it('should not list any start events, if the retrieved process model is not marked as executable', async () => {
 
     const processModel = await testFixtureProvider
-      .consumerApiClientService
+      .consumerApiClient
       .getProcessModelById(defaultIdentity, processModelIdNonExecutable);
 
     should(processModel).have.property('id');
@@ -59,7 +59,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
 
     try {
       const processModel = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getProcessModelById({}, processModelId);
 
       should.fail(processModel, undefined, 'This request should have failed!');
@@ -77,7 +77,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
 
     try {
       const processModel = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getProcessModelById(restrictedIdentity, processModelId);
 
       should.fail(processModel, undefined, 'This request should have failed!');
@@ -95,7 +95,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
 
     try {
       const processModel = await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .getProcessModelById(defaultIdentity, invalidprocessModelId);
 
       should.fail(processModel, undefined, 'This request should have failed!');

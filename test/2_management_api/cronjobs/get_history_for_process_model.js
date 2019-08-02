@@ -59,7 +59,7 @@ describe('Management API:   GET  ->  /cronjobs/history/process_model/:process_mo
 
   it('should return the cronjob history for the given ProcessModelId, when the user has the required claim', async () => {
     const cronjobHistory = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getCronjobExecutionHistoryForProcessModel(defaultIdentity, processModelId);
 
     should(cronjobHistory).have.length(2);
@@ -69,7 +69,7 @@ describe('Management API:   GET  ->  /cronjobs/history/process_model/:process_mo
 
   it('should return the cronjob history for the given ProcessModelId, when the user is a super admin', async () => {
     const cronjobHistory = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getCronjobExecutionHistoryForProcessModel(superAdmin, processModelId);
 
     should(cronjobHistory).have.length(2);
@@ -81,7 +81,7 @@ describe('Management API:   GET  ->  /cronjobs/history/process_model/:process_mo
     const startEventId = 'TimerStartEvent_2';
 
     const cronjobHistory = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getCronjobExecutionHistoryForProcessModel(defaultIdentity, processModelId, startEventId);
 
     should(cronjobHistory).have.length(1);
@@ -92,7 +92,7 @@ describe('Management API:   GET  ->  /cronjobs/history/process_model/:process_mo
   it('should fail to retrieve a list of cronjobs, when the user is unauthorized', async () => {
     try {
       const results = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getCronjobExecutionHistoryForProcessModel({});
 
       should.fail(results, undefined, 'This request should have failed!');
@@ -107,7 +107,7 @@ describe('Management API:   GET  ->  /cronjobs/history/process_model/:process_mo
   it('should fail to retrieve a list of cronjobs, when the user is forbidden to do so', async () => {
     try {
       const results = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getCronjobExecutionHistoryForProcessModel(restrictedIdentity, processModelId);
 
       should.fail(results, undefined, 'This request should have failed!');

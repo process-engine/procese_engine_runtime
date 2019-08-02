@@ -46,7 +46,7 @@ describe('Manual Tasks - ', () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTask.processInstanceId, resolve);
 
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishManualTask(identity, manualTask.processInstanceId, manualTask.correlationId, manualTask.flowNodeInstanceId);
     });
   });
@@ -61,7 +61,7 @@ describe('Manual Tasks - ', () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishManualTask(identity, 'processInstanceId', correlationId, 'Manual_Task_1');
     } catch (error) {
       should(error.name).be.match(errorName);
@@ -90,7 +90,7 @@ describe('Manual Tasks - ', () => {
     await new Promise(async (resolve, reject) => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTask.processInstanceId, resolve);
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishManualTask(identity, manualTask.processInstanceId, correlationId, manualTask.flowNodeInstanceId);
     });
 
@@ -99,7 +99,7 @@ describe('Manual Tasks - ', () => {
 
     try {
       await testFixtureProvider
-        .consumerApiClientService
+        .consumerApiClient
         .finishManualTask(identity, manualTask.processInstanceId, correlationId, manualTask.flowNodeInstanceId);
     } catch (error) {
       should(error.code).be.equal(errorCode);

@@ -25,7 +25,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id', () => {
   it('should return a ProcessModel by its ProcessModelId through the ManagementAPI, if the User has all required LaneClaims', async () => {
 
     const processModel = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
     should(processModel).have.property('id');
@@ -39,7 +39,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id', () => {
   it('should return a ProcessModel by its ProcessModelId through the ManagementAPI, if the User is a SuperAdmin', async () => {
 
     const processModel = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getProcessModelById(testFixtureProvider.identities.superAdmin, processModelId);
 
     should(processModel).have.property('id');
@@ -56,7 +56,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id', () => {
 
     try {
       const processModel = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getProcessModelById(testFixtureProvider.identities.defaultUser, invalidProcessModelId);
 
       should.fail(processModel, undefined, 'This request should have failed!');
@@ -72,7 +72,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id', () => {
 
     try {
       const processModel = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getProcessModelById({}, processModelId);
 
       should.fail(processModel, undefined, 'This request should have failed!');
@@ -88,7 +88,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id', () => {
 
     try {
       const processModel = await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getProcessModelById(testFixtureProvider.identities.restrictedUser, processModelIdRestricted);
 
       should.fail(processModel, undefined, 'This request should have failed!');

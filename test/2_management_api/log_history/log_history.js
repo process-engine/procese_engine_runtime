@@ -28,7 +28,7 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
 
   it('should sucessfully get an array which contains all logs for a given Correlation', async () => {
     const logs = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getProcessModelLog(defaultIdentity, processModelId, correlationId);
 
     const expectedProperties = [
@@ -50,7 +50,7 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
 
   it('should sucessfully get an array which contains all logs for a given ProcessInstance', async () => {
     const logs = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId);
 
     const expectedProperties = [
@@ -73,7 +73,7 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
   it('should sucessfully get an array which contains all logs for every ProcessInstance of a ProcessModel', async () => {
 
     const logs = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getProcessModelLog(defaultIdentity, processModelId);
 
     const expectedProperties = [
@@ -96,7 +96,7 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
   it('should throw a 401 error when no auth token is provided', async () => {
     try {
       await testFixtureProvider
-        .managementApiClientService
+        .managementApiClient
         .getProcessModelLog({}, processModelId, correlationId);
 
       should.fail(null, null, 'The request should have failed with code 401!');
@@ -112,7 +112,7 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
   it('should return an empty array when trying to get logs for a non existing processModelid', async () => {
     const nonExistingProcessModelId = 'bogus_process_model_id';
     const logs = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getProcessModelLog(defaultIdentity, nonExistingProcessModelId, correlationId);
 
     should(logs).be.an.Array();
@@ -122,7 +122,7 @@ describe('Management API: GET -> /process_model/:processModelId/logs?correlation
   it('should return an empty array when trying to get logs for a non existing correlationId', async () => {
     const nonExistingCorrelationId = 'bogus_correlation_id';
     const logs = await testFixtureProvider
-      .managementApiClientService
+      .managementApiClient
       .getProcessModelLog(defaultIdentity, processModelId, nonExistingCorrelationId);
 
     should(logs).be.an.Array();
