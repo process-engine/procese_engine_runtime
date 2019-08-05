@@ -78,8 +78,6 @@
     "@process-engine/correlations.repository.sequelize": "6.1.0",
     "@process-engine/cronjob_history.service": "1.0.0",
     "@process-engine/cronjob_history.repository.sequelize": "1.0.0",
-    "@process-engine/deployment_api_core": "2.3.0",
-    "@process-engine/deployment_api_http": "1.3.0",
     "@process-engine/external_task_api_core": "1.3.0",
     "@process-engine/external_task_api_http": "1.2.0",
     "@process-engine/external_task.repository.sequelize": "3.0.1",
