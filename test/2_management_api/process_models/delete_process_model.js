@@ -35,6 +35,14 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/delete', (
       .deleteProcessDefinitionsByProcessModelId(testFixtureProvider.identities.superAdmin, processModelId);
   });
 
+  it('should not throw an error when attempting to delete a non-existing ProcessModel', async () => {
+    const nonExistingProcessModelId = 'iwasneverhere';
+
+    await testFixtureProvider
+      .managementApiClient
+      .deleteProcessDefinitionsByProcessModelId(testFixtureProvider.identities.defaultUser, nonExistingProcessModelId);
+  });
+
   it('should fail to retrieve the ProcessModel, after its been deleted', async () => {
     try {
       const processModel = await testFixtureProvider

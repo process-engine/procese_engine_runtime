@@ -11,7 +11,6 @@ import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
 import {IIdentity, TokenBody} from '@essential-projects/iam_contracts';
 
 import {IConsumerApiClient} from '@process-engine/consumer_api_contracts';
-import {IDeploymentApi} from '@process-engine/deployment_api_contracts';
 import {IExternalTaskApi} from '@process-engine/external_task_api_contracts';
 import {ExternalTaskSampleWorker} from '@process-engine/external_task_sample_worker';
 import {IManagementApiClient} from '@process-engine/management_api_contracts';
@@ -23,7 +22,7 @@ import {migrate as executeMigrations} from './test_migrator';
 
 import {configureGlobalRoutes} from '../../global_route_configurator';
 
-const logger: Logger = Logger.createLogger('test:bootstrapper');
+const logger = Logger.createLogger('test:bootstrapper');
 
 export type IdentityCollection = {[userName: string]: IIdentity};
 
@@ -33,7 +32,6 @@ export class TestFixtureProvider {
   private container: InvocationContainer;
 
   private _consumerApiClient: IConsumerApiClient;
-  private _deploymentApiService: IDeploymentApi;
   private _executeProcessService: IExecuteProcessService;
   private _externalTaskApiClient: IExternalTaskApi;
   private _sampleExternalTaskWorker: ExternalTaskSampleWorker;
@@ -58,10 +56,6 @@ export class TestFixtureProvider {
     return this._managementApiClient;
   }
 
-  public get deploymentApiService(): IDeploymentApi {
-    return this._deploymentApiService;
-  }
-
   public get executeProcessService(): IExecuteProcessService {
     return this._executeProcessService;
   }
@@ -83,7 +77,6 @@ export class TestFixtureProvider {
     this._externalTaskApiClient = await this.resolveAsync<IExternalTaskApi>('ExternalTaskApiClient');
     this._managementApiClient = await this.resolveAsync<IManagementApiClient>('ManagementApiClient');
 
-    this._deploymentApiService = await this.resolveAsync<IDeploymentApi>('DeploymentApiService');
     this._executeProcessService = await this.resolveAsync<IExecuteProcessService>('ExecuteProcessService');
     this._processModelUseCases = await this.resolveAsync<IProcessModelUseCases>('ProcessModelUseCases');
 
@@ -93,7 +86,7 @@ export class TestFixtureProvider {
 
   public async tearDown(): Promise<void> {
     this._sampleExternalTaskWorker.stop();
-    const httpExtension: any = await this.container.resolveAsync('HttpExtension');
+    const httpExtension = await this.container.resolveAsync<any>('HttpExtension');
     await httpExtension.close();
     await this.bootstrapper.stop();
   }
@@ -115,12 +108,7 @@ export class TestFixtureProvider {
 
   public readProcessModelFile(processFileName: string): string {
 
-    const bpmnFolderPath: string = this.getBpmnDirectoryPath();
-    const fullFilePath: string = path.join(bpmnFolderPath, `${processFileName}.bpmn`);
-
-    const fileContent: string = fs.readFileSync(fullFilePath, 'utf-8');
-
-    return fileContent;
+    return this.readProcessModelFromFile(processFileName);
   }
 
   public getBpmnDirectoryPath(): string {
@@ -197,7 +185,7 @@ export class TestFixtureProvider {
       expiresIn: 60,
     };
 
-    const encodedToken: string = jsonwebtoken.sign(tokenBody, 'randomkey', signOptions);
+    const encodedToken = jsonwebtoken.sign(tokenBody, 'randomkey', signOptions);
 
     return {
       token: encodedToken,
@@ -206,13 +194,18 @@ export class TestFixtureProvider {
   }
 
   private async registerProcess(processFileName: string): Promise<void> {
+    const xml = this.readProcessModelFromFile(processFileName);
+    await this.processModelUseCases.persistProcessDefinitions(this.identities.defaultUser, processFileName, xml, true);
+  }
 
-    const bpmnDirectoryPath: string = this.getBpmnDirectoryPath();
-    const processFilePath: string = path.join(bpmnDirectoryPath, `${processFileName}.bpmn`);
+  private readProcessModelFromFile(fileName: string): string {
 
-    const processName: string = path.parse(processFileName).name;
+    const bpmnDirectoryPath = this.getBpmnDirectoryPath();
+    const processModelPath = path.join(bpmnDirectoryPath, `${fileName}.bpmn`);
 
-    await this.deploymentApiService.importBpmnFromFile(this.identities.defaultUser, processFilePath, processName, true);
+    const processModelAsXml = fs.readFileSync(processModelPath, 'utf-8');
+
+    return processModelAsXml;
   }
 
 }

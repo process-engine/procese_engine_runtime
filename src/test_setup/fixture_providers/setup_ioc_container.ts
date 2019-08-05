@@ -28,8 +28,6 @@ const iocModuleNames: Array<string> = [
   '@process-engine/metrics.repository.file_system',
   '@process-engine/management_api_core',
   '@process-engine/management_api_http',
-  '@process-engine/deployment_api_core',
-  '@process-engine/deployment_api_http',
   '@process-engine/process_engine_core',
   '@process-engine/process_model.repository.sequelize',
   '@process-engine/process_model.service',

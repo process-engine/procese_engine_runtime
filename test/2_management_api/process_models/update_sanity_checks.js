@@ -4,7 +4,7 @@ const should = require('should');
 
 const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
-describe('Deployment API -> Sanity checks after import', () => {
+describe('Management API -> Sanity checks for ProcessModel update', () => {
 
   let testFixtureProvider;
 
@@ -30,18 +30,16 @@ describe('Deployment API -> Sanity checks after import', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should always return the most up to date version of any ProcessDefinition', async () => {
+  it('should always return the most up to date version of any ProcessModel', async () => {
 
     const existingProcessModel = await testFixtureProvider
-      .processModelUseCases
+      .managementApiClient
       .getProcessModelById(testFixtureProvider.identities.defaultUser, processModelId);
 
     should.exist(existingProcessModel);
     should(existingProcessModel.id).be.equal(processModelId);
 
-    const startEvent = existingProcessModel.flowNodes.find((flowNode) => {
-      return flowNode.constructor.name === 'StartEvent';
-    });
+    const startEvent = existingProcessModel.startEvents[0];
 
     // The difference between the two process models is the ID of their StartEvent.
     // We must be expecting the updated StartEvent ID.
@@ -51,13 +49,13 @@ describe('Deployment API -> Sanity checks after import', () => {
     should(startEvent.id).be.equal(expectedStartEventId, `Received an unexpected StartEventId: ${startEvent.id}`);
   });
 
-  it('should not contain outdated versions of any ProcessDefinitions, when querying all ProcessDefinitions', async () => {
+  it('should not contain outdated versions of any ProcessModels, when querying all ProcessModels', async () => {
 
     const processModels = await testFixtureProvider
-      .processModelUseCases
+      .managementApiClient
       .getProcessModels(testFixtureProvider.identities.defaultUser);
 
-    const occurencesOfTestProcessModel = processModels.filter((item) => {
+    const occurencesOfTestProcessModel = processModels.processModels.filter((item) => {
       return item.id === processModelId;
     });
 
@@ -67,12 +65,13 @@ describe('Deployment API -> Sanity checks after import', () => {
   async function performImport(xml) {
 
     const importPayload = {
-      name: processModelId,
       xml: xml,
       overwriteExisting: true,
     };
 
-    await testFixtureProvider.deploymentApiService.importBpmnFromXml(testFixtureProvider.identities.defaultUser, importPayload);
+    await testFixtureProvider
+      .managementApiClient
+      .updateProcessDefinitionsByName(testFixtureProvider.identities.defaultUser, processModelId, importPayload);
   }
 
 });
