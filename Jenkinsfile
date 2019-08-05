@@ -268,6 +268,11 @@ pipeline {
             }
           }
         }
+        stage('Lint sources') {
+          steps {
+            sh('npm run lint')
+          }
+        }
       }
     }
     stage('Check test results & notify Slack') {
@@ -305,11 +310,6 @@ pipeline {
             echo "Failed to send slack report: $error";
           }
         }
-      }
-    }
-    stage('Lint sources') {
-      steps {
-        sh('npm run lint')
       }
     }
     stage('Commit & tag version') {
@@ -364,7 +364,7 @@ pipeline {
             }
           }
         }
-        stage('Build & Publish Windows Installer') {
+        stage('') {
           stages {
             stage('Build Windows Installer') {
               when {
