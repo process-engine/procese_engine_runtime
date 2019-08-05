@@ -93,8 +93,6 @@ pipeline {
 
           // stash the package.json because it contains the prepared version number
           stash(includes: 'package.json', name: 'package_json')
-
-          stash(includes: 'node_modules/', name: 'npm_package_node_modules')
         }
 
         archiveArtifacts('package-lock.json')
@@ -104,7 +102,6 @@ pipeline {
       parallel {
         stage('Build npm package') {
           steps {
-            unstash('npm_package_node_modules')
             unstash('package_json')
 
             nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
@@ -113,42 +110,6 @@ pipeline {
             }
 
             stash(includes: '*, **/**', name: 'post_build');
-          }
-        }
-        stage('Build Windows Installer') {
-          when {
-            allOf {
-              expression {
-                currentBuild.result == 'SUCCESS'
-              }
-              anyOf {
-                branch "master"
-                branch "beta"
-                branch "develop"
-              }
-            }
-          }
-          agent {
-            label 'windows'
-          }
-          steps {
-            unstash('package_json')
-
-            nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-              bat('node --version')
-
-              sh('npm ci')
-              sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
-
-              bat('npm run build')
-              bat('npm rebuild')
-
-              bat('npm run create-executable-windows')
-            }
-
-            bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
-
-            stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
           }
         }
       }
@@ -348,9 +309,6 @@ pipeline {
     }
     stage('Lint sources') {
       steps {
-        unstash('npm_package_node_modules')
-        unstash('package_json')
-
         sh('npm run lint')
       }
     }
@@ -368,7 +326,6 @@ pipeline {
         }
       }
       steps {
-        unstash('npm_package_node_modules')
         unstash('package_json')
 
         withCredentials([
@@ -399,7 +356,6 @@ pipeline {
             }
           }
           steps {
-            unstash('npm_package_node_modules')
             unstash('post_build')
             unstash('package_json')
 
@@ -408,30 +364,70 @@ pipeline {
             }
           }
         }
-        stage('Publish Windows Installer') {
-          when {
-            allOf {
-              expression {
-                currentBuild.result == 'SUCCESS'
+        stage('Build & Publish Windows Installer') {
+          stages {
+            stage('Build Windows Installer') {
+              when {
+                allOf {
+                  expression {
+                    currentBuild.result == 'SUCCESS'
+                  }
+                  anyOf {
+                    branch "master"
+                    branch "beta"
+                    branch "develop"
+                  }
+                }
               }
-              anyOf {
-                branch "master"
-                branch "beta"
-                branch "develop"
+              agent {
+                label 'windows'
+              }
+              steps {
+                unstash('package_json')
+
+                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                  bat('node --version')
+
+                  sh('npm ci')
+                  sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
+
+                  bat('npm run build')
+                  bat('npm rebuild')
+
+                  bat('npm run create-executable-windows')
+                }
+
+                bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
+
+                stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
               }
             }
-          }
-          steps {
-            unstash('package_json')
-            unstash('windows_installer_results')
+            stage('Publish Windows Installer') {
+              when {
+                allOf {
+                  expression {
+                    currentBuild.result == 'SUCCESS'
+                  }
+                  anyOf {
+                    branch "master"
+                    branch "beta"
+                    branch "develop"
+                  }
+                }
+              }
+              steps {
+                unstash('package_json')
+                unstash('windows_installer_results')
 
-            withCredentials([
-              usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
-            ]) {
-              sh("""
-              node ./node_modules/.bin/ci_tools update-github-release \
-                                                --assets installer/Output/*.exe
-              """);
+                withCredentials([
+                  usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
+                ]) {
+                  sh("""
+                  node ./node_modules/.bin/ci_tools update-github-release \
+                                                    --assets installer/Output/*.exe
+                  """);
+                }
+              }
             }
           }
         }
