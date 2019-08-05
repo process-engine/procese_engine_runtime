@@ -100,17 +100,57 @@ pipeline {
         archiveArtifacts('package-lock.json')
       }
     }
-    stage('Build npm package') {
-      steps {
-        unstash('npm_package_node_modules')
-        unstash('package_json')
+    stage('Build') {
+      parallel {
+        stage('Build npm package') {
+          steps {
+            unstash('npm_package_node_modules')
+            unstash('package_json')
 
-        nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-          sh('npm run build')
-          sh('npm rebuild')
+            nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+              sh('npm run build')
+              sh('npm rebuild')
+            }
+
+            stash(includes: '*, **/**', name: 'post_build');
+          }
         }
+        stage('Build Windows Installer') {
+          when {
+            allOf {
+              expression {
+                currentBuild.result == 'SUCCESS'
+              }
+              anyOf {
+                branch "master"
+                branch "beta"
+                branch "develop"
+              }
+            }
+          }
+          agent {
+            label 'windows'
+          }
+          steps {
+            unstash('package_json')
 
-        stash(includes: '*, **/**', name: 'post_build');
+            nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+              bat('node --version')
+
+              sh('npm ci')
+              sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
+
+              bat('npm run build')
+              bat('npm rebuild')
+
+              bat('npm run create-executable-windows')
+            }
+
+            bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
+
+            stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
+          }
+        }
       }
     }
     stage('Process Engine Runtime Tests') {
@@ -269,7 +309,7 @@ pipeline {
         }
       }
     }
-    stage('Check test results') {
+    stage('Check test results & notify Slack') {
       steps {
         script {
           if (sqlite_tests_failed || postgres_test_failed || mysql_test_failed) {
@@ -288,12 +328,7 @@ pipeline {
             currentBuild.result = 'SUCCESS';
             echo "All tests succeeded!"
           }
-        }
-      }
-    }
-    stage('Send Test Results to Slack') {
-      steps {
-        script {
+
           // Failure to send the slack message should not result in build failure.
           try {
             def mysql_report = create_summary_from_test_log(mysql_testresults, mysql_test_failed, 'MySQL');
@@ -309,42 +344,6 @@ pipeline {
             echo "Failed to send slack report: $error";
           }
         }
-      }
-    }
-    stage('Build Windows Installer') {
-      when {
-        allOf {
-          expression {
-            currentBuild.result == 'SUCCESS'
-          }
-          anyOf {
-            branch "master"
-            branch "beta"
-            branch "develop"
-          }
-        }
-      }
-      agent {
-        label 'windows'
-      }
-      steps {
-        unstash('package_json')
-
-        nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-          bat('node --version')
-
-          sh('npm ci')
-          sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
-
-          bat('npm run build')
-          bat('npm rebuild')
-
-          bat('npm run create-executable-windows')
-        }
-
-        bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
-
-        stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
       }
     }
     stage('Lint sources') {
