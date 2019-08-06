@@ -364,7 +364,7 @@ pipeline {
             }
           }
         }
-        stage('') {
+        stage('Windows') {
           stages {
             stage('Build Windows Installer') {
               when {
@@ -402,7 +402,7 @@ pipeline {
                 stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
               }
             }
-            stage('Publish Windows Installer') {
+            stage('Publish as GitHub Release') {
               when {
                 allOf {
                   expression {
