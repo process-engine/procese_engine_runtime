@@ -4,15 +4,16 @@ const fs = require('fs');
 const path = require('path');
 const should = require('should');
 const uuid = require('node-uuid');
-const TestFixtureProvider = require('../../dist/commonjs/test_setup').TestFixtureProvider;
 
-describe('Metric API Tests - ', () => {
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs/test_setup');
 
+describe.only('Metric API Tests - ', () => {
+
+  let processInstanceHandler;
   let testFixtureProvider;
 
   const processModelId = 'heatmap_sample';
   const correlationId = uuid.v4();
-  const startEventId = 'StartEvent_1';
 
   const expectedMetricsFilePath = path.join('test/metrics', `${processModelId}.met`);
 
@@ -21,6 +22,9 @@ describe('Metric API Tests - ', () => {
     await testFixtureProvider.initializeAndStart();
 
     await testFixtureProvider.importProcessFiles([processModelId]);
+
+    processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
+
     await executeSampleProcess();
   });
 
@@ -34,13 +38,13 @@ describe('Metric API Tests - ', () => {
   });
 
   it('should properly format the metrics when writing them to the file and place each entry to a new line', () => {
-    const metrics = readMetricsFile(expectedMetricsFilePath);
+    const metrics = readMetricsFile();
     const metricsAreProperlyFormatted = Array.isArray(metrics) && metrics.length > 1;
     should(metricsAreProperlyFormatted).be.true('The metrics are not properly separated by a newline!');
   });
 
   it('should write entries for each stage of the ProcessModels execution', () => {
-    const metrics = readMetricsFile(expectedMetricsFilePath);
+    const metrics = readMetricsFile();
 
     const expectedEntryForProcessStarted = /heatmap_sample.*?onProcessStart/i;
     const expectedEntryForProcessFinished = /heatmap_sample.*?onProcessFinish/i;
@@ -58,7 +62,7 @@ describe('Metric API Tests - ', () => {
   });
 
   it('should write entries for each state change of each FlowNodeInstance', () => {
-    const metrics = readMetricsFile(expectedMetricsFilePath);
+    const metrics = readMetricsFile();
 
     const expectedMessages = [
       'onFlowNodeEnter',
@@ -90,17 +94,26 @@ describe('Metric API Tests - ', () => {
 
   async function executeSampleProcess() {
 
-    const initialToken = {
-      user_task: false,
+    const payload = {
+      correlationId: correlationId,
+      inputValues: {
+        user_task: false,
+      },
     };
 
-    await testFixtureProvider.executeProcess(processModelId, startEventId, correlationId, initialToken);
+    return new Promise(async (resolve) => {
+      const result = await testFixtureProvider
+        .managementApiClient
+        .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelId, payload);
+
+      processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
+    });
   }
 
-  function readMetricsFile(filePath) {
+  function readMetricsFile() {
 
     // Don't parse anything here. Leave that to the tests of the logging service, where it belongs.
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const fileContent = fs.readFileSync(expectedMetricsFilePath, 'utf-8');
 
     const metrics = fileContent.split('\n');
 
