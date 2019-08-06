@@ -7,7 +7,7 @@ const uuid = require('node-uuid');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs/test_setup');
 
-describe.only('Metric API Tests - ', () => {
+describe('Metric API Tests - ', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
