@@ -344,15 +344,8 @@ pipeline {
       parallel {
         stage('Publish npm package') {
           when {
-            allOf {
-              expression {
-                currentBuild.result == 'SUCCESS'
-              }
-              anyOf {
-                branch "master"
-                branch "beta"
-                branch "develop"
-              }
+            expression {
+              currentBuild.result == 'SUCCESS'
             }
           }
           steps {
@@ -365,6 +358,18 @@ pipeline {
           }
         }
         stage('Windows') {
+          when {
+            allOf {
+              expression {
+                currentBuild.result == 'SUCCESS'
+              }
+              anyOf {
+                branch "master"
+                branch "beta"
+                branch "develop"
+              }
+            }
+          }
           stages {
             stage('Build Windows Installer') {
               when {
