@@ -385,8 +385,8 @@ pipeline {
                 nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
                   bat('node --version')
 
-                  sh('npm ci')
-                  sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
+                  bat('npm ci')
+                  bat('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
 
                   bat('npm run build')
                   bat('npm rebuild')
