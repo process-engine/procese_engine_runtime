@@ -95,6 +95,13 @@ pipeline {
           stash(includes: 'package.json', name: 'package_json')
         }
 
+        // TODO: variable `full_release_version_string` is still needed for windows release stage
+        script {
+          raw_package_version = sh(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
+          full_release_version_string = raw_package_version.trim()
+          echo("full_release_version_string is '${full_release_version_string}'")
+        }
+
         archiveArtifacts('package-lock.json')
       }
     }
@@ -364,18 +371,6 @@ pipeline {
           }
           stages {
             stage('Build Windows Installer') {
-              when {
-                allOf {
-                  expression {
-                    currentBuild.result == 'SUCCESS'
-                  }
-                  anyOf {
-                    branch "master"
-                    branch "beta"
-                    branch "develop"
-                  }
-                }
-              }
               agent {
                 label 'windows'
               }
@@ -401,18 +396,6 @@ pipeline {
               }
             }
             stage('Publish as GitHub Release') {
-              when {
-                allOf {
-                  expression {
-                    currentBuild.result == 'SUCCESS'
-                  }
-                  anyOf {
-                    branch "master"
-                    branch "beta"
-                    branch "develop"
-                  }
-                }
-              }
               steps {
                 unstash('windows_installer_results')
 
@@ -420,8 +403,7 @@ pipeline {
                   usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
                 ]) {
                   sh("""
-                  node ./node_modules/.bin/ci_tools update-github-release \
-                                                    --assets installer/Output/*.exe
+                  node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe"
                   """);
                 }
               }

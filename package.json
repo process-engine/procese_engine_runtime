@@ -72,7 +72,7 @@
     "@essential-projects/http": "2.4.0",
     "@essential-projects/http_extension": "6.6.1",
     "@essential-projects/timing": "5.0.0",
-    "@process-engine/ci_tools": "2.0.0-alpha.48",
+    "@process-engine/ci_tools": "2.0.0-alpha.49",
     "@process-engine/consumer_api_core": "6.0.0-ce0a8e55-b19",
     "@process-engine/consumer_api_http": "5.0.0-dbf8095b-b16",
     "@process-engine/correlation.service": "1.3.0",
