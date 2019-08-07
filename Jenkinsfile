@@ -13,33 +13,6 @@ def cleanup_workspace() {
   }
 }
 
-def find_available_version_for_publish() {
-
-  def availableVersionFound = false;
-
-  def additionalIndex = 0;
-
-  while (!availableVersionFound) {
-
-    def first_seven_digits_of_git_hash = env.GIT_COMMIT.substring(0, 8);
-    def publish_version = "${package_version}-${first_seven_digits_of_git_hash}-b${env.BUILD_NUMBER}-${additionalIndex}";
-
-    try {
-      echo "Attempting to use version ${publish_version} for publish";
-
-      nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
-        sh('node --version')
-        sh("npm version ${publish_version} --no-git-tag-version")
-      }
-
-      availableVersionFound = true;
-    } catch (Exception error) {
-      additionalIndex++
-      echo "Version ${publish_version} already exists";
-    }
-  }
-}
-
 @NonCPS
 def create_summary_from_test_log(testlog, test_failed, database_type) {
   def passing_regex = /\d+ passing/;
@@ -98,8 +71,6 @@ def slack_send_summary(testlog, test_failed) {
   slackSend(attachments: "[{$color_string, $title_string, $markdown_string, $result_string, $action_string}]");
 }
 
-def npm_install_command = 'npm install --ignore-scripts';
-
 pipeline {
   agent any
   tools {
@@ -111,41 +82,28 @@ pipeline {
   }
 
   stages {
-    stage('prepare') {
+    stage('Prepare version') {
       steps {
-        script {
-          raw_package_version = sh(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
-          package_version = raw_package_version.trim()
-          echo("Package version is '${package_version}'")
-
-          branch = BRANCH_NAME;
-          branch_is_master = branch == 'master';
-          branch_is_develop = branch == 'develop';
-
-          if (branch_is_master) {
-            full_release_version_string = "${package_version}";
-          } else {
-            full_release_version_string = "${package_version}-pre-b${BUILD_NUMBER}";
-          }
-
-          // When building a non master or develop branch the release will be a draft.
-          release_will_be_draft = !branch_is_master && !branch_is_develop;
-
-          def run_clean_install = branch_is_master || branch_is_develop;
-          if (run_clean_install) {
-            npm_install_command = 'npm ci --ignore-scripts'
-          }
-
-          echo("Branch is '${branch}'")
-        }
         nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-          sh('node --version')
-          sh(npm_install_command)
-          sh('npm run build')
-          sh('npm rebuild')
+          sh('npm ci')
+          sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
+
+          // does prepare the version, but not commit it
+          sh('node ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir')
+
+          // stash the package.json because it contains the prepared version number
+          stash(includes: 'package.json', name: 'package_json')
         }
 
         archiveArtifacts('package-lock.json')
+      }
+    }
+    stage('Build npm package') {
+      steps {
+        nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+          sh('npm run build')
+          sh('npm rebuild')
+        }
 
         stash(includes: '*, **/**', name: 'post_build');
       }
@@ -304,9 +262,14 @@ pipeline {
             }
           }
         }
+        stage('Lint sources') {
+          steps {
+            sh('npm run lint')
+          }
+        }
       }
     }
-    stage('Check test results') {
+    stage('Check test results & notify Slack') {
       steps {
         script {
           if (sqlite_tests_failed || postgres_test_failed || mysql_test_failed) {
@@ -325,12 +288,7 @@ pipeline {
             currentBuild.result = 'SUCCESS';
             echo "All tests succeeded!"
           }
-        }
-      }
-    }
-    stage('Send Test Results to Slack') {
-      steps {
-        script {
+
           // Failure to send the slack message should not result in build failure.
           try {
             def mysql_report = create_summary_from_test_log(mysql_testresults, mysql_test_failed, 'MySQL');
@@ -348,133 +306,130 @@ pipeline {
         }
       }
     }
-    stage('Build Windows Installer') {
+    stage('Commit & tag version') {
       when {
-        expression {
-          currentBuild.result == 'SUCCESS' &&
-          (branch_is_master || branch_is_develop)
+        allOf {
+          expression {
+            currentBuild.result == 'SUCCESS'
+          }
+          anyOf {
+            branch "master"
+            branch "beta"
+            branch "develop"
+          }
         }
-      }
-      agent {
-        label 'windows'
       }
       steps {
+        withCredentials([
+          usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
+        ]) {
+          // does not change the version, but commit and tag it
+          sh('node ./node_modules/.bin/ci_tools commit-and-tag-version --only-on-primary-branches')
 
-        nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-          bat('node --version')
-          bat('npm install')
-          bat('npm run build')
-          bat('npm rebuild')
-
-          bat('npm run create-executable-windows')
+          sh('node ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag');
         }
 
-        bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
-
-        stash(includes: "installer\\Output\\Install ProcessEngine Runtime v${full_release_version_string}.exe", name: 'windows_installer_exe')
+        stash(includes: 'package.json', name: 'package_json')
       }
     }
-    stage('publish') {
-      when {
-        expression {
-          currentBuild.result == 'SUCCESS'
+    stage('Publish') {
+      parallel {
+        stage('Publish npm package') {
+          when {
+            expression {
+              currentBuild.result == 'SUCCESS'
+            }
+          }
+          steps {
+            unstash('post_build')
+            unstash('package_json')
+
+            nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
+              sh('node ./node_modules/.bin/ci_tools publish-npm-package --create-tag-from-branch-name')
+            }
+          }
         }
-      }
-      steps {
-        script {
-          def new_commit = env.GIT_PREVIOUS_COMMIT != GIT_COMMIT;
-
-          def previous_build = currentBuild.getPreviousBuild();
-          def previous_build_status = previous_build == null ? null : previous_build.result;
-
-          def should_publish_to_npm = new_commit || previous_build_status != 'SUCCESS';
-
-          echo("Require npm release: ${should_publish_to_npm}")
-
-          if (should_publish_to_npm) {
-            if (branch_is_master) {
-
-              script {
-                // let the build fail if the version does not match normal semver
-                def semver_matcher = package_version =~ /\d+\.\d+\.\d+/;
-                def is_version_not_semver = semver_matcher.matches() == false;
-                if (is_version_not_semver) {
-                  error('Only non RC Versions are allowed in master')
+        stage('Windows') {
+          when {
+            allOf {
+              expression {
+                currentBuild.result == 'SUCCESS'
+              }
+              anyOf {
+                branch "master"
+                branch "beta"
+                branch "develop"
+              }
+            }
+          }
+          stages {
+            stage('Build Windows Installer') {
+              when {
+                allOf {
+                  expression {
+                    currentBuild.result == 'SUCCESS'
+                  }
+                  anyOf {
+                    branch "master"
+                    branch "beta"
+                    branch "develop"
+                  }
                 }
               }
+              agent {
+                label 'windows'
+              }
+              steps {
+                unstash('package_json')
 
-              def raw_package_name = sh(script: 'node --print --eval "require(\'./package.json\').name"', returnStdout: true).trim();
-              def current_published_version = sh(script: "npm show ${raw_package_name} version", returnStdout: true).trim();
-              def version_has_changed = current_published_version != raw_package_version;
-
-              if (version_has_changed) {
                 nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-                  sh('node --version')
-                  sh('npm publish --ignore-scripts')
+                  bat('node --version')
+
+                  sh('npm ci')
+                  sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
+
+                  bat('npm run build')
+                  bat('npm rebuild')
+
+                  bat('npm run create-executable-windows')
                 }
-              } else {
-                println 'Skipping publish for this version. Version unchanged.'
+
+                bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
+
+                stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
               }
-            } else {
-              // when not on master, publish a prerelease based on the package version, the
-              // current git commit and the build number.
-              // the published version gets tagged as the branch name.
-              def publish_tag = branch.replace("/", "~");
+            }
+            stage('Publish as GitHub Release') {
+              when {
+                allOf {
+                  expression {
+                    currentBuild.result == 'SUCCESS'
+                  }
+                  anyOf {
+                    branch "master"
+                    branch "beta"
+                    branch "develop"
+                  }
+                }
+              }
+              steps {
+                unstash('windows_installer_results')
 
-              find_available_version_for_publish();
-
-              nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-                sh('node --version')
-                sh("npm publish --tag ${publish_tag} --ignore-scripts")
+                withCredentials([
+                  usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
+                ]) {
+                  sh("""
+                  node ./node_modules/.bin/ci_tools update-github-release \
+                                                    --assets installer/Output/*.exe
+                  """);
+                }
               }
             }
           }
         }
       }
     }
-    stage('publish github release') {
-      when {
-        expression {
-          currentBuild.result == 'SUCCESS' &&
-          (branch_is_master || branch_is_develop)
-        }
-      }
-      steps {
-        script {
-          def new_commit = env.GIT_PREVIOUS_COMMIT != GIT_COMMIT;
-
-          def previous_build = currentBuild.getPreviousBuild();
-          def previous_build_status = previous_build == null ? null : previous_build.result;
-
-          def should_publish_to_github = new_commit || previous_build_status != 'SUCCESS';
-
-          echo("Require github release: ${should_publish_to_github}")
-
-          if (should_publish_to_github) {
-            unstash('windows_installer_exe')
-
-            withCredentials([
-              usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'RELEASE_GH_TOKEN', usernameVariable: 'RELEASE_GH_USER')
-            ]) {
-              script {
-
-                def create_github_release_command = 'create-github-release ';
-                create_github_release_command += 'process-engine ';
-                create_github_release_command += 'process_engine_runtime ';
-                create_github_release_command += "${full_release_version_string} ";
-                create_github_release_command += "${branch} ";
-                create_github_release_command += "${release_will_be_draft} ";
-                create_github_release_command += "${!branch_is_master} ";
-                create_github_release_command += "installer/Output/Install\\ ProcessEngine\\ Runtime\\ v${full_release_version_string}.exe";
-
-                sh(create_github_release_command);
-              }
-            }
-          }
-        }
-      }
-    }
-    stage('cleanup') {
+    stage('Cleanup') {
       steps {
         script {
           // this stage just exists, so the cleanup-work that happens in the post-script
