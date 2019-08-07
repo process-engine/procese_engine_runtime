@@ -34,7 +34,9 @@ describe(`ManagementAPI: POST  ->  /process_models/:process_model_id/start?start
   it('should start and finish a ProcessInstance with one start event, if the StartEventId is not provided', async () => {
     const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
     const payload = {
-      causeError: false,
+      inputValues: {
+        causeError: false,
+      },
     };
 
     const result = await testFixtureProvider
@@ -48,7 +50,9 @@ describe(`ManagementAPI: POST  ->  /process_models/:process_model_id/start?start
     const startEventId = 'StartEvent_1';
     const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
     const payload = {
-      causeError: false,
+      inputValues: {
+        causeError: false,
+      },
     };
 
     const result = await testFixtureProvider

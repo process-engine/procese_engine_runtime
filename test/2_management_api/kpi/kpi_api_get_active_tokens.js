@@ -3,14 +3,12 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {TestFixtureProvider, ProcessInstanceHandler} = require('../../dist/commonjs/test_setup');
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('KPI API -> Get Active Tokens - ', () => {
+describe('Management API -> Get ActiveTokens - ', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
-
-  let kpiApiService;
 
   let defaultIdentity;
   let processInstanceId;
@@ -28,7 +26,6 @@ describe('KPI API -> Get Active Tokens - ', () => {
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
     defaultIdentity = testFixtureProvider.identities.defaultUser;
-    kpiApiService = await testFixtureProvider.resolveAsync('KpiApiService');
 
     await executeProcessAndWaitForUserTask();
   });
@@ -40,7 +37,9 @@ describe('KPI API -> Get Active Tokens - ', () => {
 
   it('should successfully get the active tokens for a running ProcessModel', async () => {
 
-    const activeTokens = await kpiApiService.getActiveTokensForProcessModel(defaultIdentity, processModelId);
+    const activeTokens = await testFixtureProvider
+      .managementApiClient
+      .getActiveTokensForProcessModel(defaultIdentity, processModelId);
 
     should(activeTokens).be.an.Array();
     const assertionError = `Expected ${JSON.stringify(activeTokens)} to have two entries, but received ${activeTokens.length}!`;
@@ -53,7 +52,9 @@ describe('KPI API -> Get Active Tokens - ', () => {
 
   it('should successfully get the active tokens for a running ProcessModel within a correlation', async () => {
 
-    const activeTokens = await kpiApiService.getActiveTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId);
+    const activeTokens = await testFixtureProvider
+      .managementApiClient
+      .getActiveTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId);
 
     should(activeTokens).be.an.Array();
     const assertionError = `Expected ${JSON.stringify(activeTokens)} to have two entries, but received ${activeTokens.length}!`;
@@ -66,7 +67,9 @@ describe('KPI API -> Get Active Tokens - ', () => {
 
   it('should successfully get the active tokens for a running ProcessInstance', async () => {
 
-    const activeTokens = await kpiApiService.getActiveTokensForProcessInstance(defaultIdentity, processInstanceId);
+    const activeTokens = await testFixtureProvider
+      .managementApiClient
+      .getActiveTokensForProcessInstance(defaultIdentity, processInstanceId);
 
     should(activeTokens).be.an.Array();
     const assertionError = `Expected ${JSON.stringify(activeTokens)} to have two entries, but received ${activeTokens.length}!`;
@@ -79,7 +82,9 @@ describe('KPI API -> Get Active Tokens - ', () => {
 
   it('should successfully get the active tokens for a running FlowNodeInstance', async () => {
 
-    const activeTokens = await kpiApiService.getActiveTokensForFlowNode(defaultIdentity, userTask1Id);
+    const activeTokens = await testFixtureProvider
+      .managementApiClient
+      .getActiveTokensForFlowNode(defaultIdentity, userTask1Id);
 
     should(activeTokens).be.an.Array();
     should(activeTokens.length).be.equal(1);
@@ -95,7 +100,9 @@ describe('KPI API -> Get Active Tokens - ', () => {
     // The tokens of this ProcessInstance should not show as ActiveTokens.
     await executeSampleProcess();
 
-    const activeTokens = await kpiApiService.getActiveTokensForProcessModel(defaultIdentity, processModelId);
+    const activeTokens = await testFixtureProvider
+      .managementApiClient
+      .getActiveTokensForProcessModel(defaultIdentity, processModelId);
 
     should(activeTokens).be.an.Array();
     const assertionError = `Expected ${JSON.stringify(activeTokens)} to have two entries, but received ${activeTokens.length}!`;
@@ -112,7 +119,9 @@ describe('KPI API -> Get Active Tokens - ', () => {
     // The tokens of this ProcessInstance should not show as ActiveTokens.
     await executeSampleProcess();
 
-    const activeTokens = await kpiApiService.getActiveTokensForFlowNode(defaultIdentity, userTask1Id);
+    const activeTokens = await testFixtureProvider
+      .managementApiClient
+      .getActiveTokensForFlowNode(defaultIdentity, userTask1Id);
 
     should(activeTokens).be.an.Array();
     should(activeTokens.length).be.equal(1);
@@ -124,12 +133,11 @@ describe('KPI API -> Get Active Tokens - ', () => {
 
   async function executeSampleProcess() {
 
-    const startEventId = 'StartEvent_1';
     const initialToken = {
       user_task: false,
     };
 
-    await testFixtureProvider.executeProcess(processModelId, startEventId, correlationId, initialToken);
+    await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, correlationId, initialToken);
   }
 
   async function executeProcessAndWaitForUserTask() {
@@ -168,7 +176,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
 
       const userTaskList = await testFixtureProvider
-        .consumerApiClient
+        .managementApiClient
         .getUserTasksForCorrelation(testFixtureProvider.identities.defaultUser, correlationId);
 
       for (const userTask of userTaskList.userTasks) {
@@ -177,7 +185,7 @@ describe('KPI API -> Get Active Tokens - ', () => {
         const userTaskResult = {};
 
         await testFixtureProvider
-          .consumerApiClient
+          .managementApiClient
           .finishUserTask(testFixtureProvider.identities.defaultUser, userTaskProcessInstanceId, correlationId, userTaskInstanceId, userTaskResult);
       }
     });
