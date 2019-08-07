@@ -12,8 +12,6 @@ import {
   ExternalTaskApiInternalAccessor,
 } from '@process-engine/external_task_api_client';
 
-import {ExternalTaskSampleWorker} from '@process-engine/external_task_sample_worker';
-
 import {
   ManagementApiClient,
   ExternalAccessor as ManagementApiExternalAccessor,
@@ -21,8 +19,8 @@ import {
 } from '@process-engine/management_api_client';
 
 import {IamServiceMock} from '../mocks/index';
-
 import {
+  ExternalTaskSampleWorker,
   ParallelGatewayTestService,
   ServiceTaskTestService,
 } from '../test_services/index';
@@ -38,7 +36,7 @@ export function registerInContainer(container: InvocationContainer): void {
   }
 
   container.register('ExternalTaskSampleWorker', ExternalTaskSampleWorker)
-    .dependencies('ExternalTaskApiClient', 'IdentityService')
+    .dependencies('ConsumerApiClient', 'IdentityService')
     .configure('external_task:sample_worker')
     .singleton();
 
@@ -55,6 +53,7 @@ function registerApisWithInternalAccessors(container: InvocationContainer): void
     .dependencies(
       'ConsumerApiEmptyActivityService',
       'ConsumerApiEventService',
+      'ConsumerApiExternalTaskService',
       'ConsumerApiManualTaskService',
       'ConsumerApiNotificationService',
       'ConsumerApiProcessModelService',

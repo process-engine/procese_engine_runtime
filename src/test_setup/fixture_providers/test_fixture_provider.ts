@@ -12,11 +12,11 @@ import {IIdentity, TokenBody} from '@essential-projects/iam_contracts';
 
 import {IConsumerApiClient} from '@process-engine/consumer_api_contracts';
 import {IExternalTaskApi} from '@process-engine/external_task_api_contracts';
-import {ExternalTaskSampleWorker} from '@process-engine/external_task_sample_worker';
 import {IManagementApiClient} from '@process-engine/management_api_contracts';
 import {IExecuteProcessService} from '@process-engine/process_engine_contracts';
 import {IProcessModelUseCases} from '@process-engine/process_model.contracts';
 
+import {ExternalTaskSampleWorker} from '../test_services/external_task_sample_worker';
 import {initializeBootstrapper} from './setup_ioc_container';
 import {migrate as executeMigrations} from './test_migrator';
 
@@ -48,6 +48,8 @@ export class TestFixtureProvider {
     return this._consumerApiClient;
   }
 
+  // DEPRECATED - This client, as well as the endpoints it accesses, will be removed in future versions.
+  // For now, it is still tested, to ensure that ExternalTaskApiClients in use can still function.
   public get externalTaskApiClient(): IExternalTaskApi {
     return this._externalTaskApiClient;
   }
