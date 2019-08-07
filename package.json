@@ -88,7 +88,7 @@
     "@process-engine/logging_api_http": "1.1.0",
     "@process-engine/logging_api_core": "1.1.0",
     "@process-engine/logging.repository.file_system": "1.3.0",
-    "@process-engine/management_api_core": "feature~import_peripheral_apis",
+    "@process-engine/management_api_core": "6.0.0-020a46f9-b26",
     "@process-engine/management_api_http": "5.0.0-450a1201-b19",
     "@process-engine/metrics_api_core": "2.0.0",
     "@process-engine/metrics.repository.file_system": "2.0.0",
