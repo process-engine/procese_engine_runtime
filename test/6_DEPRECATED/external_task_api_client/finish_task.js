@@ -3,9 +3,9 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs/test_setup');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_id/finish', () => {
+describe('DEPRECATED - ExternalTask API Client:  Finish ExternalTask', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
