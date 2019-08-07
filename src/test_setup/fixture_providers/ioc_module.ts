@@ -64,7 +64,7 @@ function registerApisWithInternalAccessors(container: InvocationContainer): void
     .dependencies('ConsumerApiInternalAccessor');
 
   container.register('ExternalTaskApiInternalAccessor', ExternalTaskApiInternalAccessor)
-    .dependencies('ExternalTaskApiService');
+    .dependencies('ConsumerApiExternalTaskService');
 
   container.register('ExternalTaskApiClient', ExternalTaskApiClientService)
     .dependencies('ExternalTaskApiInternalAccessor');
