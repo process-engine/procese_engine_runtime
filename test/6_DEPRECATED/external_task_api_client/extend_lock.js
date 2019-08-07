@@ -16,7 +16,7 @@ describe('DEPRECATED - ExternalTask API Client:  Extend ExternalTask lock', () =
 
   let externalTask;
 
-  const processModelId = 'external_task_sample';
+  const processModelId = 'test_consumer_api_external_task_sample';
   const workerId = 'extend_lock_sample_worker';
   const topicName = 'external_task_sample_topic';
 

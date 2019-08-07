@@ -16,7 +16,7 @@ describe('DEPRECATED - ExternalTask API Client:  Finish ExternalTask', () => {
   let externalTaskHappyPathTest;
   let externalTaskBadPathTests;
 
-  const processModelId = 'external_task_sample';
+  const processModelId = 'test_consumer_api_external_task_sample';
   const workerId = 'finish_task_sample_worker';
   const topicName = 'external_task_sample_topic';
   const samplePayload = {

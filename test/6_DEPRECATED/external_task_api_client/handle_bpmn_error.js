@@ -16,7 +16,7 @@ describe('DEPRECATED - ExternalTask API Client:  ExternalTask BPMN Error', () =>
   let externalTaskHappyPathTest;
   let externalTaskBadPathTests;
 
-  const processModelId = 'external_task_sample';
+  const processModelId = 'test_consumer_api_external_task_sample';
   const workerId = 'handle_bpmn_error_sample_worker';
   const topicName = 'external_task_sample_topic';
   const errorCode = 'Red alert';
