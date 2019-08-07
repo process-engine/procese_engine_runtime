@@ -98,20 +98,14 @@ pipeline {
         archiveArtifacts('package-lock.json')
       }
     }
-    stage('Build') {
-      parallel {
-        stage('Build npm package') {
-          steps {
-            unstash('package_json')
-
-            nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-              sh('npm run build')
-              sh('npm rebuild')
-            }
-
-            stash(includes: '*, **/**', name: 'post_build');
-          }
+    stage('Build npm package') {
+      steps {
+        nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+          sh('npm run build')
+          sh('npm rebuild')
         }
+
+        stash(includes: '*, **/**', name: 'post_build');
       }
     }
     stage('Process Engine Runtime Tests') {
@@ -326,8 +320,6 @@ pipeline {
         }
       }
       steps {
-        unstash('package_json')
-
         withCredentials([
           usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
         ]) {
@@ -421,7 +413,6 @@ pipeline {
                 }
               }
               steps {
-                unstash('package_json')
                 unstash('windows_installer_results')
 
                 withCredentials([
