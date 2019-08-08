@@ -3,9 +3,9 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs/test_setup');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_id/handle_bpmn_error', () => {
+describe('Consumer API:   POST  ->  /external_tasks/:external_task_id/handle_service_error', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -16,10 +16,11 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
   let externalTaskHappyPathTest;
   let externalTaskBadPathTests;
 
-  const processModelId = 'external_task_sample';
-  const workerId = 'handle_bpmn_error_sample_worker';
+  const processModelId = 'test_consumer_api_external_task_sample';
+  const workerId = 'handle_service_error_sample_worker';
   const topicName = 'external_task_sample_topic';
-  const errorCode = 'Red alert';
+  const errorMessage = 'Red alert';
+  const errorDetails = 'Critical error encountered';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -41,21 +42,21 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     await testFixtureProvider.tearDown();
   });
 
-  it('should successfully abort the given ExternalTask with a BPMN Error', async () => {
+  it('should successfully abort the given ExternalTask with a ServiceError', async () => {
 
     await testFixtureProvider
-      .externalTaskApiClient
-      .handleBpmnError(defaultIdentity, workerId, externalTaskHappyPathTest.id, errorCode);
+      .consumerApiClient
+      .handleServiceError(defaultIdentity, workerId, externalTaskHappyPathTest.id, errorMessage, errorDetails);
 
-    await assertThatErrorHandlingWasSuccessful(externalTaskHappyPathTest.id, errorCode);
+    await assertThatErrorHandlingWasSuccessful(externalTaskHappyPathTest.id, errorMessage, errorDetails);
   });
 
   it('should fail to abort the given ExternalTask, if the ExernalTask is already aborted', async () => {
 
     try {
       await testFixtureProvider
-        .externalTaskApiClient
-        .handleBpmnError(defaultIdentity, workerId, externalTaskHappyPathTest.id, errorCode);
+        .consumerApiClient
+        .handleServiceError(defaultIdentity, workerId, externalTaskHappyPathTest.id, errorMessage, errorDetails);
 
       should.fail(externalTaskHappyPathTest.id, undefined, 'This request should have failed!');
     } catch (error) {
@@ -73,8 +74,8 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     try {
       await testFixtureProvider
-        .externalTaskApiClient
-        .handleBpmnError(defaultIdentity, workerId, invalidExternalTaskId, errorCode);
+        .consumerApiClient
+        .handleServiceError(defaultIdentity, workerId, invalidExternalTaskId, errorMessage, errorDetails);
 
       should.fail(invalidExternalTaskId, undefined, 'This request should have failed!');
     } catch (error) {
@@ -85,14 +86,14 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     }
   });
 
-  it('should fail to abort the given ExternalTask, if the ExternalTask is locked for another worker', async () => {
+  it('should fail to to abort the given ExternalTask, if the ExternalTask is locked for another worker', async () => {
 
     const invalidworkerId = 'some_other_work';
 
     try {
       await testFixtureProvider
-        .externalTaskApiClient
-        .handleBpmnError(defaultIdentity, invalidworkerId, externalTaskBadPathTests.id, errorCode);
+        .consumerApiClient
+        .handleServiceError(defaultIdentity, invalidworkerId, externalTaskBadPathTests.id, errorMessage, errorDetails);
 
       should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
     } catch (error) {
@@ -103,12 +104,12 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     }
   });
 
-  it('should fail to abort the given ExternalTask, when the user is unauthorized', async () => {
+  it('should fail to to abort the given ExternalTask, when the user is unauthorized', async () => {
 
     try {
       await testFixtureProvider
-        .externalTaskApiClient
-        .handleBpmnError({}, workerId, externalTaskBadPathTests.id, errorCode);
+        .consumerApiClient
+        .handleServiceError({}, workerId, externalTaskBadPathTests.id, errorMessage, errorDetails);
 
       should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
     } catch (error) {
@@ -119,12 +120,12 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     }
   });
 
-  it('should fail to abort the given ExternalTask, when the user is forbidden to access ExternalTasks', async () => {
+  it('should fail to to abort the given ExternalTask, when the user is forbidden to access ExternalTasks', async () => {
 
     try {
       await testFixtureProvider
-        .externalTaskApiClient
-        .handleBpmnError(restrictedIdentity, workerId, externalTaskBadPathTests.id, errorCode);
+        .consumerApiClient
+        .handleServiceError(restrictedIdentity, workerId, externalTaskBadPathTests.id, errorMessage, errorDetails);
 
       should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
     } catch (error) {
@@ -139,12 +140,12 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
     const correlationId = uuid.v4();
 
-    testFixtureProvider.executeProcess(processModelId, 'StartEvent_1', correlationId, {test_type: 'without_payload'});
+    processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, {test_type: 'without_payload'});
 
     await processInstanceHandler.waitForExternalTaskToBeCreated(topicName);
 
     const availableExternalTasks = await testFixtureProvider
-      .externalTaskApiClient
+      .consumerApiClient
       .fetchAndLockExternalTasks(defaultIdentity, workerId, topicName, 1, 0, 10000);
 
     should(availableExternalTasks).be.an.Array();
@@ -166,6 +167,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     should(externalTask.state).be.equal('finished');
     should(externalTask).have.property('error');
     should(externalTask.error.message).be.match(/red alert/i);
+    should(externalTask.error._additionalInformation).be.equal(errorDetails); //eslint-disable-line
 
     should(externalTask).have.property('flowNodeInstanceId');
     should(externalTask).have.property('correlationId');
@@ -179,7 +181,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(externalTaskBadPathTests.processInstanceId, resolve);
 
       await testFixtureProvider
-        .externalTaskApiClient
+        .consumerApiClient
         .finishExternalTask(defaultIdentity, workerId, externalTaskBadPathTests.id, {});
     });
   }

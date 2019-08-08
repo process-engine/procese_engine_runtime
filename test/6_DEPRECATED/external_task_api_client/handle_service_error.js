@@ -3,9 +3,9 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs/test_setup');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_id/finish', () => {
+describe('DEPRECATED - ExternalTask API Client:  ExternalTask Service Error', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -16,12 +16,11 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
   let externalTaskHappyPathTest;
   let externalTaskBadPathTests;
 
-  const processModelId = 'external_task_sample';
-  const workerId = 'finish_task_sample_worker';
+  const processModelId = 'test_consumer_api_external_task_sample';
+  const workerId = 'handle_service_error_sample_worker';
   const topicName = 'external_task_sample_topic';
-  const samplePayload = {
-    result: 'Success!',
-  };
+  const errorMessage = 'Red alert';
+  const errorDetails = 'Critical error encountered';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -43,27 +42,21 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     await testFixtureProvider.tearDown();
   });
 
-  it('should successfully finish the given ExternalTask with the given payload', async () => {
+  it('should successfully abort the given ExternalTask with a ServiceError', async () => {
 
-    return new Promise(async (resolve, reject) => {
+    await testFixtureProvider
+      .externalTaskApiClient
+      .handleServiceError(defaultIdentity, workerId, externalTaskHappyPathTest.id, errorMessage, errorDetails);
 
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(externalTaskHappyPathTest.processInstanceId, async () => {
-        await assertThatFinishingWasSuccessful(externalTaskHappyPathTest.id, samplePayload);
-        resolve();
-      });
-
-      await testFixtureProvider
-        .externalTaskApiClient
-        .finishExternalTask(defaultIdentity, workerId, externalTaskHappyPathTest.id, samplePayload);
-    });
+    await assertThatErrorHandlingWasSuccessful(externalTaskHappyPathTest.id, errorMessage, errorDetails);
   });
 
-  it('should fail to finish the given ExternalTask, if the ExernalTask is already finished', async () => {
+  it('should fail to abort the given ExternalTask, if the ExernalTask is already aborted', async () => {
 
     try {
       await testFixtureProvider
         .externalTaskApiClient
-        .finishExternalTask(defaultIdentity, workerId, externalTaskHappyPathTest.id, samplePayload);
+        .handleServiceError(defaultIdentity, workerId, externalTaskHappyPathTest.id, errorMessage, errorDetails);
 
       should.fail(externalTaskHappyPathTest.id, undefined, 'This request should have failed!');
     } catch (error) {
@@ -74,7 +67,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     }
   });
 
-  it('should fail to finish the given ExternalTask, if the given ExternalTaskId does not exist', async () => {
+  it('should fail to abort the given ExternalTask, if the given ExternalTaskId does not exist', async () => {
 
     // Postgres expects a UUID here, so we can't use a simple random string.
     const invalidExternalTaskId = uuid.v4();
@@ -82,7 +75,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     try {
       await testFixtureProvider
         .externalTaskApiClient
-        .finishExternalTask(defaultIdentity, workerId, invalidExternalTaskId, samplePayload);
+        .handleServiceError(defaultIdentity, workerId, invalidExternalTaskId, errorMessage, errorDetails);
 
       should.fail(invalidExternalTaskId, undefined, 'This request should have failed!');
     } catch (error) {
@@ -93,14 +86,14 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     }
   });
 
-  it('should fail to finish the given ExternalTask, if the ExternalTask is locked for another worker', async () => {
+  it('should fail to to abort the given ExternalTask, if the ExternalTask is locked for another worker', async () => {
 
     const invalidworkerId = 'some_other_work';
 
     try {
       await testFixtureProvider
         .externalTaskApiClient
-        .finishExternalTask(defaultIdentity, invalidworkerId, externalTaskBadPathTests.id, samplePayload);
+        .handleServiceError(defaultIdentity, invalidworkerId, externalTaskBadPathTests.id, errorMessage, errorDetails);
 
       should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
     } catch (error) {
@@ -111,12 +104,12 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     }
   });
 
-  it('should fail to finish the given ExternalTask, when the user is unauthorized', async () => {
+  it('should fail to to abort the given ExternalTask, when the user is unauthorized', async () => {
 
     try {
       await testFixtureProvider
         .externalTaskApiClient
-        .finishExternalTask({}, workerId, externalTaskBadPathTests.id, samplePayload);
+        .handleServiceError({}, workerId, externalTaskBadPathTests.id, errorMessage, errorDetails);
 
       should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
     } catch (error) {
@@ -127,12 +120,12 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     }
   });
 
-  it('should fail to finish the given ExternalTask, when the user is forbidden to access ExternalTasks', async () => {
+  it('should fail to to abort the given ExternalTask, when the user is forbidden to access ExternalTasks', async () => {
 
     try {
       await testFixtureProvider
         .externalTaskApiClient
-        .finishExternalTask(restrictedIdentity, workerId, externalTaskBadPathTests.id, samplePayload);
+        .handleServiceError(restrictedIdentity, workerId, externalTaskBadPathTests.id, errorMessage, errorDetails);
 
       should.fail(externalTaskBadPathTests.id, undefined, 'This request should have failed!');
     } catch (error) {
@@ -161,7 +154,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     return availableExternalTasks[0];
   }
 
-  async function assertThatFinishingWasSuccessful(externalTaskIdToAssert) {
+  async function assertThatErrorHandlingWasSuccessful(externalTaskIdToAssert) {
 
     const externalTaskRepository = await testFixtureProvider.resolveAsync('ExternalTaskRepository');
 
@@ -172,8 +165,9 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
     should(externalTask.workerId).be.equal(workerId);
     should(externalTask.topic).be.equal(topicName);
     should(externalTask.state).be.equal('finished');
-    should(externalTask).have.property('result');
-    should(externalTask.result).be.eql(samplePayload);
+    should(externalTask).have.property('error');
+    should(externalTask.error.message).be.match(/red alert/i);
+    should(externalTask.error._additionalInformation).be.equal(errorDetails); //eslint-disable-line
 
     should(externalTask).have.property('flowNodeInstanceId');
     should(externalTask).have.property('correlationId');
@@ -188,7 +182,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/task/:external_task_i
 
       await testFixtureProvider
         .externalTaskApiClient
-        .finishExternalTask(defaultIdentity, workerId, externalTaskBadPathTests.id, samplePayload);
+        .finishExternalTask(defaultIdentity, workerId, externalTaskBadPathTests.id, {});
     });
   }
 

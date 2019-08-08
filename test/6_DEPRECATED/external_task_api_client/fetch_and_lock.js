@@ -4,9 +4,9 @@ const moment = require('moment');
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs/test_setup');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () => {
+describe('DEPRECATED - ExternalTask API Client:  Fetch and lock ExternalTasks', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -14,7 +14,7 @@ describe('ExternalTask API:   POST  ->  /worker/:worker_id/fetch_and_lock', () =
   let defaultIdentity;
   let restrictedIdentity;
 
-  const processModelId = 'external_task_sample';
+  const processModelId = 'test_consumer_api_external_task_sample';
   const workerId = 'fetch_and_lock_sample_worker';
   const topicName = 'external_task_sample_topic';
   const topicNameWithPayload = 'external_task_sample_topic_with_payload';

@@ -5,7 +5,7 @@
   "host": null,
   "port": null,
   "dialect": "sqlite",
-  "storage": "processengine.sqlite",
+  "storage": "test/sqlite_repositories/cronjob_history.sqlite",
   "supportBigNumbers": true,
   "resetPasswordRequestTimeToLive": 12,
   "logging": false
