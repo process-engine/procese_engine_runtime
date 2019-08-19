@@ -412,6 +412,67 @@ pipeline {
         }
       }
     }
+    stage('Docker') {
+      // when {
+      //   allOf {
+      //     expression {
+      //       currentBuild.result == 'SUCCESS'
+      //     }
+      //     // anyOf {
+      //     //   branch "master"
+      //     // }
+      //   }
+      // }
+      stages {
+        stage('Build Docker') {
+          steps {
+            script {
+              def docker_image_name = '5minds/process_engine_runtime';
+              def docker_node_version = '10-alpine';
+
+              def process_engine_version = full_release_version_string
+
+              def full_image_name = "${docker_image_name}:${process_engine_version}";
+
+              sh("docker build --build-arg NODE_IMAGE_VERSION=${docker_node_version} \
+                              --build-arg PROCESS_ENGINE_VERSION=${process_engine_version} \
+                              --no-cache \
+                              --tag ${full_image_name} .");
+
+
+
+              // def docker_image = docker.image(full_image_name);
+            }
+          }
+        }
+        stage('Publish Docker') {
+          steps {
+            script {
+              try {
+                // withDockerRegistry([ credentialsId: "5mio-docker-hub-username-and-password" ]) {
+
+                //   docker_image.push("${node_version}-${BRANCH_NAME}");
+
+                //   if (branch_is_master) {
+                //     docker_image.push("${node_version}-latest");
+
+                //     if (node_version == NODE_VERSION_FOR_LATEST_TAG) {
+                //       docker_image.push('latest');
+                //     }
+                //   }
+
+                //   if (node_version == NODE_VERSION_FOR_LATEST_TAG) {
+                //     docker_image.push(BRANCH_NAME);
+                //   }
+                // }
+              } finally {
+                sh("docker rmi ${full_image_name} || true");
+              }
+            }
+          }
+        }
+      }
+    }
     stage('Cleanup') {
       steps {
         script {
