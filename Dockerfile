@@ -1,6 +1,4 @@
-# Define NodeJS docker image.
-# Here we use alpine as distribution
-ARG NODE_IMAGE_VERSION=10-alpine
+ARG NODE_IMAGE_VERSION
 
 # Create base image
 FROM node:${NODE_IMAGE_VERSION} as base
@@ -8,9 +6,12 @@ RUN apk add --no-cache tini python make g++
 
 # Install process engine
 FROM base as process_engine
+
+ARG PROCESS_ENGINE_VERSION
 # Hack to compromise priviliges error https://github.com/npm/npm/issues/17851
 RUN npm config set user 0 &&\
   npm config set unsafe-perm true
+
 RUN npm install -g @process-engine/process_engine_runtime@${PROCESS_ENGINE_VERSION}
 
 # Create release
