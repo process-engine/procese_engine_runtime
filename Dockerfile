@@ -29,4 +29,4 @@ HEALTHCHECK --interval=5s \
 LABEL de.5minds.version="0.1.0" \
   de.5minds.release-date="2019-01-17" \
   vendor="5Minds IT-Solutions GmbH & Co. KG" \
-  maintainer="Robin Lenz"
+  maintainer="5Minds IT-Solutions GmbH & Co. KG"
