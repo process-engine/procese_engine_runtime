@@ -441,7 +441,7 @@ pipeline {
 
 
 
-              // def docker_image = docker.image(full_image_name);
+              docker_image = docker.image(full_image_name);
             }
           }
         }
@@ -449,22 +449,12 @@ pipeline {
           steps {
             script {
               try {
-                // withDockerRegistry([ credentialsId: "5mio-docker-hub-username-and-password" ]) {
+                def process_engine_version = full_release_version_string
 
-                //   docker_image.push("${node_version}-${BRANCH_NAME}");
+                withDockerRegistry([ credentialsId: "5mio-docker-hub-username-and-password" ]) {
 
-                //   if (branch_is_master) {
-                //     docker_image.push("${node_version}-latest");
-
-                //     if (node_version == NODE_VERSION_FOR_LATEST_TAG) {
-                //       docker_image.push('latest');
-                //     }
-                //   }
-
-                //   if (node_version == NODE_VERSION_FOR_LATEST_TAG) {
-                //     docker_image.push(BRANCH_NAME);
-                //   }
-                // }
+                  docker_image.push("${process_engine_version}");
+                }
               } finally {
                 sh("docker rmi ${full_image_name} || true");
               }
