@@ -436,6 +436,7 @@ pipeline {
 
           sh("docker build --build-arg NODE_IMAGE_VERSION=${docker_node_version} \
                           --build-arg PROCESS_ENGINE_VERSION=${process_engine_version} \
+                          --build-arg BUILD_DATE=${BUILD_TIMESTAMP} \
                           --no-cache \
                           --tag ${full_image_name} .");
 
