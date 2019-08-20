@@ -432,7 +432,7 @@ pipeline {
 
               def process_engine_version = full_release_version_string
 
-              def full_image_name = "${docker_image_name}:${process_engine_version}";
+              full_image_name = "${docker_image_name}:${process_engine_version}";
 
               sh("docker build --build-arg NODE_IMAGE_VERSION=${docker_node_version} \
                               --build-arg PROCESS_ENGINE_VERSION=${process_engine_version} \
