@@ -86,7 +86,7 @@ pipeline {
       steps {
         nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
           sh('npm ci')
-          sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
+          // sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
 
           // does prepare the version, but not commit it
           sh('node ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir')
