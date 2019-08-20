@@ -11,7 +11,6 @@ FROM base as process_engine
 # Hack to compromise priviliges error https://github.com/npm/npm/issues/17851
 RUN npm config set user 0 &&\
   npm config set unsafe-perm true
-ARG PROCESS_ENGINE_VERSION="latest"
 RUN npm install -g @process-engine/process_engine_runtime@${PROCESS_ENGINE_VERSION}
 
 # Create release
