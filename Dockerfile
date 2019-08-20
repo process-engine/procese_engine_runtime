@@ -22,12 +22,10 @@ CMD ["process-engine"]
 VOLUME [ "/root/.config/process_engine_runtime/" ]
 VOLUME [ "/usr/local/lib/node_modules/@process-engine/process_engine_runtime/config/" ]
 
-# Set a health check
 HEALTHCHECK --interval=5s \
   --timeout=5s \
   CMD curl -f http://127.0.0.1:8000 || exit 1
 
-# Thanks for using ProcessEngine Runtime Docker image
 LABEL de.5minds.version="0.1.0" \
   de.5minds.release-date="2019-01-17" \
   vendor="5Minds IT-Solutions GmbH & Co. KG" \
