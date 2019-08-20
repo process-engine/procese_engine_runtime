@@ -413,16 +413,18 @@ pipeline {
       }
     }
     stage('Docker') {
-      // when {
-      //   allOf {
-      //     expression {
-      //       currentBuild.result == 'SUCCESS'
-      //     }
-      //     // anyOf {
-      //     //   branch "master"
-      //     // }
-      //   }
-      // }
+      when {
+        allOf {
+          expression {
+            currentBuild.result == 'SUCCESS'
+          }
+          anyOf {
+            branch "master"
+            branch "beta"
+            branch "develop"
+          }
+        }
+      }
       stages {
         stage('Build Docker') {
           steps {
