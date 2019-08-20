@@ -412,7 +412,7 @@ pipeline {
         }
       }
     }
-    stage('Docker') {
+    stage('Build Docker') {
       when {
         allOf {
           expression {
@@ -425,42 +425,50 @@ pipeline {
           }
         }
       }
-      stages {
-        stage('Build Docker') {
-          steps {
-            script {
-              def docker_image_name = '5minds/process_engine_runtime';
-              def docker_node_version = '10-alpine';
+      steps {
+        script {
+          def docker_image_name = '5minds/process_engine_runtime';
+          def docker_node_version = '10-alpine';
 
-              def process_engine_version = full_release_version_string
+          def process_engine_version = full_release_version_string
 
-              full_image_name = "${docker_image_name}:${process_engine_version}";
+          full_image_name = "${docker_image_name}:${process_engine_version}";
 
-              sh("docker build --build-arg NODE_IMAGE_VERSION=${docker_node_version} \
-                              --build-arg PROCESS_ENGINE_VERSION=${process_engine_version} \
-                              --no-cache \
-                              --tag ${full_image_name} .");
+          sh("docker build --build-arg NODE_IMAGE_VERSION=${docker_node_version} \
+                          --build-arg PROCESS_ENGINE_VERSION=${process_engine_version} \
+                          --no-cache \
+                          --tag ${full_image_name} .");
 
 
 
-              docker_image = docker.image(full_image_name);
-            }
+          docker_image = docker.image(full_image_name);
+        }
+      }
+    }
+    stage('Publish Docker') {
+      when {
+        allOf {
+          expression {
+            currentBuild.result == 'SUCCESS'
+          }
+          anyOf {
+            branch "master"
+            branch "beta"
+            branch "develop"
           }
         }
-        stage('Publish Docker') {
-          steps {
-            script {
-              try {
-                def process_engine_version = full_release_version_string
+      }
+      steps {
+        script {
+          try {
+            def process_engine_version = full_release_version_string
 
-                withDockerRegistry([ credentialsId: "5mio-docker-hub-username-and-password" ]) {
+            withDockerRegistry([ credentialsId: "5mio-docker-hub-username-and-password" ]) {
 
-                  docker_image.push("${process_engine_version}");
-                }
-              } finally {
-                sh("docker rmi ${full_image_name} || true");
-              }
+              docker_image.push("${process_engine_version}");
             }
+          } finally {
+            sh("docker rmi ${full_image_name} || true");
           }
         }
       }
