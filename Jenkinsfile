@@ -85,7 +85,6 @@ pipeline {
     stage('Prepare version') {
       steps {
         nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-          sh('npm cache clean --force')
           sh('npm ci')
           sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
 
