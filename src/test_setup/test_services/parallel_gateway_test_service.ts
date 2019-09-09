@@ -31,7 +31,6 @@ export class ParallelGatewayTestService {
     logger.info('veryLongRunningFunction has finished');
 
     return 'veryLongRunningFunction has finished';
-
   }
 
   public async secondVeryLongRunningFunction(): Promise<string> {
