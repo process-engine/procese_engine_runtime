@@ -10,8 +10,7 @@ import {Logger} from 'loggerhythm';
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
 import {IIdentity, TokenBody} from '@essential-projects/iam_contracts';
 
-import {IConsumerApiClient} from '@process-engine/consumer_api_contracts';
-import {IExternalTaskApi} from '@process-engine/external_task_api_contracts';
+import {APIs, IConsumerApiClient} from '@process-engine/consumer_api_contracts';
 import {IManagementApiClient} from '@process-engine/management_api_contracts';
 import {IExecuteProcessService} from '@process-engine/process_engine_contracts';
 import {IProcessModelUseCases} from '@process-engine/process_model.contracts';
@@ -33,7 +32,7 @@ export class TestFixtureProvider {
 
   private _consumerApiClient: IConsumerApiClient;
   private _executeProcessService: IExecuteProcessService;
-  private _externalTaskApiClient: IExternalTaskApi;
+  private _externalTaskApiClient: APIs.IExternalTaskConsumerApi;
   private _sampleExternalTaskWorker: ExternalTaskSampleWorker;
   private _managementApiClient: IManagementApiClient;
   private _processModelUseCases: IProcessModelUseCases;
@@ -50,7 +49,7 @@ export class TestFixtureProvider {
 
   // DEPRECATED - This client, as well as the endpoints it accesses, will be removed in future versions.
   // For now, it is still tested, to ensure that ExternalTaskApiClients in use can still function.
-  public get externalTaskApiClient(): IExternalTaskApi {
+  public get externalTaskApiClient(): APIs.IExternalTaskConsumerApi {
     return this._externalTaskApiClient;
   }
 
@@ -76,7 +75,7 @@ export class TestFixtureProvider {
     await this.createMockIdentities();
 
     this._consumerApiClient = await this.resolveAsync<IConsumerApiClient>('ConsumerApiClient');
-    this._externalTaskApiClient = await this.resolveAsync<IExternalTaskApi>('ExternalTaskApiClient');
+    this._externalTaskApiClient = await this.resolveAsync<APIs.IExternalTaskConsumerApi>('ExternalTaskApiClient');
     this._managementApiClient = await this.resolveAsync<IManagementApiClient>('ManagementApiClient');
 
     this._executeProcessService = await this.resolveAsync<IExecuteProcessService>('ExecuteProcessService');

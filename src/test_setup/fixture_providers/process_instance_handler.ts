@@ -3,8 +3,7 @@ import * as should from 'should';
 
 import {EventReceivedCallback, IEventAggregator} from '@essential-projects/event_aggregator_contracts';
 import {IIdentity} from '@essential-projects/iam_contracts';
-import {DataModels} from '@process-engine/consumer_api_contracts';
-import {ExternalTask, IExternalTaskRepository} from '@process-engine/external_task_api_contracts';
+import {DataModels, IExternalTaskRepository} from '@process-engine/consumer_api_contracts';
 import {FlowNodeInstance, IFlowNodeInstanceService} from '@process-engine/flow_node_instance.contracts';
 
 import {TestFixtureProvider} from './test_fixture_provider';
@@ -114,7 +113,8 @@ export class ProcessInstanceHandler {
 
       await this.wait(delayBetweenRetriesInMs);
 
-      const externalTasks: Array<ExternalTask<any>> = await externalTaskRepository.fetchAvailableForProcessing(topicName, maxTask);
+      const externalTasks: Array<DataModels.ExternalTask.ExternalTask<any>> =
+        await externalTaskRepository.fetchAvailableForProcessing(topicName, maxTask);
 
       if (externalTasks.length >= 1) {
         return;
