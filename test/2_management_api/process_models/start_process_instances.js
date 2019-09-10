@@ -30,14 +30,14 @@ describe('ManagementAPI: POST  ->  /process_models/:process_model_id/start?start
     await testFixtureProvider.tearDown();
   });
 
-  it('should start and finish a ProcessInstance with one start event, if optional parameters are not provided', async () => {
-    await testFixtureProvider
-      .managementApiClient
-      .startProcessInstance(defaultIdentity, processModelId);
+  it('should start and finish a ProcessInstance with one start event, if payload is not provided', async () => {
+    const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
 
-    testFixtureProvider.consumerApiClient.onProcessEnded(defaultIdentity, (endEventReachedMessage) => {
-      should(endEventReachedMessage.currentToken).be.eql('process instance started');
-    }, true);
+    const result = await testFixtureProvider
+      .managementApiClient
+      .startProcessInstance(defaultIdentity, processModelId, undefined, returnOn);
+
+    should(result.tokenPayload).be.eql('process instance started');
   });
 
   it('should start and finish a ProcessInstance with one start event, if the StartEventId is not provided', async () => {
