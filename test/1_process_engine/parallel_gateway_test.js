@@ -137,7 +137,7 @@ describe('Parallel Gateway execution', () => {
       .managementApiClient
       .startProcessInstance(defaultIdentity, parallelGatewayFinishTestId, payload, returnOn);
 
-    should(result.tokenPayload).have.size(2, 'There should be two waiting manual tasks');
+    should(result.tokenPayload).have.size(2, 'There should be two entries in the final token payload!');
     should(result.tokenPayload).have.property('ExclusiveGateway1');
     should(result.tokenPayload).have.property('ScriptTask1');
   });
