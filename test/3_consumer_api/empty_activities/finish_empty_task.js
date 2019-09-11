@@ -28,7 +28,6 @@ describe(`Consumer API: ${testCase}`, () => {
   });
 
   after(async () => {
-    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -187,18 +186,4 @@ describe(`Consumer API: ${testCase}`, () => {
       should(error.code).be.equal(expectedErrorCode);
     }
   });
-
-  async function cleanup() {
-
-    return new Promise(async (resolve, reject) => {
-      const processInstanceId = emptyActivityForBadPathTests.processInstanceId;
-      const emptyActivityId = emptyActivityForBadPathTests.flowNodeInstanceId;
-
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(emptyActivityForBadPathTests.processInstanceId, resolve);
-
-      await testFixtureProvider
-        .consumerApiClient
-        .finishEmptyActivity(defaultIdentity, processInstanceId, emptyActivityForBadPathTests.correlationId, emptyActivityId);
-    });
-  }
 });

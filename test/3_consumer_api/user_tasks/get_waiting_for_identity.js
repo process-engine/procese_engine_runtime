@@ -32,7 +32,6 @@ describe('ConsumerAPI:   GET  ->  /user_tasks/own', () => {
   });
 
   after(async () => {
-    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -89,17 +88,4 @@ describe('ConsumerAPI:   GET  ->  /user_tasks/own', () => {
       should(error.message).be.match(expectedErrorMessage);
     }
   });
-
-  async function cleanup() {
-    return new Promise(async (resolve, reject) => {
-      const processInstanceId = userTaskToCleanupAfterTest.processInstanceId;
-      const userTaskId = userTaskToCleanupAfterTest.flowNodeInstanceId;
-
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskToCleanupAfterTest.processInstanceId, resolve);
-
-      await testFixtureProvider
-        .consumerApiClient
-        .finishUserTask(defaultIdentity, processInstanceId, correlationId, userTaskId);
-    });
-  }
 });

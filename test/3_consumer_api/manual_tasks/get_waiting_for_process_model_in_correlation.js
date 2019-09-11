@@ -36,7 +36,6 @@ describe(`Consumer API: ${testCase}`, () => {
   });
 
   after(async () => {
-    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -146,17 +145,4 @@ describe(`Consumer API: ${testCase}`, () => {
       should(error.code).be.equal(expectedErrorCode);
     }
   });
-
-  async function cleanup() {
-    return new Promise(async (resolve, reject) => {
-      const processInstanceId = manualTaskToFinishAfterTest.processInstanceId;
-      const userTaskId = manualTaskToFinishAfterTest.flowNodeInstanceId;
-
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTaskToFinishAfterTest.processInstanceId, resolve);
-
-      await testFixtureProvider
-        .consumerApiClient
-        .finishManualTask(defaultIdentity, processInstanceId, manualTaskToFinishAfterTest.correlationId, userTaskId);
-    });
-  }
 });

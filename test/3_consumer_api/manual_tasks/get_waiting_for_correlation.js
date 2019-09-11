@@ -96,8 +96,6 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
     should(manualTask).have.property('tokenPayload');
     should(manualTask).not.have.property('processInstanceOwner');
     should(manualTask).not.have.property('identity');
-
-    await cleanup(manualTask);
   });
 
   it('should return a list of ManualTasks from a call activity, by the given correlationId through the ConsumerAPI', async () => {
@@ -166,17 +164,4 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/manual_tasks', (
     should(manualTaskList.manualTasks).be.instanceOf(Array);
     should(manualTaskList.manualTasks.length).be.equal(0);
   });
-
-  async function cleanup(manualTask) {
-    return new Promise(async (resolve, reject) => {
-      const processInstanceId = manualTask.processInstanceId;
-      const manualTaskId = manualTask.flowNodeInstanceId;
-
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTask.processInstanceId, resolve);
-
-      await testFixtureProvider
-        .consumerApiClient
-        .finishManualTask(defaultIdentity, processInstanceId, manualTask.correlationId, manualTaskId);
-    });
-  }
 });

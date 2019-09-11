@@ -28,7 +28,6 @@ describe(`Consumer API: ${testCase}`, () => {
   });
 
   after(async () => {
-    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -297,23 +296,4 @@ describe(`Consumer API: ${testCase}`, () => {
       should(error.code).be.equal(expectedErrorCode);
     }
   });
-
-  async function cleanup() {
-
-    return new Promise(async (resolve, reject) => {
-      const processInstanceId = userTaskForBadPathTests.processInstanceId;
-      const userTaskId = userTaskForBadPathTests.flowNodeInstanceId;
-      const userTaskResult = {
-        formFields: {
-          Form_XGSVBgio: true,
-        },
-      };
-
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskForBadPathTests.processInstanceId, resolve);
-
-      await testFixtureProvider
-        .consumerApiClient
-        .finishUserTask(defaultIdentity, processInstanceId, userTaskForBadPathTests.correlationId, userTaskId, userTaskResult);
-    });
-  }
 });

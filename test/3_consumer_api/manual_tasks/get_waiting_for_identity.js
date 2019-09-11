@@ -32,7 +32,6 @@ describe('ConsumerAPI:   GET  ->  /manual_tasks/own', () => {
   });
 
   after(async () => {
-    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -89,18 +88,4 @@ describe('ConsumerAPI:   GET  ->  /manual_tasks/own', () => {
       should(error.code).be.equal(expectedErrorCode);
     }
   });
-
-  async function cleanup() {
-    return new Promise(async (resolve, reject) => {
-      const manualTaskCorrelation = manualTaskToCleanupAfterTest.correlationId;
-      const processInstanceId = manualTaskToCleanupAfterTest.processInstanceId;
-      const manualTaskId = manualTaskToCleanupAfterTest.flowNodeInstanceId;
-
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(manualTaskToCleanupAfterTest.processInstanceId, resolve);
-
-      await testFixtureProvider
-        .consumerApiClient
-        .finishManualTask(defaultIdentity, processInstanceId, manualTaskCorrelation, manualTaskId);
-    });
-  }
 });

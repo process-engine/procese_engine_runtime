@@ -33,7 +33,6 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
   });
 
   after(async () => {
-    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -105,14 +104,4 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/events', () => 
       should(error.message).be.match(expectedErrorMessage);
     }
   });
-
-  async function cleanup() {
-    return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
-
-      await testFixtureProvider
-        .consumerApiClient
-        .triggerSignalEvent(defaultIdentity, eventNameToTriggerAfterTest, {});
-    });
-  }
 });

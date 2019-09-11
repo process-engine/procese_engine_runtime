@@ -37,7 +37,6 @@ describe('Consumer API:   POST  ->  /external_tasks/:external_task_id/handle_bpm
   });
 
   after(async () => {
-    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -173,15 +172,4 @@ describe('Consumer API:   POST  ->  /external_tasks/:external_task_id/handle_bpm
     should(externalTask).have.property('payload');
     should(externalTask).have.property('createdAt');
   }
-
-  async function cleanup() {
-    return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(externalTaskBadPathTests.processInstanceId, resolve);
-
-      await testFixtureProvider
-        .consumerApiClient
-        .finishExternalTask(defaultIdentity, workerId, externalTaskBadPathTests.id, {});
-    });
-  }
-
 });

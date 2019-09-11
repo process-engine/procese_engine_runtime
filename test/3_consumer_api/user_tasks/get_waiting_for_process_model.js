@@ -16,8 +16,6 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
   const processModelId = 'test_consumer_api_usertask';
   const processModelIdNoUserTasks = 'test_consumer_api_usertask_empty';
 
-  let userTaskToFinishAfterTest;
-
   const correlationId = uuid.v4();
 
   before(async () => {
@@ -40,7 +38,6 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
   });
 
   after(async () => {
-    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -56,10 +53,6 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
     should(userTaskList.userTasks.length).be.greaterThan(0);
 
     const userTask = userTaskList.userTasks[0];
-
-    userTaskToFinishAfterTest = userTaskList.userTasks.find((entry) => {
-      return entry.correlationId === correlationId;
-    });
 
     should(userTask).have.property('id');
     should(userTask).have.property('flowNodeInstanceId');
@@ -156,23 +149,4 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/userTasks',
       should(error.message).be.match(expectedErrorMessage);
     }
   });
-
-  async function cleanup() {
-
-    return new Promise(async (resolve, reject) => {
-      const processInstanceId = userTaskToFinishAfterTest.processInstanceId;
-      const userTaskId = userTaskToFinishAfterTest.flowNodeInstanceId;
-      const userTaskResult = {
-        formFields: {
-          Form_XGSVBgio: true,
-        },
-      };
-
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskToFinishAfterTest.processInstanceId, resolve);
-
-      await testFixtureProvider
-        .consumerApiClient
-        .finishUserTask(defaultIdentity, processInstanceId, userTaskToFinishAfterTest.correlationId, userTaskId, userTaskResult);
-    });
-  }
 });

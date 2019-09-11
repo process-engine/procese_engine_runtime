@@ -96,8 +96,6 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/empty_activities
     should(emptyActivity).have.property('tokenPayload');
     should(emptyActivity).not.have.property('processInstanceOwner');
     should(emptyActivity).not.have.property('identity');
-
-    await cleanup(emptyActivity);
   });
 
   it('should return a list of EmptyActivities from a call activity, by the given correlationId through the ConsumerAPI', async () => {
@@ -139,7 +137,6 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/empty_activities
       const result = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelIdNoEmptyActivities);
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(result.correlationId, processModelIdNoEmptyActivities);
 
-      // Wait for the ProcessInstance to finish, so it won't interfere with follow-up tests.
       processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
 
       const emptyActivityList = await testFixtureProvider
@@ -166,17 +163,4 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/empty_activities
     should(emptyActivityList.emptyActivities).be.instanceOf(Array);
     should(emptyActivityList.emptyActivities.length).be.equal(0);
   });
-
-  async function cleanup(emptyActivity) {
-    return new Promise(async (resolve, reject) => {
-      const processInstanceId = emptyActivity.processInstanceId;
-      const emptyActivityId = emptyActivity.flowNodeInstanceId;
-
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(emptyActivity.processInstanceId, resolve);
-
-      await testFixtureProvider
-        .consumerApiClient
-        .finishEmptyActivity(defaultIdentity, processInstanceId, emptyActivity.correlationId, emptyActivityId);
-    });
-  }
 });

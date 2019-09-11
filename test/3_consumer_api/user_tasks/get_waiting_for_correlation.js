@@ -108,8 +108,6 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
     should(formField).have.property('enumValues');
     should(formField).have.property('label');
     should(formField).have.property('defaultValue');
-
-    await cleanup(userTask);
   });
 
   it('should return a list of UserTasks from a call activity, by the given correlationId through the ConsumerAPI', async () => {
@@ -164,7 +162,7 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
 
       const userTaskList = await testFixtureProvider
         .consumerApiClient
-        .getUserTasksForCorrelation(defaultIdentity, correlationId);
+        .getUserTasksForCorrelation(defaultIdentity, result.correlationId);
 
       should(userTaskList).have.property('userTasks');
       should(userTaskList.userTasks).be.instanceOf(Array);
@@ -186,23 +184,4 @@ describe('ConsumerAPI:   GET  ->  /correlations/:correlation_id/user_tasks', () 
     should(userTaskList.userTasks).be.instanceOf(Array);
     should(userTaskList.userTasks.length).be.equal(0);
   });
-
-  async function cleanup(userTaskToFinishAfterTest) {
-
-    return new Promise(async (resolve, reject) => {
-      const processInstanceId = userTaskToFinishAfterTest.processInstanceId;
-      const userTaskId = userTaskToFinishAfterTest.flowNodeInstanceId;
-      const userTaskResult = {
-        formFields: {
-          Form_XGSVBgio: true,
-        },
-      };
-
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTaskToFinishAfterTest.processInstanceId, resolve);
-
-      await testFixtureProvider
-        .consumerApiClient
-        .finishUserTask(defaultIdentity, processInstanceId, userTaskToFinishAfterTest.correlationId, userTaskId, userTaskResult);
-    });
-  }
 });

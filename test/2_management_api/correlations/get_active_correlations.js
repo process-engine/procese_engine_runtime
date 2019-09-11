@@ -13,9 +13,6 @@ describe('Management API:   GET  ->  /correlations/active', () => {
   let secondDefaultIdentity;
   const processModelId = 'user_task_test';
 
-  let processInstance1Data;
-  let processInstance2Data;
-
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
     await testFixtureProvider.initializeAndStart();
@@ -27,13 +24,11 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     defaultIdentity = testFixtureProvider.identities.defaultUser;
     secondDefaultIdentity = testFixtureProvider.identities.secondDefaultUser;
 
-    processInstance1Data = await createActiveCorrelations(defaultIdentity);
-    processInstance2Data = await createActiveCorrelations(secondDefaultIdentity);
+    await createActiveCorrelations(defaultIdentity);
+    await createActiveCorrelations(secondDefaultIdentity);
   });
 
   after(async () => {
-    await cleanup(processInstance1Data, defaultIdentity);
-    await cleanup(processInstance2Data, secondDefaultIdentity);
     await testFixtureProvider.tearDown();
   });
 
@@ -141,29 +136,6 @@ describe('Management API:   GET  ->  /correlations/active', () => {
     await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(result.correlationId, processModelId);
 
     return result;
-  }
-
-  async function cleanup(processInstanceData, identity) {
-
-    await new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceData.processInstanceId, resolve);
-
-      const userTaskList = await testFixtureProvider
-        .managementApiClient
-        .getUserTasksForProcessModelInCorrelation(identity, processModelId, processInstanceData.correlationId);
-
-      const userTaskInput = {
-        formFields: {
-          Sample_Form_Field: 'Hello',
-        },
-      };
-
-      for (const userTask of userTaskList.userTasks) {
-        await testFixtureProvider
-          .managementApiClient
-          .finishUserTask(identity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskInput);
-      }
-    });
   }
 
 });
