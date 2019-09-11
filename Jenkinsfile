@@ -241,20 +241,14 @@ pipeline {
             unstash('post_build');
 
             script {
+              def node_env = 'NODE_ENV=test-sqlite';
+              def api_mode = 'API_ACCESS_TYPE=internal ';
               def junit_report_path = 'JUNIT_REPORT_PATH=process_engine_runtime_integration_tests_sqlite.xml';
-              def config_path = 'CONFIG_PATH=/usr/src/app/config';
-              def api_access_mode = '--env API_ACCESS_TYPE=internal ';
+              def config_path = 'CONFIG_PATH=config';
 
-              def db_storage_folder_path = "$WORKSPACE/process_engine_databases";
-              def db_storage_path_correlation = "process_engine__correlation_repository__storage=$db_storage_folder_path/correlation.sqlite";
-              def db_storage_path_cronjob_history = "process_engine__cronjob_history_repository__storage=$db_storage_folder_path/cronjob_history.sqlite";
-              def db_storage_path_external_task = "process_engine__external_task_repository__storage=$db_storage_folder_path/external_task.sqlite";
-              def db_storage_path_process_model = "process_engine__process_model_repository__storage=$db_storage_folder_path/process_model.sqlite";
-              def db_storage_path_flow_node_instance = "process_engine__flow_node_instance_repository__storage=$db_storage_folder_path/flow_node_instance.sqlite";
+              def node_env_settings = "${node_env} ${api_mode} ${junit_report_path} ${config_path}"
 
-              def db_environment_settings = "jenkinsDbStoragePath=${db_storage_folder_path} ${db_storage_path_cronjob_history} ${db_storage_path_correlation} ${db_storage_path_external_task} ${db_storage_path_process_model} ${db_storage_path_flow_node_instance}";
-
-              def npm_test_command = "node ./node_modules/.bin/cross-env NODE_ENV=test-sqlite JUNIT_REPORT_PATH=process_engine_runtime_integration_tests_sqlite.xml CONFIG_PATH=config API_ACCESS_TYPE=internal ${db_environment_settings} ./node_modules/.bin/mocha -t 20000 test/**/*.js test/**/**/*.js";
+              def npm_test_command = "node ./node_modules/.bin/cross-env ${node_env_settings} ./node_modules/.bin/mocha -t 20000 test/**/*.js test/**/**/*.js";
 
               docker.image("node:${NODE_VERSION_NUMBER}").inside("--env PATH=$PATH:/$WORKSPACE/node_modules/.bin") {
                 sqlite_exit_code = sh(script: "${npm_test_command} --colors --reporter mocha-jenkins-reporter --exit > process_engine_runtime_integration_tests_sqlite.txt", returnStatus: true);
