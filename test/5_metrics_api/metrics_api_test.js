@@ -108,6 +108,9 @@ describe('Metric API Tests - ', () => {
     await testFixtureProvider
       .managementApiClient
       .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelId, payload, returnOn);
+
+    // Metrics are written outside of the main Promise-Chain, so give the backend some time to finish writing the metrics.
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 
   function readMetricsFile() {

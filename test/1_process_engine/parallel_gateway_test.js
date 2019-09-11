@@ -12,9 +12,9 @@ describe('Parallel Gateway execution', () => {
   const startEventId = 'StartEvent_1';
 
   const processModelId = 'parallel_gateway_test';
-  const parallelGatewayFinishTestId = 'parallel_gateway_finish_test';
   const processModelIdUnsupported = 'parallel_gateway_unsupported_test';
   const processModelParallelEmptyActivitiesId = 'empty_activity_test';
+  const processModelParallelJoinGatewayBranchingTest = 'parallel_gateway_finish_test';
   const processModelParallelManualTasksId = 'manual_task_parallel_test';
   const processModelParallelUserTasksId = 'user_task_parallel_test';
 
@@ -28,9 +28,9 @@ describe('Parallel Gateway execution', () => {
       processModelId,
       processModelIdUnsupported,
       processModelParallelEmptyActivitiesId,
+      processModelParallelJoinGatewayBranchingTest,
       processModelParallelManualTasksId,
       processModelParallelUserTasksId,
-      parallelGatewayFinishTestId,
     ];
 
     await testFixtureProvider.importProcessFiles(processDefFileList);
