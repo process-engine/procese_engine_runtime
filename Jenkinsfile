@@ -392,26 +392,27 @@ pipeline {
                 }
 
                 bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
-              }
-            }
-            stage('Publish as GitHub Release') {
-              agent {
-                label 'windows'
-              }
-              steps {
-                withCredentials([
-                  usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
-                ]) {
-                  sh("""
-                  node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe"
-                  """);
-                }
+
+                stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
               }
               post {
                 always {
                   script {
                     cleanup_workspace();
                   }
+                }
+              }
+            }
+            stage('Publish as GitHub Release') {
+              steps {
+                unstash('windows_installer_results')
+
+                withCredentials([
+                  usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
+                ]) {
+                  sh("""
+                  node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe"
+                  """);
                 }
               }
             }
