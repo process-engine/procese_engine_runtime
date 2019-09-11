@@ -262,6 +262,13 @@ pipeline {
               sqlite_tests_failed = sqlite_exit_code > 0;
             }
           }
+          post {
+            always {
+              script {
+                cleanup_workspace();
+              }
+            }
+          }
         }
         stage('Lint sources') {
           steps {
@@ -385,20 +392,26 @@ pipeline {
                 }
 
                 bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
-
-                stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
               }
             }
             stage('Publish as GitHub Release') {
+              agent {
+                label 'windows'
+              }
               steps {
-                unstash('windows_installer_results')
-
                 withCredentials([
                   usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
                 ]) {
                   sh("""
                   node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe"
                   """);
+                }
+              }
+              post {
+                always {
+                  script {
+                    cleanup_workspace();
+                  }
                 }
               }
             }
