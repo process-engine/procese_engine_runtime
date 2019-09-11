@@ -5,6 +5,8 @@ const path = require('path');
 const should = require('should');
 const uuid = require('node-uuid');
 
+const StartCallbackType = require('@process-engine/management_api_contracts').DataModels.ProcessModels.StartCallbackType;
+
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs/test_setup');
 
 describe('Metric API Tests - ', () => {
@@ -25,7 +27,7 @@ describe('Metric API Tests - ', () => {
 
     processInstanceHandler = new ProcessInstanceHandler(testFixtureProvider);
 
-    await executeSampleProcess();
+    await createFinishedProcessInstance();
   });
 
   after(async () => {
@@ -92,7 +94,7 @@ describe('Metric API Tests - ', () => {
     }
   });
 
-  async function executeSampleProcess() {
+  async function createFinishedProcessInstance() {
 
     const payload = {
       correlationId: correlationId,
@@ -101,13 +103,14 @@ describe('Metric API Tests - ', () => {
       },
     };
 
-    return new Promise(async (resolve) => {
-      const result = await testFixtureProvider
-        .managementApiClient
-        .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelId, payload);
+    const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
 
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(result.processInstanceId, resolve);
-    });
+    await testFixtureProvider
+      .managementApiClient
+      .startProcessInstance(testFixtureProvider.identities.defaultUser, processModelId, payload, returnOn);
+
+    // Metrics are written outside of the main Promise-Chain, so give the backend some time to finish writing the metrics.
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 
   function readMetricsFile() {

@@ -1,8 +1,6 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const StartCallbackType = require('@process-engine/management_api_contracts').DataModels.ProcessModels.StartCallbackType;
-
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs/test_setup');
 
 describe('Parallel Gateway execution', () => {
@@ -14,9 +12,9 @@ describe('Parallel Gateway execution', () => {
   const startEventId = 'StartEvent_1';
 
   const processModelId = 'parallel_gateway_test';
-  const parallelGatewayFinishTestId = 'parallel_gateway_finish_test';
   const processModelIdUnsupported = 'parallel_gateway_unsupported_test';
   const processModelParallelEmptyActivitiesId = 'empty_activity_test';
+  const processModelParallelJoinGatewayBranchingTest = 'parallel_gateway_finish_test';
   const processModelParallelManualTasksId = 'manual_task_parallel_test';
   const processModelParallelUserTasksId = 'user_task_parallel_test';
 
@@ -30,9 +28,9 @@ describe('Parallel Gateway execution', () => {
       processModelId,
       processModelIdUnsupported,
       processModelParallelEmptyActivitiesId,
+      processModelParallelJoinGatewayBranchingTest,
       processModelParallelManualTasksId,
       processModelParallelUserTasksId,
-      parallelGatewayFinishTestId,
     ];
 
     await testFixtureProvider.importProcessFiles(processDefFileList);
@@ -125,21 +123,16 @@ describe('Parallel Gateway execution', () => {
     });
   });
 
-  it('should finish parallel gateway by finished flow nodes', async () => {
+  it('should finish a ParallelJoinGateway when each expected incoming FlowNode has been executed at least once', async () => {
 
+    const startEventIdToUse = 'StartEvent_1';
     const correlationId = uuid.v4();
-    const payload = {
-      correlationId: correlationId,
-    };
-    const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
 
-    const result = await testFixtureProvider
-      .managementApiClient
-      .startProcessInstance(defaultIdentity, parallelGatewayFinishTestId, payload, returnOn);
+    const result = await testFixtureProvider.executeProcess(processModelParallelJoinGatewayBranchingTest, startEventIdToUse, correlationId, {});
 
-    should(result.tokenPayload).have.size(2, 'There should be two entries in the final token payload!');
-    should(result.tokenPayload).have.property('ExclusiveGateway1');
-    should(result.tokenPayload).have.property('ScriptTask1');
+    should(Object.keys(result.currentToken)).have.length(2, 'There should be two entries in the final token payload!');
+    should(result.currentToken).have.property('ExclusiveGateway1');
+    should(result.currentToken).have.property('ScriptTask1');
   });
 
   it('should finish two parallel running EmptyActivities', async () => {
