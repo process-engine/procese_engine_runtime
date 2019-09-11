@@ -1,7 +1,7 @@
-'use strict';
-
 const should = require('should');
 const uuid = require('node-uuid');
+
+const StartCallbackType = require('@process-engine/management_api_contracts').DataModels.ProcessModels.StartCallbackType;
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../dist/commonjs/test_setup');
 
@@ -14,6 +14,7 @@ describe('Parallel Gateway execution', () => {
   const startEventId = 'StartEvent_1';
 
   const processModelId = 'parallel_gateway_test';
+  const parallelGatewayFinishTestId = 'parallel_gateway_finish_test';
   const processModelIdUnsupported = 'parallel_gateway_unsupported_test';
   const processModelParallelEmptyActivitiesId = 'empty_activity_test';
   const processModelParallelManualTasksId = 'manual_task_parallel_test';
@@ -31,6 +32,7 @@ describe('Parallel Gateway execution', () => {
       processModelParallelEmptyActivitiesId,
       processModelParallelManualTasksId,
       processModelParallelUserTasksId,
+      parallelGatewayFinishTestId,
     ];
 
     await testFixtureProvider.importProcessFiles(processDefFileList);
@@ -58,7 +60,8 @@ describe('Parallel Gateway execution', () => {
       expectedHistoryEntryForTask2,
       expectedHistoryEntryForTask3,
       expectedHistoryEntryForTokenTestTask,
-      expectedHistoryEntryForSequence3);
+      expectedHistoryEntryForSequence3,
+    );
     should(result.currentToken[expectedHistoryEntryForTask1]).be.equal('longRunningFunction has finished');
     should(result.currentToken[expectedHistoryEntryForTask2]).be.equal('veryLongRunningFunction has finished');
     should(result.currentToken[expectedHistoryEntryForTask3]).be.equal('secondVeryLongRunningFunction has finished');
@@ -120,6 +123,23 @@ describe('Parallel Gateway execution', () => {
           .finishManualTask(defaultIdentity, manualTask.processInstanceId, correlationId, manualTask.flowNodeInstanceId);
       }
     });
+  });
+
+  it('should finish parallel gateway by finished flow nodes', async () => {
+
+    const correlationId = uuid.v4();
+    const payload = {
+      correlationId: correlationId,
+    };
+    const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
+
+    const result = await testFixtureProvider
+      .managementApiClient
+      .startProcessInstance(defaultIdentity, parallelGatewayFinishTestId, payload, returnOn);
+
+    should(result.tokenPayload).have.size(2, 'There should be two entries in the final token payload!');
+    should(result.tokenPayload).have.property('ExclusiveGateway1');
+    should(result.tokenPayload).have.property('ScriptTask1');
   });
 
   it('should finish two parallel running EmptyActivities', async () => {
