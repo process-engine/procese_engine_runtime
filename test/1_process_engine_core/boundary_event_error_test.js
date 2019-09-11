@@ -21,7 +21,7 @@ describe('Error Boundary Event - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should not alter the execution path, if the node instance, to which the event is attached, was executed successfully.', async () => {
+  it('should not alter the execution path, if the decorated FlowNodeInstance was executed successfully.', async () => {
 
     const initialToken = {
       raiseError: false,
@@ -37,7 +37,7 @@ describe('Error Boundary Event - ', () => {
     should(result.currentToken).be.match(expectedTaskResult);
   });
 
-  it('should successfully catch the error, alter the execution path and write the result to the token history.', async () => {
+  it('should alter the execution path, if an error occured in the decorated FlowNodeInstance.', async () => {
 
     const initialToken = {
       raiseError: true,

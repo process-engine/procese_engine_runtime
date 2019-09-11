@@ -58,8 +58,6 @@ describe('Consumer API:   POST  ->  /external_tasks/fetch_and_lock', () => {
 
     const externalTask = availableExternalTasks[0];
 
-    await cleanup(externalTask);
-
     should(externalTask.workerId).be.equal(workerId);
     should(externalTask.topic).be.equal(topicName);
     should(externalTask.state).be.equal('pending');
@@ -91,10 +89,7 @@ describe('Consumer API:   POST  ->  /external_tasks/fetch_and_lock', () => {
     should(availableExternalTasks.length).be.equal(1);
 
     const externalTask = availableExternalTasks[0];
-    console.log(externalTask);
     should(externalTask.payload.currentToken).have.property('test_type');
-
-    await cleanup(externalTask);
 
     should(externalTask.payload).have.property('testProperty');
     should(externalTask.payload.testProperty).be.equal('Test');
@@ -140,15 +135,4 @@ describe('Consumer API:   POST  ->  /external_tasks/fetch_and_lock', () => {
 
     await processInstanceHandler.waitForExternalTaskToBeCreated(targetTopicName);
   }
-
-  async function cleanup(externalTask) {
-    return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(externalTask.processInstanceId, resolve);
-
-      await testFixtureProvider
-        .consumerApiClient
-        .finishExternalTask(defaultIdentity, workerId, externalTask.id, {});
-    });
-  }
-
 });

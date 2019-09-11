@@ -3,6 +3,8 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
+const StartCallbackType = require('@process-engine/management_api_contracts').DataModels.ProcessModels.StartCallbackType;
+
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
 describe('Management API -> Get ActiveTokens - ', () => {
@@ -31,7 +33,6 @@ describe('Management API -> Get ActiveTokens - ', () => {
   });
 
   after(async () => {
-    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -133,11 +134,17 @@ describe('Management API -> Get ActiveTokens - ', () => {
 
   async function executeSampleProcess() {
 
-    const initialToken = {
-      user_task: false,
+    const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
+    const payload = {
+      correlationId: correlationId || uuid.v4(),
+      inputValues: {
+        user_task: false,
+      },
     };
 
-    await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, correlationId, initialToken);
+    await testFixtureProvider
+      .managementApiClient
+      .startProcessInstance(defaultIdentity, processModelId, payload, returnOn);
   }
 
   async function executeProcessAndWaitForUserTask() {
@@ -168,26 +175,5 @@ describe('Management API -> Get ActiveTokens - ', () => {
     should(activeToken).have.property('processInstanceId');
     should(activeToken).have.property('flowNodeInstanceId');
     should(activeToken).have.property('createdAt');
-  }
-
-  async function cleanup() {
-    return new Promise(async (resolve, reject) => {
-
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
-
-      const userTaskList = await testFixtureProvider
-        .managementApiClient
-        .getUserTasksForCorrelation(testFixtureProvider.identities.defaultUser, correlationId);
-
-      for (const userTask of userTaskList.userTasks) {
-        const userTaskProcessInstanceId = userTask.processInstanceId;
-        const userTaskInstanceId = userTask.flowNodeInstanceId;
-        const userTaskResult = {};
-
-        await testFixtureProvider
-          .managementApiClient
-          .finishUserTask(testFixtureProvider.identities.defaultUser, userTaskProcessInstanceId, correlationId, userTaskInstanceId, userTaskResult);
-      }
-    });
   }
 });

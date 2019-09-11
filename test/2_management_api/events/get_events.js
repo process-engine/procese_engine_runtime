@@ -35,7 +35,6 @@ describe('Management API:   Get waiting Events', () => {
   });
 
   after(async () => {
-    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -107,14 +106,4 @@ describe('Management API:   Get waiting Events', () => {
       should(event).have.property('eventName');
     });
   });
-
-  async function cleanup() {
-    return new Promise(async (resolve) => {
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(processInstanceId, resolve);
-
-      await testFixtureProvider
-        .managementApiClient
-        .triggerSignalEvent(defaultIdentity, eventNameToTriggerAfterTest, {});
-    });
-  }
 });

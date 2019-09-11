@@ -40,7 +40,6 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/empty_activ
   });
 
   after(async () => {
-    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -139,18 +138,4 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id/empty_activ
       should(error.code).be.equal(expectedErrorCode);
     }
   });
-
-  async function cleanup() {
-    return new Promise(async (resolve, reject) => {
-      const processInstanceId = emptyActivityToFinishAfterTest.processInstanceId;
-      const emptyActivityId = emptyActivityToFinishAfterTest.flowNodeInstanceId;
-
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(emptyActivityToFinishAfterTest.processInstanceId, resolve);
-
-      await testFixtureProvider
-        .consumerApiClient
-        .finishEmptyActivity(defaultIdentity, processInstanceId, emptyActivityToFinishAfterTest.correlationId, emptyActivityId);
-    });
-  }
-
 });

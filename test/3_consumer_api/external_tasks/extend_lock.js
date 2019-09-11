@@ -38,7 +38,6 @@ describe('Consumer API:   POST  ->  /external_tasks/:external_task_id/extend_loc
   });
 
   after(async () => {
-    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -172,15 +171,4 @@ describe('Consumer API:   POST  ->  /external_tasks/:external_task_id/extend_loc
 
     should(lockExpirationTimeIsLongerThanBefore).be.true();
   }
-
-  async function cleanup() {
-    return new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(externalTask.processInstanceId, resolve);
-
-      await testFixtureProvider
-        .consumerApiClient
-        .finishExternalTask(defaultIdentity, workerId, externalTask.id, {});
-    });
-  }
-
 });

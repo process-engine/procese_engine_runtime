@@ -35,7 +35,6 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
   });
 
   after(async () => {
-    await cleanup();
     await testFixtureProvider.tearDown();
   });
 
@@ -95,32 +94,4 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
       should(error.message).be.match(expectedErrorMessage);
     }
   });
-
-  async function cleanup() {
-
-    const userTaskList = await testFixtureProvider
-      .consumerApiClient
-      .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationId);
-
-    for (const userTask of userTaskList.userTasks) {
-      await finishUserTaskAndWaitForProcessInstanceToEnd(userTask);
-    }
-  }
-
-  async function finishUserTaskAndWaitForProcessInstanceToEnd(userTask) {
-
-    await new Promise(async (resolve, reject) => {
-      processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTask.processInstanceId, resolve);
-
-      const userTaskInput = {
-        formFields: {
-          Sample_Form_Field: 'Hello',
-        },
-      };
-
-      await testFixtureProvider
-        .consumerApiClient
-        .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId, userTaskInput);
-    });
-  }
 });

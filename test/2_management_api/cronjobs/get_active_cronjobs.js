@@ -28,7 +28,6 @@ describe('Management API:   GET  ->  /cronjobs/active', () => {
 
   after(async () => {
     await cronjobService.stop();
-    await disposeProcessModel(processModelId);
     await testFixtureProvider.tearDown();
   });
 
