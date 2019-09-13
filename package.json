@@ -118,7 +118,7 @@
   "devDependencies": {
     "@essential-projects/eslint-config": "^1.0.0",
     "@process-engine/ci_tools": "^2.0.0",
-    "@process-engine/consumer_api_client": "6.1.0-alpha.1",
+    "@process-engine/consumer_api_client": "6.1.0-alpha.2",
     "@process-engine/external_task_api_client": "^1.2.0",
     "@process-engine/management_api_client": "6.1.0-alpha.3",
     "@types/bluebird-global": "^3.5.9",
