@@ -59,7 +59,7 @@ describe('Management API -> Sanity checks for ProcessModel update', () => {
       return item.id === processModelId;
     });
 
-    should(occurencesOfTestProcessModel.length).be.equal(1);
+    should(occurencesOfTestProcessModel).have.a.lengthOf(1);
   });
 
   async function performImport(xml) {

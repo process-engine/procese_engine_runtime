@@ -42,7 +42,7 @@ describe('Consumer API:   POST  ->  /external_tasks/fetch_and_lock', () => {
       .fetchAndLockExternalTasks(defaultIdentity, workerId, topicName, 1, 0, 10000);
 
     should(availableExternalTasks).be.an.Array();
-    should(availableExternalTasks.length).be.equal(0);
+    should(availableExternalTasks).have.a.lengthOf(0);
   });
 
   it('should successfully get a list of ExternalTasks, if there is at least one ExternalTask available', async () => {
@@ -54,7 +54,7 @@ describe('Consumer API:   POST  ->  /external_tasks/fetch_and_lock', () => {
       .fetchAndLockExternalTasks(defaultIdentity, workerId, topicName, 1, 0, 10000);
 
     should(availableExternalTasks).be.an.Array();
-    should(availableExternalTasks.length).be.equal(1);
+    should(availableExternalTasks).have.a.lengthOf(1);
 
     const externalTask = availableExternalTasks[0];
 
@@ -86,9 +86,10 @@ describe('Consumer API:   POST  ->  /external_tasks/fetch_and_lock', () => {
       .fetchAndLockExternalTasks(defaultIdentity, workerId, topicNameWithPayload, 1, 0, 10000);
 
     should(availableExternalTasks).be.an.Array();
-    should(availableExternalTasks.length).be.equal(1);
+    should(availableExternalTasks).have.a.lengthOf(1);
 
     const externalTask = availableExternalTasks[0];
+    console.log(externalTask);
     should(externalTask.payload.currentToken).have.property('test_type');
 
     should(externalTask.payload).have.property('testProperty');
@@ -128,7 +129,6 @@ describe('Consumer API:   POST  ->  /external_tasks/fetch_and_lock', () => {
   });
 
   async function createWaitingExternalTask(testType, targetTopicName) {
-
     const correlationId = uuid.v4();
 
     processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, {test_type: testType});

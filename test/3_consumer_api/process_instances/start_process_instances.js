@@ -1,16 +1,13 @@
-'use strict';
-
 const should = require('should');
 
 const StartCallbackType = require('@process-engine/consumer_api_contracts').DataModels.ProcessModels.StartCallbackType;
 
-const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
+const {TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 const testCase = 'Consumer API:   POST  ->  /process_models/:process_model_id/start?start_callback_type=1&start_event_id=:start_event_id';
 
 describe(`Consumer API: ${testCase}`, () => {
 
-  let processInstanceHandler;
   let testFixtureProvider;
   let defaultIdentity;
 
@@ -32,6 +29,16 @@ describe(`Consumer API: ${testCase}`, () => {
 
   after(async () => {
     await testFixtureProvider.tearDown();
+  });
+
+  it('should start and finish a ProcessInstance with one start event, if the payload is not provided', async () => {
+    const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
+
+    const result = await testFixtureProvider
+      .consumerApiClient
+      .startProcessInstance(defaultIdentity, processModelId, undefined, returnOn);
+
+    should(result.tokenPayload).be.eql('process instance started');
   });
 
   it('should start and finish a ProcessInstance with one start event, if the StartEventId is not provided', async () => {
@@ -88,7 +95,7 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorCode = 404;
       const expectedErrorMessage = /start.*event.*not found/i;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -106,7 +113,7 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorCode = 400;
       const expectedErrorMessage = /multiple.*start.*events/i;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 });

@@ -11,8 +11,8 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
 
   let defaultIdentity;
 
-  const processModelId = 'test_callactivity_notification';
-  const callActivityTargetProcessModelId = 'test_callactivity_notification_target';
+  const processModelId = 'test_consumer_api_callactivity';
+  const callActivityTargetProcessModelId = 'test_consumer_api_callactivity_target';
 
   let correlationId;
 
@@ -50,7 +50,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should send a notification via socket when an Activity is suspended', async () => {
+  it('should send a notification via socket when an Activity is reached', async () => {
 
     correlationId = uuid.v4();
 
@@ -108,7 +108,7 @@ describe('Consumer API:   Receive global Activity Notifications', () => {
     });
   });
 
-  it('should fail to subscribe for the ActivityWaiting notification, if the user is unauthorized', async () => {
+  it('should fail to subscribe for the ActivityReached notification, if the user is unauthorized', async () => {
     try {
       const subscribeOnce = true;
       const subscription = await testFixtureProvider

@@ -4,8 +4,7 @@ const should = require('should');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-const testCase = 'POST -> /process_models/:process_model_id/correlations/:correlation_id/empty_activities/:empty_activity_instance_id/finish';
-describe(`Consumer API: ${testCase}`, () => {
+describe(`Consumer API: FinishEmptyActivity`, () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -78,7 +77,7 @@ describe(`Consumer API: ${testCase}`, () => {
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 404;
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -99,11 +98,11 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorMessage = /does not have an emptyactivity/i;
       const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
-  it('should fail to finish the ManualTask, if the given CorrelationId does not exist', async () => {
+  it('should fail to finish the EmptyActivity, if the given CorrelationId does not exist', async () => {
 
     const invalidCorrelationId = 'invalidCorrelationId';
 
@@ -120,13 +119,13 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorMessage = /correlation.*?invalidCorrelationId.*?does not have an emptyactivity/i;
       const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
-  it('should fail to finish the ManualTask, if the given ManualTaskInstanceId does not exist', async () => {
+  it('should fail to finish the EmptyActivity, if the given EmptyActivityInstanceId does not exist', async () => {
 
-    const invalidManualTaskId = 'invalidManualTaskId';
+    const invalidEmptyActivityId = 'invalidEmptyActivityId';
 
     const processInstanceId = emptyActivityForBadPathTests.processInstanceId;
     const correlationId = emptyActivityForBadPathTests.correlationId;
@@ -134,14 +133,14 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       await testFixtureProvider
         .consumerApiClient
-        .finishEmptyActivity(defaultIdentity, processInstanceId, correlationId, invalidManualTaskId);
+        .finishEmptyActivity(defaultIdentity, processInstanceId, correlationId, invalidEmptyActivityId);
 
       should.fail('unexpectedSuccesResult', undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorMessage = /processinstance.*?in correlation.*?does not have.*?emptyactivity/i;
       const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -161,7 +160,7 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorMessage = /no auth token provided/i;
       const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -183,7 +182,7 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorMessage = /access.*?denied/i;
       const expectedErrorCode = 403;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 });

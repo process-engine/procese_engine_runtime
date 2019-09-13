@@ -3,7 +3,7 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 describe('Management API:   Receive ProcessWithProcessModelIdStarted Notifications', () => {
 
@@ -13,7 +13,7 @@ describe('Management API:   Receive ProcessWithProcessModelIdStarted Notificatio
 
   let defaultIdentity;
 
-  const processModelId = 'test_consumer_api_process_start';
+  const processModelId = 'test_management_api_generic_sample';
 
   const noopCallback = () => {};
 

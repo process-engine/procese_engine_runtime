@@ -13,8 +13,8 @@ describe('Management API:   Receive global Activity Notifications', () => {
 
   let defaultIdentity;
 
-  const processModelId = 'test_callactivity_notification';
-  const callActivityTargetProcessModelId = 'test_callactivity_notification_target';
+  const processModelId = 'test_management_api_callactivity';
+  const callActivityTargetProcessModelId = 'test_management_api_callactivity_target';
 
   let correlationId;
 

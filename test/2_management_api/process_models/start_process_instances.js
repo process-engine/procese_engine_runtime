@@ -1,9 +1,8 @@
-
 const should = require('should');
 
 const StartCallbackType = require('@process-engine/management_api_contracts').DataModels.ProcessModels.StartCallbackType;
 
-const TestFixtureProvider = require('../../../dist/commonjs/test_setup/fixture_providers').TestFixtureProvider;
+const {TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 describe('ManagementAPI: POST  ->  /process_models/:process_model_id/start?start_callback_type=1&start_event_id=:start_event_id', () => {
 
@@ -30,7 +29,7 @@ describe('ManagementAPI: POST  ->  /process_models/:process_model_id/start?start
     await testFixtureProvider.tearDown();
   });
 
-  it('should start and finish a ProcessInstance with one start event, if payload is not provided', async () => {
+  it('should start and finish a ProcessInstance with one start event, if the payload not provided', async () => {
     const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
 
     const result = await testFixtureProvider
@@ -43,9 +42,7 @@ describe('ManagementAPI: POST  ->  /process_models/:process_model_id/start?start
   it('should start and finish a ProcessInstance with one start event, if the StartEventId is not provided', async () => {
     const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
     const payload = {
-      inputValues: {
-        causeError: false,
-      },
+      causeError: false,
     };
 
     const result = await testFixtureProvider
@@ -59,9 +56,7 @@ describe('ManagementAPI: POST  ->  /process_models/:process_model_id/start?start
     const startEventId = 'StartEvent_1';
     const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
     const payload = {
-      inputValues: {
-        causeError: false,
-      },
+      causeError: false,
     };
 
     const result = await testFixtureProvider

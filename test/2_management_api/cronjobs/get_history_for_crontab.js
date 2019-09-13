@@ -5,7 +5,7 @@ const should = require('should');
 
 const {TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API:   GET  ->  /cronjobs/history/crontab/:crontab', () => {
+describe('Management API: GetCronjobExecutionHistoryForCrontab', () => {
 
   let cronjobHistoryRepository;
   let testFixtureProvider;
@@ -13,31 +13,6 @@ describe('Management API:   GET  ->  /cronjobs/history/crontab/:crontab', () => 
   let defaultIdentity;
   let superAdmin;
   let restrictedIdentity;
-
-  const processModelId = 'dummy_process_model_id_1';
-  const processModelId2 = 'dummy_process_model_id_2';
-
-  const fixtures = [{
-    processModelId: processModelId,
-    startEventId: 'TimerStartEvent_1',
-    crontab: '* * 1 1 1',
-    executedAt: moment().subtract(10, 'minutes').toDate(),
-  }, {
-    processModelId: processModelId,
-    startEventId: 'TimerStartEvent_2',
-    crontab: '* * 2 2 2',
-    executedAt: moment().subtract(20, 'minutes').toDate(),
-  }, {
-    processModelId: processModelId2,
-    startEventId: 'TimerStartEvent_1',
-    crontab: '* * 1 1 1',
-    executedAt: moment().subtract(5, 'minutes').toDate(),
-  }, {
-    processModelId: processModelId2,
-    startEventId: 'TimerStartEvent_2',
-    crontab: '* * 4 4 4',
-    executedAt: moment().subtract(25, 'minutes').toDate(),
-  }];
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -48,67 +23,216 @@ describe('Management API:   GET  ->  /cronjobs/history/crontab/:crontab', () => 
     restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
     cronjobHistoryRepository = await testFixtureProvider.resolveAsync('CronjobHistoryRepository');
-
-    await addFixtures();
   });
 
   after(async () => {
-    await removeFixtures();
     await testFixtureProvider.tearDown();
   });
 
-  it('should return the cronjob history for the given Crontab, when the user has the required claim', async () => {
+  describe('Execution', () => {
+
+    const processModelId = 'dummy_process_model_id_1';
+    const processModelId2 = 'dummy_process_model_id_2';
+
+    const fixtures = [{
+      processModelId: processModelId,
+      startEventId: 'TimerStartEvent_1',
+      crontab: '* * 1 1 1',
+      executedAt: moment().subtract(10, 'minutes').toDate(),
+    }, {
+      processModelId: processModelId,
+      startEventId: 'TimerStartEvent_2',
+      crontab: '* * 2 2 2',
+      executedAt: moment().subtract(20, 'minutes').toDate(),
+    }, {
+      processModelId: processModelId2,
+      startEventId: 'TimerStartEvent_1',
+      crontab: '* * 1 1 1',
+      executedAt: moment().subtract(5, 'minutes').toDate(),
+    }, {
+      processModelId: processModelId2,
+      startEventId: 'TimerStartEvent_2',
+      crontab: '* * 4 4 4',
+      executedAt: moment().subtract(25, 'minutes').toDate(),
+    }];
+
+    before(async () => {
+      await addFixtures(fixtures);
+    });
+
+    after(async () => {
+      await removeFixtures(processModelId);
+      await removeFixtures(processModelId2);
+    });
+
+    it('should return the cronjob history for the given Crontab, when the user has the required claim', async () => {
+      const crontab = '* * 1 1 1';
+
+      const cronjobHistory = await testFixtureProvider
+        .managementApiClient
+        .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab);
+
+      should(cronjobHistory).have.a.lengthOf(2);
+
+      assertCronjobHistory(cronjobHistory, crontab);
+    });
+
+    it('should return the cronjob history for the given Crontab, when the user is a super admin', async () => {
+      const crontab = '* * 1 1 1';
+
+      const cronjobHistory = await testFixtureProvider
+        .managementApiClient
+        .getCronjobExecutionHistoryForCrontab(superAdmin, crontab);
+
+      should(cronjobHistory).have.a.lengthOf(2);
+
+      assertCronjobHistory(cronjobHistory, crontab);
+    });
+  });
+
+  describe('Pagination', () => {
+
+    const processModelId = 'dummy_process_model_id_1';
     const crontab = '* * 1 1 1';
 
-    const cronjobHistory = await testFixtureProvider
-      .managementApiClient
-      .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab);
+    const fixtures = [{
+      processModelId: processModelId,
+      startEventId: 'TimerStartEvent_1',
+      crontab: crontab,
+      executedAt: moment().subtract(10, 'minutes').toDate(),
+    }, {
+      processModelId: processModelId,
+      startEventId: 'TimerStartEvent_1',
+      crontab: crontab,
+      executedAt: moment().subtract(20, 'minutes').toDate(),
+    }, {
+      processModelId: processModelId,
+      startEventId: 'TimerStartEvent_1',
+      crontab: crontab,
+      executedAt: moment().subtract(5, 'minutes').toDate(),
+    }, {
+      processModelId: processModelId,
+      startEventId: 'TimerStartEvent_1',
+      crontab: crontab,
+      executedAt: moment().subtract(12, 'minutes').toDate(),
+    }, {
+      processModelId: processModelId,
+      startEventId: 'TimerStartEvent_1',
+      crontab: crontab,
+      executedAt: moment().subtract(25, 'minutes').toDate(),
+    }, {
+      processModelId: processModelId,
+      startEventId: 'TimerStartEvent_1',
+      crontab: crontab,
+      executedAt: moment().subtract(35, 'minutes').toDate(),
+    }, {
+      processModelId: processModelId,
+      startEventId: 'TimerStartEvent_1',
+      crontab: crontab,
+      executedAt: moment().subtract(45, 'minutes').toDate(),
+    }];
 
-    should(cronjobHistory).have.length(2);
+    before(async () => {
+      await addFixtures(fixtures);
+    });
 
-    assertCronjobHistory(cronjobHistory, crontab);
-  });
+    after(async () => {
+      await removeFixtures(processModelId);
+    });
 
-  it('should return the cronjob history for the given Crontab, when the user is a super admin', async () => {
-    const crontab = '* * 1 1 1';
+    it('should apply no limit, an offset of 4 and return 3 items', async () => {
 
-    const cronjobHistory = await testFixtureProvider
-      .managementApiClient
-      .getCronjobExecutionHistoryForCrontab(superAdmin, crontab);
-
-    should(cronjobHistory).have.length(2);
-
-    assertCronjobHistory(cronjobHistory, crontab);
-  });
-
-  it('should fail to retrieve a list of cronjobs, when the user is unauthorized', async () => {
-    try {
-      const results = await testFixtureProvider
+      const cronjobs = await testFixtureProvider
         .managementApiClient
-        .getCronjobExecutionHistoryForCrontab({});
+        .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 4);
 
-      should.fail(results, undefined, 'This request should have failed!');
-    } catch (error) {
-      const expectedErrorMessage = /no auth token provided/i;
-      const expectedErrorCode = 401;
-      should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
-    }
+      should(cronjobs).be.an.instanceOf(Array);
+      should(cronjobs).have.a.lengthOf(3);
+    });
+
+    it('should apply no offset, a limit of 2 and return 2 items', async () => {
+
+      const cronjobs = await testFixtureProvider
+        .managementApiClient
+        .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 0, 2);
+
+      should(cronjobs).be.an.instanceOf(Array);
+      should(cronjobs).have.a.lengthOf(2);
+    });
+
+    it('should apply an offset of 3, a limit of 2 and return 2 items', async () => {
+
+      const cronjobs = await testFixtureProvider
+        .managementApiClient
+        .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 3, 2);
+
+      should(cronjobs).be.an.instanceOf(Array);
+      should(cronjobs).have.a.lengthOf(2);
+    });
+
+    it('should apply an offset of 5, a limit of 5 and return 2 items', async () => {
+
+      const cronjobs = await testFixtureProvider
+        .managementApiClient
+        .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 5, 5);
+
+      should(cronjobs).be.an.instanceOf(Array);
+      should(cronjobs).have.a.lengthOf(2);
+    });
+
+    it('should return all items, if the limit is larger than the max number of records', async () => {
+
+      const cronjobs = await testFixtureProvider
+        .managementApiClient
+        .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 0, 20);
+
+      should(cronjobs).be.an.instanceOf(Array);
+      should(cronjobs).have.a.lengthOf(7);
+
+    });
+
+    it('should return an empty Array, if the offset is out of bounds', async () => {
+
+      const cronjobs = await testFixtureProvider
+        .managementApiClient
+        .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 1000);
+
+      should(cronjobs).be.an.instanceOf(Array);
+      should(cronjobs).have.a.lengthOf(0);
+    });
   });
 
-  it('should fail to retrieve a list of cronjobs, when the user is forbidden to do so', async () => {
-    try {
-      const results = await testFixtureProvider
-        .managementApiClient
-        .getCronjobExecutionHistoryForCrontab(restrictedIdentity, processModelId);
+  describe('Security Checks', () => {
 
-      should.fail(results, undefined, 'This request should have failed!');
-    } catch (error) {
-      const expectedErrorMessage = /access denied/i;
-      const expectedErrorCode = 403;
-      should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
-    }
+    it('should fail to retrieve a list of cronjobs, when the user is unauthorized', async () => {
+      try {
+        const results = await testFixtureProvider
+          .managementApiClient
+          .getCronjobExecutionHistoryForCrontab({});
+
+        should.fail(results, undefined, 'This request should have failed!');
+      } catch (error) {
+        const expectedErrorMessage = /no auth token provided/i;
+        const expectedErrorCode = 401;
+        should(error.message).be.match(expectedErrorMessage);
+        should(error.code).be.equal(expectedErrorCode);
+      }
+    });
+
+    it('should fail to retrieve a list of cronjobs, when the user is forbidden to do so', async () => {
+      try {
+        const results = await testFixtureProvider
+          .managementApiClient
+          .getCronjobExecutionHistoryForCrontab(restrictedIdentity, 'processModelId');
+
+        should.fail(results, undefined, 'This request should have failed!');
+      } catch (error) {
+        const expectedErrorMessage = /access denied/i;
+        const expectedErrorCode = 403;
+        should(error.message).be.match(expectedErrorMessage);
+        should(error.code).be.equal(expectedErrorCode);
+      }
+    });
   });
 
   function assertCronjobHistory(cronjobHistoryList, expectedCrontab) {
@@ -121,22 +245,16 @@ describe('Management API:   GET  ->  /cronjobs/history/crontab/:crontab', () => 
     }
   }
 
-  async function addFixtures() {
+  async function addFixtures(fixtures) {
     for (const fixture of fixtures) {
       await cronjobHistoryRepository.create(fixture);
     }
   }
 
-  async function removeFixtures() {
+  async function removeFixtures(processModelId) {
     await cronjobHistoryRepository.sequelizeInstance.models.CronjobHistory.destroy({
       where: {
         processModelId: processModelId,
-      },
-    });
-
-    await cronjobHistoryRepository.sequelizeInstance.models.CronjobHistory.destroy({
-      where: {
-        processModelId: processModelId2,
       },
     });
   }

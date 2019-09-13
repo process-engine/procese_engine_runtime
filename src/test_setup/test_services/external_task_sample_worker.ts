@@ -4,8 +4,7 @@ import * as bluebird from 'bluebird';
 import {Logger} from 'loggerhythm';
 
 import {IIdentity, IIdentityService, TokenBody} from '@essential-projects/iam_contracts';
-
-import {ExternalTask, IExternalTaskApi} from '@process-engine/external_task_api_contracts';
+import {APIs, DataModels} from '@process-engine/consumer_api_contracts';
 
 const logger = Logger.createLogger('processengine:external_task:sample_worker');
 
@@ -18,14 +17,14 @@ export class ExternalTaskSampleWorker {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public config: any;
 
-  private externalTaskApiClient: IExternalTaskApi;
+  private externalTaskApiClient: APIs.IExternalTaskConsumerApi;
   private identityService: IIdentityService;
 
   private intervalTimer: NodeJS.Timeout;
 
   private sampleIdentity: IIdentity;
 
-  constructor(externalTaskApiClient: IExternalTaskApi, identityService: IIdentityService) {
+  constructor(externalTaskApiClient: APIs.IExternalTaskConsumerApi, identityService: IIdentityService) {
     this.externalTaskApiClient = externalTaskApiClient;
     this.identityService = identityService;
   }
@@ -72,7 +71,7 @@ export class ExternalTaskSampleWorker {
 
       this.stop();
 
-      await bluebird.each(availableExternalTasks, async (externalTask: ExternalTask<TPayload>): Promise<void> => {
+      await bluebird.each(availableExternalTasks, async (externalTask: DataModels.ExternalTask.ExternalTask<TPayload>): Promise<void> => {
         return this.processExternalTask<TPayload, TResult>(externalTask);
       });
 
@@ -81,7 +80,7 @@ export class ExternalTaskSampleWorker {
     }
   }
 
-  private async processExternalTask<TPayload, TResult>(externalTask: ExternalTask<TPayload>): Promise<void> {
+  private async processExternalTask<TPayload, TResult>(externalTask: DataModels.ExternalTask.ExternalTask<TPayload>): Promise<void> {
 
     logger.info(`Processing ExternalTask ${externalTask.id}.`);
 

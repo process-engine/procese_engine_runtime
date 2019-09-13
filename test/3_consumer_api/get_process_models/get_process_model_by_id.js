@@ -4,7 +4,7 @@ const should = require('should');
 
 const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
-describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
+describe('Consumer API: GetProcessModelById', () => {
 
   let testFixtureProvider;
   let defaultIdentity;
@@ -51,8 +51,8 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
     should(processModel).have.property('id');
     should(processModel).have.property('startEvents');
     should(processModel).have.property('endEvents');
-    should(processModel.startEvents.length).be.equal(0);
-    should(processModel.endEvents.length).be.equal(0);
+    should(processModel.startEvents).have.a.lengthOf(0);
+    should(processModel.endEvents).have.a.lengthOf(0);
   });
 
   it('should fail to retrieve the process model, when the user is unauthorized', async () => {
@@ -66,7 +66,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
     } catch (error) {
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
@@ -84,7 +84,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
     } catch (error) {
       const expectedErrorCode = 403;
       const expectedErrorMessage = /access denied/i;
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
@@ -102,7 +102,7 @@ describe('Consumer API:   GET  ->  /process_models/:process_model_id', () => {
     } catch (error) {
       const expectedErrorCode = 404;
       const expectedErrorMessage = /not found/i;
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });

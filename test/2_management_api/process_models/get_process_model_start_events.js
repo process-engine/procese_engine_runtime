@@ -2,13 +2,13 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
+const {TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/events', () => {
 
   let testFixtureProvider;
 
-  const processModelId = 'generic_sample';
+  const processModelId = 'test_management_api_generic_sample';
   const processModelIdRestricted = 'test_management_api_emptyactivity';
 
   before(async () => {
@@ -29,7 +29,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/events', (
       .getStartEventsForProcessModel(testFixtureProvider.identities.defaultUser, processModelId);
 
     should(processModel).have.property('events');
-    should(processModel.events).be.instanceof(Array);
+    should(processModel.events).be.an.instanceOf(Array);
     should(processModel.events.length).be.greaterThan(0);
 
     for (const event of processModel.events) {
@@ -44,7 +44,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/events', (
       .getStartEventsForProcessModel(testFixtureProvider.identities.superAdmin, processModelId);
 
     should(processModel).have.property('events');
-    should(processModel.events).be.instanceof(Array);
+    should(processModel.events).be.an.instanceOf(Array);
     should(processModel.events.length).be.greaterThan(0);
 
     for (const event of processModel.events) {

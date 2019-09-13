@@ -3,7 +3,7 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 describe('Management API:   Receive ProcessTerminated Notification', () => {
 
@@ -14,7 +14,7 @@ describe('Management API:   Receive ProcessTerminated Notification', () => {
   let defaultIdentity;
 
   const correlationId = uuid.v4();
-  const processModelId = 'test_consumer_api_process_terminate';
+  const processModelId = 'test_management_api_process_terminate';
 
   const noopCallback = () => {};
 

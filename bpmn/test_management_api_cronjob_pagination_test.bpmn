@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_019scie" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
+  <bpmn:collaboration id="Collaboration_1dwnbx6" name="">
+    <bpmn:participant id="Participant_1ndejx1" name="test_management_api_cronjob_pagination_test" processRef="test_management_api_cronjob_pagination_test" />
+  </bpmn:collaboration>
+  <bpmn:process id="test_management_api_cronjob_pagination_test" name="test_management_api_cronjob_pagination_test" isExecutable="true">
+    <bpmn:laneSet>
+      <bpmn:lane id="Lane_1jhpx27" name="Default_Test_Lane">
+        <bpmn:flowNodeRef>TimerStartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_03ggl2f</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_06fgvoy</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1qhojr4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_07xful5</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_0ljs98q</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_15fa8dk</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_0qtqpm7</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ScriptTaskTimerEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_TimerTest</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:sequenceFlow id="SequenceFlow_0x9ie3k" sourceRef="TimerStartEvent_1" targetRef="ExclusiveGateway_0qtqpm7" />
+    <bpmn:sequenceFlow id="SequenceFlow_07eg0vm" sourceRef="ScriptTaskTimerEvent_1" targetRef="EndEvent_TimerTest" />
+    <bpmn:startEvent id="TimerStartEvent_1" name="Timer with Crontab">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="enabled" value="true" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_0x9ie3k</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">1 1 1 1 1</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_17sku4b" sourceRef="ExclusiveGateway_0qtqpm7" targetRef="ScriptTaskTimerEvent_1" />
+    <bpmn:startEvent id="StartEvent_03ggl2f" name="Timer with Crontab">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="enabled" value="true" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_15u9i5a</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0fbcv6v">
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">2 2 2 2 2</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:startEvent id="StartEvent_06fgvoy" name="Timer with Crontab">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="enabled" value="true" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_1gf9b9z</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_06jwzp5">
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">3 3 3 3 3</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:startEvent id="StartEvent_1qhojr4" name="Timer with Crontab">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="enabled" value="true" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_1bu0fzo</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_04bz5h9">
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">4 4 4 4 4</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:startEvent id="StartEvent_07xful5" name="Timer with Crontab">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="enabled" value="true" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_083wihf</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1vdb4cc">
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">5 5 5 5 5</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:startEvent id="StartEvent_0ljs98q" name="Timer with Crontab">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="enabled" value="true" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_0ew4d3q</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1y09cwt">
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">6 6 6 6 6</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:startEvent id="StartEvent_15fa8dk" name="Timer with Crontab">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="enabled" value="true" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_1fj99hq</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0mhmv03">
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">7 7 7 7 7</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_15u9i5a" sourceRef="StartEvent_03ggl2f" targetRef="ExclusiveGateway_0qtqpm7" />
+    <bpmn:sequenceFlow id="SequenceFlow_1gf9b9z" sourceRef="StartEvent_06fgvoy" targetRef="ExclusiveGateway_0qtqpm7" />
+    <bpmn:sequenceFlow id="SequenceFlow_1bu0fzo" sourceRef="StartEvent_1qhojr4" targetRef="ExclusiveGateway_0qtqpm7" />
+    <bpmn:sequenceFlow id="SequenceFlow_083wihf" sourceRef="StartEvent_07xful5" targetRef="ExclusiveGateway_0qtqpm7" />
+    <bpmn:sequenceFlow id="SequenceFlow_0ew4d3q" sourceRef="StartEvent_0ljs98q" targetRef="ExclusiveGateway_0qtqpm7" />
+    <bpmn:sequenceFlow id="SequenceFlow_1fj99hq" sourceRef="StartEvent_15fa8dk" targetRef="ExclusiveGateway_0qtqpm7" />
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0qtqpm7" name="">
+      <bpmn:incoming>SequenceFlow_0x9ie3k</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_15u9i5a</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1gf9b9z</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1bu0fzo</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_083wihf</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0ew4d3q</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1fj99hq</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_17sku4b</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:scriptTask id="ScriptTaskTimerEvent_1" name="Return sample result">
+      <bpmn:incoming>SequenceFlow_17sku4b</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_07eg0vm</bpmn:outgoing>
+      <bpmn:script>console.log('Process with cronjob started!');
+
+return 'Success';</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="EndEvent_TimerTest" name="End">
+      <bpmn:incoming>SequenceFlow_07eg0vm</bpmn:incoming>
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmn:message id="Message_18zwda3" name="MessageAutoStart_Test" />
+  <bpmn:signal id="Signal_1gmrdgn" name="SignalAutoStart_Test" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1dwnbx6">
+      <bpmndi:BPMNShape id="Participant_1ndejx1_di" bpmnElement="Participant_1ndejx1" isHorizontal="true">
+        <dc:Bounds x="111" y="23" width="592" height="691" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0x9ie3k_di" bpmnElement="SequenceFlow_0x9ie3k">
+        <di:waypoint x="234" y="104" />
+        <di:waypoint x="364" y="104" />
+        <di:waypoint x="364" y="351" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="233" y="189.5" width="0" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0bw7vw9_di" bpmnElement="EndEvent_TimerTest">
+        <dc:Bounds x="611" y="358" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="619" y="397" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1jhpx27_di" bpmnElement="Lane_1jhpx27" isHorizontal="true">
+        <dc:Bounds x="141" y="23" width="562" height="691" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_07eg0vm_di" bpmnElement="SequenceFlow_07eg0vm">
+        <di:waypoint x="545" y="376" />
+        <di:waypoint x="611" y="376" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_18ruani_di" bpmnElement="ScriptTaskTimerEvent_1">
+        <dc:Bounds x="445" y="336" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_01qhzro_di" bpmnElement="TimerStartEvent_1">
+        <dc:Bounds x="198" y="86" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="191" y="125" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0qtqpm7_di" bpmnElement="ExclusiveGateway_0qtqpm7" isMarkerVisible="true">
+        <dc:Bounds x="339" y="351" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_17sku4b_di" bpmnElement="SequenceFlow_17sku4b">
+        <di:waypoint x="389" y="376" />
+        <di:waypoint x="445" y="376" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="StartEvent_03ggl2f_di" bpmnElement="StartEvent_03ggl2f">
+        <dc:Bounds x="198" y="175" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="191" y="214" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1qhojr4_di" bpmnElement="StartEvent_1qhojr4">
+        <dc:Bounds x="198" y="358" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="191" y="397" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_06fgvoy_di" bpmnElement="StartEvent_06fgvoy">
+        <dc:Bounds x="198" y="266" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="191" y="305" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_07xful5_di" bpmnElement="StartEvent_07xful5">
+        <dc:Bounds x="198" y="448" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="191" y="487" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0ljs98q_di" bpmnElement="StartEvent_0ljs98q">
+        <dc:Bounds x="198" y="542" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="191" y="581" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_15fa8dk_di" bpmnElement="StartEvent_15fa8dk">
+        <dc:Bounds x="198" y="629" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="191" y="668" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_15u9i5a_di" bpmnElement="SequenceFlow_15u9i5a">
+        <di:waypoint x="234" y="193" />
+        <di:waypoint x="364" y="193" />
+        <di:waypoint x="364" y="351" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1gf9b9z_di" bpmnElement="SequenceFlow_1gf9b9z">
+        <di:waypoint x="234" y="284" />
+        <di:waypoint x="364" y="284" />
+        <di:waypoint x="364" y="351" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1bu0fzo_di" bpmnElement="SequenceFlow_1bu0fzo">
+        <di:waypoint x="234" y="376" />
+        <di:waypoint x="339" y="376" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_083wihf_di" bpmnElement="SequenceFlow_083wihf">
+        <di:waypoint x="234" y="466" />
+        <di:waypoint x="364" y="466" />
+        <di:waypoint x="364" y="401" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0ew4d3q_di" bpmnElement="SequenceFlow_0ew4d3q">
+        <di:waypoint x="234" y="560" />
+        <di:waypoint x="364" y="560" />
+        <di:waypoint x="364" y="401" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1fj99hq_di" bpmnElement="SequenceFlow_1fj99hq">
+        <di:waypoint x="234" y="647" />
+        <di:waypoint x="364" y="647" />
+        <di:waypoint x="364" y="401" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

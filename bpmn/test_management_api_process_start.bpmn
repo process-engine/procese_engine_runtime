@@ -80,7 +80,7 @@
       <bpmndi:BPMNShape id="StartEvent_0u6sqo1_di" bpmnElement="StartEvent_1">
         <dc:Bounds x="121" y="61" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="96" y="97" width="89" height="40" />
+          <dc:Bounds x="98" y="97" width="85" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0g7zduf_di" bpmnElement="SequenceFlow_0g7zduf">

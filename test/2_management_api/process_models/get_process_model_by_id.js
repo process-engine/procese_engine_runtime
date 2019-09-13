@@ -8,7 +8,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id', () => {
 
   let testFixtureProvider;
 
-  const processModelId = 'generic_sample';
+  const processModelId = 'test_management_api_generic_sample';
   const processModelIdRestricted = 'test_management_api_emptyactivity';
 
   before(async () => {

@@ -12,7 +12,7 @@ describe('ManagementAPI:   GET  ->  /process_model/:process_model_id/logs', () =
   let testFixtureProvider;
 
   const correlationId = uuid.v4();
-  const processModelId = 'test_consumer_api_correlation_result';
+  const processModelId = 'test_management_api_generic_sample';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
