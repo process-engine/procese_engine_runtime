@@ -20,7 +20,7 @@
       <bpmn:outgoing>SequenceFlow_0fkan76</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0fkan76" sourceRef="StartEvent_1" targetRef="Task_1vdwmn1" />
-    <bpmn:userTask id="Task_1vdwmn1" name="Sample UserTask" camunda:formKey="Form Key">
+    <bpmn:userTask id="Task_1vdwmn1" name="TestUserTask" camunda:formKey="Form Key">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="Form_XGSVBgio" label="test_enum" type="enum" defaultValue="testvalue">
@@ -28,6 +28,10 @@
             <camunda:value id="Value_2f53b5n" name="testvalue" />
           </camunda:formField>
         </camunda:formData>
+        <camunda:properties>
+          <camunda:property name="description" value="TestDescription" />
+          <camunda:property name="finishedMessage" value="TestFinishedMessage" />
+        </camunda:properties>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0fkan76</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_00nxkwz</bpmn:outgoing>

@@ -2,13 +2,13 @@
 
 const should = require('should');
 
-const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
+const {TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/delete', () => {
 
   let testFixtureProvider;
 
-  const processModelId = 'generic_sample';
+  const processModelId = 'test_management_api_generic_sample';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();

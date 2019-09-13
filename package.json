@@ -118,9 +118,9 @@
   "devDependencies": {
     "@essential-projects/eslint-config": "^1.0.0",
     "@process-engine/ci_tools": "^2.0.0",
-    "@process-engine/consumer_api_client": "6.1.0-alpha.1",
+    "@process-engine/consumer_api_client": "feature~add_limit_and_offset_to_list_queries",
     "@process-engine/external_task_api_client": "^1.2.0",
-    "@process-engine/management_api_client": "6.1.0-alpha.1",
+    "@process-engine/management_api_client": "feature~add_limit_and_offset_to_list_queries",
     "@types/bluebird-global": "^3.5.9",
     "@types/express": "^4.16.0",
     "@types/node": "^10.12.10",

@@ -91,12 +91,12 @@ describe(`Consumer API: ${testCase}`, () => {
         .consumerApiClient
         .startProcessInstance(defaultIdentity, processModelId, payload);
 
-      should(re, startEventIdsult).have.property('correlationId');
+      should(result).have.property('correlationId');
       should(result.correlationId).be.equal(payload.correlationId);
     });
   });
 
-  it('should sucessfully execute a process with two different sublanes', async () => {
+  it('should successfully execute a process with two different sublanes', async () => {
 
     const startEventId = 'StartEvent_1';
 

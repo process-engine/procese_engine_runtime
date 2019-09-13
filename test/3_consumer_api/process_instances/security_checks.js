@@ -48,13 +48,13 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClient
-        .startProcessInstance({}, processModelId, payload, startCallbackType, startEventId);
+        .startProcessInstance({}, processModelId, startEventId, payload, startCallbackType);
 
       should.fail(result, undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
@@ -82,7 +82,7 @@ describe(`Consumer API: ${testCase}`, () => {
     } catch (error) {
       const expectedErrorCode = 403;
       const expectedErrorMessage = /access denied/i;
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
@@ -105,7 +105,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClient
-        .startProcessInstance(userIdentity, processModelIdSublanes, payload, startCallbackType, startEventId, endEventId);
+        .startProcessInstance(userIdentity, processModelIdSublanes, payload, startCallbackType, endEventId, startEventId);
 
       should.fail(result, undefined, 'This request should have failed!');
 
@@ -113,7 +113,7 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorCode = 404;
       const expectedErrorMessage = /not found/i;
 
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
@@ -141,7 +141,7 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorCode = 403;
       const expectedErrorMessage = /access denied/i;
 
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });
@@ -164,7 +164,7 @@ describe(`Consumer API: ${testCase}`, () => {
     try {
       const result = await testFixtureProvider
         .consumerApiClient
-        .startProcessInstance(userIdentity, processModelIdSublanes, payload, startCallbackType, startEventId, endEventId);
+        .startProcessInstance(userIdentity, processModelIdSublanes, payload, startCallbackType, endEventId, startEventId);
 
       should.fail(result, undefined, 'The restricted user should not be able to execute the process inside the sublane');
 
@@ -172,7 +172,7 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorCode = 403;
       const expectedErrorMessage = /access denied/i;
 
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
       should(error.message).be.match(expectedErrorMessage);
     }
   });

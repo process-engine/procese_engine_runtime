@@ -4,9 +4,9 @@
     <bpmn:extensionElements>
       <camunda:formData />
     </bpmn:extensionElements>
-    <bpmn:participant id="Participant_0px403d" name="heatmap_sample" processRef="heatmap_sample" />
+    <bpmn:participant id="Participant_0px403d" name="test_management_api_heatmap_sample" processRef="test_management_api_heatmap_sample" />
   </bpmn:collaboration>
-  <bpmn:process id="heatmap_sample" name="heatmap_sample" isExecutable="true">
+  <bpmn:process id="test_management_api_heatmap_sample" name="test_management_api_heatmap_sample" isExecutable="true">
     <bpmn:laneSet>
       <bpmn:lane id="Default_Test_Lane" name="Default_Test_Lane">
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
@@ -22,15 +22,16 @@
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="StartEvent_1" name="Sample Start">
-      <bpmn:outgoing>SequenceFlow_1ms83wv</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_13qn2l4</bpmn:outgoing>
     </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_13qn2l4" sourceRef="StartEvent_1" targetRef="ExclusiveGateway_0fi1ct7" />
     <bpmn:sequenceFlow id="SequenceFlow_1g8yhyu" sourceRef="ExclusiveGateway_0fi1ct7" targetRef="ScriptTask_1">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">token.history.StartEvent_1.user_task === false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_0nqcs3t" sourceRef="ExclusiveGateway_134ybqm" targetRef="EndEvent_0eie6q6" />
     <bpmn:sequenceFlow id="SequenceFlow_1ejes54" sourceRef="ServiceTask_1" targetRef="ExclusiveGateway_134ybqm" />
     <bpmn:exclusiveGateway id="ExclusiveGateway_0fi1ct7" name="">
-      <bpmn:incoming>SequenceFlow_1ms83wv</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_13qn2l4</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1g8yhyu</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_15utt92</bpmn:outgoing>
     </bpmn:exclusiveGateway>
@@ -84,7 +85,6 @@
       <bpmn:incoming>SequenceFlow_1kllfly</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_02m8mcn</bpmn:outgoing>
     </bpmn:parallelGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_1ms83wv" sourceRef="StartEvent_1" targetRef="ExclusiveGateway_0fi1ct7" />
     <bpmn:association id="Association_0h60rgi" sourceRef="ScriptTask_1" targetRef="TextAnnotation_0nuu0fl" />
     <bpmn:association id="Association_13hg298" sourceRef="UserTask_1" targetRef="TextAnnotation_0n7oyg3" />
     <bpmn:association id="Association_0c0pgpe" sourceRef="ServiceTask_1" targetRef="TextAnnotation_0jnw6m2" />
@@ -125,6 +125,10 @@
           <dc:Bounds x="815" y="118" width="79" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_13qn2l4_di" bpmnElement="SequenceFlow_13qn2l4">
+        <di:waypoint x="119" y="87" />
+        <di:waypoint x="166" y="87" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1g8yhyu_di" bpmnElement="SequenceFlow_1g8yhyu">
         <di:waypoint x="216" y="87" />
         <di:waypoint x="294" y="87" />
@@ -223,10 +227,6 @@
       <bpmndi:BPMNShape id="ParallelGateway_1am03kr_di" bpmnElement="ParallelJoinGateway_1">
         <dc:Bounds x="549" y="258" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_1ms83wv_di" bpmnElement="SequenceFlow_1ms83wv">
-        <di:waypoint x="119" y="87" />
-        <di:waypoint x="166" y="87" />
-      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

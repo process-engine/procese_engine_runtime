@@ -134,7 +134,7 @@ describe('Consumer API:   Receive identity specific ManualTask Notifications', (
       const expectedErrorMessage = /no auth token/i;
       const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -149,7 +149,7 @@ describe('Consumer API:   Receive identity specific ManualTask Notifications', (
       const expectedErrorMessage = /no auth token/i;
       const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 

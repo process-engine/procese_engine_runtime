@@ -65,8 +65,8 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
       .consumerApiClient
       .getProcessResultForCorrelation(defaultIdentity, correlationId, processModelIdDefault);
 
-    should(correlationResults).be.instanceof(Array);
-    should(correlationResults.length).be.equal(1);
+    should(correlationResults).be.an.instanceOf(Array);
+    should(correlationResults).have.a.lengthOf(1);
 
     const correlationResult = correlationResults[0];
 
@@ -90,8 +90,8 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
       .consumerApiClient
       .getProcessResultForCorrelation(defaultIdentity, correlationIdMultipleResults, processModelIdMultipleEndEvents);
 
-    should(correlationResults).be.instanceof(Array);
-    should(correlationResults.length).be.equal(2);
+    should(correlationResults).be.an.instanceOf(Array);
+    should(correlationResults).have.a.lengthOf(2);
 
     const expectedResults = {
       EndEvent_1: {
@@ -125,7 +125,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
       const expectedErrorCode = 404;
       const expectedErrorMessage = /no process results for correlation.*?found/i;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -143,7 +143,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
       const expectedErrorCode = 404;
       const expectedErrorMessage = /processmodel.*?not found/i;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -159,7 +159,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
       const expectedErrorCode = 401;
       const expectedErrorMessage = /no auth token provided/i;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -175,7 +175,7 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
       const expectedErrorCode = 403;
       const expectedErrorMessage = /access denied/i;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 

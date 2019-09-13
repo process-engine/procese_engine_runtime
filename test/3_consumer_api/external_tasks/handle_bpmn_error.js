@@ -147,7 +147,7 @@ describe('Consumer API:   POST  ->  /external_tasks/:external_task_id/handle_bpm
       .fetchAndLockExternalTasks(defaultIdentity, workerId, topicName, 1, 0, 10000);
 
     should(availableExternalTasks).be.an.Array();
-    should(availableExternalTasks.length).be.equal(1);
+    should(availableExternalTasks).have.a.lengthOf(1);
 
     return availableExternalTasks[0];
   }

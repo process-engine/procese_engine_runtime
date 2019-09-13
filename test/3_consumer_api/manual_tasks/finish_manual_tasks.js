@@ -4,8 +4,7 @@ const should = require('should');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-const testCase = 'POST -> /process_models/:process_model_id/correlations/:correlation_id/manual_tasks/:manual_task_id/finish';
-describe(`Consumer API: ${testCase}`, () => {
+describe(`Consumer API: FinishManualTask`, () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -78,7 +77,7 @@ describe(`Consumer API: ${testCase}`, () => {
       should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
     } catch (error) {
       const expectedErrorCode = 404;
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -99,7 +98,7 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorMessage = /does not have a ManualTask/i;
       const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -120,7 +119,7 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorMessage = /correlation.*?invalidCorrelationId.*?does not have a manualtask/i;
       const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -141,7 +140,7 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorMessage = /processinstance.*?in correlation.*?does not have.*?manualtask/i;
       const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -161,7 +160,7 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorMessage = /no auth token provided/i;
       const expectedErrorCode = 401;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 
@@ -183,7 +182,7 @@ describe(`Consumer API: ${testCase}`, () => {
       const expectedErrorMessage = /access.*?denied/i;
       const expectedErrorCode = 403;
       should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.equal(expectedErrorCode);
+      should(error.code).be.match(expectedErrorCode);
     }
   });
 });

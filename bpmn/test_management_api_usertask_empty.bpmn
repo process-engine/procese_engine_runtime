@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definition_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
+  <bpmn:collaboration id="Collaboration_1cidyxu">
+    <bpmn:participant id="Participant_0px403d" name="test_management_api_usertask_empty" processRef="test_management_api_usertask_empty" />
+  </bpmn:collaboration>
+  <bpmn:process id="test_management_api_usertask_empty" name="test_management_api_usertask_empty" isExecutable="true">
+    <bpmn:laneSet>
+      <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="role" value="user" />
+          </camunda:properties>
+        </bpmn:extensionElements>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_1j67qnl</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SignalCatch_WaitForContinue</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_1" name="test_management_api_usertask_empty">
+      <bpmn:outgoing>SequenceFlow_0yuregv</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0yuregv" sourceRef="StartEvent_1" targetRef="SignalCatch_WaitForContinue" />
+    <bpmn:endEvent id="EndEvent_1j67qnl">
+      <bpmn:incoming>SequenceFlow_0p471l2</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0p471l2" sourceRef="SignalCatch_WaitForContinue" targetRef="EndEvent_1j67qnl" />
+    <bpmn:intermediateCatchEvent id="SignalCatch_WaitForContinue" name="Wait for signal to continue">
+      <bpmn:incoming>SequenceFlow_0yuregv</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0p471l2</bpmn:outgoing>
+      <bpmn:signalEventDefinition signalRef="Signal_0ibm6dy" />
+    </bpmn:intermediateCatchEvent>
+  </bpmn:process>
+  <bpmn:signal id="Signal_0ibm6dy" name="Continue" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1cidyxu">
+      <bpmndi:BPMNShape id="Participant_0px403d_di" bpmnElement="Participant_0px403d">
+        <dc:Bounds x="5" y="4" width="408" height="203" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="101" y="86" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="75" y="122" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3">
+        <dc:Bounds x="35" y="4" width="378" height="203" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1j67qnl_di" bpmnElement="EndEvent_1j67qnl">
+        <dc:Bounds x="347" y="86" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="418" y="105" width="0" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0yuregv_di" bpmnElement="SequenceFlow_0yuregv">
+        <di:waypoint x="137" y="104" />
+        <di:waypoint x="220" y="104" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0p471l2_di" bpmnElement="SequenceFlow_0p471l2">
+        <di:waypoint x="256" y="104" />
+        <di:waypoint x="347" y="104" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IntermediateCatchEvent_0lzcxze_di" bpmnElement="SignalCatch_WaitForContinue">
+        <dc:Bounds x="220" y="86" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="197" y="129" width="82" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

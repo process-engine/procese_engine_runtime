@@ -12,7 +12,7 @@ describe(`Management API: ${testCase}`, () => {
 
   let correlationId;
   let processInstanceId;
-  const processModelId = 'test_management_api_multiple_start_events';
+  const processModelId = 'test_management_api_generic_sample';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -50,7 +50,7 @@ describe(`Management API: ${testCase}`, () => {
   }
 
   function assertFlowNodeInstances(flowNodeInstances) {
-    should(flowNodeInstances).be.instanceOf(Array);
+    should(flowNodeInstances).be.an.instanceOf(Array);
     should(flowNodeInstances.length).be.greaterThan(0);
 
     for (const flowNodeInstance of flowNodeInstances) {

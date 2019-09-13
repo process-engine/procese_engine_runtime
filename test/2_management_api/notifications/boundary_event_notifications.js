@@ -1,11 +1,10 @@
-'use strict';
 
 const should = require('should');
 const uuid = require('node-uuid');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API:   Receive global BoundaryEvent notifications', () => {
+describe('Management API:   Receive global BoundaryEvent Notifications', () => {
 
   let eventAggregator;
   let processInstanceHandler;

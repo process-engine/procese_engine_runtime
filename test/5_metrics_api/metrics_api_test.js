@@ -14,7 +14,7 @@ describe('Metric API Tests - ', () => {
   let processInstanceHandler;
   let testFixtureProvider;
 
-  const processModelId = 'heatmap_sample';
+  const processModelId = 'test_management_api_heatmap_sample';
   const correlationId = uuid.v4();
 
   const expectedMetricsFilePath = path.join('test/metrics', `${processModelId}.met`);
