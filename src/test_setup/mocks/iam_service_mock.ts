@@ -64,9 +64,9 @@ export class IamServiceMock implements IIAMService {
 
   public async ensureHasClaim(identity: IIdentity, claimName: string): Promise<void> {
 
-    // The dummy token is used by the AutoStartService and must always be passed.
     const isDummyToken = identity.userId === 'dummy_token';
-    if (isDummyToken) {
+    const isSuperAdmin = identity.userId === 'superAdmin';
+    if (isDummyToken || isSuperAdmin) {
       return Promise.resolve();
     }
 
