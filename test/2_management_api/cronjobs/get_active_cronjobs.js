@@ -52,7 +52,7 @@ describe('Management API: GetAllActiveCronjobs', () => {
 
       should(cronjob.processModelId).be.equal('test_management_api_cyclic_timers');
       should(cronjob.startEventId).be.equal('TimerStartEvent_1');
-      should(cronjob.crontab).be.equal('*/15 1 * * *');
+      should(cronjob.crontab).be.equal('*/2 * * * * *');
     });
 
     it('should include all cronjobs that are added \'on the fly\'', async () => {
