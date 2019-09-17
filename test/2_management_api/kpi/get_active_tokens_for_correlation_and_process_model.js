@@ -47,11 +47,11 @@ describe('Management API: GetActiveTokensForCorrelationAndProcessModel', () => {
         .managementApiClient
         .getActiveTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId);
 
-      should(activeTokenList.activeToken).be.an.Array();
-      const assertionError = `Expected ${JSON.stringify(activeTokenList.activeToken)} to have two entries, but received ${activeTokenList.activeToken.length}!`;
-      should(activeTokenList.activeToken).have.a.lengthOf(2, assertionError); // 2 UserTasks running in parallel executed branches
+      should(activeTokenList.activeTokens).be.an.Array();
+      const assertionError = `Expected ${JSON.stringify(activeTokenList.activeTokens)} to have two entries, but received ${activeTokenList.activeTokens.length}!`;
+      should(activeTokenList.activeTokens).have.a.lengthOf(2, assertionError); // 2 UserTasks running in parallel executed branches
 
-      for (const activeToken of activeTokenList.activeToken) {
+      for (const activeToken of activeTokenList.activeTokens) {
         assertActiveToken(activeToken, activeToken.flowNodeId);
       }
     });

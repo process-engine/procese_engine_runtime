@@ -46,15 +46,15 @@ describe('Management API: GetActiveTokensForProcessModel', () => {
 
     it('should successfully get the active tokens for a running ProcessModel', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokensList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessModel(defaultIdentity, processModelId);
 
-      should(activeTokens).be.an.Array();
-      const assertionError = `Expected ${JSON.stringify(activeTokens)} to have two entries, but received ${activeTokens.length}!`;
-      should(activeTokens).have.a.lengthOf(2, assertionError); // 2 UserTasks running in parallel executed branches
+      should(activeTokensList.activeTokens).be.an.Array();
+      const assertionError = `Expected ${JSON.stringify(activeTokensList.activeTokens)} to have two entries, but received ${activeTokensList.activeTokens.length}!`;
+      should(activeTokensList.activeTokens).have.a.lengthOf(2, assertionError); // 2 UserTasks running in parallel executed branches
 
-      for (const activeToken of activeTokens) {
+      for (const activeToken of activeTokensList.activeTokens) {
         assertActiveToken(activeToken, activeToken.flowNodeId);
       }
     });
@@ -65,15 +65,15 @@ describe('Management API: GetActiveTokensForProcessModel', () => {
       // The tokens of this ProcessInstance should not show as ActiveTokens.
       await executeSampleProcess();
 
-      const activeTokens = await testFixtureProvider
+      const activeTokensList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessModel(defaultIdentity, processModelId);
 
-      should(activeTokens).be.an.Array();
-      const assertionError = `Expected ${JSON.stringify(activeTokens)} to have two entries, but received ${activeTokens.length}!`;
-      should(activeTokens).have.a.lengthOf(2, assertionError); // 2 UserTasks running in parallel executed branches
+      should(activeTokensList.activeTokens).be.an.Array();
+      const assertionError = `Expected ${JSON.stringify(activeTokensList.activeTokens)} to have two entries, but received ${activeTokensList.activeTokens.length}!`;
+      should(activeTokensList.activeTokens).have.a.lengthOf(2, assertionError); // 2 UserTasks running in parallel executed branches
 
-      for (const activeToken of activeTokens) {
+      for (const activeToken of activeTokensList.activeTokens) {
         assertActiveToken(activeToken, activeToken.flowNodeId);
       }
     });
@@ -121,63 +121,63 @@ describe('Management API: GetActiveTokensForProcessModel', () => {
 
     it('should apply no limit, an offset of 1 and return 3 items', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokensList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessModel(defaultIdentity, processModelIdTokenSample, 1);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(3);
+      should(activeTokensList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokensList.activeTokens).have.a.lengthOf(3);
     });
 
     it('should apply no offset, a limit of 2 and return 2 items', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokensList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessModel(defaultIdentity, processModelIdTokenSample, 0, 2);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(2);
+      should(activeTokensList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokensList.activeTokens).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 1, a limit of 2 and return 2 items', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokensList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessModel(defaultIdentity, processModelIdTokenSample, 1, 2);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(2);
+      should(activeTokensList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokensList.activeTokens).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 2, a limit of 5 and return 2 items', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokensList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessModel(defaultIdentity, processModelIdTokenSample, 2, 5);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(2);
+      should(activeTokensList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokensList.activeTokens).have.a.lengthOf(2);
     });
 
     it('should return all items, if the limit is larger than the max number of records', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokensList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessModel(defaultIdentity, processModelIdTokenSample, 0, 20);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(4);
+      should(activeTokensList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokensList.activeTokens).have.a.lengthOf(4);
 
     });
 
     it('should return an empty Array, if the offset is out of bounds', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokensList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessModel(defaultIdentity, processModelIdTokenSample, 1000);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(0);
+      should(activeTokensList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokensList.activeTokens).have.a.lengthOf(0);
     });
   });
 

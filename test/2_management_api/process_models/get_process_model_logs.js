@@ -49,14 +49,14 @@ describe('ManagementAPI:   GET  ->  /process_model/:process_model_id/logs', () =
 
   it('should successfully return the logs for a ProcessModel by its processModelId through the ManagementApi.', async () => {
 
-    const logs = await testFixtureProvider
+    const logEntryList = await testFixtureProvider
       .managementApiClient
       .getProcessModelLog(testFixtureProvider.identities.defaultUser, processModelId);
 
-    should(logs).be.an.Array();
-    should(logs.length).be.greaterThan(0);
+    should(logEntryList.logEntries).be.an.Array();
+    should(logEntryList.logEntries.length).be.greaterThan(0);
 
-    for (const log of logs) {
+    for (const log of logEntryList.logEntries) {
       should(log).have.property('timeStamp');
       should(log).have.property('correlationId');
       should(log).have.property('processModelId');
@@ -68,14 +68,14 @@ describe('ManagementAPI:   GET  ->  /process_model/:process_model_id/logs', () =
 
   it('should successfully return logs for a ProcessModel that match a specific Correlation, if correlationId is provided.', async () => {
 
-    const logs = await testFixtureProvider
+    const logEntryList = await testFixtureProvider
       .managementApiClient
       .getProcessModelLog(testFixtureProvider.identities.defaultUser, processModelId, correlationId);
 
-    should(logs).be.an.Array();
-    should(logs.length).be.greaterThan(0);
+    should(logEntryList.logEntries).be.an.Array();
+    should(logEntryList.logEntries.length).be.greaterThan(0);
 
-    for (const log of logs) {
+    for (const log of logEntryList.logEntries) {
       should(log).have.property('timeStamp');
       should(log).have.property('correlationId');
       should(log).have.property('processModelId');
@@ -90,18 +90,18 @@ describe('ManagementAPI:   GET  ->  /process_model/:process_model_id/logs', () =
 
     const invalidProcessModelId = 'invalidProcessModelId';
 
-    const logs = await testFixtureProvider
+    const logEntryList = await testFixtureProvider
       .managementApiClient
       .getProcessModelLog(testFixtureProvider.identities.defaultUser, invalidProcessModelId);
 
-    should(logs).be.an.Array();
-    should(logs).be.empty();
+    should(logEntryList.logEntries).be.an.Array();
+    should(logEntryList.logEntries).be.empty();
   });
 
   it('should fail to retrieve the logs, when the user is unauthorized.', async () => {
 
     try {
-      const logs = await testFixtureProvider
+      const logEntryList = await testFixtureProvider
         .managementApiClient
         .getProcessModelLog({}, processModelId);
 

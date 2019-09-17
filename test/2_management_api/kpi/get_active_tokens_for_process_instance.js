@@ -47,15 +47,15 @@ describe('Management API: GetActiveTokensForProcessInstance', () => {
 
     it('should successfully get the active tokens for a running ProcessInstance', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessInstance(defaultIdentity, processInstanceId);
 
-      should(activeTokens).be.an.Array();
-      const assertionError = `Expected ${JSON.stringify(activeTokens)} to have two entries, but received ${activeTokens.length}!`;
-      should(activeTokens).have.a.lengthOf(2, assertionError); // 2 UserTasks running in parallel executed branches
+      should(activeTokenList.activeTokens).be.an.Array();
+      const assertionError = `Expected ${JSON.stringify(activeTokenList.activeTokens)} to have two entries, but received ${activeTokenList.activeTokens.length}!`;
+      should(activeTokenList.activeTokens).have.a.lengthOf(2, assertionError); // 2 UserTasks running in parallel executed branches
 
-      for (const activeToken of activeTokens) {
+      for (const activeToken of activeTokenList.activeTokens) {
         assertActiveToken(activeToken, activeToken.flowNodeId);
       }
     });
@@ -94,63 +94,63 @@ describe('Management API: GetActiveTokensForProcessInstance', () => {
 
     it('should apply no limit, an offset of 1 and return 3 items', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessInstance(defaultIdentity, processInstanceId, 1);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(3);
+      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).have.a.lengthOf(3);
     });
 
     it('should apply no offset, a limit of 2 and return 2 items', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessInstance(defaultIdentity, processInstanceId, 0, 2);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(2);
+      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 1, a limit of 2 and return 2 items', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessInstance(defaultIdentity, processInstanceId, 1, 2);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(2);
+      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 2, a limit of 5 and return 2 items', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessInstance(defaultIdentity, processInstanceId, 2, 5);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(2);
+      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).have.a.lengthOf(2);
     });
 
     it('should return all items, if the limit is larger than the max number of records', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessInstance(defaultIdentity, processInstanceId, 0, 20);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(4);
+      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).have.a.lengthOf(4);
 
     });
 
     it('should return an empty Array, if the offset is out of bounds', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForProcessInstance(defaultIdentity, processInstanceId, 1000);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(0);
+      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).have.a.lengthOf(0);
     });
   });
 

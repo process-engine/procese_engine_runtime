@@ -35,7 +35,7 @@ describe(`Management API: ${testCase}`, () => {
       .managementApiClient
       .getFlowNodeInstancesForProcessInstance(testFixtureProvider.identities.defaultUser, processInstanceId);
 
-    assertFlowNodeInstances(flowNodeInstances);
+    assertFlowNodeInstances(flowNodeInstances.flowNodeInstances);
   });
 
   async function createFinishedProcessInstance() {

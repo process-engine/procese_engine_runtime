@@ -50,7 +50,7 @@ describe('Management API: GetActiveTokensForFlowNode', () => {
         .managementApiClient
         .getUserTasksForProcessModel(testFixtureProvider.identities.superAdmin, processModelId);
 
-      for(const userTask of userTaskList.userTasks) {
+      for (const userTask of userTaskList.userTasks) {
         const {correlationId, flowNodeInstanceId, processInstanceId} = userTask;
 
         await testFixtureProvider
@@ -61,14 +61,14 @@ describe('Management API: GetActiveTokensForFlowNode', () => {
 
     it('should successfully get the active tokens for a running FlowNodeInstance', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForFlowNode(defaultIdentity, userTask1Id);
 
-      should(activeTokens).be.an.Array();
-      should(activeTokens).have.a.lengthOf(1);
+      should(activeTokenList.activeTokens).be.an.Array();
+      should(activeTokenList.activeTokens).have.a.lengthOf(1);
 
-      const activeToken = activeTokens[0];
+      const activeToken = activeTokenList.activeTokens[0];
 
       assertActiveToken(activeToken, userTask1Id);
     });
@@ -79,14 +79,14 @@ describe('Management API: GetActiveTokensForFlowNode', () => {
       // The tokens of this ProcessInstance should not show as ActiveTokens.
       await executeSampleProcess();
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForFlowNode(defaultIdentity, userTask1Id);
 
-      should(activeTokens).be.an.Array();
-      should(activeTokens).have.a.lengthOf(1);
+      should(activeTokenList.activeTokens).be.an.Array();
+      should(activeTokenList.activeTokens).have.a.lengthOf(1);
 
-      const activeToken = activeTokens[0];
+      const activeToken = activeTokenList.activeTokens[0];
 
       assertActiveToken(activeToken, userTask1Id);
     });
@@ -135,7 +135,7 @@ describe('Management API: GetActiveTokensForFlowNode', () => {
 
       // Create a number of ProcessInstances, so we can actually test pagination
       // We will have a grand total of 10 suspended tasks after this (2 per instance).
-      for(let i = 0; i < 5; i++) {
+      for (let i = 0; i < 5; i++) {
         await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, correlationId, initialToken);
       }
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId, 10);
@@ -143,63 +143,63 @@ describe('Management API: GetActiveTokensForFlowNode', () => {
 
     it('should apply no limit, an offset of 2 and return 3 items', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForFlowNode(defaultIdentity, userTask1Id, 2);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(3);
+      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).have.a.lengthOf(3);
     });
 
     it('should apply no offset, a limit of 2 and return 2 items', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForFlowNode(defaultIdentity, userTask1Id, 0, 2);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(2);
+      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 2, a limit of 2 and return 2 items', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForFlowNode(defaultIdentity, userTask1Id, 2, 2);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(2);
+      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 2, a limit of 5 and return 3 items', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForFlowNode(defaultIdentity, userTask1Id, 2, 5);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(3);
+      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).have.a.lengthOf(3);
     });
 
     it('should return all items, if the limit is larger than the max number of records', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForFlowNode(defaultIdentity, userTask1Id, 0, 20);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(5);
+      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).have.a.lengthOf(5);
 
     });
 
     it('should return an empty Array, if the offset is out of bounds', async () => {
 
-      const activeTokens = await testFixtureProvider
+      const activeTokenList = await testFixtureProvider
         .managementApiClient
         .getActiveTokensForFlowNode(defaultIdentity, userTask1Id, 1000);
 
-      should(activeTokens).be.an.instanceOf(Array);
-      should(activeTokens).have.a.lengthOf(0);
+      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).have.a.lengthOf(0);
     });
   });
 

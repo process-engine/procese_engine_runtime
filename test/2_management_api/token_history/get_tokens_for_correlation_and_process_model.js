@@ -46,19 +46,19 @@ describe('Management API: GetTokensForCorrelationAndProcessModel', () => {
       'EndEvent_0eie6q6',
     ];
 
-    const tokenHistories = await testFixtureProvider
+    const tokenHistoryList = await testFixtureProvider
       .managementApiClient
       .getTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId);
 
     for (const expectedFlowNodeName of expectedFlowNodeNames) {
-      const tokenHistory = tokenHistories[expectedFlowNodeName];
+      const tokenHistory = tokenHistoryList[expectedFlowNodeName];
 
-      should(tokenHistory).be.an.Array();
-      should(tokenHistory).have.a.lengthOf(2, `Not all state changes were persisted for FlowNode ${expectedFlowNodeName}!`);
+      should(tokenHistory.tokenHistoryEntries).be.an.Array();
+      should(tokenHistory.tokenHistoryEntries).have.a.lengthOf(2, `Not all state changes were persisted for FlowNode ${expectedFlowNodeName}!`);
 
       for (const tokenType of expectedTokenTypes) {
 
-        const matchingTokenHistoryEntry = tokenHistory.find((entry) => {
+        const matchingTokenHistoryEntry = tokenHistory.tokenHistoryEntries.find((entry) => {
           return entry.tokenEventType === tokenType;
         });
 

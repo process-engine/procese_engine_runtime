@@ -56,14 +56,14 @@ describe('Management API: GetTokensForProcessInstance', () => {
     should(tokenHistoryGroup).be.an.Object();
 
     for (const expectedFlowNodeName of expectedFlowNodeNames) {
-      const tokenHistory = tokenHistoryGroup[expectedFlowNodeName];
+      const tokenHistoryList = tokenHistoryGroup[expectedFlowNodeName];
 
-      should(tokenHistory).be.an.Array();
-      should(tokenHistory).have.a.lengthOf(2, `Not all state changes were persisted for FlowNode ${expectedFlowNodeName}!`);
+      should(tokenHistoryList.tokenHistoryEntries).be.an.Array();
+      should(tokenHistoryList.tokenHistoryEntries).have.a.lengthOf(2, `Not all state changes were persisted for FlowNode ${expectedFlowNodeName}!`);
 
       for (const tokenType of expectedTokenTypes) {
 
-        const matchingTokenHistoryEntry = tokenHistory.find((entry) => {
+        const matchingTokenHistoryEntry = tokenHistoryList.tokenHistoryEntries.find((entry) => {
           return entry.tokenEventType === tokenType;
         });
 
