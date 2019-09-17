@@ -72,7 +72,7 @@
     "@essential-projects/http": "2.4.0",
     "@essential-projects/http_extension": "6.6.1",
     "@essential-projects/timing": "5.0.0",
-    "@process-engine/consumer_api_core": "6.1.0-18c335f4-b24",
+    "@process-engine/consumer_api_core": "feature~add_total-count",
     "@process-engine/consumer_api_http": "5.1.0-31dfc078-b23",
     "@process-engine/correlation.service": "1.4.0-9f239841-b10",
     "@process-engine/correlations.repository.sequelize": "6.2.0-862313dd-b12",
@@ -117,7 +117,7 @@
   "devDependencies": {
     "@essential-projects/eslint-config": "^1.0.0",
     "@process-engine/ci_tools": "^2.0.0",
-    "@process-engine/consumer_api_client": "6.1.0-alpha.2",
+    "@process-engine/consumer_api_client": "feature~add_total-count",
     "@process-engine/external_task_api_client": "1.3.0-alpha.2",
     "@process-engine/management_api_client": "feature~add_total-count",
     "@types/bluebird-global": "^3.5.9",
