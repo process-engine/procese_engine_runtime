@@ -6,7 +6,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
+describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -44,9 +44,12 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
 
     it('should return a Users ProcessInstances by his identity', async () => {
 
-      const processInstances = await testFixtureProvider
+      const results = await testFixtureProvider
         .consumerApiClient
         .getProcessInstancesByIdentity(defaultIdentity);
+
+      should(results).have.a.property('processInstances');
+      const processInstances = results.processInstances;
 
       should(processInstances).be.an.instanceOf(Array);
       should(processInstances.length).be.greaterThan(0);
@@ -65,9 +68,12 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
 
     it('should filter out ProcessInstances that belong to a different User', async () => {
 
-      const processInstances = await testFixtureProvider
+      const results = await testFixtureProvider
         .consumerApiClient
         .getProcessInstancesByIdentity(secondaryIdentity);
+
+      should(results).have.a.property('processInstances');
+      const processInstances = results.processInstances;
 
       should(processInstances).be.an.instanceOf(Array);
       should(processInstances).have.a.lengthOf(0);
@@ -75,9 +81,13 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
 
     it('should return an empty Array, if no accessible running ProcessInstances were found', async () => {
 
-      const processInstances = await testFixtureProvider
+      const results = await testFixtureProvider
         .consumerApiClient
         .getProcessInstancesByIdentity(restrictedIdentity);
+
+      should(results).have.a.property('processInstances');
+
+      const processInstances = results.processInstances;
 
       should(processInstances).be.an.instanceOf(Array);
       should(processInstances).have.a.lengthOf(0);
@@ -98,9 +108,12 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
 
     it('should apply no limit, an offset of 5 and return 5 items', async () => {
 
-      const processInstances = await testFixtureProvider
+      const results = await testFixtureProvider
         .consumerApiClient
         .getProcessInstancesByIdentity(secondaryIdentity, 5);
+
+      should(results).have.a.property('processInstances');
+      const processInstances = results.processInstances;
 
       should(processInstances).be.an.instanceOf(Array);
       should(processInstances).have.a.lengthOf(5);
@@ -108,9 +121,12 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
 
     it('should apply no offset, a limit of 2 and return 2 items', async () => {
 
-      const processInstances = await testFixtureProvider
+      const results = await testFixtureProvider
         .consumerApiClient
         .getProcessInstancesByIdentity(secondaryIdentity, 0, 2);
+
+      should(results).have.a.property('processInstances');
+      const processInstances = results.processInstances;
 
       should(processInstances).be.an.instanceOf(Array);
       should(processInstances).have.a.lengthOf(2);
@@ -118,9 +134,12 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
 
     it('should apply an offset of 5, a limit of 2 and return 2 items', async () => {
 
-      const processInstances = await testFixtureProvider
+      const results = await testFixtureProvider
         .consumerApiClient
         .getProcessInstancesByIdentity(secondaryIdentity, 5, 2);
+
+      should(results).have.a.property('processInstances');
+      const processInstances = results.processInstances;
 
       should(processInstances).be.an.instanceOf(Array);
       should(processInstances).have.a.lengthOf(2);
@@ -128,9 +147,12 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
 
     it('should apply an offset of 7, a limit of 5 and return 3 items', async () => {
 
-      const processInstances = await testFixtureProvider
+      const results = await testFixtureProvider
         .consumerApiClient
         .getProcessInstancesByIdentity(secondaryIdentity, 7, 5);
+
+      should(results).have.a.property('processInstances');
+      const processInstances = results.processInstances;
 
       should(processInstances).be.an.instanceOf(Array);
       should(processInstances).have.a.lengthOf(3);
@@ -138,9 +160,12 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
 
     it('should return all items, if the limit is larger than the max number of records', async () => {
 
-      const processInstances = await testFixtureProvider
+      const results = await testFixtureProvider
         .consumerApiClient
         .getProcessInstancesByIdentity(secondaryIdentity, 0, 20);
+
+      should(results).have.a.property('processInstances');
+      const processInstances = results.processInstances;
 
       should(processInstances).be.an.instanceOf(Array);
       should(processInstances).have.a.lengthOf(10);
@@ -149,9 +174,12 @@ describe('ConsumerAPI:   GET  ->  /process_instances/own', () => {
 
     it('should return an empty Array, if the offset is out of bounds', async () => {
 
-      const processInstances = await testFixtureProvider
+      const results = await testFixtureProvider
         .consumerApiClient
         .getProcessInstancesByIdentity(secondaryIdentity, 1000);
+
+      should(results).have.a.property('processInstances');
+      const processInstances = results.processInstances;
 
       should(processInstances).be.an.instanceOf(Array);
       should(processInstances).have.a.lengthOf(0);
