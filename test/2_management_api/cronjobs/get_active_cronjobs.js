@@ -41,14 +41,14 @@ describe('Management API: GetAllActiveCronjobs', () => {
 
     it('should return all active cronjobs', async () => {
 
-      const cronjobs = await testFixtureProvider
+      const cronjobList = await testFixtureProvider
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity);
 
-      should(cronjobs).be.an.Array();
-      should(cronjobs).have.a.lengthOf(1);
+      should(cronjobList.cronjobs).be.an.Array();
+      should(cronjobList.cronjobs).have.a.lengthOf(1);
 
-      const cronjob = cronjobs[0];
+      const cronjob = cronjobList.cronjobs[0];
 
       should(cronjob.processModelId).be.equal('test_management_api_cyclic_timers');
       should(cronjob.startEventId).be.equal('TimerStartEvent_1');
@@ -61,15 +61,15 @@ describe('Management API: GetAllActiveCronjobs', () => {
 
       await cronjobService.addOrUpdate(parsedProcessModel2);
 
-      const cronjobs = await testFixtureProvider
+      const cronjobList = await testFixtureProvider
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity);
 
-      should(cronjobs).be.an.Array();
-      should(cronjobs).have.a.lengthOf(2);
+      should(cronjobList.cronjobs).be.an.Array();
+      should(cronjobList.cronjobs).have.a.lengthOf(2);
 
-      should(cronjobs).matchAny((cronjob) => cronjob.processModelId === processModelId);
-      should(cronjobs).matchAny((cronjob) => cronjob.processModelId === processModelId2);
+      should(cronjobList.cronjobs).matchAny((cronjob) => cronjob.processModelId === processModelId);
+      should(cronjobList.cronjobs).matchAny((cronjob) => cronjob.processModelId === processModelId2);
     });
 
     it('should not include cronjobs that are removed \'on the fly\'', async () => {
@@ -78,12 +78,12 @@ describe('Management API: GetAllActiveCronjobs', () => {
 
       await cronjobService.remove(processModelId2);
 
-      const cronjobs = await testFixtureProvider
+      const cronjobList = await testFixtureProvider
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity);
 
-      should(cronjobs).be.an.Array();
-      should(cronjobs).have.a.lengthOf(1);
+      should(cronjobList.cronjobs).be.an.Array();
+      should(cronjobList.cronjobs).have.a.lengthOf(1);
     });
 
   });
@@ -104,63 +104,63 @@ describe('Management API: GetAllActiveCronjobs', () => {
 
     it('should apply no limit, an offset of 4 and return 3 items', async () => {
 
-      const cronjobs = await testFixtureProvider
+      const cronjobList = await testFixtureProvider
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity, 4);
 
-      should(cronjobs).be.an.instanceOf(Array);
-      should(cronjobs).have.a.lengthOf(3);
+      should(cronjobList.cronjobs).be.an.instanceOf(Array);
+      should(cronjobList.cronjobs).have.a.lengthOf(3);
     });
 
     it('should apply no offset, a limit of 2 and return 2 items', async () => {
 
-      const cronjobs = await testFixtureProvider
+      const cronjobList = await testFixtureProvider
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity, 0, 2);
 
-      should(cronjobs).be.an.instanceOf(Array);
-      should(cronjobs).have.a.lengthOf(2);
+      should(cronjobList.cronjobs).be.an.instanceOf(Array);
+      should(cronjobList.cronjobs).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 3, a limit of 2 and return 2 items', async () => {
 
-      const cronjobs = await testFixtureProvider
+      const cronjobList = await testFixtureProvider
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity, 3, 2);
 
-      should(cronjobs).be.an.instanceOf(Array);
-      should(cronjobs).have.a.lengthOf(2);
+      should(cronjobList.cronjobs).be.an.instanceOf(Array);
+      should(cronjobList.cronjobs).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 5, a limit of 5 and return 2 items', async () => {
 
-      const cronjobs = await testFixtureProvider
+      const cronjobList = await testFixtureProvider
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity, 5, 5);
 
-      should(cronjobs).be.an.instanceOf(Array);
-      should(cronjobs).have.a.lengthOf(2);
+      should(cronjobList.cronjobs).be.an.instanceOf(Array);
+      should(cronjobList.cronjobs).have.a.lengthOf(2);
     });
 
     it('should return all items, if the limit is larger than the max number of records', async () => {
 
-      const cronjobs = await testFixtureProvider
+      const cronjobList = await testFixtureProvider
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity, 0, 20);
 
-      should(cronjobs).be.an.instanceOf(Array);
-      should(cronjobs).have.a.lengthOf(7);
+      should(cronjobList.cronjobs).be.an.instanceOf(Array);
+      should(cronjobList.cronjobs).have.a.lengthOf(7);
 
     });
 
     it('should return an empty Array, if the offset is out of bounds', async () => {
 
-      const cronjobs = await testFixtureProvider
+      const cronjobList = await testFixtureProvider
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity, 1000);
 
-      should(cronjobs).be.an.instanceOf(Array);
-      should(cronjobs).have.a.lengthOf(0);
+      should(cronjobList.cronjobs).be.an.instanceOf(Array);
+      should(cronjobList.cronjobs).have.a.lengthOf(0);
     });
   });
 
@@ -168,11 +168,11 @@ describe('Management API: GetAllActiveCronjobs', () => {
 
     it('should fail to retrieve a list of cronjobs, when the user is unauthorized', async () => {
       try {
-        const cronjobs = await testFixtureProvider
+        const cronjobList = await testFixtureProvider
           .managementApiClient
           .getAllActiveCronjobs({});
 
-        should.fail(cronjobs, undefined, 'This request should have failed!');
+        should.fail(cronjobList, undefined, 'This request should have failed!');
       } catch (error) {
         const expectedErrorMessage = /no auth token provided/i;
         const expectedErrorCode = 401;

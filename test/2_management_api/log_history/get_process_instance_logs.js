@@ -28,7 +28,7 @@ describe('Management API: GetProcessInstanceLogs', () => {
   describe('Execution', () => {
 
     it('should sucessfully get an array which contains all logs for a given ProcessInstance', async () => {
-      const logs = await testFixtureProvider
+      const logEntryList = await testFixtureProvider
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId);
 
@@ -41,32 +41,32 @@ describe('Management API: GetProcessInstanceLogs', () => {
         'message',
       ];
 
-      should(logs).be.an.Array();
-      should(logs).have.a.lengthOf(14);
+      should(logEntryList.logEntries).be.an.Array();
+      should(logEntryList.logEntries).have.a.lengthOf(14);
 
-      for (const currentLogEntry of logs) {
+      for (const currentLogEntry of logEntryList.logEntries) {
         should(currentLogEntry).have.properties(...expectedProperties);
       }
     });
 
     it('should return an empty array when trying to get logs for a non existing processModelid', async () => {
       const nonExistingProcessModelId = 'bogus_process_model_id';
-      const logs = await testFixtureProvider
+      const logEntryList = await testFixtureProvider
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, nonExistingProcessModelId, processInstanceId);
 
-      should(logs).be.an.Array();
-      should(logs).be.empty();
+      should(logEntryList.logEntries).be.an.Array();
+      should(logEntryList.logEntries).be.empty();
     });
 
     it('should return an empty array when trying to get logs for a non existing processInstanceId', async () => {
       const nonExistingProcessInstanceId = 'bogus_processInstance_id';
-      const logs = await testFixtureProvider
+      const logEntryList = await testFixtureProvider
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, processModelId, nonExistingProcessInstanceId);
 
-      should(logs).be.an.Array();
-      should(logs).be.empty();
+      should(logEntryList.logEntries).be.an.Array();
+      should(logEntryList.logEntries).be.empty();
     });
   });
 
@@ -74,63 +74,63 @@ describe('Management API: GetProcessInstanceLogs', () => {
 
     it('should apply no limit, an offset of 5 and return 9 items', async () => {
 
-      const logs = await testFixtureProvider
+      const logEntryList = await testFixtureProvider
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId, 5);
 
-      should(logs).be.an.instanceOf(Array);
-      should(logs).have.a.lengthOf(9);
+      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).have.a.lengthOf(9);
     });
 
     it('should apply no offset, a limit of 2 and return 2 items', async () => {
 
-      const logs = await testFixtureProvider
+      const logEntryList = await testFixtureProvider
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId, 0, 2);
 
-      should(logs).be.an.instanceOf(Array);
-      should(logs).have.a.lengthOf(2);
+      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 5, a limit of 2 and return 2 items', async () => {
 
-      const logs = await testFixtureProvider
+      const logEntryList = await testFixtureProvider
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId, 5, 2);
 
-      should(logs).be.an.instanceOf(Array);
-      should(logs).have.a.lengthOf(2);
+      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 11, a limit of 5 and return 3 items', async () => {
 
-      const logs = await testFixtureProvider
+      const logEntryList = await testFixtureProvider
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId, 11, 5);
 
-      should(logs).be.an.instanceOf(Array);
-      should(logs).have.a.lengthOf(3);
+      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).have.a.lengthOf(3);
     });
 
     it('should return all items, if the limit is larger than the max number of records', async () => {
 
-      const logs = await testFixtureProvider
+      const logEntryList = await testFixtureProvider
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId, 0, 20);
 
-      should(logs).be.an.instanceOf(Array);
-      should(logs).have.a.lengthOf(14);
+      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).have.a.lengthOf(14);
 
     });
 
     it('should return an empty Array, if the offset is out of bounds', async () => {
 
-      const logs = await testFixtureProvider
+      const logEntryList = await testFixtureProvider
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId, 1000);
 
-      should(logs).be.an.instanceOf(Array);
-      should(logs).have.a.lengthOf(0);
+      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).have.a.lengthOf(0);
     });
   });
 

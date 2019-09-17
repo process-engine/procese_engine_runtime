@@ -46,14 +46,14 @@ describe('Management API: getTokensForFlowNodeByProcessInstanceId', () => {
 
     should(tokenHistoryGroup).be.an.Object();
 
-    const tokenHistory = tokenHistoryGroup[startEventId];
+    const tokenHistoryList = tokenHistoryGroup[startEventId];
 
-    should(tokenHistory).be.an.Array();
-    should(tokenHistory).have.a.lengthOf(2, `Not all state changes were persisted for FlowNode ${startEventId}!`);
+    should(tokenHistoryList.tokenHistoryEntries).be.an.Array();
+    should(tokenHistoryList.tokenHistoryEntries).have.a.lengthOf(2, `Not all state changes were persisted for FlowNode ${startEventId}!`);
 
     for (const tokenType of expectedTokenTypes) {
 
-      const matchingTokenHistoryEntry = tokenHistory.find((entry) => {
+      const matchingTokenHistoryEntry = tokenHistoryList.tokenHistoryEntries.find((entry) => {
         return entry.tokenEventType === tokenType;
       });
 
@@ -73,7 +73,7 @@ describe('Management API: getTokensForFlowNodeByProcessInstanceId', () => {
     }
   });
 
-  it('sshould return an empty result set, if the ProcessInstance does not exist', async () => {
+  it('should return an empty result set, if the ProcessInstance does not exist', async () => {
     const tokenHistories = await testFixtureProvider
       .managementApiClient
       .getTokensForFlowNodeByProcessInstanceId(defaultIdentity, 'invalid_process_instance_id', startEventId);
@@ -82,7 +82,7 @@ describe('Management API: getTokensForFlowNodeByProcessInstanceId', () => {
     should(Object.keys(tokenHistories)).have.a.lengthOf(0);
   });
 
-  it('sshould return an empty result set, if the FlowNode does not exist', async () => {
+  it('should return an empty result set, if the FlowNode does not exist', async () => {
     const tokenHistories = await testFixtureProvider
       .managementApiClient
       .getTokensForFlowNodeByProcessInstanceId(defaultIdentity, processInstanceId, 'invalid_flow_node_id');

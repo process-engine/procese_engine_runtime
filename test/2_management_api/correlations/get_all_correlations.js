@@ -18,7 +18,7 @@ describe('Management API: GetAllCorrelations', () => {
     await testFixtureProvider.initializeAndStart();
 
     defaultIdentity = testFixtureProvider.identities.defaultUser;
-    secondIdentity = testFixtureProvider.identities.secondDefaultUser
+    secondIdentity = testFixtureProvider.identities.secondDefaultUser;
   });
 
   after(async () => {
@@ -43,14 +43,14 @@ describe('Management API: GetAllCorrelations', () => {
 
     it('should return all correlations for an user through the management api', async () => {
 
-      const correlations = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClient
         .getAllCorrelations(defaultIdentity);
 
-      should(correlations).be.an.instanceOf(Array);
-      should(correlations.length).be.greaterThan(0);
+      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations.length).be.greaterThan(0);
 
-      correlations.forEach((correlation) => {
+      correlationList.correlations.forEach((correlation) => {
         should(correlation).have.property('id');
         should(correlation).have.property('state');
         should(correlation).have.property('createdAt');
@@ -72,14 +72,14 @@ describe('Management API: GetAllCorrelations', () => {
 
     it('should return all correlations for a super admin through the management api', async () => {
 
-      const correlations = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClient
         .getAllCorrelations(testFixtureProvider.identities.superAdmin);
 
-      should(correlations).be.an.instanceOf(Array);
-      should(correlations.length).be.greaterThan(0);
+      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations.length).be.greaterThan(0);
 
-      correlations.forEach((correlation) => {
+      correlationList.correlations.forEach((correlation) => {
         should(correlation).have.property('id');
         should(correlation).have.property('state');
         should(correlation).have.property('createdAt');
@@ -104,7 +104,7 @@ describe('Management API: GetAllCorrelations', () => {
         .managementApiClient
         .getAllCorrelations(defaultIdentity);
 
-      correlationListDefaultUser.forEach((correlation) => {
+      correlationListDefaultUser.correlations.forEach((correlation) => {
         correlation.processInstances.forEach((processInstance) => {
           should(processInstance.identity.userId).be.equal(defaultIdentity.userId);
         });
@@ -114,7 +114,7 @@ describe('Management API: GetAllCorrelations', () => {
         .managementApiClient
         .getAllCorrelations(secondIdentity);
 
-      correlationListSecondUser.forEach((correlation) => {
+      correlationListSecondUser.correlations.forEach((correlation) => {
         correlation.processInstances.forEach((processInstance) => {
           should(processInstance.identity.userId).be.equal(secondIdentity.userId);
         });
@@ -131,14 +131,14 @@ describe('Management API: GetAllCorrelations', () => {
         await wait(500);
       }
 
-      const correlations = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClient
         .getAllCorrelations(defaultIdentity);
 
-      should(correlations).be.an.instanceOf(Array);
-      should(correlations.length).be.greaterThan(0);
+      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations.length).be.greaterThan(0);
 
-      const oneCorrelationErrorState = correlations.some((currentCorrelation) => {
+      const oneCorrelationErrorState = correlationList.correlations.some((currentCorrelation) => {
         return currentCorrelation.state === 'error';
       });
 
@@ -160,63 +160,63 @@ describe('Management API: GetAllCorrelations', () => {
 
     it('should apply no limit, an offset of 5 and return 5 items', async () => {
 
-      const correlations = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClient
         .getAllCorrelations(defaultIdentity, 5);
 
-      should(correlations).be.an.instanceOf(Array);
-      should(correlations).have.a.lengthOf(5);
+      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).have.a.lengthOf(5);
     });
 
     it('should apply no offset, a limit of 2 and return 2 items', async () => {
 
-      const correlations = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClient
         .getAllCorrelations(defaultIdentity, 0, 2);
 
-      should(correlations).be.an.instanceOf(Array);
-      should(correlations).have.a.lengthOf(2);
+      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 5, a limit of 2 and return 2 items', async () => {
 
-      const correlations = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClient
         .getAllCorrelations(defaultIdentity, 5, 2);
 
-      should(correlations).be.an.instanceOf(Array);
-      should(correlations).have.a.lengthOf(2);
+      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 7, a limit of 5 and return 3 items', async () => {
 
-      const correlations = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClient
         .getAllCorrelations(defaultIdentity, 7, 5);
 
-      should(correlations).be.an.instanceOf(Array);
-      should(correlations).have.a.lengthOf(3);
+      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).have.a.lengthOf(3);
     });
 
     it('should return all items, if the limit is larger than the max number of records', async () => {
 
-      const correlations = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClient
         .getAllCorrelations(defaultIdentity, 0, 20);
 
-      should(correlations).be.an.instanceOf(Array);
-      should(correlations).have.a.lengthOf(10);
+      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).have.a.lengthOf(10);
 
     });
 
     it('should return an empty Array, if the offset is out of bounds', async () => {
 
-      const correlations = await testFixtureProvider
+      const correlationList = await testFixtureProvider
         .managementApiClient
         .getAllCorrelations(defaultIdentity, 1000);
 
-      should(correlations).be.an.instanceOf(Array);
-      should(correlations).have.a.lengthOf(0);
+      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).have.a.lengthOf(0);
     });
   });
 

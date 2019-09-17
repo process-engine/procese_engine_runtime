@@ -38,22 +38,26 @@ describe('Management API: GetCronjobExecutionHistoryForCrontab', () => {
       processModelId: processModelId,
       startEventId: 'TimerStartEvent_1',
       crontab: '* * 1 1 1',
-      executedAt: moment().subtract(10, 'minutes').toDate(),
+      executedAt: moment().subtract(10, 'minutes')
+        .toDate(),
     }, {
       processModelId: processModelId,
       startEventId: 'TimerStartEvent_2',
       crontab: '* * 2 2 2',
-      executedAt: moment().subtract(20, 'minutes').toDate(),
+      executedAt: moment().subtract(20, 'minutes')
+        .toDate(),
     }, {
       processModelId: processModelId2,
       startEventId: 'TimerStartEvent_1',
       crontab: '* * 1 1 1',
-      executedAt: moment().subtract(5, 'minutes').toDate(),
+      executedAt: moment().subtract(5, 'minutes')
+        .toDate(),
     }, {
       processModelId: processModelId2,
       startEventId: 'TimerStartEvent_2',
       crontab: '* * 4 4 4',
-      executedAt: moment().subtract(25, 'minutes').toDate(),
+      executedAt: moment().subtract(25, 'minutes')
+        .toDate(),
     }];
 
     before(async () => {
@@ -72,9 +76,9 @@ describe('Management API: GetCronjobExecutionHistoryForCrontab', () => {
         .managementApiClient
         .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab);
 
-      should(cronjobHistory).have.a.lengthOf(2);
+      should(cronjobHistory.cronjobHistories).have.a.lengthOf(2);
 
-      assertCronjobHistory(cronjobHistory, crontab);
+      assertCronjobHistory(cronjobHistory.cronjobHistories, crontab);
     });
 
     it('should return the cronjob history for the given Crontab, when the user is a super admin', async () => {
@@ -84,9 +88,9 @@ describe('Management API: GetCronjobExecutionHistoryForCrontab', () => {
         .managementApiClient
         .getCronjobExecutionHistoryForCrontab(superAdmin, crontab);
 
-      should(cronjobHistory).have.a.lengthOf(2);
+      should(cronjobHistory.cronjobHistories).have.a.lengthOf(2);
 
-      assertCronjobHistory(cronjobHistory, crontab);
+      assertCronjobHistory(cronjobHistory.cronjobHistories, crontab);
     });
   });
 
@@ -99,37 +103,44 @@ describe('Management API: GetCronjobExecutionHistoryForCrontab', () => {
       processModelId: processModelId,
       startEventId: 'TimerStartEvent_1',
       crontab: crontab,
-      executedAt: moment().subtract(10, 'minutes').toDate(),
+      executedAt: moment().subtract(10, 'minutes')
+        .toDate(),
     }, {
       processModelId: processModelId,
       startEventId: 'TimerStartEvent_1',
       crontab: crontab,
-      executedAt: moment().subtract(20, 'minutes').toDate(),
+      executedAt: moment().subtract(20, 'minutes')
+        .toDate(),
     }, {
       processModelId: processModelId,
       startEventId: 'TimerStartEvent_1',
       crontab: crontab,
-      executedAt: moment().subtract(5, 'minutes').toDate(),
+      executedAt: moment().subtract(5, 'minutes')
+        .toDate(),
     }, {
       processModelId: processModelId,
       startEventId: 'TimerStartEvent_1',
       crontab: crontab,
-      executedAt: moment().subtract(12, 'minutes').toDate(),
+      executedAt: moment().subtract(12, 'minutes')
+        .toDate(),
     }, {
       processModelId: processModelId,
       startEventId: 'TimerStartEvent_1',
       crontab: crontab,
-      executedAt: moment().subtract(25, 'minutes').toDate(),
+      executedAt: moment().subtract(25, 'minutes')
+        .toDate(),
     }, {
       processModelId: processModelId,
       startEventId: 'TimerStartEvent_1',
       crontab: crontab,
-      executedAt: moment().subtract(35, 'minutes').toDate(),
+      executedAt: moment().subtract(35, 'minutes')
+        .toDate(),
     }, {
       processModelId: processModelId,
       startEventId: 'TimerStartEvent_1',
       crontab: crontab,
-      executedAt: moment().subtract(45, 'minutes').toDate(),
+      executedAt: moment().subtract(45, 'minutes')
+        .toDate(),
     }];
 
     before(async () => {
@@ -142,63 +153,63 @@ describe('Management API: GetCronjobExecutionHistoryForCrontab', () => {
 
     it('should apply no limit, an offset of 4 and return 3 items', async () => {
 
-      const cronjobs = await testFixtureProvider
+      const cronjobHistory = await testFixtureProvider
         .managementApiClient
         .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 4);
 
-      should(cronjobs).be.an.instanceOf(Array);
-      should(cronjobs).have.a.lengthOf(3);
+      should(cronjobHistory.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistory.cronjobHistories).have.a.lengthOf(3);
     });
 
     it('should apply no offset, a limit of 2 and return 2 items', async () => {
 
-      const cronjobs = await testFixtureProvider
+      const cronjobHistory = await testFixtureProvider
         .managementApiClient
         .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 0, 2);
 
-      should(cronjobs).be.an.instanceOf(Array);
-      should(cronjobs).have.a.lengthOf(2);
+      should(cronjobHistory.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistory.cronjobHistories).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 3, a limit of 2 and return 2 items', async () => {
 
-      const cronjobs = await testFixtureProvider
+      const cronjobHistory = await testFixtureProvider
         .managementApiClient
         .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 3, 2);
 
-      should(cronjobs).be.an.instanceOf(Array);
-      should(cronjobs).have.a.lengthOf(2);
+      should(cronjobHistory.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistory.cronjobHistories).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 5, a limit of 5 and return 2 items', async () => {
 
-      const cronjobs = await testFixtureProvider
+      const cronjobHistory = await testFixtureProvider
         .managementApiClient
         .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 5, 5);
 
-      should(cronjobs).be.an.instanceOf(Array);
-      should(cronjobs).have.a.lengthOf(2);
+      should(cronjobHistory.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistory.cronjobHistories).have.a.lengthOf(2);
     });
 
     it('should return all items, if the limit is larger than the max number of records', async () => {
 
-      const cronjobs = await testFixtureProvider
+      const cronjobHistory = await testFixtureProvider
         .managementApiClient
         .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 0, 20);
 
-      should(cronjobs).be.an.instanceOf(Array);
-      should(cronjobs).have.a.lengthOf(7);
+      should(cronjobHistory.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistory.cronjobHistories).have.a.lengthOf(7);
 
     });
 
     it('should return an empty Array, if the offset is out of bounds', async () => {
 
-      const cronjobs = await testFixtureProvider
+      const cronjobHistory = await testFixtureProvider
         .managementApiClient
         .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 1000);
 
-      should(cronjobs).be.an.instanceOf(Array);
-      should(cronjobs).have.a.lengthOf(0);
+      should(cronjobHistory.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistory.cronjobHistories).have.a.lengthOf(0);
     });
   });
 

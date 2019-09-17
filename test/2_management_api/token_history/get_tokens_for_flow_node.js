@@ -48,16 +48,16 @@ describe('Management API: GetTokensForFlowNode', () => {
 
     for (const flowNodeId of expectedFlowNodeNames) {
 
-      const tokenHistory = await testFixtureProvider
+      const tokenHistoryList = await testFixtureProvider
         .managementApiClient
         .getTokensForFlowNode(defaultIdentity, correlationId, processModelId, flowNodeId);
 
-      should(tokenHistory).be.an.Array();
-      should(tokenHistory).have.a.lengthOf(2, `Not all state changes were persisted for FlowNode ${flowNodeId}!`);
+      should(tokenHistoryList.tokenHistoryEntries).be.an.Array();
+      should(tokenHistoryList.tokenHistoryEntries).have.a.lengthOf(2, `Not all state changes were persisted for FlowNode ${flowNodeId}!`);
 
       for (const tokenType of expectedTokenTypes) {
 
-        const matchingTokenHistoryEntry = tokenHistory.find((entry) => {
+        const matchingTokenHistoryEntry = tokenHistoryList.tokenHistoryEntries.find((entry) => {
           return entry.tokenEventType === tokenType;
         });
 

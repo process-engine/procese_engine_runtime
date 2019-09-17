@@ -7,7 +7,7 @@ const startCallbackType = require('@process-engine/consumer_api_contracts').Data
 
 const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
-describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/:process_model_id/results', () => {
+describe('Consumer API: GetProcessResultForCorrelation', () => {
 
   let testFixtureProvider;
   let defaultIdentity;
@@ -61,9 +61,13 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
 
   it('should successfully return the results for the given correlationId', async () => {
 
-    const correlationResults = await testFixtureProvider
+    const results = await testFixtureProvider
       .consumerApiClient
       .getProcessResultForCorrelation(defaultIdentity, correlationId, processModelIdDefault);
+
+    should(results).have.a.property('correlationResults');
+
+    const correlationResults = results.correlationResults;
 
     should(correlationResults).be.an.instanceOf(Array);
     should(correlationResults).have.a.lengthOf(1);
@@ -86,9 +90,13 @@ describe('Consumer API:   GET  ->  /correlations/:correlation_id/process_models/
     const correlationIdMultipleResults =
       await createFinishedProcessInstanceAndReturnCorrelationId(processModelIdMultipleEndEvents, endEventToWaitFor);
 
-    const correlationResults = await testFixtureProvider
+    const results = await testFixtureProvider
       .consumerApiClient
       .getProcessResultForCorrelation(defaultIdentity, correlationIdMultipleResults, processModelIdMultipleEndEvents);
+
+    should(results).have.a.property('correlationResults');
+
+    const correlationResults = results.correlationResults;
 
     should(correlationResults).be.an.instanceOf(Array);
     should(correlationResults).have.a.lengthOf(2);

@@ -29,8 +29,8 @@ describe('Management API: GetRuntimeInformationForProcessModel ', () => {
         .managementApiClient
         .getRuntimeInformationForProcessModel(defaultIdentity, processModelId);
 
-      should(runtimeInfos).be.an.Array();
-      should(runtimeInfos).have.a.lengthOf(10, `Expected 10 runtime informations, but got ${runtimeInfos.length}.`);
+      should(runtimeInfos.flowNodeRuntimeInformation).be.an.Array();
+      should(runtimeInfos.flowNodeRuntimeInformation).have.a.lengthOf(10, `Expected 10 runtime informations, but got ${runtimeInfos.flowNodeRuntimeInformation.length}.`);
 
       const expectedFlowNodeIds = [
         'StartEvent_1mox3jl',
@@ -47,7 +47,7 @@ describe('Management API: GetRuntimeInformationForProcessModel ', () => {
 
       for (const flowNodeId of expectedFlowNodeIds) {
 
-        const matchingRuntimeInfo = runtimeInfos.find((runtimeInfo) => {
+        const matchingRuntimeInfo = runtimeInfos.flowNodeRuntimeInformation.find((runtimeInfo) => {
           return runtimeInfo.flowNodeId === flowNodeId;
         });
 
@@ -71,8 +71,8 @@ describe('Management API: GetRuntimeInformationForProcessModel ', () => {
         .managementApiClient
         .getRuntimeInformationForProcessModel(defaultIdentity, processModelId, 5);
 
-      should(runtimeInfos).be.an.instanceOf(Array);
-      should(runtimeInfos).have.a.lengthOf(5);
+      should(runtimeInfos.flowNodeRuntimeInformation).be.an.instanceOf(Array);
+      should(runtimeInfos.flowNodeRuntimeInformation).have.a.lengthOf(5);
     });
 
     it('should apply no offset, a limit of 2 and return 2 items', async () => {
@@ -81,8 +81,8 @@ describe('Management API: GetRuntimeInformationForProcessModel ', () => {
         .managementApiClient
         .getRuntimeInformationForProcessModel(defaultIdentity, processModelId, 0, 2);
 
-      should(runtimeInfos).be.an.instanceOf(Array);
-      should(runtimeInfos).have.a.lengthOf(2);
+      should(runtimeInfos.flowNodeRuntimeInformation).be.an.instanceOf(Array);
+      should(runtimeInfos.flowNodeRuntimeInformation).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 5, a limit of 2 and return 2 items', async () => {
@@ -91,8 +91,8 @@ describe('Management API: GetRuntimeInformationForProcessModel ', () => {
         .managementApiClient
         .getRuntimeInformationForProcessModel(defaultIdentity, processModelId, 5, 2);
 
-      should(runtimeInfos).be.an.instanceOf(Array);
-      should(runtimeInfos).have.a.lengthOf(2);
+      should(runtimeInfos.flowNodeRuntimeInformation).be.an.instanceOf(Array);
+      should(runtimeInfos.flowNodeRuntimeInformation).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 7, a limit of 5 and return 3 items', async () => {
@@ -101,8 +101,8 @@ describe('Management API: GetRuntimeInformationForProcessModel ', () => {
         .managementApiClient
         .getRuntimeInformationForProcessModel(defaultIdentity, processModelId, 7, 5);
 
-      should(runtimeInfos).be.an.instanceOf(Array);
-      should(runtimeInfos).have.a.lengthOf(3);
+      should(runtimeInfos.flowNodeRuntimeInformation).be.an.instanceOf(Array);
+      should(runtimeInfos.flowNodeRuntimeInformation).have.a.lengthOf(3);
     });
 
     it('should return all items, if the limit is larger than the max number of records', async () => {
@@ -111,8 +111,8 @@ describe('Management API: GetRuntimeInformationForProcessModel ', () => {
         .managementApiClient
         .getRuntimeInformationForProcessModel(defaultIdentity, processModelId, 0, 20);
 
-      should(runtimeInfos).be.an.instanceOf(Array);
-      should(runtimeInfos).have.a.lengthOf(10);
+      should(runtimeInfos.flowNodeRuntimeInformation).be.an.instanceOf(Array);
+      should(runtimeInfos.flowNodeRuntimeInformation).have.a.lengthOf(10);
 
     });
 
@@ -122,8 +122,8 @@ describe('Management API: GetRuntimeInformationForProcessModel ', () => {
         .managementApiClient
         .getRuntimeInformationForProcessModel(defaultIdentity, processModelId, 1000);
 
-      should(runtimeInfos).be.an.instanceOf(Array);
-      should(runtimeInfos).have.a.lengthOf(0);
+      should(runtimeInfos.flowNodeRuntimeInformation).be.an.instanceOf(Array);
+      should(runtimeInfos.flowNodeRuntimeInformation).have.a.lengthOf(0);
     });
   });
 
