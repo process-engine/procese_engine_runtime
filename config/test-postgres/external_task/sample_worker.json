@@ -5,7 +5,5 @@
   "maxTasks": 10,
   "longPollingTimeout": 100,
   "lockDuration": 3000,
-  "httpClient": {
-    "url": "http://localhost:46465"
-  }
+  "processEngineUrl": "http://localhost:32413"
 }

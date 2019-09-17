@@ -1,31 +1,36 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as jsonwebtoken from 'jsonwebtoken';
 
-import * as bluebird from 'bluebird';
 import {Logger} from 'loggerhythm';
 
 import {IIdentity, IIdentityService, TokenBody} from '@essential-projects/iam_contracts';
-import {APIs, DataModels} from '@process-engine/consumer_api_contracts';
+import {DataModels} from '@process-engine/consumer_api_contracts';
+import {ExternalTaskWorker} from '@process-engine/consumer_api_client';
 
 const logger = Logger.createLogger('processengine:external_task:sample_worker');
 
+interface IWorkerConfig {
+  workerId: string;
+  topicName: string;
+  pollingInterval: number;
+  maxTasks: number;
+  longPollingTimeout: number;
+  lockDuration: number;
+  processEngineUrl: string;
+}
+
 /**
- * Contains a sample implementation for an ExternalTask worker.
- * Use only for the Integrationtests.
+ * Wraps an ExternalTaskWorker with a sample config and identity for easy use with the integrationtests.
  */
 export class ExternalTaskSampleWorker {
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public config: any;
+  public config: IWorkerConfig;
 
-  private externalTaskApiClient: APIs.IExternalTaskConsumerApi;
   private identityService: IIdentityService;
-
-  private intervalTimer: NodeJS.Timeout;
-
   private sampleIdentity: IIdentity;
+  private externalTaskWorker: ExternalTaskWorker<any, any>;
 
-  constructor(externalTaskApiClient: APIs.IExternalTaskConsumerApi, identityService: IIdentityService) {
-    this.externalTaskApiClient = externalTaskApiClient;
+  constructor(identityService: IIdentityService) {
     this.identityService = identityService;
   }
 
@@ -43,63 +48,36 @@ export class ExternalTaskSampleWorker {
     const encodedToken = jsonwebtoken.sign(tokenBody, 'randomkey', signOptions);
 
     this.sampleIdentity = await this.identityService.getIdentity(encodedToken);
-  }
 
-  public start<TPayload, TResult>(): void {
-    this.intervalTimer = setInterval(async (): Promise<void> => {
-      await this.fetchAndProcessExternalTasks<TPayload, TResult>();
-    }, this.config.pollingInterval);
-  }
-
-  public stop(): void {
-    clearInterval(this.intervalTimer);
-  }
-
-  private async fetchAndProcessExternalTasks<TPayload, TResult>(): Promise<void> {
-
-    const availableExternalTasks = await this.externalTaskApiClient.fetchAndLockExternalTasks<TPayload>(
+    this.externalTaskWorker = new ExternalTaskWorker(
+      this.config.processEngineUrl,
       this.sampleIdentity,
-      this.config.workerId,
       this.config.topicName,
       this.config.maxTasks,
       this.config.longPollingTimeout,
-      this.config.lockDuration,
+      this.processExternalTask,
     );
-
-    if (availableExternalTasks.length > 0) {
-      logger.info(`Found ${availableExternalTasks.length} ExternalTasks available for processing.`);
-
-      this.stop();
-
-      await bluebird.each(availableExternalTasks, async (externalTask: DataModels.ExternalTask.ExternalTask<TPayload>): Promise<void> => {
-        return this.processExternalTask<TPayload, TResult>(externalTask);
-      });
-
-      logger.info('All tasks processed.');
-      this.start();
-    }
   }
 
-  private async processExternalTask<TPayload, TResult>(externalTask: DataModels.ExternalTask.ExternalTask<TPayload>): Promise<void> {
+  public start<TPayload, TResult>(): void {
+    this.externalTaskWorker.start();
+  }
+
+  public stop(): void {
+    this.externalTaskWorker.stop();
+  }
+
+  private async processExternalTask(externalTask: DataModels.ExternalTask.ExternalTask<any>): Promise<any> {
 
     logger.info(`Processing ExternalTask ${externalTask.id}.`);
 
-    const result = await this.getSampleResult<TPayload>(externalTask.payload);
-
-    await this.externalTaskApiClient.finishExternalTask<TResult>(this.sampleIdentity, this.config.workerId, externalTask.id, result);
+    const sampleResult = {
+      testResults: externalTask.payload,
+    };
 
     logger.info(`Finished processing ExternalTask with ID ${externalTask.id}.`);
 
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private getSampleResult<TPayload>(payload: TPayload): any {
-
-    const sampleResult = {
-      testResults: payload,
-    };
-
-    return sampleResult;
+    return new DataModels.ExternalTask.ExternalTaskSuccessResult(externalTask.id, sampleResult);
   }
 
 }
