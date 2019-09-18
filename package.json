@@ -88,7 +88,7 @@
     "@process-engine/management_api_http": "5.0.0-c765c583-b24",
     "@process-engine/metrics_api_core": "2.0.0",
     "@process-engine/metrics.repository.file_system": "2.0.0",
-    "@process-engine/process_engine_core": "feature~fix_error_boundary_event_matching",
+    "@process-engine/process_engine_core": "12.11.0-39d56fe9-b60",
     "@process-engine/process_model.repository.sequelize": "6.1.0-48c6d7cc-b16",
     "@process-engine/process_model.service": "1.2.0-7bd01e3c-b10",
     "@process-engine/process_model.use_case": "1.4.0-d84b8543-b10",
