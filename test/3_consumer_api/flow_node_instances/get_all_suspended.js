@@ -1,7 +1,7 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 describe('Consumer API: GetAllSuspendedTasks', () => {
 
@@ -37,81 +37,35 @@ describe('Consumer API: GetAllSuspendedTasks', () => {
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId, 3);
     });
 
+    after(async () => {
+      await testFixtureProvider.clearDatabases();
+      await testFixtureProvider.importProcessFiles([
+        processModelId,
+      ]);
+    });
+
     it('should return all suspended tasks', async () => {
 
       const taskList = await testFixtureProvider
         .consumerApiClient
         .getAllSuspendedTasks(defaultIdentity);
 
-      // UserTaskList Checks
-      should(taskList).have.property('userTasks');
+      should(taskList).have.property('tasks');
 
-      should(taskList.userTasks).be.instanceOf(Array);
-      should(taskList.userTasks.length).be.greaterThan(0);
+      should(taskList.tasks).be.instanceOf(Array);
+      should(taskList.tasks.length).be.greaterThan(0);
 
-      const userTask = taskList.userTasks[0];
+      const task = taskList.tasks[0];
 
-      should(userTask).have.property('id');
-      should(userTask).have.property('flowNodeInstanceId');
-      should(userTask).have.property('name');
-      should(userTask).have.property('correlationId');
-      should(userTask).have.property('processModelId');
-      should(userTask).have.property('processInstanceId');
-      should(userTask).have.property('tokenPayload');
-      should(userTask).not.have.property('processInstanceOwner');
-      should(userTask).not.have.property('identity');
-
-      // EmptyActivityList Checks
-      should(taskList).have.property('emptyActivities');
-
-      should(taskList.emptyActivities).be.instanceOf(Array);
-      should(taskList.emptyActivities.length).be.greaterThan(0);
-
-      const emptyActivity = taskList.emptyActivities[0];
-
-      should(emptyActivity).have.property('id');
-      should(emptyActivity).have.property('flowNodeInstanceId');
-      should(emptyActivity).have.property('name');
-      should(emptyActivity).have.property('correlationId');
-      should(emptyActivity).have.property('processModelId');
-      should(emptyActivity).have.property('processInstanceId');
-      should(emptyActivity).have.property('tokenPayload');
-      should(emptyActivity).not.have.property('processInstanceOwner');
-      should(emptyActivity).not.have.property('identity');
-
-      // ManualTaskList Checks
-      should(taskList).have.property('manualTasks');
-
-      should(taskList.manualTasks).be.instanceOf(Array);
-      should(taskList.manualTasks.length).be.greaterThan(0);
-
-      const manualTask = taskList.manualTasks[0];
-
-      should(manualTask).have.property('id');
-      should(manualTask).have.property('flowNodeInstanceId');
-      should(manualTask).have.property('name');
-      should(manualTask).have.property('correlationId');
-      should(manualTask).have.property('processModelId');
-      should(manualTask).have.property('processInstanceId');
-      should(manualTask).have.property('tokenPayload');
-      should(manualTask).not.have.property('processInstanceOwner');
-      should(manualTask).not.have.property('identity');
-
-      await new Promise(async (resolve, reject) => {
-        processInstanceHandler.waitForProcessWithInstanceIdToEnd(userTask.processInstanceId, resolve);
-
-        await testFixtureProvider
-          .consumerApiClient
-          .finishUserTask(defaultIdentity, userTask.processInstanceId, userTask.correlationId, userTask.flowNodeInstanceId);
-
-        await testFixtureProvider
-          .consumerApiClient
-          .finishManualTask(defaultIdentity, manualTask.processInstanceId, manualTask.correlationId, manualTask.flowNodeInstanceId);
-
-        await testFixtureProvider
-          .consumerApiClient
-          .finishEmptyActivity(defaultIdentity, emptyActivity.processInstanceId, emptyActivity.correlationId, emptyActivity.flowNodeInstanceId);
-      });
+      should(task).have.property('id');
+      should(task).have.property('flowNodeInstanceId');
+      should(task).have.property('name');
+      should(task).have.property('correlationId');
+      should(task).have.property('processModelId');
+      should(task).have.property('processInstanceId');
+      should(task).have.property('tokenPayload');
+      should(task).not.have.property('processInstanceOwner');
+      should(task).not.have.property('identity');
     });
   });
 
@@ -134,17 +88,9 @@ describe('Consumer API: GetAllSuspendedTasks', () => {
         .consumerApiClient
         .getAllSuspendedTasks(defaultIdentity, 5);
 
-      should(taskList).have.property('userTasks');
-      should(taskList.userTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('manualTasks');
-      should(taskList.manualTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('emptyActivities');
-      should(taskList.emptyActivities).be.an.instanceOf(Array);
-
-      const amountOfReceivedTasks = taskList.manualTasks.length + taskList.userTasks.length + taskList.emptyActivities.length;
-      should(amountOfReceivedTasks).be.equal(4);
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).have.a.lengthOf(4);
     });
 
     it('should apply no offset, a limit of 2 and return 2 items', async () => {
@@ -153,17 +99,9 @@ describe('Consumer API: GetAllSuspendedTasks', () => {
         .consumerApiClient
         .getAllSuspendedTasks(defaultIdentity, 0, 2);
 
-      should(taskList).have.property('userTasks');
-      should(taskList.userTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('manualTasks');
-      should(taskList.manualTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('emptyActivities');
-      should(taskList.emptyActivities).be.an.instanceOf(Array);
-
-      const amountOfReceivedTasks = taskList.manualTasks.length + taskList.userTasks.length + taskList.emptyActivities.length;
-      should(amountOfReceivedTasks).be.equal(2);
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 5, a limit of 2 and return 2 items', async () => {
@@ -172,17 +110,9 @@ describe('Consumer API: GetAllSuspendedTasks', () => {
         .consumerApiClient
         .getAllSuspendedTasks(defaultIdentity, 5, 2);
 
-      should(taskList).have.property('userTasks');
-      should(taskList.userTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('manualTasks');
-      should(taskList.manualTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('emptyActivities');
-      should(taskList.emptyActivities).be.an.instanceOf(Array);
-
-      const amountOfReceivedTasks = taskList.manualTasks.length + taskList.userTasks.length + taskList.emptyActivities.length;
-      should(amountOfReceivedTasks).be.equal(2);
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).have.a.lengthOf(2);
     });
 
     it('should apply an offset of 6, a limit of 5 and return 3 items', async () => {
@@ -191,17 +121,9 @@ describe('Consumer API: GetAllSuspendedTasks', () => {
         .consumerApiClient
         .getAllSuspendedTasks(defaultIdentity, 6, 5);
 
-      should(taskList).have.property('userTasks');
-      should(taskList.userTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('manualTasks');
-      should(taskList.manualTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('emptyActivities');
-      should(taskList.emptyActivities).be.an.instanceOf(Array);
-
-      const amountOfReceivedTasks = taskList.manualTasks.length + taskList.userTasks.length + taskList.emptyActivities.length;
-      should(amountOfReceivedTasks).be.equal(3);
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).have.a.lengthOf(3);
     });
 
     it('should return all items, if the limit is larger than the max number of records', async () => {
@@ -210,17 +132,9 @@ describe('Consumer API: GetAllSuspendedTasks', () => {
         .consumerApiClient
         .getAllSuspendedTasks(defaultIdentity, 0, 11);
 
-      should(taskList).have.property('userTasks');
-      should(taskList.userTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('manualTasks');
-      should(taskList.manualTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('emptyActivities');
-      should(taskList.emptyActivities).be.an.instanceOf(Array);
-
-      const amountOfReceivedTasks = taskList.manualTasks.length + taskList.userTasks.length + taskList.emptyActivities.length;
-      should(amountOfReceivedTasks).be.equal(9);
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).have.a.lengthOf(9);
     });
 
     it('should return an empty Array, if the offset is out of bounds', async () => {
@@ -229,17 +143,9 @@ describe('Consumer API: GetAllSuspendedTasks', () => {
         .consumerApiClient
         .getAllSuspendedTasks(defaultIdentity, 1000);
 
-      should(taskList).have.property('userTasks');
-      should(taskList.userTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('manualTasks');
-      should(taskList.manualTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('emptyActivities');
-      should(taskList.emptyActivities).be.an.instanceOf(Array);
-
-      const amountOfReceivedTasks = taskList.manualTasks.length + taskList.userTasks.length + taskList.emptyActivities.length;
-      should(amountOfReceivedTasks).be.equal(0);
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).have.a.lengthOf(0);
     });
   });
 

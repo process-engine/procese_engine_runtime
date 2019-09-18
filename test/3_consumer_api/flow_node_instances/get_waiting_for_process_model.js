@@ -1,8 +1,7 @@
-
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
+const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 describe('Consumer API: GetSuspendedTasksForProcessModel', () => {
 
@@ -45,33 +44,12 @@ describe('Consumer API: GetSuspendedTasksForProcessModel', () => {
 
     after(async () => {
       // The tasks must be cleaned up here, so they won't interfere with the pagination tests.
-      const taskList = await testFixtureProvider
-        .consumerApiClient
-        .getSuspendedTasksForProcessModel(testFixtureProvider.identities.superAdmin, processModelId);
-
-      for (const userTask of taskList.userTasks) {
-        const {correlationId, flowNodeInstanceId, processInstanceId} = userTask;
-
-        await testFixtureProvider
-          .consumerApiClient
-          .finishUserTask(testFixtureProvider.identities.superAdmin, processInstanceId, correlationId, flowNodeInstanceId);
-      }
-
-      for (const manualTask of taskList.manualTasks) {
-        const {correlationId, flowNodeInstanceId, processInstanceId} = manualTask;
-
-        await testFixtureProvider
-          .consumerApiClient
-          .finishManualTask(testFixtureProvider.identities.superAdmin, processInstanceId, correlationId, flowNodeInstanceId);
-      }
-
-      for (const emptyActivity of taskList.emptyActivities) {
-        const {correlationId, flowNodeInstanceId, processInstanceId} = emptyActivity;
-
-        await testFixtureProvider
-          .consumerApiClient
-          .finishEmptyActivity(testFixtureProvider.identities.superAdmin, processInstanceId, correlationId, flowNodeInstanceId);
-      }
+      await testFixtureProvider.clearDatabases();
+      const processModelsToImport = [
+        processModelId,
+        processModelIdNoUserTasks,
+      ];
+      await testFixtureProvider.importProcessFiles(processModelsToImport);
     });
 
     it('should return a ProcessModel\'s Tasks by its ProcessModelId through the Consumer API', async () => {
@@ -80,71 +58,21 @@ describe('Consumer API: GetSuspendedTasksForProcessModel', () => {
         .consumerApiClient
         .getSuspendedTasksForProcessModel(defaultIdentity, processModelId);
 
-      // UserTaskList Checks
-      should(taskList).have.property('userTasks');
+      should(taskList).have.property('tasks');
 
-      should(taskList.userTasks).be.instanceOf(Array);
-      should(taskList.userTasks.length).be.greaterThan(0);
+      should(taskList.tasks).be.instanceOf(Array);
+      should(taskList.tasks.length).be.greaterThan(0);
 
-      const userTask = taskList.userTasks[0];
+      const task = taskList.tasks[0];
 
-      should(userTask).have.property('id');
-      should(userTask).have.property('flowNodeInstanceId');
-      should(userTask).have.property('name');
-      should(userTask).have.property('correlationId');
-      should(userTask).have.property('processModelId');
-      should(userTask).have.property('processInstanceId');
-      should(userTask).have.property('data');
-      should(userTask).not.have.property('processInstanceOwner');
-      should(userTask).not.have.property('identity');
-
-      should(userTask.data).have.property('formFields');
-      should(userTask.data.formFields).be.instanceOf(Array);
-      should(userTask.data.formFields.length).be.equal(1);
-
-      const formField = userTask.data.formFields[0];
-
-      should(formField).have.property('id');
-      should(formField).have.property('type');
-      should(formField).have.property('enumValues');
-      should(formField).have.property('label');
-      should(formField).have.property('defaultValue');
-
-      // EmptyActivityList Checks
-      should(taskList).have.property('emptyActivities');
-
-      should(taskList.emptyActivities).be.instanceOf(Array);
-      should(taskList.emptyActivities.length).be.greaterThan(0);
-
-      const emptyActivity = taskList.emptyActivities[0];
-
-      should(emptyActivity).have.property('id');
-      should(emptyActivity).have.property('flowNodeInstanceId');
-      should(emptyActivity).have.property('name');
-      should(emptyActivity).have.property('correlationId');
-      should(emptyActivity).have.property('processModelId');
-      should(emptyActivity).have.property('processInstanceId');
-      should(emptyActivity).have.property('tokenPayload');
-      should(emptyActivity).not.have.property('processInstanceOwner');
-      should(emptyActivity).not.have.property('identity');
-
-      // ManualTaskList Checks
-      should(taskList).have.property('manualTasks');
-
-      should(taskList.manualTasks).be.instanceOf(Array);
-      should(taskList.manualTasks.length).be.greaterThan(0);
-
-      const manualTask = taskList.manualTasks[0];
-
-      should(manualTask).have.property('id');
-      should(manualTask).have.property('flowNodeInstanceId');
-      should(manualTask).have.property('name');
-      should(manualTask).have.property('correlationId');
-      should(manualTask).have.property('processModelId');
-      should(manualTask).have.property('processInstanceId');
-      should(manualTask).have.property('tokenPayload');
-      should(manualTask).not.have.property('processInstanceOwner');
-      should(manualTask).not.have.property('identity');
+      should(task).have.property('id');
+      should(task).have.property('flowNodeInstanceId');
+      should(task).have.property('name');
+      should(task).have.property('correlationId');
+      should(task).have.property('processModelId');
+      should(task).have.property('processInstanceId');
+      should(task).not.have.property('processInstanceOwner');
+      should(task).not.have.property('identity');
     });
 
     it('should return an empty Array, if the given ProcessModel does not have any Tasks', async () => {
@@ -160,17 +88,9 @@ describe('Consumer API: GetSuspendedTasksForProcessModel', () => {
           .consumerApiClient
           .getSuspendedTasksForProcessModel(defaultIdentity, processModelIdNoUserTasks);
 
-        should(taskList).have.property('userTasks');
-        should(taskList.userTasks).be.an.instanceOf(Array);
-        should(taskList.userTasks).have.a.lengthOf(0);
-
-        should(taskList).have.property('manualTasks');
-        should(taskList.manualTasks).be.an.instanceOf(Array);
-        should(taskList.manualTasks).have.a.lengthOf(0);
-
-        should(taskList).have.property('emptyActivities');
-        should(taskList.emptyActivities).be.an.instanceOf(Array);
-        should(taskList.emptyActivities).have.a.lengthOf(0);
+        should(taskList).have.property('tasks');
+        should(taskList.tasks).be.an.instanceOf(Array);
+        should(taskList.tasks).have.a.lengthOf(0);
 
         eventAggregator.publish('/processengine/process/signal/Continue', {});
       });
@@ -184,17 +104,9 @@ describe('Consumer API: GetSuspendedTasksForProcessModel', () => {
         .consumerApiClient
         .getSuspendedTasksForProcessModel(defaultIdentity, invalidprocessModelId);
 
-      should(taskList).have.property('userTasks');
-      should(taskList.userTasks).be.an.instanceOf(Array);
-      should(taskList.userTasks).have.a.lengthOf(0);
-
-      should(taskList).have.property('manualTasks');
-      should(taskList.manualTasks).be.an.instanceOf(Array);
-      should(taskList.manualTasks).have.a.lengthOf(0);
-
-      should(taskList).have.property('emptyActivities');
-      should(taskList.emptyActivities).be.an.instanceOf(Array);
-      should(taskList.emptyActivities).have.a.lengthOf(0);
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).have.a.lengthOf(0);
     });
   });
 
@@ -216,17 +128,9 @@ describe('Consumer API: GetSuspendedTasksForProcessModel', () => {
         .consumerApiClient
         .getSuspendedTasksForProcessModel(defaultIdentity, processModelId, 4);
 
-      should(taskList).have.property('userTasks');
-      should(taskList.userTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('manualTasks');
-      should(taskList.manualTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('emptyActivities');
-      should(taskList.emptyActivities).be.an.instanceOf(Array);
-
-      const amountOfReceivedTasks = taskList.manualTasks.length + taskList.userTasks.length + taskList.emptyActivities.length;
-      should(amountOfReceivedTasks).be.equal(5);
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).has.a.lengthOf(5);
     });
 
     it('should apply no offset, a limit of 2 and return 2 items', async () => {
@@ -235,17 +139,9 @@ describe('Consumer API: GetSuspendedTasksForProcessModel', () => {
         .consumerApiClient
         .getSuspendedTasksForProcessModel(defaultIdentity, processModelId, 0, 2);
 
-      should(taskList).have.property('userTasks');
-      should(taskList.userTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('manualTasks');
-      should(taskList.manualTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('emptyActivities');
-      should(taskList.emptyActivities).be.an.instanceOf(Array);
-
-      const amountOfReceivedTasks = taskList.manualTasks.length + taskList.userTasks.length + taskList.emptyActivities.length;
-      should(amountOfReceivedTasks).be.equal(2);
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).has.a.lengthOf(2);
     });
 
     it('should apply an offset of 5, a limit of 2 and return 2 items', async () => {
@@ -254,17 +150,9 @@ describe('Consumer API: GetSuspendedTasksForProcessModel', () => {
         .consumerApiClient
         .getSuspendedTasksForProcessModel(defaultIdentity, processModelId, 5, 2);
 
-      should(taskList).have.property('userTasks');
-      should(taskList.userTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('manualTasks');
-      should(taskList.manualTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('emptyActivities');
-      should(taskList.emptyActivities).be.an.instanceOf(Array);
-
-      const amountOfReceivedTasks = taskList.manualTasks.length + taskList.userTasks.length + taskList.emptyActivities.length;
-      should(amountOfReceivedTasks).be.equal(2);
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).has.a.lengthOf(2);
     });
 
     it('should apply an offset of 6, a limit of 5 and return 3 items', async () => {
@@ -273,17 +161,9 @@ describe('Consumer API: GetSuspendedTasksForProcessModel', () => {
         .consumerApiClient
         .getSuspendedTasksForProcessModel(defaultIdentity, processModelId, 6, 5);
 
-      should(taskList).have.property('userTasks');
-      should(taskList.userTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('manualTasks');
-      should(taskList.manualTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('emptyActivities');
-      should(taskList.emptyActivities).be.an.instanceOf(Array);
-
-      const amountOfReceivedTasks = taskList.manualTasks.length + taskList.userTasks.length + taskList.emptyActivities.length;
-      should(amountOfReceivedTasks).be.equal(3);
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).has.a.lengthOf(3);
     });
 
     it('should return all items, if the limit is larger than the max number of records', async () => {
@@ -292,17 +172,9 @@ describe('Consumer API: GetSuspendedTasksForProcessModel', () => {
         .consumerApiClient
         .getSuspendedTasksForProcessModel(defaultIdentity, processModelId, 0, 11);
 
-      should(taskList).have.property('userTasks');
-      should(taskList.userTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('manualTasks');
-      should(taskList.manualTasks).be.an.instanceOf(Array);
-
-      should(taskList).have.property('emptyActivities');
-      should(taskList.emptyActivities).be.an.instanceOf(Array);
-
-      const amountOfReceivedTasks = taskList.manualTasks.length + taskList.userTasks.length + taskList.emptyActivities.length;
-      should(amountOfReceivedTasks).be.equal(9);
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).has.a.lengthOf(9);
 
     });
 
@@ -312,17 +184,9 @@ describe('Consumer API: GetSuspendedTasksForProcessModel', () => {
         .consumerApiClient
         .getSuspendedTasksForProcessModel(defaultIdentity, processModelId, 1000);
 
-      should(taskList).have.property('userTasks');
-      should(taskList.userTasks).be.an.instanceOf(Array);
-      should(taskList.userTasks).have.a.lengthOf(0);
-
-      should(taskList).have.property('manualTasks');
-      should(taskList.manualTasks).be.an.instanceOf(Array);
-      should(taskList.manualTasks).have.a.lengthOf(0);
-
-      should(taskList).have.property('emptyActivities');
-      should(taskList.emptyActivities).be.an.instanceOf(Array);
-      should(taskList.emptyActivities).have.a.lengthOf(0);
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).have.a.lengthOf(0);
     });
   });
 
