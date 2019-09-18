@@ -88,10 +88,10 @@ pipeline {
           sh('npm ci')
           sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
 
-          // does prepare the version, but not commit it
+          // Prepares the new version (alpha, beta, stable), but does not yet commit it.
           sh('node ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir')
 
-          // stash the package.json because it contains the prepared version number
+          // We need this on the other agents, so we stash this.
           stash(includes: 'package.json', name: 'package_json')
         }
 
@@ -331,10 +331,8 @@ pipeline {
         withCredentials([
           usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
         ]) {
-          // does not change the version, but commit and tag it
+          // Creates a tag from the current version and commits that tag.
           sh('node ./node_modules/.bin/ci_tools commit-and-tag-version --only-on-primary-branches')
-
-          sh('node ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag');
         }
 
         stash(includes: 'package.json', name: 'package_json')
@@ -410,6 +408,7 @@ pipeline {
                 withCredentials([
                   usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
                 ]) {
+                  sh('node ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag');
                   sh("""
                   node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe"
                   """);
