@@ -58,6 +58,7 @@ function registerApisWithInternalAccessors(container: InvocationContainer): void
       'ConsumerApiNotificationService',
       'ConsumerApiProcessModelService',
       'ConsumerApiUserTaskService',
+      'ConsumerApiFlowNodeInstanceService',
     );
 
   container.register('ConsumerApiClient', ConsumerApiClient)
