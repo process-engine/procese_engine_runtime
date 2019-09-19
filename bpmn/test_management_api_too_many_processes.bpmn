@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_15mlx3e" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
   <bpmn:collaboration id="Collaboration_0bxb8mu">
-    <bpmn:participant id="Participant_0ylnmok" name="process_model_too_many_processes" processRef="process_model_too_many_processes" />
+    <bpmn:participant id="Participant_0ylnmok" name="test_management_api_too_many_processes" processRef="test_management_api_too_many_processes" />
     <bpmn:participant id="Participant_1cr6h77" name="hello_hello" processRef="Process_0tfbmod" />
   </bpmn:collaboration>
-  <bpmn:process id="process_model_too_many_processes" name="process_model_too_many_processes" isExecutable="true" camunda:versionTag="1.0">
+  <bpmn:process id="test_management_api_too_many_processes" name="test_management_api_too_many_processes" isExecutable="true" camunda:versionTag="1.0">
     <bpmn:laneSet id="LaneSet_08i1la7" />
     <bpmn:startEvent id="startEvent" name="Start" camunda:formKey="TradeId">
       <bpmn:extensionElements>
