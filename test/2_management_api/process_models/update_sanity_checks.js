@@ -8,8 +8,8 @@ describe('Management API -> Sanity checks for ProcessModel update', () => {
 
   let testFixtureProvider;
 
-  const processModelId = 'generic_deployment_sanity_check';
-  const processModelUpdatedId = 'generic_deployment_sanity_check_updated';
+  const processModelId = 'test_management_api_deployment_sanity_check';
+  const processModelUpdatedId = 'test_management_api_deployment_sanity_check_updated';
 
   let processModelXml;
   let processModelUpdatedXml;
