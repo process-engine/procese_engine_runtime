@@ -71,8 +71,13 @@ def slack_send_summary(testlog, test_failed) {
   slackSend(attachments: "[{$color_string, $title_string, $markdown_string, $result_string, $action_string}]");
 }
 
+def buildIsRequired = true
+
 pipeline {
   agent any
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
+  }
   tools {
     nodejs "node-lts"
   }
@@ -82,7 +87,30 @@ pipeline {
   }
 
   stages {
+    stage('Check if build is required') {
+      steps {
+        script {
+          // Taken from https://stackoverflow.com/questions/37755586/how-do-you-pull-git-committer-information-for-jenkins-pipeline
+          sh 'git --no-pager show -s --format=\'%an\' > commit-author.txt'
+          def commitAuthorName = readFile('commit-author.txt').trim()
+
+          def ciUserName = "admin"
+
+          echo(commitAuthorName)
+          echo("Commiter is process-engine-ci: ${commitAuthorName == ciUserName}")
+
+          buildIsRequired = commitAuthorName != ciUserName
+
+          if (!buildIsRequired) {
+            echo("Commit was made by process-engine-ci. Skipping build.")
+          }
+        }
+      }
+    }
     stage('Prepare version') {
+      when {
+        expression {buildIsRequired == true}
+      }
       steps {
         nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
           sh('npm ci')
@@ -106,6 +134,9 @@ pipeline {
       }
     }
     stage('Build npm package') {
+      when {
+        expression {buildIsRequired == true}
+      }
       steps {
         nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
           sh('npm run build')
@@ -116,6 +147,9 @@ pipeline {
       }
     }
     stage('Process Engine Runtime Tests') {
+      when {
+        expression {buildIsRequired == true}
+      }
       parallel {
         stage('MySQL') {
           agent {
@@ -278,6 +312,9 @@ pipeline {
       }
     }
     stage('Check test results & notify Slack') {
+      when {
+        expression {buildIsRequired == true}
+      }
       steps {
         script {
           if (sqlite_tests_failed || postgres_test_failed || mysql_test_failed) {
@@ -317,9 +354,8 @@ pipeline {
     stage('Commit & tag version') {
       when {
         allOf {
-          expression {
-            currentBuild.result == 'SUCCESS'
-          }
+          expression {buildIsRequired == true}
+          expression {currentBuild.result == 'SUCCESS'}
           anyOf {
             branch "master"
             branch "beta"
@@ -339,6 +375,9 @@ pipeline {
       }
     }
     stage('Publish') {
+      when {
+        expression {buildIsRequired == true}
+      }
       parallel {
         stage('Publish npm package') {
           when {
@@ -422,9 +461,8 @@ pipeline {
     // stage('Build Docker') {
     //   when {
     //     allOf {
-    //       expression {
-    //         currentBuild.result == 'SUCCESS'
-    //       }
+    //       expression {buildIsRequired == true}
+    //       expression {currentBuild.result == 'SUCCESS'}
     //       anyOf {
     //         branch "master"
     //         branch "beta"
@@ -456,9 +494,8 @@ pipeline {
     // stage('Publish Docker') {
     //   when {
     //     allOf {
-    //       expression {
-    //         currentBuild.result == 'SUCCESS'
-    //       }
+    //       expression {buildIsRequired == true}
+    //       expression {currentBuild.result == 'SUCCESS'}
     //       anyOf {
     //         branch "master"
     //         branch "beta"
@@ -482,6 +519,9 @@ pipeline {
     //   }
     // }
     stage('Cleanup') {
+      when {
+        expression {buildIsRequired == true}
+      }
       steps {
         script {
           // this stage just exists, so the cleanup-work that happens in the post-script
