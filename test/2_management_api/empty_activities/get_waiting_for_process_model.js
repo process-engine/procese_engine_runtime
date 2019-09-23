@@ -50,7 +50,7 @@ describe('Management API: GetEmptyActivitiesForProcessModel', () => {
         .managementApiClient
         .getEmptyActivitiesForProcessModel(testFixtureProvider.identities.superAdmin, processModelId);
 
-      for(const emptyActivity of emptyActivityList.emptyActivities) {
+      for (const emptyActivity of emptyActivityList.emptyActivities) {
         const {correlationId, flowNodeInstanceId, processInstanceId} = emptyActivity;
 
         await testFixtureProvider
@@ -124,7 +124,7 @@ describe('Management API: GetEmptyActivitiesForProcessModel', () => {
       const correlationIdPaginationTest = uuid.v4();
       // Create a number of ProcessInstances, so we can actually test pagination
       // We will have a grand total of 10 EmptyActivities after this.
-      for(let i = 0; i < 10; i++) {
+      for (let i = 0; i < 10; i++) {
         await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, correlationIdPaginationTest);
       }
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationIdPaginationTest, processModelId, 10);

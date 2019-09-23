@@ -96,7 +96,7 @@ describe('Management API: GetWaitingEventsForProcessModelInCorrelation', () => {
     before(async () => {
       // Create a number of ProcessInstances, so we can actually test pagination
       // We will have a grand total of 10 Events after this.
-      for(let i = 0; i < 10; i++) {
+      for (let i = 0; i < 10; i++) {
         await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, correlationIdPaginationTest);
       }
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationIdPaginationTest, processModelId, 10);

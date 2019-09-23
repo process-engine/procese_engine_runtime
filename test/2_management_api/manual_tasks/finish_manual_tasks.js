@@ -4,7 +4,7 @@ const should = require('should');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: FinishManualTask', () => {
+describe(`Management API: FinishManualTask`, () => {
 
   let processInstanceHandler;
   let testFixtureProvider;

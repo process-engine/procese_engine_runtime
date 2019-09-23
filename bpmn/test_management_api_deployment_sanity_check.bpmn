@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definition_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
   <bpmn:collaboration id="Collaboration_1cidyxu">
-    <bpmn:participant id="Participant_0px403d" name="generic_deployment_sanity_check" processRef="generic_deployment_sanity_check" />
+    <bpmn:participant id="Participant_0px403d" name="test_management_api_deployment_sanity_check" processRef="test_management_api_deployment_sanity_check" />
   </bpmn:collaboration>
-  <bpmn:process id="generic_deployment_sanity_check" name="generic_deployment_sanity_check" isExecutable="true">
+  <bpmn:process id="test_management_api_deployment_sanity_check" name="test_management_api_deployment_sanity_check" isExecutable="true">
     <bpmn:laneSet>
       <bpmn:lane id="Lane_1xzf0d3" name="Default_Test_Lane">
         <bpmn:extensionElements>
