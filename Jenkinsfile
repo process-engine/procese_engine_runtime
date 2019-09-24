@@ -111,6 +111,27 @@ pipeline {
       when {
         expression {buildIsRequired == true}
       }
+      steps {
+        nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+          // Prepares the new version (alpha, beta, stable), but does not yet commit it.
+          sh('node ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir')
+
+          // We need this on the other agents, so we stash this.
+          stash(includes: 'package.json', name: 'package_json')
+
+          // TODO: variable `full_release_version_string` is still needed for windows release stage
+          script {
+            raw_package_version = bat(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
+            full_release_version_string = raw_package_version.trim()
+            echo("full_release_version_string is '${full_release_version_string}'")
+          }
+        }
+      }
+    }
+    stage('Installation & Build') {
+      when {
+        expression {buildIsRequired == true}
+      }
       parallel {
         stage('Linux') {
           agent {
@@ -119,24 +140,12 @@ pipeline {
           stages {
             stage('Install Dependencies') {
               steps {
+                unstash('package_json');
+
                 nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
                   sh('npm ci')
                   sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
-
-                  // Prepares the new version (alpha, beta, stable), but does not yet commit it.
-                  sh('node ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir')
-
-                  // We need this on the other agents, so we stash this.
-                  stash(includes: 'package.json', name: 'package_json')
                 }
-
-                // TODO: variable `full_release_version_string` is still needed for windows release stage
-                script {
-                  raw_package_version = sh(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
-                  full_release_version_string = raw_package_version.trim()
-                  echo("full_release_version_string is '${full_release_version_string}'")
-                }
-
                 archiveArtifacts('package-lock.json')
               }
             }
@@ -162,20 +171,12 @@ pipeline {
           stages {
             stage('Install Dependencies') {
               steps {
+                unstash('package_json');
+
                 nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
                   sh('npm ci')
                   sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
-
-                  sh('node ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir')
                 }
-
-                // TODO: variable `full_release_version_string` is still needed for windows release stage
-                script {
-                  raw_package_version = sh(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
-                  full_release_version_string = raw_package_version.trim()
-                  echo("full_release_version_string is '${full_release_version_string}'")
-                }
-
                 archiveArtifacts('package-lock.json')
               }
             }
@@ -201,20 +202,14 @@ pipeline {
           stages {
             stage('Install Dependencies') {
               steps {
+                unstash('package_json');
+
                 nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-                  bat('npm ci')
-                  bat('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
-
-                  bat('node ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir')
+                  // TODO: this throws an error on Windows
+                  // bat('npm ci')
+                  // bat('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
+                  bat('npm install')
                 }
-
-                // TODO: variable `full_release_version_string` is still needed for windows release stage
-                script {
-                  raw_package_version = bat(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
-                  full_release_version_string = raw_package_version.trim()
-                  echo("full_release_version_string is '${full_release_version_string}'")
-                }
-
                 archiveArtifacts('package-lock.json')
               }
             }
@@ -475,7 +470,7 @@ pipeline {
             }
           }
           steps {
-            unstash('post_build')
+            unstash('post_build_linux')
             unstash('package_json')
 
             nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
