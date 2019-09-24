@@ -160,8 +160,7 @@ pipeline {
                   sh('npm run build')
                   sh('npm rebuild')
                 }
-
-                stash(includes: '*, **/**', name: 'post_build_linux');
+                stash(includes: '*, **/**', name: 'linux_sources');
               }
             }
           }
@@ -191,8 +190,6 @@ pipeline {
                   sh('npm run build')
                   sh('npm rebuild')
                 }
-
-                stash(includes: '*, **/**', name: 'post_build_macos');
               }
             }
           }
@@ -224,8 +221,6 @@ pipeline {
                   bat('npm run build')
                   bat('npm rebuild')
                 }
-
-                stash(includes: '*, **/**', name: 'post_build_windows');
               }
             }
           }
@@ -245,7 +240,7 @@ pipeline {
             skipDefaultCheckout()
           }
           steps {
-            unstash('post_build_linux');
+            unstash('linux_sources');
 
             script {
               def mysql_host = "db";
@@ -302,7 +297,7 @@ pipeline {
             skipDefaultCheckout()
           }
           steps {
-            unstash('post_build_linux');
+            unstash('linux_sources');
 
             script {
               def postgres_host = "postgres";
@@ -358,7 +353,7 @@ pipeline {
             skipDefaultCheckout()
           }
           steps {
-            unstash('post_build_linux');
+            unstash('linux_sources');
 
             script {
               def node_env = 'NODE_ENV=test-sqlite';
@@ -456,8 +451,6 @@ pipeline {
           // Creates a tag from the current version and commits that tag.
           sh('node ./node_modules/.bin/ci_tools commit-and-tag-version --only-on-primary-branches')
         }
-
-        stash(includes: 'package.json', name: 'package_json')
       }
     }
     stage('Publish') {
@@ -472,7 +465,7 @@ pipeline {
             }
           }
           steps {
-            unstash('post_build_linux')
+            unstash('linux_sources')
             unstash('package_json')
 
             nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
