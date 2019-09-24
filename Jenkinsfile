@@ -564,12 +564,13 @@ pipeline {
         withCredentials([
           usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
         ]) {
-          sh('node ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag');
+          //sh('node ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag');
           // sh("""
-          // node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe" process_engine_runtime_macos.tar.gz process_engine_runtime_linux.tar.gz process_engine_runtime_windows.zip
+          // node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe" "process_engine_runtime_macos.tar.gz" "process_engine_runtime_linux.tar.gz" "process_engine_runtime_windows.zip"
           // """);
+          sh('node ./node_modules/.bin/ci_tools update-github-release --use-title-and-text-from-git-tag');
           sh("""
-          node ./node_modules/.bin/ci_tools update-github-release --assets process_engine_runtime_macos.tar.gz process_engine_runtime_linux.tar.gz
+          node ./node_modules/.bin/ci_tools update-github-release --assets "process_engine_runtime_macos.tar.gz" "process_engine_runtime_linux.tar.gz"
           """);
         }
       }
