@@ -268,7 +268,7 @@ pipeline {
                 script {
                   echo('Creating zip from compiled sources')
                   // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
-                  powershell('Compress-Archive -Path bin, bpmn, config, dist, node_modules, scripts, sequelize, src, test, .eslintignore, .eslintrc, LICENSE, package-lock.json, package.json, README.md, reinstall.sh, tsconfig.json -CompressionLevel Fastest -DestinationPath process_engine_runtime_windows.zip')
+                  powershell('Compress-Archive -Path bin, bpmn, config, dist, node_modules, scripts, sequelize, src, test, .eslintignore, .eslintrc, LICENSE, package-lock.json, package.json, README.md, reinstall.sh, tsconfig.json -CompressionLevel NoCompression -DestinationPath process_engine_runtime_windows.zip')
 
                   stash(includes: 'process_engine_runtime_windows.zip', name: 'windows_application_package');
                   archiveArtifacts('process_engine_runtime_windows.zip')
