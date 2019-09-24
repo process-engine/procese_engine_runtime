@@ -268,9 +268,10 @@ pipeline {
                 script {
                   echo('Creating zip from compiled sources')
                   // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
-                  bat('tar -czvf process_engine_runtime_linux.tar.gz bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock package.json README.md reinstall.sh tsconfig.json')
+                  powershell('Compress-Archive -Path bin, bpmn, config, dist, node_modules, scripts, sequelize, src, test, .eslintignore, .eslintrc, LICENSE, package-lock.json, package.json, README.md, reinstall.sh, tsconfig.json -CompressionLevel Optimal -DestinationPath process_engine_runtime_windows.zip')
 
-                  stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'linux_application_package');
+                  stash(includes: 'process_engine_runtime_windows.zip', name: 'windows_application_package');
+                  archiveArtifacts('process_engine_runtime_windows.zip')
                 }
               }
             }
@@ -547,13 +548,14 @@ pipeline {
                 unstash('windows_installer_results')
                 unstash('linux_application_package');
                 unstash('macos_application_package');
+                unstash('windows_application_package');
 
                 withCredentials([
                   usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
                 ]) {
                   sh('node ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag');
                   sh("""
-                  node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe" process_engine_runtime_macos.tar.gz process_engine_runtime_linux.tar.gz
+                  node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe" process_engine_runtime_macos.tar.gz process_engine_runtime_linux.tar.gz process_engine_runtime_windows.zip
                   """);
                 }
               }
