@@ -165,6 +165,7 @@ async function startProcessEngine(): Promise<void> {
 
   } catch (error) {
     logger.error('Bootstrapper failed to start.', error);
+    process.exit(1);
   }
 }
 
