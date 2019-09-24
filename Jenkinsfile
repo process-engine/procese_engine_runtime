@@ -162,7 +162,7 @@ pipeline {
                 }
               }
             }
-            stage('Create and stash tarball from sources') {
+            stage('Create tarball from sources') {
               when {
                 expression {buildIsRequired == true}
               }
@@ -214,7 +214,7 @@ pipeline {
                 }
               }
             }
-            stage('Create and stash tarball from sources') {
+            stage('Create tarball from sources') {
               when {
                 expression {buildIsRequired == true}
               }
@@ -260,7 +260,7 @@ pipeline {
                 }
               }
             }
-            // stage('Create and stash zip from sources') {
+            // stage('Create zipfile from sources') {
             //   when {
             //     expression {buildIsRequired == true}
             //   }
@@ -332,13 +332,6 @@ pipeline {
               mysql_test_failed = mysql_exit_code > 0;
             }
           }
-          post {
-            always {
-              script {
-                cleanup_workspace();
-              }
-            }
-          }
         }
         stage('PostgreSQL') {
           agent {
@@ -388,13 +381,6 @@ pipeline {
               postgres_test_failed = postgres_exit_code > 0;
             }
           }
-          post {
-            always {
-              script {
-                cleanup_workspace();
-              }
-            }
-          }
         }
         stage('SQLite') {
           agent {
@@ -426,13 +412,6 @@ pipeline {
               sh('cat process_engine_runtime_integration_tests_sqlite.txt');
 
               sqlite_tests_failed = sqlite_exit_code > 0;
-            }
-          }
-          post {
-            always {
-              script {
-                cleanup_workspace();
-              }
             }
           }
         }
@@ -562,13 +541,6 @@ pipeline {
 
                 stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
               }
-              post {
-                always {
-                  script {
-                    cleanup_workspace();
-                  }
-                }
-              }
             }
             stage('Publish as GitHub Release') {
               steps {
@@ -650,23 +622,73 @@ pipeline {
     //     }
     //   }
     // }
+    // Performs cleanup for all workspaces on every agent the runtime builds use.
+    // Each stage has a dummy step, so that it shows up as a stage in BlueOcean.
     stage('Cleanup') {
       when {
         expression {buildIsRequired == true}
       }
-      steps {
-        script {
-          // this stage just exists, so the cleanup-work that happens in the post-script
-          // will show up in its own stage in Blue Ocean
-          sh(script: ':', returnStdout: true);
+      parallel {
+        stage('master') {
+          agent {label 'master'}
+          steps {
+            script {
+              sh(script: ':', returnStdout: true);
+            }
+          }
         }
-      }
-    }
-  }
-  post {
-    always {
-      script {
-        cleanup_workspace();
+        post {
+          always {
+            script {
+              cleanup_workspace();
+            }
+          }
+        }
+        stage('macos') {
+          agent {label 'macos'}
+          steps {
+            script {
+              sh(script: ':', returnStdout: true);
+            }
+          }
+        }
+        post {
+          always {
+            script {
+              cleanup_workspace();
+            }
+          }
+        }
+        stage('windows') {
+          agent {label 'windows'}
+          steps {
+            script {
+              sh(script: ':', returnStdout: true);
+            }
+          }
+        }
+        post {
+          always {
+            script {
+              cleanup_workspace();
+            }
+          }
+        }
+        stage('linux slaves') {
+          agent {label 'process-engine-tests'}
+          steps {
+            script {
+              sh(script: ':', returnStdout: true);
+            }
+          }
+        }
+        post {
+          always {
+            script {
+              cleanup_workspace();
+            }
+          }
+        }
       }
     }
   }
