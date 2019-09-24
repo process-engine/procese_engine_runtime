@@ -160,6 +160,13 @@ pipeline {
                   sh('npm run build')
                   sh('npm rebuild')
                 }
+              }
+            }
+            stage('stash sources for integrationtests') {
+              when {
+                expression {buildIsRequired == true}
+              }
+              steps {
                 stash(includes: '*, **/**', name: 'linux_sources');
               }
             }
