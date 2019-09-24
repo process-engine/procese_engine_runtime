@@ -260,20 +260,20 @@ pipeline {
                 }
               }
             }
-            // stage('Create zipfile from sources') {
-            //   when {
-            //     expression {buildIsRequired == true}
-            //   }
-            //   steps {
-            //     script {
-            //       echo('Creating zip from compiled sources')
-            //       // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
-            //       bat('tar -czvf process_engine_runtime_linux.tar.gz bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock package.json README.md reinstall.sh tsconfig.json')
+            stage('Create zipfile from sources') {
+              when {
+                expression {buildIsRequired == true}
+              }
+              steps {
+                script {
+                  echo('Creating zip from compiled sources')
+                  // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
+                  bat('tar -czvf process_engine_runtime_linux.tar.gz bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock package.json README.md reinstall.sh tsconfig.json')
 
-            //       stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'linux_application_package');
-            //     }
-            //   }
-            // }
+                  stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'linux_application_package');
+                }
+              }
+            }
           }
         }
       }
@@ -633,14 +633,14 @@ pipeline {
           agent {label 'master'}
           steps {
             script {
-              sh(script: ':', returnStdout: true);
+              echo('Cleaning up master');
             }
           }
-        }
-        post {
-          always {
-            script {
-              cleanup_workspace();
+          post {
+            always {
+              script {
+                cleanup_workspace();
+              }
             }
           }
         }
@@ -648,14 +648,14 @@ pipeline {
           agent {label 'macos'}
           steps {
             script {
-              sh(script: ':', returnStdout: true);
+              echo('Cleaning up macos slave');
             }
           }
-        }
-        post {
-          always {
-            script {
-              cleanup_workspace();
+          post {
+            always {
+              script {
+                cleanup_workspace();
+              }
             }
           }
         }
@@ -663,29 +663,31 @@ pipeline {
           agent {label 'windows'}
           steps {
             script {
-              sh(script: ':', returnStdout: true);
+              echo('Cleaning up windows slave');
+            }
+          }
+          post {
+            always {
+              script {
+                cleanup_workspace();
+              }
             }
           }
         }
-        post {
-          always {
-            script {
-              cleanup_workspace();
-            }
-          }
-        }
-        stage('linux slaves') {
+        stage('linux slave') {
+          // Note that there are actually two slaves with that label.
+          // So it CAN happen, that this will not run on the actual slave that was used by the integration tests.
           agent {label 'process-engine-tests'}
           steps {
             script {
-              sh(script: ':', returnStdout: true);
+              echo('Cleaning up linux integrationtest slave');
             }
           }
-        }
-        post {
-          always {
-            script {
-              cleanup_workspace();
+          post {
+            always {
+              script {
+                cleanup_workspace();
+              }
             }
           }
         }
