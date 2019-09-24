@@ -123,7 +123,7 @@ pipeline {
 
           // TODO: variable `full_release_version_string` is still needed for windows release stage
           script {
-            raw_package_version = bat(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
+            raw_package_version = sh(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
             full_release_version_string = raw_package_version.trim()
             echo("full_release_version_string is '${full_release_version_string}'")
           }
