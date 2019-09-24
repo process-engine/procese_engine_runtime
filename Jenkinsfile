@@ -162,22 +162,7 @@ pipeline {
                 }
               }
             }
-            stage('Create tarball from sources') {
-              when {
-                expression {buildIsRequired == true}
-              }
-              steps {
-                script {
-                  echo('Creating tarball from compiled sources')
-                  // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
-                  sh('tar -czvf process_engine_runtime_linux.tar.gz bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock.json package.json README.md reinstall.sh tsconfig.json')
-
-                  stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'linux_application_package');
-                  archiveArtifacts('process_engine_runtime_linux.tar.gz')
-                }
-              }
-            }
-            stage('stash sources for integrationtests') {
+            stage('stash sources') {
               when {
                 expression {buildIsRequired == true}
               }
@@ -214,19 +199,12 @@ pipeline {
                 }
               }
             }
-            stage('Create tarball from sources') {
+            stage('stash sources') {
               when {
                 expression {buildIsRequired == true}
               }
               steps {
-                script {
-                  echo('Creating tarball from compiled sources')
-                  // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
-                  sh('tar -czvf process_engine_runtime_macos.tar.gz bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock.json package.json README.md reinstall.sh tsconfig.json')
-
-                  stash(includes: 'process_engine_runtime_macos.tar.gz', name: 'macos_application_package');
-                  archiveArtifacts('process_engine_runtime_macos.tar.gz')
-                }
+                stash(includes: '*, **/**', name: 'macos_sources');
               }
             }
           }
@@ -260,19 +238,12 @@ pipeline {
                 }
               }
             }
-            stage('Create zipfile from sources') {
+            stage('stash sources') {
               when {
                 expression {buildIsRequired == true}
               }
               steps {
-                script {
-                  echo('Creating zip from compiled sources')
-                  // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
-                  powershell('Compress-Archive -Path bin, bpmn, config, dist, node_modules, scripts, sequelize, src, test, .eslintignore, .eslintrc, LICENSE, package-lock.json, package.json, README.md, reinstall.sh, tsconfig.json -CompressionLevel NoCompression -DestinationPath process_engine_runtime_windows.zip')
-
-                  stash(includes: 'process_engine_runtime_windows.zip', name: 'windows_application_package');
-                  archiveArtifacts('process_engine_runtime_windows.zip')
-                }
+                stash(includes: '*, **/**', name: 'windows_sources');
               }
             }
           }
@@ -281,7 +252,8 @@ pipeline {
     }
     stage('Process Engine Runtime Tests') {
       when {
-        expression {buildIsRequired == true}
+        // expression {buildIsRequired == true}
+        expression {false == true}
       }
       parallel {
         stage('MySQL') {
@@ -425,7 +397,8 @@ pipeline {
     }
     stage('Check test results & notify Slack') {
       when {
-        expression {buildIsRequired == true}
+        // expression {buildIsRequired == true}
+        expression {false == true}
       }
       steps {
         script {
@@ -467,12 +440,12 @@ pipeline {
       when {
         allOf {
           expression {buildIsRequired == true}
-          expression {currentBuild.result == 'SUCCESS'}
-          anyOf {
-            branch "master"
-            branch "beta"
-            branch "develop"
-          }
+          // expression {currentBuild.result == 'SUCCESS'}
+          // anyOf {
+          //   branch "master"
+          //   branch "beta"
+          //   branch "develop"
+          // }
         }
       }
       steps {
@@ -484,83 +457,120 @@ pipeline {
         }
       }
     }
-    stage('Publish') {
+    stage('Publish to npm') {
       when {
-        expression {buildIsRequired == true}
+        allOf {
+          expression {buildIsRequired == true}
+          expression { currentBuild.result == 'SUCCESS'}
+        }
+      }
+      steps {
+        unstash('linux_sources')
+        unstash('package_json')
+
+        nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
+          sh('node ./node_modules/.bin/ci_tools publish-npm-package --create-tag-from-branch-name')
+        }
+      }
+    }
+    stage('Create GitHub Release parts') {
+      when {
+        allOf {
+          expression {buildIsRequired == true}
+          // expression {currentBuild.result == 'SUCCESS'}
+          // anyOf {
+          //   branch "master"
+          //   branch "beta"
+          //   branch "develop"
+          // }
+        }
       }
       parallel {
-        stage('Publish npm package') {
-          when {
-            expression {
-              currentBuild.result == 'SUCCESS'
-            }
+        stage('Create tarball from linux sources') {
+          agent {
+            label 'linux'
           }
           steps {
-            unstash('linux_sources')
-            unstash('package_json')
+            unstash('linux_sources');
+            script {
+              echo('Creating tarball from compiled sources')
+              // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
+              sh('tar -czvf process_engine_runtime_linux.tar.gz bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock.json package.json README.md reinstall.sh tsconfig.json')
 
-            nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
-              sh('node ./node_modules/.bin/ci_tools publish-npm-package --create-tag-from-branch-name')
+              stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'linux_application_package');
+              archiveArtifacts('process_engine_runtime_linux.tar.gz')
             }
           }
         }
-        stage('Windows') {
-          when {
-            allOf {
-              expression {
-                currentBuild.result == 'SUCCESS'
-              }
-              anyOf {
-                branch "master"
-                branch "beta"
-                branch "develop"
-              }
+        stage('Create tarball from macos sources') {
+          agent {
+            label 'macos'
+          }
+          steps {
+            unstash('macos_sources');
+            script {
+              echo('Creating tarball from compiled sources')
+              // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
+              sh('tar -czvf process_engine_runtime_macos.tar.gz bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock.json package.json README.md reinstall.sh tsconfig.json')
+
+              stash(includes: 'process_engine_runtime_macos.tar.gz', name: 'macos_application_package');
+              archiveArtifacts('process_engine_runtime_macos.tar.gz')
             }
           }
-          stages {
-            stage('Build Windows Installer') {
-              agent {
-                label 'windows'
-              }
-              steps {
-                unstash('package_json')
+        }
+        stage('Create zipfile from windows sources') {
+          agent {
+            label 'windows'
+          }
+          steps {
+            unstash('windows_sources');
+            script {
+              echo('Creating zip from compiled sources')
+              powershell('$PSVersionTable.PSVersion');
+              // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
+              // powershell('Compress-Archive -Path bin, bpmn, config, dist, node_modules, scripts, sequelize, src, test, .eslintignore, .eslintrc, LICENSE, package-lock.json, package.json, README.md, reinstall.sh, tsconfig.json -CompressionLevel NoCompression -DestinationPath process_engine_runtime_windows.zip')
 
-                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-                  bat('node --version')
-
-                  bat('npm install')
-                  // TODO: this throws an error on Windows
-                  // bat('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
-
-                  bat('npm run build')
-                  bat('npm rebuild')
-
-                  bat('npm run create-executable-windows')
-                }
-
-                bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
-
-                stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
-              }
-            }
-            stage('Publish as GitHub Release') {
-              steps {
-                unstash('windows_installer_results')
-                unstash('linux_application_package');
-                unstash('macos_application_package');
-                unstash('windows_application_package');
-
-                withCredentials([
-                  usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
-                ]) {
-                  sh('node ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag');
-                  sh("""
-                  node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe" process_engine_runtime_macos.tar.gz process_engine_runtime_linux.tar.gz process_engine_runtime_windows.zip
-                  """);
-                }
-              }
+              // stash(includes: 'process_engine_runtime_windows.zip', name: 'windows_application_package');
+              // archiveArtifacts('process_engine_runtime_windows.zip')
             }
           }
+        }
+        // stage('Build Windows Installer') {
+        //   agent {
+        //     label 'windows'
+        //   }
+        //   steps {
+        //     unstash('package_json')
+
+        //     nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+        //       unstash('windows_sources');
+        //       bat('npm run create-executable-windows')
+        //     }
+
+        //     bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
+
+        //     stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
+        //   }
+        // }
+      }
+    }
+    stage('Publish GitHub Release') {
+      steps {
+        // unstash('windows_installer_results')
+        unstash('linux_application_package');
+        unstash('macos_application_package');
+        // unstash('windows_application_package');
+
+        withCredentials([
+          usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
+        ]) {
+          sh('node ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag');
+          // sh("""
+          // node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe" process_engine_runtime_macos.tar.gz process_engine_runtime_linux.tar.gz process_engine_runtime_windows.zip
+          // """);
+          sh("""
+          node ./node_modules/.bin/ci_tools update-github-release --assets process_engine_runtime_macos.tar.gz process_engine_runtime_linux.tar.gz
+          """);
         }
       }
     }
