@@ -111,39 +111,128 @@ pipeline {
       when {
         expression {buildIsRequired == true}
       }
-      steps {
-        nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-          sh('npm ci')
-          sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
+      parallel {
+        stage('Linux') {
+          agent {
+            label 'master'
+          }
+          stages {
+            stage('Install Dependencies') {
+              steps {
+                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                  sh('npm ci')
+                  sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
 
-          // Prepares the new version (alpha, beta, stable), but does not yet commit it.
-          sh('node ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir')
+                  // Prepares the new version (alpha, beta, stable), but does not yet commit it.
+                  sh('node ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir')
 
-          // We need this on the other agents, so we stash this.
-          stash(includes: 'package.json', name: 'package_json')
+                  // We need this on the other agents, so we stash this.
+                  stash(includes: 'package.json', name: 'package_json')
+                }
+
+                // TODO: variable `full_release_version_string` is still needed for windows release stage
+                script {
+                  raw_package_version = sh(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
+                  full_release_version_string = raw_package_version.trim()
+                  echo("full_release_version_string is '${full_release_version_string}'")
+                }
+
+                archiveArtifacts('package-lock.json')
+              }
+            }
+            stage('Build Sources') {
+              when {
+                expression {buildIsRequired == true}
+              }
+              steps {
+                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                  sh('npm run build')
+                  sh('npm rebuild')
+                }
+
+                stash(includes: '*, **/**', name: 'post_build_linux');
+              }
+            }
+          }
         }
+        stage('MacOS') {
+          agent {
+            label 'macos'
+          }
+          stages {
+            stage('Install Dependencies') {
+              steps {
+                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                  sh('npm ci')
+                  sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
 
-        // TODO: variable `full_release_version_string` is still needed for windows release stage
-        script {
-          raw_package_version = sh(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
-          full_release_version_string = raw_package_version.trim()
-          echo("full_release_version_string is '${full_release_version_string}'")
+                  sh('node ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir')
+                }
+
+                // TODO: variable `full_release_version_string` is still needed for windows release stage
+                script {
+                  raw_package_version = sh(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
+                  full_release_version_string = raw_package_version.trim()
+                  echo("full_release_version_string is '${full_release_version_string}'")
+                }
+
+                archiveArtifacts('package-lock.json')
+              }
+            }
+            stage('Build Sources') {
+              when {
+                expression {buildIsRequired == true}
+              }
+              steps {
+                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                  sh('npm run build')
+                  sh('npm rebuild')
+                }
+
+                stash(includes: '*, **/**', name: 'post_build_macos');
+              }
+            }
+          }
         }
+        stage('Windows') {
+          agent {
+            label 'windows'
+          }
+          stages {
+            stage('Install Dependencies') {
+              steps {
+                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                  bat('npm ci')
+                  bat('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
 
-        archiveArtifacts('package-lock.json')
-      }
-    }
-    stage('Build npm package') {
-      when {
-        expression {buildIsRequired == true}
-      }
-      steps {
-        nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-          sh('npm run build')
-          sh('npm rebuild')
+                  bat('node ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir')
+                }
+
+                // TODO: variable `full_release_version_string` is still needed for windows release stage
+                script {
+                  raw_package_version = bat(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
+                  full_release_version_string = raw_package_version.trim()
+                  echo("full_release_version_string is '${full_release_version_string}'")
+                }
+
+                archiveArtifacts('package-lock.json')
+              }
+            }
+            stage('Build Sources') {
+              when {
+                expression {buildIsRequired == true}
+              }
+              steps {
+                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                  bat('npm run build')
+                  bat('npm rebuild')
+                }
+
+                stash(includes: '*, **/**', name: 'post_build_windows');
+              }
+            }
+          }
         }
-
-        stash(includes: '*, **/**', name: 'post_build');
       }
     }
     stage('Process Engine Runtime Tests') {
@@ -159,7 +248,7 @@ pipeline {
             skipDefaultCheckout()
           }
           steps {
-            unstash('post_build');
+            unstash('post_build_linux');
 
             script {
               def mysql_host = "db";
@@ -216,7 +305,7 @@ pipeline {
             skipDefaultCheckout()
           }
           steps {
-            unstash('post_build');
+            unstash('post_build_linux');
 
             script {
               def postgres_host = "postgres";
@@ -272,7 +361,7 @@ pipeline {
             skipDefaultCheckout()
           }
           steps {
-            unstash('post_build');
+            unstash('post_build_linux');
 
             script {
               def node_env = 'NODE_ENV=test-sqlite';
