@@ -510,6 +510,7 @@ pipeline {
           steps {
             unstash('macos_sources');
             script {
+              sh('pwd')
               echo('Creating tarball from compiled sources')
               // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
               sh('tar -czvf process_engine_runtime_macos.tar.gz bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock.json package.json README.md reinstall.sh tsconfig.json')
@@ -529,11 +530,14 @@ pipeline {
             // To prevent collision with the 'Create tarball from macos sources' step, we do this in a subfolder.
             sh('mkdir windows_sources')
             dir('windows_sources') {
+              sh('pwd')
               echo('Creating zip from compiled sources')
               unstash('windows_sources');
 
+              sh('ls -lahS .')
+
               // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
-              sh('zip process_engine_runtime_windows.zip bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock.json package.json README.md reinstall.sh tsconfig.json')
+              sh('zip -r process_engine_runtime_windows.zip bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock.json package.json README.md reinstall.sh tsconfig.json')
 
               stash(includes: 'process_engine_runtime_windows.zip', name: 'windows_application_package');
               archiveArtifacts('process_engine_runtime_windows.zip')
