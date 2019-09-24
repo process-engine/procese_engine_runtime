@@ -113,6 +113,8 @@ pipeline {
       }
       steps {
         nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+          // ci_tools must be installed for the scripts to work.
+          sh('npm install @process-engine/ci_tools')
           // Prepares the new version (alpha, beta, stable), but does not yet commit it.
           sh('node ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir')
 
