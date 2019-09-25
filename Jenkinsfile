@@ -478,7 +478,6 @@ pipeline {
             unstash('linux_sources');
             script {
               echo('Creating tarball from compiled sources')
-              // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
               sh('tar -czvf process_engine_runtime_linux.tar.gz bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock.json package.json README.md reinstall.sh tsconfig.json')
 
               stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'linux_application_package');
@@ -493,7 +492,6 @@ pipeline {
             script {
               sh('pwd')
               echo('Creating tarball from compiled sources')
-              // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
               sh('tar -czvf process_engine_runtime_macos.tar.gz bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock.json package.json README.md reinstall.sh tsconfig.json')
 
               stash(includes: 'process_engine_runtime_macos.tar.gz', name: 'macos_application_package');
@@ -512,7 +510,6 @@ pipeline {
               echo('Creating zip from compiled sources')
               unstash('windows_sources');
 
-              // Excludes the following files and folders: .git, .github, .gitignore, .npmignore, Dockerfile, Jenkinsfile
               sh('zip -r process_engine_runtime_windows.zip bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock.json package.json README.md reinstall.sh tsconfig.json')
 
               stash(includes: 'process_engine_runtime_windows.zip', name: 'windows_application_package');
