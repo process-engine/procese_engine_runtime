@@ -246,7 +246,8 @@ pipeline {
     }
     stage('Process Engine Runtime Tests') {
       when {
-        expression {buildIsRequired == true}
+        // expression {buildIsRequired == true}
+        expression {false == true}
       }
       parallel {
         stage('MySQL') {
@@ -384,7 +385,8 @@ pipeline {
     }
     stage('Check test results & notify Slack') {
       when {
-        expression {buildIsRequired == true}
+        // expression {buildIsRequired == true}
+        expression {false == true}
       }
       steps {
         script {
@@ -426,12 +428,12 @@ pipeline {
       when {
         allOf {
           expression {buildIsRequired == true}
-          expression {currentBuild.result == 'SUCCESS'}
-          anyOf {
-            branch "master"
-            branch "beta"
-            branch "develop"
-          }
+          // expression {currentBuild.result == 'SUCCESS'}
+          // anyOf {
+          //   branch "master"
+          //   branch "beta"
+          //   branch "develop"
+          // }
         }
       }
       steps {
@@ -439,7 +441,7 @@ pipeline {
           usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
         ]) {
           // Creates a tag from the current version and commits that tag.
-          sh('node ./node_modules/.bin/ci_tools commit-and-tag-version --only-on-primary-branches')
+          sh('node ./node_modules/.bin/ci_tools commit-and-tag-version')
         }
       }
     }
@@ -447,7 +449,7 @@ pipeline {
       when {
         allOf {
           expression {buildIsRequired == true}
-          expression {currentBuild.result == 'SUCCESS'}
+          // expression {currentBuild.result == 'SUCCESS'}
         }
       }
       steps {
@@ -463,12 +465,12 @@ pipeline {
       when {
         allOf {
           expression {buildIsRequired == true}
-          expression {currentBuild.result == 'SUCCESS'}
-          anyOf {
-            branch "master"
-            branch "beta"
-            branch "develop"
-          }
+          // expression {currentBuild.result == 'SUCCESS'}
+          // anyOf {
+          //   branch "master"
+          //   branch "beta"
+          //   branch "develop"
+          // }
         }
       }
       parallel {
@@ -517,37 +519,37 @@ pipeline {
             }
           }
         }
-        stage('Build Windows Installer') {
-          agent {label 'windows'}
-          steps {
-            unstash('package_json')
+        // stage('Build Windows Installer') {
+        //   agent {label 'windows'}
+        //   steps {
+        //     unstash('package_json')
 
-            nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-              unstash('windows_sources');
-              bat('npm run build-windows-executable')
-            }
+        //     nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+        //       unstash('windows_sources');
+        //       bat('npm run build-windows-executable')
+        //     }
 
-            bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
+        //     bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
 
-            stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
-          }
-        }
+        //     stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
+        //   }
+        // }
       }
     }
     stage('Publish GitHub Release') {
       when {
         allOf {
           expression {buildIsRequired == true}
-          expression {currentBuild.result == 'SUCCESS'}
-          anyOf {
-            branch "master"
-            branch "beta"
-            branch "develop"
-          }
+          // expression {currentBuild.result == 'SUCCESS'}
+          // anyOf {
+          //   branch "master"
+          //   branch "beta"
+          //   branch "develop"
+          // }
         }
       }
       steps {
-        unstash('windows_installer_results')
+        // unstash('windows_installer_results')
         unstash('linux_application_package');
         unstash('macos_application_package');
         unstash('windows_application_package');
@@ -555,9 +557,12 @@ pipeline {
         withCredentials([
           usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
         ]) {
-          sh('node ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag');
+          sh('node ./node_modules/.bin/ci_tools update-github-release --use-title-and-text-from-git-tag');
+          // sh("""
+          // node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe" --assets process_engine_runtime_macos.tar.gz --assets process_engine_runtime_linux.tar.gz --assets process_engine_runtime_windows.zip
+          // """);
           sh("""
-          node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe" --assets process_engine_runtime_macos.tar.gz --assets process_engine_runtime_linux.tar.gz --assets process_engine_runtime_windows.zip
+          node ./node_modules/.bin/ci_tools update-github-release --assets process_engine_runtime_macos.tar.gz --assets process_engine_runtime_linux.tar.gz --assets process_engine_runtime_windows.zip
           """);
         }
       }
