@@ -482,7 +482,9 @@ pipeline {
               unstash('linux_sources');
               script {
                 echo('Creating tarball from compiled sources')
-                sh('tar -czvf process_engine_runtime_linux.tar.gz --exclude=\'.git\' --exclude=\'.github\' --exclude=\'Jenkinsfile\' --exclude=\'Dockerfile\' .')
+                sh('tar -czvf process_engine_runtime_linux.tar.gz bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock.json package.json README.md reinstall.sh tsconfig.json')
+                // TODO: For some reason, this causes a "tar: .: file changed as we read it" error
+                // sh('tar -czvf process_engine_runtime_linux.tar.gz --exclude=\'.git*\' --exclude=\'Jenkinsfile\' --exclude=\'Dockerfile\' --exclude=\'.npmignore\' .')
 
                 stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'linux_application_package');
                 archiveArtifacts('process_engine_runtime_linux.tar.gz')
@@ -499,7 +501,7 @@ pipeline {
               script {
                 sh('pwd')
                 echo('Creating tarball from compiled sources')
-                sh('tar -czvf process_engine_runtime_macos.tar.gz --exclude=\'.git\' --exclude=\'.github\' --exclude=\'Jenkinsfile\' --exclude=\'Dockerfile\' .')
+                sh('tar -czvf process_engine_runtime_macos.tar.gz --exclude=\'.git*\' --exclude=\'Jenkinsfile\' --exclude=\'Dockerfile\' --exclude=\'.npmignore\' .')
 
                 stash(includes: 'process_engine_runtime_macos.tar.gz', name: 'macos_application_package');
                 archiveArtifacts('process_engine_runtime_macos.tar.gz')
@@ -518,7 +520,7 @@ pipeline {
               echo('Creating zip from compiled sources')
               unstash('windows_sources');
 
-              sh('zip -r process_engine_runtime_windows.zip --exclude=\'.git\' --exclude=\'.github\' --exclude=\'Jenkinsfile\' --exclude=\'Dockerfile\' .')
+              sh('zip -r process_engine_runtime_windows.zip --exclude=\'.git*\' --exclude=\'Jenkinsfile\' --exclude=\'Dockerfile\' --exclude=\'.npmignore\' .')
 
               stash(includes: 'process_engine_runtime_windows.zip', name: 'windows_application_package');
               archiveArtifacts('process_engine_runtime_windows.zip')
