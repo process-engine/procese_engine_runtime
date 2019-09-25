@@ -476,51 +476,45 @@ pipeline {
         stage('Create tarball from linux sources') {
           agent {label 'linux'}
           steps {
+            echo('Creating tarball from compiled sources')
             sh('mkdir linux_sources')
+
             dir('linux_sources') {
               unstash('linux_sources');
-              script {
-                echo('Creating tarball from compiled sources')
-                sh('tar -czvf process_engine_runtime_linux.tar.gz bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock.json package.json README.md reinstall.sh tsconfig.json')
-                // TODO: For some reason, this causes a "tar: .: file changed as we read it" error
-                // Only seems to happen for the linux sources.
-                // sh('tar -czvf process_engine_runtime_linux.tar.gz --exclude=\'.git*\' --exclude=\'Jenkinsfile\' --exclude=\'Dockerfile\' --exclude=\'.npmignore\' .')
+              sh('npm run create-tarball')
 
-                stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'linux_application_package');
-                archiveArtifacts('process_engine_runtime_linux.tar.gz')
-              }
+              stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'linux_application_package');
+              archiveArtifacts('process_engine_runtime_linux.tar.gz')
             }
           }
         }
         stage('Create tarball from macos sources') {
           agent {label 'macos'}
           steps {
+            echo('Creating tarball from compiled sources')
             sh('mkdir macos_sources')
+
             dir('macos_sources') {
               unstash('macos_sources');
-              script {
-                sh('pwd')
-                echo('Creating tarball from compiled sources')
-                sh('tar -czvf process_engine_runtime_macos.tar.gz --exclude=\'.git*\' --exclude=\'Jenkinsfile\' --exclude=\'Dockerfile\' --exclude=\'.npmignore\' .')
+              sh('npm run create-tarball')
 
-                stash(includes: 'process_engine_runtime_macos.tar.gz', name: 'macos_application_package');
-                archiveArtifacts('process_engine_runtime_macos.tar.gz')
-              }
+              stash(includes: 'process_engine_runtime_macos.tar.gz', name: 'macos_application_package');
+              archiveArtifacts('process_engine_runtime_macos.tar.gz')
             }
           }
         }
         stage('Create zipfile from windows sources') {
+          // NOTE: Zipping these files on the windows slave takes ridiculously long; like over an HOUR.
+          // So the Windows Slave just has to provide the sources (i.e. run npm intall, npm build and npm rebuild) and then we let one of the faster slaves to all the zipping.
+          // To prevent collision with the 'Create tarball from macos sources' step, we do this in a subfolder.
           agent {label 'macos'}
           steps {
-            // NOTE: Zipping these files on the windows slave takes ridiculously long; like over an HOUR.
-            // So the Windows Slave just has to provide the sources (i.e. run npm intall, npm build and npm rebuild) and then we let one of the faster slaves to all the zipping.
-            // To prevent collision with the 'Create tarball from macos sources' step, we do this in a subfolder.
+            echo('Creating zip from compiled sources')
             sh('mkdir windows_sources')
-            dir('windows_sources') {
-              echo('Creating zip from compiled sources')
-              unstash('windows_sources');
 
-              sh('zip -r process_engine_runtime_windows.zip --exclude=\'.git*\' --exclude=\'Jenkinsfile\' --exclude=\'Dockerfile\' --exclude=\'.npmignore\' .')
+            dir('windows_sources') {
+              unstash('windows_sources');
+              sh('npm run create-zipfile')
 
               stash(includes: 'process_engine_runtime_windows.zip', name: 'windows_application_package');
               archiveArtifacts('process_engine_runtime_windows.zip')
