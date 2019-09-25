@@ -524,7 +524,7 @@ pipeline {
 
             nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
               unstash('windows_sources');
-              bat('npm run create-executable-windows')
+              bat('npm run build-windows-executable')
             }
 
             bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")

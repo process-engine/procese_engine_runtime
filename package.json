@@ -24,7 +24,7 @@
     "test": "npm run test-sqlite",
     "test-all": "npm run test-sqlite && npm run test-postgres",
     "test-debug": "cross-env NODE_ENV=test-sqlite CONFIG_PATH=config mocha --inspect-brk test/**/*.js test/**/**/*.js  --exit",
-    "create-executable-windows": "pkg --targets windows ."
+    "build-windows-executable": "pkg --targets windows ."
   },
   "main": "./dist/commonjs/index.js",
   "license": "MIT",

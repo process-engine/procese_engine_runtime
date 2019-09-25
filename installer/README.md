@@ -22,7 +22,7 @@ Create a windows installer for the ProcessEngine Runtime.
 1. Create an executable file from the runtime:
 
     ```bat
-    npm run create-executable-windows
+    npm run build-windows-executable
     ```
 
     This script will use `pkg` to create the `process_engine_runtime.exe`
