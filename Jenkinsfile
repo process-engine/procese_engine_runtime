@@ -94,12 +94,13 @@ pipeline {
           sh 'git --no-pager show -s --format=\'%an\' > commit-author.txt'
           def commitAuthorName = readFile('commit-author.txt').trim()
 
-          def ciUserName = "admin"
+          def ciAdminName = "admin" // jenkins will set this name after every restart, so we need to look out for this.
+          def ciUserName = "process-engine-ci"
 
           echo(commitAuthorName)
           echo("Commiter is process-engine-ci: ${commitAuthorName == ciUserName}")
 
-          buildIsRequired = commitAuthorName != ciUserName
+          buildIsRequired = commitAuthorName != ciAdminName && commitAuthorName != ciUserName
 
           if (!buildIsRequired) {
             echo("Commit was made by process-engine-ci. Skipping build.")
@@ -484,6 +485,7 @@ pipeline {
                 echo('Creating tarball from compiled sources')
                 sh('tar -czvf process_engine_runtime_linux.tar.gz bin bpmn config dist node_modules scripts sequelize src test .eslintignore .eslintrc LICENSE package-lock.json package.json README.md reinstall.sh tsconfig.json')
                 // TODO: For some reason, this causes a "tar: .: file changed as we read it" error
+                // Only seems to happen for the linux sources.
                 // sh('tar -czvf process_engine_runtime_linux.tar.gz --exclude=\'.git*\' --exclude=\'Jenkinsfile\' --exclude=\'Dockerfile\' --exclude=\'.npmignore\' .')
 
                 stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'linux_application_package');
