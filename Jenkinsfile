@@ -477,27 +477,33 @@ pipeline {
         stage('Create tarball from linux sources') {
           agent {label 'linux'}
           steps {
-            unstash('linux_sources');
-            script {
-              echo('Creating tarball from compiled sources')
-              sh('tar -czvf process_engine_runtime_linux.tar.gz --exclude=\'.git\' --exclude=\'.github\' --exclude=\'Jenkinsfile\' --exclude=\'Dockerfile\' .')
+            sh('mkdir linux_sources')
+            dir('linux_sources') {
+              unstash('linux_sources');
+              script {
+                echo('Creating tarball from compiled sources')
+                sh('tar -czvf process_engine_runtime_linux.tar.gz --exclude=\'.git\' --exclude=\'.github\' --exclude=\'Jenkinsfile\' --exclude=\'Dockerfile\' .')
 
-              stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'linux_application_package');
-              archiveArtifacts('process_engine_runtime_linux.tar.gz')
+                stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'linux_application_package');
+                archiveArtifacts('process_engine_runtime_linux.tar.gz')
+              }
             }
           }
         }
         stage('Create tarball from macos sources') {
           agent {label 'macos'}
           steps {
-            unstash('macos_sources');
-            script {
-              sh('pwd')
-              echo('Creating tarball from compiled sources')
-              sh('tar -czvf process_engine_runtime_macos.tar.gz --exclude=\'.git\' --exclude=\'.github\' --exclude=\'Jenkinsfile\' --exclude=\'Dockerfile\' .')
+            sh('mkdir macos_sources')
+            dir('macos_sources') {
+              unstash('macos_sources');
+              script {
+                sh('pwd')
+                echo('Creating tarball from compiled sources')
+                sh('tar -czvf process_engine_runtime_macos.tar.gz --exclude=\'.git\' --exclude=\'.github\' --exclude=\'Jenkinsfile\' --exclude=\'Dockerfile\' .')
 
-              stash(includes: 'process_engine_runtime_macos.tar.gz', name: 'macos_application_package');
-              archiveArtifacts('process_engine_runtime_macos.tar.gz')
+                stash(includes: 'process_engine_runtime_macos.tar.gz', name: 'macos_application_package');
+                archiveArtifacts('process_engine_runtime_macos.tar.gz')
+              }
             }
           }
         }
