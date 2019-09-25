@@ -94,12 +94,13 @@ pipeline {
           sh 'git --no-pager show -s --format=\'%an\' > commit-author.txt'
           def commitAuthorName = readFile('commit-author.txt').trim()
 
-          def ciUserName = "admin"
+          def ciAdminName = "admin" // jenkins will set this name after every restart, so we need to look out for this.
+          def ciUserName = "process-engine-ci"
 
           echo(commitAuthorName)
           echo("Commiter is process-engine-ci: ${commitAuthorName == ciUserName}")
 
-          buildIsRequired = commitAuthorName != ciUserName
+          buildIsRequired = commitAuthorName != ciAdminName && commitAuthorName != ciUserName
 
           if (!buildIsRequired) {
             echo("Commit was made by process-engine-ci. Skipping build.")
@@ -113,37 +114,135 @@ pipeline {
       }
       steps {
         nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-          sh('npm ci')
-          sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
-
+          // ci_tools must be installed for the scripts to work.
+          sh('npm install @process-engine/ci_tools')
           // Prepares the new version (alpha, beta, stable), but does not yet commit it.
           sh('node ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir')
 
           // We need this on the other agents, so we stash this.
           stash(includes: 'package.json', name: 'package_json')
-        }
 
-        // TODO: variable `full_release_version_string` is still needed for windows release stage
-        script {
-          raw_package_version = sh(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
-          full_release_version_string = raw_package_version.trim()
-          echo("full_release_version_string is '${full_release_version_string}'")
+          // TODO: variable `full_release_version_string` is still needed for windows release stage
+          script {
+            raw_package_version = sh(script: 'node --print --eval "require(\'./package.json\').version"', returnStdout: true)
+            full_release_version_string = raw_package_version.trim()
+            echo("full_release_version_string is '${full_release_version_string}'")
+          }
         }
-
-        archiveArtifacts('package-lock.json')
       }
     }
-    stage('Build npm package') {
+    stage('Installation & Build') {
       when {
         expression {buildIsRequired == true}
       }
-      steps {
-        nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-          sh('npm run build')
-          sh('npm rebuild')
-        }
+      parallel {
+        stage('Linux') {
+          agent {label 'master'}
+          stages {
+            stage('Install Dependencies') {
+              steps {
+                unstash('package_json');
 
-        stash(includes: '*, **/**', name: 'post_build');
+                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                  sh('npm ci')
+                  sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
+                }
+                archiveArtifacts('package-lock.json')
+              }
+            }
+            stage('Build Sources') {
+              when {
+                expression {buildIsRequired == true}
+              }
+              steps {
+                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                  sh('npm run build')
+                  sh('npm rebuild')
+                }
+              }
+            }
+            stage('stash sources') {
+              when {
+                expression {buildIsRequired == true}
+              }
+              steps {
+                stash(includes: '*, **/**', name: 'linux_sources');
+              }
+            }
+          }
+        }
+        stage('MacOS') {
+          agent {label 'macos'}
+          stages {
+            stage('Install Dependencies') {
+              steps {
+                unstash('package_json');
+
+                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                  sh('npm ci')
+                  sh('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
+                }
+                archiveArtifacts('package-lock.json')
+              }
+            }
+            stage('Build Sources') {
+              when {
+                expression {buildIsRequired == true}
+              }
+              steps {
+                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                  sh('npm run build')
+                  sh('npm rebuild')
+                }
+              }
+            }
+            stage('stash sources') {
+              when {
+                expression {buildIsRequired == true}
+              }
+              steps {
+                stash(includes: '*, **/**', name: 'macos_sources');
+              }
+            }
+          }
+        }
+        stage('Windows') {
+          agent {label 'windows'}
+          stages {
+            stage('Install Dependencies') {
+              steps {
+                unstash('package_json');
+
+                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                  // TODO: this throws an error on Windows
+                  // bat('npm ci')
+                  // bat('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
+                  bat('npm install')
+                }
+                archiveArtifacts('package-lock.json')
+              }
+            }
+            stage('Build Sources') {
+              when {
+                expression {buildIsRequired == true}
+              }
+              steps {
+                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                  bat('npm run build')
+                  bat('npm rebuild')
+                }
+              }
+            }
+            stage('stash sources') {
+              when {
+                expression {buildIsRequired == true}
+              }
+              steps {
+                stash(includes: '*, **/**', name: 'windows_sources');
+              }
+            }
+          }
+        }
       }
     }
     stage('Process Engine Runtime Tests') {
@@ -152,14 +251,12 @@ pipeline {
       }
       parallel {
         stage('MySQL') {
-          agent {
-            label 'any-docker && process-engine-tests'
-          }
+          agent {label 'any-docker && process-engine-tests'}
           options {
             skipDefaultCheckout()
           }
           steps {
-            unstash('post_build');
+            unstash('linux_sources');
 
             script {
               def mysql_host = "db";
@@ -200,23 +297,14 @@ pipeline {
               mysql_test_failed = mysql_exit_code > 0;
             }
           }
-          post {
-            always {
-              script {
-                cleanup_workspace();
-              }
-            }
-          }
         }
         stage('PostgreSQL') {
-          agent {
-            label 'any-docker && process-engine-tests'
-          }
+          agent {label 'any-docker && process-engine-tests'}
           options {
             skipDefaultCheckout()
           }
           steps {
-            unstash('post_build');
+            unstash('linux_sources');
 
             script {
               def postgres_host = "postgres";
@@ -256,23 +344,14 @@ pipeline {
               postgres_test_failed = postgres_exit_code > 0;
             }
           }
-          post {
-            always {
-              script {
-                cleanup_workspace();
-              }
-            }
-          }
         }
         stage('SQLite') {
-          agent {
-            label 'any-docker && process-engine-tests'
-          }
+          agent {label 'any-docker && process-engine-tests'}
           options {
             skipDefaultCheckout()
           }
           steps {
-            unstash('post_build');
+            unstash('linux_sources');
 
             script {
               def node_env = 'NODE_ENV=test-sqlite';
@@ -294,13 +373,6 @@ pipeline {
               sh('cat process_engine_runtime_integration_tests_sqlite.txt');
 
               sqlite_tests_failed = sqlite_exit_code > 0;
-            }
-          }
-          post {
-            always {
-              script {
-                cleanup_workspace();
-              }
             }
           }
         }
@@ -370,91 +442,127 @@ pipeline {
           // Creates a tag from the current version and commits that tag.
           sh('node ./node_modules/.bin/ci_tools commit-and-tag-version --only-on-primary-branches')
         }
-
-        stash(includes: 'package.json', name: 'package_json')
       }
     }
-    stage('Publish') {
+    stage('Publish to npm') {
       when {
-        expression {buildIsRequired == true}
+        allOf {
+          expression {buildIsRequired == true}
+          expression {currentBuild.result == 'SUCCESS'}
+        }
+      }
+      steps {
+        unstash('linux_sources')
+        unstash('package_json')
+
+        nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
+          sh('node ./node_modules/.bin/ci_tools publish-npm-package --create-tag-from-branch-name')
+        }
+      }
+    }
+    stage('Create GitHub Release parts') {
+      when {
+        allOf {
+          expression {buildIsRequired == true}
+          expression {currentBuild.result == 'SUCCESS'}
+          anyOf {
+            branch "master"
+            branch "beta"
+            branch "develop"
+          }
+        }
       }
       parallel {
-        stage('Publish npm package') {
-          when {
-            expression {
-              currentBuild.result == 'SUCCESS'
-            }
-          }
+        stage('Create tarball from linux sources') {
+          agent {label 'linux'}
           steps {
-            unstash('post_build')
-            unstash('package_json')
+            echo('Creating tarball from compiled sources')
+            sh('mkdir linux_sources')
 
-            nodejs(configId: env.NPM_RC_FILE, nodeJSInstallationName: env.NODE_JS_VERSION) {
-              sh('node ./node_modules/.bin/ci_tools publish-npm-package --create-tag-from-branch-name')
+            dir('linux_sources') {
+              unstash('linux_sources');
+              sh('npm run create-tarball')
+
+              stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'linux_application_package');
+              archiveArtifacts('process_engine_runtime_linux.tar.gz')
             }
           }
         }
-        stage('Windows') {
-          when {
-            allOf {
-              expression {
-                currentBuild.result == 'SUCCESS'
-              }
-              anyOf {
-                branch "master"
-                branch "beta"
-                branch "develop"
-              }
+        stage('Create tarball from macos sources') {
+          agent {label 'macos'}
+          steps {
+            echo('Creating tarball from compiled sources')
+            sh('mkdir macos_sources')
+
+            dir('macos_sources') {
+              unstash('macos_sources');
+              sh('npm run create-tarball')
+
+              stash(includes: 'process_engine_runtime_macos.tar.gz', name: 'macos_application_package');
+              archiveArtifacts('process_engine_runtime_macos.tar.gz')
             }
           }
-          stages {
-            stage('Build Windows Installer') {
-              agent {
-                label 'windows'
-              }
-              steps {
-                unstash('package_json')
+        }
+        stage('Create zipfile from windows sources') {
+          // NOTE: Zipping these files on the windows slave takes ridiculously long; like over an HOUR.
+          // So the Windows Slave just has to provide the sources (i.e. run npm intall, npm build and npm rebuild) and then we let one of the faster slaves to all the zipping.
+          // To prevent collision with the 'Create tarball from macos sources' step, we do this in a subfolder.
+          agent {label 'macos'}
+          steps {
+            echo('Creating zip from compiled sources')
+            sh('mkdir windows_sources')
 
-                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-                  bat('node --version')
+            dir('windows_sources') {
+              unstash('windows_sources');
+              sh('npm run create-zipfile')
 
-                  bat('npm install')
-                  // TODO: this throws an error on Windows
-                  // bat('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
-
-                  bat('npm run build')
-                  bat('npm rebuild')
-
-                  bat('npm run create-executable-windows')
-                }
-
-                bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
-
-                stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
-              }
-              post {
-                always {
-                  script {
-                    cleanup_workspace();
-                  }
-                }
-              }
-            }
-            stage('Publish as GitHub Release') {
-              steps {
-                unstash('windows_installer_results')
-
-                withCredentials([
-                  usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
-                ]) {
-                  sh('node ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag');
-                  sh("""
-                  node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe"
-                  """);
-                }
-              }
+              stash(includes: 'process_engine_runtime_windows.zip', name: 'windows_application_package');
+              archiveArtifacts('process_engine_runtime_windows.zip')
             }
           }
+        }
+        stage('Build Windows Installer') {
+          agent {label 'windows'}
+          steps {
+            unstash('package_json')
+
+            nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+              unstash('windows_sources');
+              bat('npm run build-windows-executable')
+            }
+
+            bat("$INNO_SETUP_ISCC /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss")
+
+            stash(includes: "installer\\Output\\*.exe", name: 'windows_installer_results')
+          }
+        }
+      }
+    }
+    stage('Publish GitHub Release') {
+      when {
+        allOf {
+          expression {buildIsRequired == true}
+          expression {currentBuild.result == 'SUCCESS'}
+          anyOf {
+            branch "master"
+            branch "beta"
+            branch "develop"
+          }
+        }
+      }
+      steps {
+        unstash('windows_installer_results')
+        unstash('linux_application_package');
+        unstash('macos_application_package');
+        unstash('windows_application_package');
+
+        withCredentials([
+          usernamePassword(credentialsId: 'process-engine-ci_github-token', passwordVariable: 'GH_TOKEN', usernameVariable: 'GH_USER')
+        ]) {
+          sh('node ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag');
+          sh("""
+          node ./node_modules/.bin/ci_tools update-github-release --assets "installer/Output/*.exe" --assets process_engine_runtime_macos.tar.gz --assets process_engine_runtime_linux.tar.gz --assets process_engine_runtime_windows.zip
+          """);
         }
       }
     }
@@ -518,23 +626,75 @@ pipeline {
     //     }
     //   }
     // }
+    // Performs cleanup for all workspaces on every agent the runtime builds use.
+    // Each stage has a dummy step, so that it shows up as a stage in BlueOcean.
     stage('Cleanup') {
       when {
         expression {buildIsRequired == true}
       }
-      steps {
-        script {
-          // this stage just exists, so the cleanup-work that happens in the post-script
-          // will show up in its own stage in Blue Ocean
-          sh(script: ':', returnStdout: true);
+      parallel {
+        stage('master') {
+          agent {label 'master'}
+          steps {
+            script {
+              echo('Cleaning up master');
+            }
+          }
+          post {
+            always {
+              script {
+                cleanup_workspace();
+              }
+            }
+          }
         }
-      }
-    }
-  }
-  post {
-    always {
-      script {
-        cleanup_workspace();
+        stage('macos') {
+          agent {label 'macos'}
+          steps {
+            script {
+              echo('Cleaning up macos slave');
+            }
+          }
+          post {
+            always {
+              script {
+                cleanup_workspace();
+              }
+            }
+          }
+        }
+        stage('windows') {
+          agent {label 'windows'}
+          steps {
+            script {
+              echo('Cleaning up windows slave');
+            }
+          }
+          post {
+            always {
+              script {
+                cleanup_workspace();
+              }
+            }
+          }
+        }
+        stage('linux slave') {
+          // Note that there are actually two slaves with that label.
+          // So it CAN happen, that this will not run on the actual slave that was used by the integration tests.
+          agent {label 'process-engine-tests'}
+          steps {
+            script {
+              echo('Cleaning up linux integrationtest slave');
+            }
+          }
+          post {
+            always {
+              script {
+                cleanup_workspace();
+              }
+            }
+          }
+        }
       }
     }
   }
