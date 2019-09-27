@@ -66,7 +66,8 @@ export class IamServiceMock implements IIAMService {
 
     const isDummyToken = identity.userId === 'dummy_token';
     const isSuperAdmin = identity.userId === 'superAdmin';
-    if (isDummyToken || isSuperAdmin) {
+    const isInternalUser = identity.userId === 'ProcessEngineInternalUser';
+    if (isDummyToken || isSuperAdmin || isInternalUser) {
       return Promise.resolve();
     }
 
