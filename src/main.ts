@@ -34,8 +34,8 @@ export async function startRuntime(sqlitePath: string): Promise<void> {
   initializeEnvironment(sqlitePath);
   await runMigrations(sqlitePath);
   await startProcessEngine();
-  await startServices();
   await configureGlobalRoutes(container);
+  await startServices();
   await resumeProcessInstances();
 }
 
@@ -291,9 +291,11 @@ function readConfigFile(env: string, repositoryConfigFileName: string): Sequeliz
 
 async function resumeProcessInstances(): Promise<void> {
 
+  // Note that the ProcessInstances will be resumed with the Identity that started them.
+  // The identity we use here does not matter at all.
   const dummyIdentity: IIdentity = {
     token: 'ZHVtbXlfdG9rZW4=',
-    userId: 'dummy_token',
+    userId: 'SYSTEM',
   };
 
   logger.info('Resuming previously interrupted ProcessInstances...');
