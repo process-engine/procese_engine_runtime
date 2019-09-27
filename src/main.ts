@@ -35,7 +35,7 @@ export async function startRuntime(sqlitePath: string): Promise<void> {
   await runMigrations(sqlitePath);
   await startProcessEngine();
   await configureGlobalRoutes(container);
-  await startServices();
+  await startInternalServices();
   await resumeProcessInstances();
 }
 
@@ -169,19 +169,24 @@ async function startProcessEngine(): Promise<void> {
   }
 }
 
-async function startServices(): Promise<void> {
+async function startInternalServices(): Promise<void> {
 
-  logger.info('Starting Services...');
+  try {
+    logger.info('Starting Services...');
 
-  const autoStartService = await container.resolveAsync<IAutoStartService>('AutoStartService');
-  await autoStartService.start();
+    const autoStartService = await container.resolveAsync<IAutoStartService>('AutoStartService');
+    await autoStartService.start();
 
-  logger.info('AutoStartService started.');
+    logger.info('AutoStartService started.');
 
-  const cronjobService = await container.resolveAsync<ICronjobService>('CronjobService');
-  await cronjobService.start();
+    const cronjobService = await container.resolveAsync<ICronjobService>('CronjobService');
+    await cronjobService.start();
 
-  logger.info('CronjobService started.');
+    logger.info('CronjobService started.');
+  } catch (error) {
+    logger.error('Failed to start the internal services.', error);
+    process.exit(1);
+  }
 }
 
 function loadIocModules(): Array<any> {
