@@ -13,7 +13,7 @@ import {IIdentity, TokenBody} from '@essential-projects/iam_contracts';
 import {APIs, IConsumerApiClient} from '@process-engine/consumer_api_contracts';
 import {IManagementApiClient} from '@process-engine/management_api_contracts';
 import {IExecuteProcessService} from '@process-engine/process_engine_contracts';
-import {IProcessModelUseCases} from '@process-engine/process_model.contracts';
+import {IProcessModelUseCases} from '@process-engine/persistence_api.contracts';
 
 import {ExternalTaskSampleWorker} from '../test_services/external_task_sample_worker';
 import {initializeBootstrapper} from './setup_ioc_container';
