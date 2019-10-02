@@ -118,6 +118,8 @@
     "@process-engine/external_task_api_client": "^2.0.0",
     "@process-engine/management_api_client": "^6.1.0",
     "@process-engine/management_api_contracts": "^13.0.0",
+    "@process-engine/persistence_api.contracts": "^1.0.0",
+    "@process-engine/process_engine_contracts": "^46.0.0",
     "@types/bluebird-global": "^3.5.9",
     "@types/express": "^4.16.0",
     "@types/node": "^10.12.10",
