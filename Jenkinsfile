@@ -508,7 +508,7 @@ pipeline {
         }
         stage('Create zipfile from windows sources') {
           // NOTE: Zipping these files on the windows slave takes ridiculously long; like over an HOUR.
-          // So the Windows Slave just has to provide the sources (i.e. run npm intall, npm build and npm rebuild) and then we let one of the faster slaves to all the zipping.
+          // So the Windows Slave just has to provide the sources (i.e. run npm intall, npm build and npm rebuild) and then we let one of the faster slaves do all the zipping.
           // To prevent collision with the 'Create tarball from macos sources' step, we do this in a subfolder.
           agent {label 'macos'}
           steps {
@@ -528,9 +528,9 @@ pipeline {
           agent {label 'windows'}
           steps {
             unstash('package_json')
+            unstash('windows_sources');
 
             nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-              unstash('windows_sources');
               bat('npm run build-windows-executable')
             }
 
@@ -569,68 +569,6 @@ pipeline {
         }
       }
     }
-    // stage('Build Docker') {
-    //   when {
-    //     allOf {
-    //       expression {buildIsRequired == true}
-    //       expression {currentBuild.result == 'SUCCESS'}
-    //       anyOf {
-    //         branch "master"
-    //         branch "beta"
-    //         branch "develop"
-    //       }
-    //     }
-    //   }
-    //   steps {
-    //     script {
-    //       def docker_image_name = '5minds/process_engine_runtime';
-    //       def docker_node_version = '10-alpine';
-
-    //       def process_engine_version = full_release_version_string
-
-    //       full_image_name = "${docker_image_name}:${process_engine_version}";
-
-    //       sh("docker build --build-arg NODE_IMAGE_VERSION=${docker_node_version} \
-    //                       --build-arg PROCESS_ENGINE_VERSION=${process_engine_version} \
-    //                       --build-arg BUILD_DATE=${BUILD_TIMESTAMP} \
-    //                       --no-cache \
-    //                       --tag ${full_image_name} .");
-
-
-
-    //       docker_image = docker.image(full_image_name);
-    //     }
-    //   }
-    // }
-    // stage('Publish Docker') {
-    //   when {
-    //     allOf {
-    //       expression {buildIsRequired == true}
-    //       expression {currentBuild.result == 'SUCCESS'}
-    //       anyOf {
-    //         branch "master"
-    //         branch "beta"
-    //         branch "develop"
-    //       }
-    //     }
-    //   }
-    //   steps {
-    //     script {
-    //       try {
-    //         def process_engine_version = full_release_version_string
-
-    //         withDockerRegistry([ credentialsId: "5mio-docker-hub-username-and-password" ]) {
-
-    //           docker_image.push("${process_engine_version}");
-    //         }
-    //       } finally {
-    //         sh("docker rmi ${full_image_name} || true");
-    //       }
-    //     }
-    //   }
-    // }
-    // Performs cleanup for all workspaces on every agent the runtime builds use.
-    // Each stage has a dummy step, so that it shows up as a stage in BlueOcean.
     stage('Cleanup') {
       when {
         expression {buildIsRequired == true}
