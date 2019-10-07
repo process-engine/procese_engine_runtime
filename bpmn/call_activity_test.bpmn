@@ -14,8 +14,18 @@
         <bpmn:flowNodeRef>ExclusiveGatewaySplit_92vrb290b1c</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CallActivity2</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>CallActivity1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>ExclusiveGatewayJoin_08v1crf3cvf1v19c</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_TestAttachedStartEventId</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_TestAttachedPayload</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_TestTokenizedPayload</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_0as0ep9</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_0m2o5me</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_06oiof9</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_TestInvalidStartEventId</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CallActivity_1qdmcsb</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>CallActivity_0qv9mqn</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_TestInvalidPayload</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGatewayJoin_08v1crf3cvf1v19c</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_1ix3iyx</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
@@ -29,7 +39,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_0jrnh8c" sourceRef="CallActivity2" targetRef="ExclusiveGatewayJoin_08v1crf3cvf1v19c" />
     <bpmn:sequenceFlow id="SequenceFlow_0kht2qx" sourceRef="CallActivity1" targetRef="ExclusiveGatewayJoin_08v1crf3cvf1v19c" />
     <bpmn:sequenceFlow id="SequenceFlow_1bikbuc" sourceRef="ExclusiveGatewayJoin_08v1crf3cvf1v19c" targetRef="EndEvent_1ix3iyx" />
-    <bpmn:startEvent id="StartEvent_1" name="StartEvent CallActivityTest">
+    <bpmn:startEvent id="StartEvent_1" name="StartEvent standard tests">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
       </bpmn:extensionElements>
@@ -49,16 +59,94 @@
       <bpmn:incoming>SequenceFlow_08qdbhe</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0kht2qx</bpmn:outgoing>
     </bpmn:callActivity>
-    <bpmn:exclusiveGateway id="ExclusiveGatewayJoin_08v1crf3cvf1v19c">
-      <bpmn:incoming>SequenceFlow_0jrnh8c</bpmn:incoming>
-      <bpmn:incoming>SequenceFlow_0kht2qx</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1bikbuc</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
     <bpmn:scriptTask id="Task1" name="Return sample value">
       <bpmn:incoming>SequenceFlow_1qh6ra1</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_03j02na</bpmn:outgoing>
       <bpmn:script>return 1;</bpmn:script>
     </bpmn:scriptTask>
+    <bpmn:startEvent id="StartEvent_TestAttachedStartEventId" name="Test with attached StartEventId">
+      <bpmn:outgoing>SequenceFlow_0p4kzi8</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:startEvent id="StartEvent_TestAttachedPayload" name="Test with payload">
+      <bpmn:outgoing>SequenceFlow_1krz8uz</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:startEvent id="StartEvent_TestTokenizedPayload" name="Test with tokenized payload">
+      <bpmn:outgoing>SequenceFlow_0df8axn</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0p4kzi8" sourceRef="StartEvent_TestAttachedStartEventId" targetRef="Task_0as0ep9" />
+    <bpmn:sequenceFlow id="SequenceFlow_15sq94o" sourceRef="Task_0as0ep9" targetRef="ExclusiveGatewayJoin_08v1crf3cvf1v19c" />
+    <bpmn:sequenceFlow id="SequenceFlow_1krz8uz" sourceRef="StartEvent_TestAttachedPayload" targetRef="Task_0m2o5me" />
+    <bpmn:sequenceFlow id="SequenceFlow_0df8axn" sourceRef="StartEvent_TestTokenizedPayload" targetRef="Task_06oiof9" />
+    <bpmn:sequenceFlow id="SequenceFlow_0azsl0m" sourceRef="Task_0m2o5me" targetRef="ExclusiveGatewayJoin_08v1crf3cvf1v19c" />
+    <bpmn:sequenceFlow id="SequenceFlow_02gok0z" sourceRef="Task_06oiof9" targetRef="ExclusiveGatewayJoin_08v1crf3cvf1v19c" />
+    <bpmn:callActivity id="Task_0as0ep9" name="Start process from StartEvent_2" calledElement="call_activity_subprocess">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="startEventId" value="StartEvent_2" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0p4kzi8</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_15sq94o</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:callActivity id="Task_0m2o5me" name="Start Process with payload" calledElement="call_activity_subprocess">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="startEventId" value="StartEvent_2" />
+          <camunda:property name="payload" value="12345" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1krz8uz</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0azsl0m</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:callActivity id="Task_06oiof9" name="Start Process with tokenized payload" calledElement="call_activity_subprocess">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="startEventId" value="StartEvent_2" />
+          <camunda:property name="payload" value="{bla: token.current}" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0df8axn</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_02gok0z</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:startEvent id="StartEvent_TestInvalidStartEventId" name="Test with invalid StartEventId">
+      <bpmn:outgoing>SequenceFlow_0utfkl9</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0utfkl9" sourceRef="StartEvent_TestInvalidStartEventId" targetRef="CallActivity_1qdmcsb" />
+    <bpmn:sequenceFlow id="SequenceFlow_1o8ejcl" sourceRef="StartEvent_TestInvalidPayload" targetRef="CallActivity_0qv9mqn" />
+    <bpmn:callActivity id="CallActivity_1qdmcsb" name="Invalid StartEventId" calledElement="call_activity_subprocess">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="startEventId" value="InvalidStartEventID" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0utfkl9</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1fusl8r</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="SequenceFlow_1fusl8r" sourceRef="CallActivity_1qdmcsb" targetRef="ExclusiveGatewayJoin_08v1crf3cvf1v19c" />
+    <bpmn:sequenceFlow id="SequenceFlow_0nf3ni1" sourceRef="CallActivity_0qv9mqn" targetRef="ExclusiveGatewayJoin_08v1crf3cvf1v19c" />
+    <bpmn:callActivity id="CallActivity_0qv9mqn" name="Start Process with invalid payload" calledElement="call_activity_subprocess">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="startEventId" value="StartEvent_2" />
+          <camunda:property name="payload" value="{bla: token.bla.bla}" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1o8ejcl</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0nf3ni1</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:startEvent id="StartEvent_TestInvalidPayload" name="Test with invalid payload">
+      <bpmn:outgoing>SequenceFlow_1o8ejcl</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="ExclusiveGatewayJoin_08v1crf3cvf1v19c" name="">
+      <bpmn:incoming>SequenceFlow_0jrnh8c</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0kht2qx</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_15sq94o</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0azsl0m</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_02gok0z</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1fusl8r</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0nf3ni1</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1bikbuc</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
     <bpmn:endEvent id="EndEvent_1ix3iyx" name="End">
       <bpmn:extensionElements>
         <camunda:executionListener class="" event="" />
@@ -68,22 +156,22 @@
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1cidyxu">
-      <bpmndi:BPMNShape id="Participant_0px403d_di" bpmnElement="Participant_0px403d">
-        <dc:Bounds x="5" y="7" width="732" height="314" />
+      <bpmndi:BPMNShape id="Participant_0px403d_di" bpmnElement="Participant_0px403d" isHorizontal="true">
+        <dc:Bounds x="5" y="7" width="734" height="899" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="93" y="133" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="75" y="169" width="74" height="27" />
+          <dc:Bounds x="77" y="169" width="70" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3">
-        <dc:Bounds x="35" y="7" width="702" height="314" />
+      <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3" isHorizontal="true">
+        <dc:Bounds x="35" y="7" width="704" height="899" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1ix3iyx_di" bpmnElement="EndEvent_1ix3iyx">
-        <dc:Bounds x="674" y="133" width="36" height="36" />
+        <dc:Bounds x="677" y="482" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="682" y="175" width="20" height="14" />
+          <dc:Bounds x="685" y="524" width="20" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CallActivity_1bdjg57_di" bpmnElement="CallActivity1">
@@ -114,7 +202,7 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ExclusiveGateway_197m51j_di" bpmnElement="ExclusiveGatewayJoin_08v1crf3cvf1v19c" isMarkerVisible="true">
-        <dc:Bounds x="569" y="126" width="50" height="50" />
+        <dc:Bounds x="569" y="475" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="549" y="186" width="90" height="13" />
         </bpmndi:BPMNLabel>
@@ -123,8 +211,8 @@
         <dc:Bounds x="417" y="204" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1bikbuc_di" bpmnElement="SequenceFlow_1bikbuc">
-        <di:waypoint x="619" y="151" />
-        <di:waypoint x="674" y="151" />
+        <di:waypoint x="619" y="500" />
+        <di:waypoint x="677" y="500" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="590.5" y="129.5" width="90" height="13" />
         </bpmndi:BPMNLabel>
@@ -140,7 +228,7 @@
       <bpmndi:BPMNEdge id="SequenceFlow_0jrnh8c_di" bpmnElement="SequenceFlow_0jrnh8c">
         <di:waypoint x="517" y="244" />
         <di:waypoint x="594" y="244" />
-        <di:waypoint x="594" y="176" />
+        <di:waypoint x="594" y="475" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="510.5" y="222.5" width="90" height="13" />
         </bpmndi:BPMNLabel>
@@ -148,7 +236,7 @@
       <bpmndi:BPMNEdge id="SequenceFlow_0kht2qx_di" bpmnElement="SequenceFlow_0kht2qx">
         <di:waypoint x="517" y="68" />
         <di:waypoint x="594" y="68" />
-        <di:waypoint x="594" y="126" />
+        <di:waypoint x="594" y="475" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="510.5" y="46.5" width="90" height="13" />
         </bpmndi:BPMNLabel>
@@ -159,6 +247,95 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="243.5" y="129.5" width="90" height="13" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="StartEvent_1mycb49_di" bpmnElement="StartEvent_TestAttachedStartEventId">
+        <dc:Bounds x="93" y="372" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="67" y="415" width="89" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_18iiujg_di" bpmnElement="StartEvent_TestAttachedPayload">
+        <dc:Bounds x="93" y="482" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="69" y="525" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0ad9nk6_di" bpmnElement="StartEvent_TestTokenizedPayload">
+        <dc:Bounds x="93" y="586" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="67" y="629" width="89" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0p4kzi8_di" bpmnElement="SequenceFlow_0p4kzi8">
+        <di:waypoint x="129" y="390" />
+        <di:waypoint x="296" y="390" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_15sq94o_di" bpmnElement="SequenceFlow_15sq94o">
+        <di:waypoint x="396" y="390" />
+        <di:waypoint x="594" y="390" />
+        <di:waypoint x="594" y="475" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1krz8uz_di" bpmnElement="SequenceFlow_1krz8uz">
+        <di:waypoint x="129" y="500" />
+        <di:waypoint x="296" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0df8axn_di" bpmnElement="SequenceFlow_0df8axn">
+        <di:waypoint x="129" y="604" />
+        <di:waypoint x="296" y="604" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0azsl0m_di" bpmnElement="SequenceFlow_0azsl0m">
+        <di:waypoint x="396" y="500" />
+        <di:waypoint x="569" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_02gok0z_di" bpmnElement="SequenceFlow_02gok0z">
+        <di:waypoint x="396" y="604" />
+        <di:waypoint x="594" y="604" />
+        <di:waypoint x="594" y="525" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="CallActivity_0ybmtqv_di" bpmnElement="Task_0as0ep9">
+        <dc:Bounds x="296" y="350" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CallActivity_0ukccu3_di" bpmnElement="Task_0m2o5me">
+        <dc:Bounds x="296" y="460" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CallActivity_0egnn91_di" bpmnElement="Task_06oiof9">
+        <dc:Bounds x="296" y="564" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_15o1a6h_di" bpmnElement="StartEvent_TestInvalidStartEventId">
+        <dc:Bounds x="93" y="695" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="73" y="738" width="78" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0gle8g9_di" bpmnElement="StartEvent_TestInvalidPayload">
+        <dc:Bounds x="93" y="802" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="73" y="845" width="78" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0utfkl9_di" bpmnElement="SequenceFlow_0utfkl9">
+        <di:waypoint x="129" y="713" />
+        <di:waypoint x="296" y="713" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1o8ejcl_di" bpmnElement="SequenceFlow_1o8ejcl">
+        <di:waypoint x="129" y="820" />
+        <di:waypoint x="296" y="820" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="CallActivity_1qdmcsb_di" bpmnElement="CallActivity_1qdmcsb">
+        <dc:Bounds x="296" y="673" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1fusl8r_di" bpmnElement="SequenceFlow_1fusl8r">
+        <di:waypoint x="396" y="713" />
+        <di:waypoint x="594" y="713" />
+        <di:waypoint x="594" y="525" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="CallActivity_0qv9mqn_di" bpmnElement="CallActivity_0qv9mqn">
+        <dc:Bounds x="296" y="780" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0nf3ni1_di" bpmnElement="SequenceFlow_0nf3ni1">
+        <di:waypoint x="396" y="820" />
+        <di:waypoint x="594" y="820" />
+        <di:waypoint x="594" y="525" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
