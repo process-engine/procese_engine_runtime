@@ -217,7 +217,7 @@ pipeline {
                   // TODO: this throws an error on Windows
                   // bat('npm ci')
                   // bat('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
-                  bat('npm install')
+                  bat('npm ci')
                 }
                 archiveArtifacts('package-lock.json')
               }
@@ -228,6 +228,9 @@ pipeline {
               }
               steps {
                 nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+                  // TODO: This crashes, when the file paths are longer than 255 chars.
+                  // This can happen a lot, if a dependency has its own node_modules folder
+                  // Like, for example: node_modules/@process-engine/persistence_api.services/node_modules/@process-engine/persistence_api.contracts/dist/commonjs/data_models/process_model/....
                   bat('npm run build')
                   bat('npm rebuild')
                 }
