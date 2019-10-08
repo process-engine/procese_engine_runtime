@@ -378,8 +378,7 @@ pipeline {
         }
         stage('Lint sources') {
           steps {
-            // TODO: This currently fails with false errors about unresolvable file paths to `@process-engine/persistence_api.contracts` and `@essential-projects/sequelize_connection_manager`
-            sh('npm run lint || true')
+            sh('npm run lint')
           }
         }
       }
