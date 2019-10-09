@@ -30,7 +30,7 @@ the installation as **Administrator**.
 Also, each full releae provides ready-to-use source files for each platform.
 These are stored in a `.tar.gz` archive (for macOS and Linux) and a zip file (for windows).
 
-All these source have been pre installed and build. You only need to download and upack them
+All these sources have been pre-installed and build. You only need to download and unpack them
 and you are good to go.
 
 ## How do I use this project?
@@ -52,7 +52,7 @@ found, please make sure your `PATH` is set correctly.
 
 ### Global routes
 
-The ProcessEngine exposes a number of global http routes,
+The ProcessEngine exposes a number of global HTTP routes,
 which you can use to get general information about the application.
 
 These routes include:
@@ -71,11 +71,11 @@ Usually, you'd want to use routes like `http://localhost:8000/` for your own
 purposes and not have it expose information about any embedded service
 (which is what the ProcessEngine would be in this instance).
 
-BPMN Studio uses these global routes to identity remote ProcessEngines to connect to.
-The route `http://localhost:8000/process_engine` ensures that the Studio can do so, even if
+BPMN Studio uses these global routes to identify remote ProcessEngines to connect to.
+The route `http://localhost:8000/process_engine` ensures that the studio can do so, even if
 `http://localhost:8000/` is reserved by your application.
 
-In other words: These routes allow you to access an embedded ProcessEngine through BPMN studio.
+In other words: These routes allow you to access an embedded ProcessEngine through BPMN Studio.
 
 **Note:**
 See the [Other startup parameters](#other_startup_parameters) section for instructions
@@ -105,7 +105,7 @@ See:
 - [Configuration for sqlite repositories](./config/sqlite/process_engine)
 
 **Note:**
-Switching to mysql or postgres requires an instance of the respective database to be running and accessible!s
+Switching to MySQL or Postgres requires an instance of the respective database to be running and accessible!
 
 #### Customized Configuration
 
@@ -156,9 +156,9 @@ The full start command will then look like this:
 
 There are various other parameters you can provide at startup:
 
-- `NO_HTTP`: Providing this flag will disable all http endpoints of the ProcessEngine.
-  This can be useful, if you are embedding the ProcessEngine into another application
-  and you do not intend for the ProcessEngine to expose its own http routes
+- `NO_HTTP`: Providing this flag will disable all HTTP endpoints of the ProcessEngine.
+  This can be useful if you are embedding the ProcessEngine into another application
+  and you do not intend for the ProcessEngine to expose its own HTTP routes
 - `DO_NOT_BLOCK_GLOBAL_ROUTE`: Disables the global routes `http://localhost:8000/` and `http://localhost:8000/security/authority`.
   This can be useful, if you are embedding the ProcessEngine into another web application,
   where you would usually want to reserve such routes for your own application
