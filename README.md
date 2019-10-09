@@ -14,8 +14,7 @@ Engine.
 
 ### Setup/Installation
 
-
-Install all Dependencies
+Install the runtime as a global npm package:
 
 ```bash
 npm install -g @process-engine/process_engine_runtime
@@ -28,41 +27,85 @@ installation command again.
 Please make sure that you run the shell you use for
 the installation as **Administrator**.
 
+Also, each full release provides ready-to-use source files for each platform.
+These are stored in a `.tar.gz` archive (for macOS and Linux) and a zip file (for windows).
 
-## How do I use this project?
+All these sources have been fully installed and build.
+You only need to download and unpack them and you are good to go.
 
-### Starting the ProcessEngine-Server
+## How to use this project
 
-Start the server on your main machine with
+### Starting the ProcessEngineRuntime
+
+You can start the application with the following command:
 
 ```bash
 process-engine
 ```
 
-When started, the process-engine-instance is available at
+When started, the ProcessEngine is available at
 
 `http://localhost:8000`.
 
 __Note:__ If you're on Windows and the command `process-engine` can not be
 found, please make sure your `PATH` is set correctly.
 
-#### With SQLite Database (default)
+### Global routes
 
-```bash
-NODE_ENV=sqlite process-engine
-```
+The ProcessEngine exposes a number of global HTTP routes,
+which you can use to get general information about the application.
 
-The database files will be placed in the `databases` directory mentioned in
-[Application Files](#application_files).
+These routes include:
 
-#### With PostgreSQL Database
+- `http://localhost:8000/` - Base route to get basic details about the ProcessEngine
+- `http://localhost:8000/process_engine` - Same as above
+- `http://localhost:8000/security/authority` - Returns the address of the authority
+  the ProcessEngine uses to perform claim checks
+- `http://localhost:8000/process_engine/security/authority` - Same as above
 
-__Note:__ This requires a running PostgreSQL instance on your system. The
-standard configuration requires it to run on port `5432`.
+You might wonder why we use two routes for each UseCase.
+
+The reason is simple:
+Let's say you want to embed your ProcessEngine into another web application.
+Usually, you'd want to use routes like `http://localhost:8000/` for your own
+purposes and not have it expose information about any embedded service
+(which is what the ProcessEngine would be in this instance).
+
+BPMN Studio uses these global routes to identify remote ProcessEngines to connect to.
+The route `http://localhost:8000/process_engine` ensures that the studio can do so, even if
+`http://localhost:8000/` is reserved by your application.
+
+In other words: These routes allow you to access an embedded ProcessEngine through BPMN Studio.
+
+**Note:**
+See the [Other startup parameters](#other_startup_parameters) section for instructions
+on how to prevent the ProcessEngine from using these global routes.
+
+#### Switching the database
+
+By default, the ProcessEngine will use `SQLite` as its database.
+
+The corresponding files will be placed in the `databases` directory mentioned in the
+[Application Files](#application_files) section.
+
+If you want to use a different database, you must provide a `NODE_ENV` parameter at startup:
 
 ```bash
 NODE_ENV=postgres process-engine
 ```
+
+Currently supported values are `postgres` and `mysql`.
+
+Each environment comes with its own config.
+
+See:
+
+- [Configuration for mysql repositories](./config/mysql/process_engine)
+- [Configuration for postgres repositories](./config/postgres/process_engine)
+- [Configuration for sqlite repositories](./config/sqlite/process_engine)
+
+**Note:**
+Switching to MySQL or Postgres requires an instance of the respective database to be running and accessible!
 
 #### Customized Configuration
 
@@ -71,7 +114,8 @@ folder.
 
 If you wish to provide your own set of configurations, you can do so by setting the following
 environment variables prior to startup:
-- `CONFIG_PATH` - The path to your configuration folder 
+
+- `CONFIG_PATH` - The path to your configuration folder
 - `NODE_ENV` - The name of the environment to use
 
 **NOTE:**
@@ -89,23 +133,37 @@ Let's say you want to store your configs in your local home folder, in a subfold
 and the environment you wish to use is named `production`.
 
 Your configs must then be located in the following path:
+
 - macOS: `/Users/{{YOUR_USERNAME}}/runtime/production`
 - Linux: `/home/{{YOUR_USERNAME}}/runtime/production`
 - Windows: `C:\Users\{{YOUR_USERNAME}}\runtime\production`
 
 You would need to provide the following environment parameters to access this config:
+
+- `NODE_ENV`: `production`
 - `CONFIG_PATH`:
     - macOS: `/Users/{{YOUR_USERNAME}}/runtime`
     - Linux: `/home/{{YOUR_USERNAME}}/runtime`
     - Windows: `C:\Users\{{YOUR_USERNAME}}\runtime`
-- `NODE_ENV` = `production`
 
 The full start command will then look like this:
+
 - macOS: `CONFIG_PATH=/Users/{{YOUR_USERNAME}}/runtime NODE_ENV=production process-engine`
 - Linux: `CONFIG_PATH=/home/{{YOUR_USERNAME}}/runtime NODE_ENV=production process-engine`
 - Windows: `CONFIG_PATH=C:\Users\{{YOUR_USERNAME}}\runtime NODE_ENV=production process-engine`
 
-### Automatically starting ProcessEngine-Server on system startup
+#### Other startup parameters
+
+There are various other parameters you can provide at startup:
+
+- `NO_HTTP`: Providing this flag will disable all HTTP endpoints of the ProcessEngine.
+  This can be useful if you are embedding the ProcessEngine into another application
+  and you do not intend for the ProcessEngine to expose its own HTTP routes
+- `DO_NOT_BLOCK_GLOBAL_ROUTE`: Disables the global routes `http://localhost:8000/` and `http://localhost:8000/security/authority`.
+  This can be useful, if you are embedding the ProcessEngine into another web application,
+  where you would usually want to reserve such routes for your own purposes
+
+### Automatically starting the ProcessEngineRuntime on system startup
 
 **macOS**
 
@@ -193,5 +251,4 @@ Contained in the application files are the following folders:
 ### Authors/Contact information
 
 1. [Christian Werner](mailto:christian.werner@5minds.de)
-2. [Sebastian Meier](mailto:sebastian.meier@5minds.de)
-3. [Christoph Gnip](mailto:christoph.gnip@5minds.de)
+2. [René Föhring](mailto:rene.foehring@5minds.de)
