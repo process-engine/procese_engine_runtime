@@ -71,8 +71,11 @@ export class TestFixtureProvider {
     await this.initializeBootstrapper();
     await this.bootstrapper.start();
 
+    this._sampleExternalTaskWorker = await this.resolveAsync<ExternalTaskSampleWorker>('ExternalTaskSampleWorker');
+
     const httpIsEnabled = process.env.NO_HTTP === undefined;
     if (httpIsEnabled) {
+      this._sampleExternalTaskWorker.start();
       await configureGlobalRoutes(this.container);
     }
 
@@ -84,18 +87,22 @@ export class TestFixtureProvider {
 
     this._executeProcessService = await this.resolveAsync<IExecuteProcessService>('ExecuteProcessService');
     this._processModelUseCases = await this.resolveAsync<IProcessModelUseCases>('ProcessModelUseCases');
-
-    this._sampleExternalTaskWorker = await this.resolveAsync<ExternalTaskSampleWorker>('ExternalTaskSampleWorker');
-    this._sampleExternalTaskWorker.start();
   }
 
   public async tearDown(): Promise<void> {
+
+    const httpIsEnabled = process.env.NO_HTTP === undefined;
+    if (httpIsEnabled) {
+      const httpExtension = await this.container.resolveAsync<any>('HttpExtension');
+      await httpExtension.close();
+    }
+
     this._sampleExternalTaskWorker.stop();
+
     await this.clearDatabases();
 
-    const httpExtension = await this.container.resolveAsync<any>('HttpExtension');
-    await httpExtension.close();
     await this.bootstrapper.stop();
+    this.container.clear();
   }
 
   public resolve<TModule>(moduleName: string, args?: any): TModule {

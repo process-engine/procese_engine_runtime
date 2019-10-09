@@ -21,8 +21,6 @@ export async function initializeBootstrapper(): Promise<InvocationContainer> {
 
 function loadIocModules(): Array<any> {
 
-  const httpIsEnabled = process.env.NO_HTTP === undefined;
-
   const iocModuleNames = [
     '@essential-projects/bootstrapper',
     '@essential-projects/bootstrapper_node',
@@ -41,6 +39,7 @@ function loadIocModules(): Array<any> {
     '@process-engine/persistence_api.repositories.sequelize',
     '@process-engine/persistence_api.services',
     '@process-engine/persistence_api.use_cases',
+    '.',
   ];
 
   const httpIocModules = [
@@ -49,6 +48,7 @@ function loadIocModules(): Array<any> {
     '@process-engine/management_api_http',
   ];
 
+  const httpIsEnabled = process.env.NO_HTTP === undefined;
   if (httpIsEnabled) {
     iocModuleNames.push(...httpIocModules);
   }
