@@ -23,8 +23,8 @@ describe('Main Route Sanity checks', () => {
   });
 
   after(async () => {
-    process.env.DO_NOT_BLOCK_GLOBAL_ROUTE = undefined;
     await testFixtureProvider.tearDown();
+    delete process.env.DO_NOT_BLOCK_GLOBAL_ROUTE;
   });
 
   it(`Should block global route '/', when DO_NOT_BLOCK_GLOBAL_ROUTE is set to true`, async () => {
