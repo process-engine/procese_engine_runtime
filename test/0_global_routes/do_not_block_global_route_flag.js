@@ -27,7 +27,7 @@ describe('Main Route Sanity checks', () => {
     delete process.env.DO_NOT_BLOCK_GLOBAL_ROUTE;
   });
 
-  it(`Should block global route '/', when DO_NOT_BLOCK_GLOBAL_ROUTE is set to true`, async () => {
+  it(`Should disable '/' route, when DO_NOT_BLOCK_GLOBAL_ROUTE is set to true`, async () => {
 
     const requestHeaders = {
       headers: {
@@ -44,7 +44,7 @@ describe('Main Route Sanity checks', () => {
     }
   });
 
-  it(`Should block global route '/security/authority', when DO_NOT_BLOCK_GLOBAL_ROUTE is set to true`, async () => {
+  it(`Should disable '/security/authority' route, when DO_NOT_BLOCK_GLOBAL_ROUTE is set to true`, async () => {
 
     const requestHeaders = {
       headers: {
@@ -61,7 +61,7 @@ describe('Main Route Sanity checks', () => {
     }
   });
 
-  it(`Should not block global route '/process_engine', when DO_NOT_BLOCK_GLOBAL_ROUTE is set to true`, async () => {
+  it(`Should not disable '/process_engine' route, when DO_NOT_BLOCK_GLOBAL_ROUTE is set to true`, async () => {
 
     const requestHeaders = {
       headers: {
@@ -74,7 +74,7 @@ describe('Main Route Sanity checks', () => {
     should(response.status).be.equal(200);
   });
 
-  it(`Should not block global route '/process_engine/security/authority', when DO_NOT_BLOCK_GLOBAL_ROUTE is set to true`, async () => {
+  it(`Should not disable '/process_engine/ routesecurity/authority', when DO_NOT_BLOCK_GLOBAL_ROUTE is set to true`, async () => {
 
     const requestHeaders = {
       headers: {
