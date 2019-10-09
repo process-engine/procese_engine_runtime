@@ -66,7 +66,7 @@ These routes include:
 You might wonder why we use two routes for each UseCase.
 
 The reason is simple:
-Lets say you want to embedd your ProcessEngine into another web application.
+Lets say you want to embed your ProcessEngine into another web application.
 Usually, you'd want to use routes like `http://localhost:8000/` for your own
 purposes and not have it expose information about any embedded service
 (which is what the ProcessEngine would be in this instance).
