@@ -60,6 +60,23 @@ describe('Authority Route /security/authority - ', () => {
     }
   });
 
+  it(`Should return the address of the used authority, when the route with the 'process_engine' prefix is used`, async () => {
+
+    const requestHeaders = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    try {
+      const response = await httpClient.get(`process_engine/${routeToCall}`, requestHeaders);
+      assertResponse(response);
+    } catch (error) {
+      should.fail(error, 'success', `Failed to run the request: ${error.message}`);
+    }
+  });
+
+
   function assertResponse(response) {
 
     should(response.status).be.equal(200);
