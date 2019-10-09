@@ -27,6 +27,8 @@ const container = new InvocationContainer({
   },
 });
 
+const httpIsEnabled = process.env.NO_HTTP === undefined;
+
 // The folder location for the skeleton-electron app was a different one,
 // than the one we are using now. The BPMN Studio needs to be able to provide
 // a path to the databases, so that the backend can access them.
@@ -34,7 +36,9 @@ export async function startRuntime(sqlitePath: string): Promise<void> {
   initializeEnvironment(sqlitePath);
   await runMigrations(sqlitePath);
   await startProcessEngine();
-  await configureGlobalRoutes(container);
+  if (httpIsEnabled) {
+    await configureGlobalRoutes(container);
+  }
   await startInternalServices();
   await resumeProcessInstances();
 }
@@ -196,23 +200,30 @@ function loadIocModules(): Array<any> {
     '@essential-projects/bootstrapper_node',
     '@essential-projects/event_aggregator',
     '@essential-projects/http',
-    '@essential-projects/http_extension',
     '@essential-projects/sequelize_connection_manager',
     '@essential-projects/timing',
     '@process-engine/consumer_api_core',
-    '@process-engine/consumer_api_http',
     '@process-engine/iam',
     '@process-engine/logging_api_core',
     '@process-engine/logging.repository.file_system',
     '@process-engine/metrics_api_core',
     '@process-engine/metrics.repository.file_system',
     '@process-engine/management_api_core',
-    '@process-engine/management_api_http',
     '@process-engine/process_engine_core',
     '@process-engine/persistence_api.repositories.sequelize',
     '@process-engine/persistence_api.services',
     '@process-engine/persistence_api.use_cases',
   ];
+
+  const httpIocModules = [
+    '@essential-projects/http_extension',
+    '@process-engine/consumer_api_http',
+    '@process-engine/management_api_http',
+  ];
+
+  if (httpIsEnabled) {
+    iocModuleNames.push(...httpIocModules);
+  }
 
   const iocModules = iocModuleNames.map((moduleName: string): any => {
     // eslint-disable-next-line
