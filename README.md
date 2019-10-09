@@ -27,17 +27,17 @@ installation command again.
 Please make sure that you run the shell you use for
 the installation as **Administrator**.
 
-Also, each full releae provides ready-to-use source files for each platform.
+Also, each full release provides ready-to-use source files for each platform.
 These are stored in a `.tar.gz` archive (for macOS and Linux) and a zip file (for windows).
 
-All these sources have been pre-installed and build. You only need to download and unpack them
-and you are good to go.
+All these sources have been fully installed and build.
+You only need to download and unpack them and you are good to go.
 
-## How do I use this project?
+## How to use this project
 
 ### Starting the ProcessEngineRuntime
 
-Start the application on your main machine with the following command:
+You can start the application with the following command:
 
 ```bash
 process-engine
@@ -161,7 +161,7 @@ There are various other parameters you can provide at startup:
   and you do not intend for the ProcessEngine to expose its own HTTP routes
 - `DO_NOT_BLOCK_GLOBAL_ROUTE`: Disables the global routes `http://localhost:8000/` and `http://localhost:8000/security/authority`.
   This can be useful, if you are embedding the ProcessEngine into another web application,
-  where you would usually want to reserve such routes for your own application
+  where you would usually want to reserve such routes for your own purposes
 
 ### Automatically starting the ProcessEngineRuntime on system startup
 
