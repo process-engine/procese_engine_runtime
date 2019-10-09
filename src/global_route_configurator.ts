@@ -9,8 +9,6 @@ let httpExtension: IHttpExtension;
 
 const httpStatusCodeSuccess = 200;
 
-const allowUseOfGlobalRoute = process.env.DO_NOT_BLOCK_GLOBAL_ROUTE === undefined;
-
 interface IApplicationInfo {
   name: string;
   version: string;
@@ -31,6 +29,8 @@ export async function configureGlobalRoutes(container: InvocationContainer): Pro
 }
 
 function configureRootRoute(): void {
+
+  const allowUseOfGlobalRoute = process.env.DO_NOT_BLOCK_GLOBAL_ROUTE === undefined;
   const packageInfo = getInfosFromPackageJson();
 
   const formattedResponse = JSON.stringify(packageInfo, undefined, 2);
@@ -54,6 +54,8 @@ function configureRootRoute(): void {
 }
 
 function configureAuthorityRoute(): void {
+
+  const allowUseOfGlobalRoute = process.env.DO_NOT_BLOCK_GLOBAL_ROUTE === undefined;
   const iamConfig = loadConfig('iam', 'iam_service');
 
   const responseBody = {
@@ -73,7 +75,7 @@ function configureAuthorityRoute(): void {
     });
   }
 
-  httpExtension.app.get(`/process_engine/${authorityRoute}`, (request: Request, response: Response): void => {
+  httpExtension.app.get(`/process_engine${authorityRoute}`, (request: Request, response: Response): void => {
     response
       .status(httpStatusCodeSuccess)
       .header('Content-Type', 'application/json')
