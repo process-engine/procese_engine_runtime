@@ -8,7 +8,8 @@ import {IHttpExtension} from '@essential-projects/http_contracts';
 let httpExtension: IHttpExtension;
 
 const httpStatusCodeSuccess = 200;
-const authorityRoute = '/security/authority';
+
+const allowUseOfGlobalRoute = process.env.DO_NOT_BLOCK_GLOBAL_ROUTE === undefined;
 
 interface IApplicationInfo {
   name: string;
@@ -34,7 +35,17 @@ function configureRootRoute(): void {
 
   const formattedResponse = JSON.stringify(packageInfo, undefined, 2);
 
-  httpExtension.app.get('/', (request: Request, response: Response): void => {
+  // Note: If the ProcessEngine runs as an embedded service, this route will likely be occupied by another application.
+  if (allowUseOfGlobalRoute) {
+    httpExtension.app.get('/', (request: Request, response: Response): void => {
+      response
+        .status(httpStatusCodeSuccess)
+        .header('Content-Type', 'application/json')
+        .send(formattedResponse);
+    });
+  }
+
+  httpExtension.app.get('/process_engine', (request: Request, response: Response): void => {
     response
       .status(httpStatusCodeSuccess)
       .header('Content-Type', 'application/json')
@@ -49,9 +60,20 @@ function configureAuthorityRoute(): void {
     authority: process.env.iam__iam_service__basePath || iamConfig.basePath,
   };
 
+  const authorityRoute = '/security/authority';
   const formattedResponse = JSON.stringify(responseBody, undefined, 2);
 
-  httpExtension.app.get(authorityRoute, (request: Request, response: Response): void => {
+  // Note: If the ProcessEngine runs as an embedded service, the root namespace should not be occupied.
+  if (allowUseOfGlobalRoute) {
+    httpExtension.app.get(authorityRoute, (request: Request, response: Response): void => {
+      response
+        .status(httpStatusCodeSuccess)
+        .header('Content-Type', 'application/json')
+        .send(formattedResponse);
+    });
+  }
+
+  httpExtension.app.get(`/process_engine/${authorityRoute}`, (request: Request, response: Response): void => {
     response
       .status(httpStatusCodeSuccess)
       .header('Content-Type', 'application/json')
