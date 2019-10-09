@@ -70,7 +70,11 @@ export class TestFixtureProvider {
     await this.runMigrations();
     await this.initializeBootstrapper();
     await this.bootstrapper.start();
-    await configureGlobalRoutes(this.container);
+
+    const httpIsEnabled = process.env.NO_HTTP === undefined;
+    if (httpIsEnabled) {
+      await configureGlobalRoutes(this.container);
+    }
 
     await this.createMockIdentities();
 
