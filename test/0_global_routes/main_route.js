@@ -60,7 +60,7 @@ describe('Main Route http://localhost:32413 - ', () => {
     }
   });
 
-  it(`Should return infos about the application, when the route with the 'process_engine' prefix is used`, async () => {
+  it(`Should return info about the application, when the route with the 'process_engine' prefix is used`, async () => {
 
     const requestHeaders = {
       headers: {

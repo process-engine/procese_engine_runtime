@@ -30,7 +30,7 @@ export async function configureGlobalRoutes(container: InvocationContainer): Pro
 
 function configureRootRoute(): void {
 
-  const allowUseOfGlobalRoute = process.env.DO_NOT_BLOCK_GLOBAL_ROUTE === undefined;
+  const allowUseOfGlobalRoute = !process.env.DO_NOT_BLOCK_GLOBAL_ROUTE;
   const packageInfo = getInfosFromPackageJson();
 
   const formattedResponse = JSON.stringify(packageInfo, undefined, 2);
