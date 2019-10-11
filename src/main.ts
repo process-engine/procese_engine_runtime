@@ -160,7 +160,16 @@ async function runPostMigrations(): Promise<void> {
   try {
     logger.info('Running post-migration scripts.');
 
+    // NOTE:
+    // When embedding the ProcessEngine, the cwd may not necessarily be the directory that contains the runtimes.
+    // However, to access npm scripts, the cwd must be that directory.
+    // To get around this issue, we temporarily change the cwd to the ProcessEngine's location, run the post-migrations
+    // and restore the old cwd afterwards.
+    const currentWorkingDir = process.cwd();
+    const runtimeDir = path.resolve(__dirname, '..', '..');
+    process.chdir(runtimeDir);
     await execAsync('npm run postMigrations');
+    process.chdir(currentWorkingDir);
 
     logger.info('Post-Migrations successfully executed.');
   } catch (error) {
