@@ -143,9 +143,8 @@ async function moveFlowNodeInstancesFromProcessModelDbToFlowNodeInstanceDb(flowN
 }
 
 run()
-  .then(() => {
-    console.log('Success!');
-  })
+  .then(() => console.log('Success!'))
   .catch((error) => {
     console.log('Failed to execute post-migration script: ', error);
+    process.exit(1);
   });
