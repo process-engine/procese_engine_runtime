@@ -343,12 +343,7 @@ async function execAsync(command): Promise<string> {
       return resolve(stdout);
     });
 
-    childProcess.stdout.on('data', (data) => {
-      console.log(data);
-    });
-
-    childProcess.stderr.on('data', (data) => {
-      console.error(data);
-    });
+    childProcess.stdout.on('data', (data): void => logger.verbose(data));
+    childProcess.stderr.on('data', (data): void => logger.error(data));
   });
 }
