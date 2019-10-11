@@ -7,8 +7,8 @@ const StartCallbackType = require('@process-engine/consumer_api_contracts').Data
 
 const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
-const testCase = 'Consumer API:   POST  ->  /process_models/:process_model_id/start_events/:start_event_id/start';
-describe(`Consumer API: ${testCase}`, () => {
+const testCase = 'ConsumerAPI:   POST  ->  /process_models/:process_model_id/start_events/:start_event_id/start';
+describe(`ConsumerAPI: ${testCase}`, () => {
 
   let testFixtureProvider;
 

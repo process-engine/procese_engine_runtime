@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Consumer API: GetEventsForCorrelation', () => {
+describe('ConsumerAPI: GetEventsForCorrelation', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -200,6 +200,19 @@ describe('Consumer API: GetEventsForCorrelation', () => {
         should(error.message).be.match(expectedErrorMessage);
         should(error.code).be.match(expectedErrorCode);
       }
+    });
+
+    it('should return an empty Array, if the user is not allowed to access any suspended events', async () => {
+
+      const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+      const eventList = await testFixtureProvider
+        .consumerApiClient
+        .getEventsForCorrelation(restrictedIdentity, correlationId);
+
+      should(eventList).have.property('events');
+
+      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).have.a.lengthOf(0);
     });
   });
 });

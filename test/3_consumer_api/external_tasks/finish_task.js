@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('Consumer API:   POST  ->  /external_tasks/:external_task_id/finish', () => {
+describe('ConsumerAPI:   POST  ->  /external_tasks/:external_task_id/finish', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;

@@ -6,7 +6,7 @@ const uuid = require('node-uuid');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('Consumer API:   POST  ->  /external_tasks/fetch_and_lock', () => {
+describe('ConsumerAPI:   POST  ->  /external_tasks/fetch_and_lock', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;

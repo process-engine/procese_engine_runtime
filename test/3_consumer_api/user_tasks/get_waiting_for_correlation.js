@@ -15,7 +15,7 @@ describe('ConsumerAPI: GetUserTasksForCorrelation', () => {
 
   const processModelId = 'test_consumer_api_usertask';
   const processModelIdNoUserTasks = 'test_consumer_api_usertask_empty';
-  const processModelIdCallActivity = 'test_consumer_api_usertask_call_acvtivity';
+  const processModelIdCallActivity = 'test_consumer_api_usertask_call_activity';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -270,22 +270,16 @@ describe('ConsumerAPI: GetUserTasksForCorrelation', () => {
       }
     });
 
-    it('should fail to retrieve the Correlation\'s UserTasks, when the user is forbidden to retrieve it', async () => {
+    it('should return an empty Array, if the user not allowed to access any suspended UserTasks', async () => {
 
       const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+      const userTaskList = await testFixtureProvider
+        .consumerApiClient
+        .getUserTasksForCorrelation(restrictedIdentity, correlationId);
 
-      try {
-        const userTaskList = await testFixtureProvider
-          .consumerApiClient
-          .getUserTasksForCorrelation(restrictedIdentity, correlationId);
-
-        should.fail(userTaskList, undefined, 'This request should have failed!');
-      } catch (error) {
-        const expectedErrorMessage = /access denied/i;
-        const expectedErrorCode = 403;
-        should(error.message).be.match(expectedErrorMessage);
-        should(error.code).be.match(expectedErrorCode);
-      }
+      should(userTaskList).have.property('userTasks');
+      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).have.a.lengthOf(0);
     });
   });
 });

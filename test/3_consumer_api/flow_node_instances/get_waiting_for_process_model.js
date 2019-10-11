@@ -1,9 +1,9 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Consumer API: GetSuspendedTasksForProcessModel', () => {
+describe('ConsumerAPI: GetSuspendedTasksForProcessModel', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -52,7 +52,7 @@ describe('Consumer API: GetSuspendedTasksForProcessModel', () => {
       await testFixtureProvider.importProcessFiles(processModelsToImport);
     });
 
-    it('should return a ProcessModel\'s Tasks by its ProcessModelId through the Consumer API', async () => {
+    it('should return a ProcessModel\'s Tasks by its ProcessModelId through the ConsumerAPI', async () => {
 
       const taskList = await testFixtureProvider
         .consumerApiClient
@@ -208,22 +208,16 @@ describe('Consumer API: GetSuspendedTasksForProcessModel', () => {
       }
     });
 
-    it('should fail to retrieve the ProcessModel\'s Tasks, when the user is forbidden to retrieve it', async () => {
+    it('should return an empty Array, if the user not allowed to access any suspended tasks', async () => {
 
       const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+      const taskList = await testFixtureProvider
+        .consumerApiClient
+        .getSuspendedTasksForProcessModel(restrictedIdentity, processModelId);
 
-      try {
-        const taskList = await testFixtureProvider
-          .consumerApiClient
-          .getSuspendedTasksForProcessModel(restrictedIdentity, processModelId);
-
-        should.fail(taskList, undefined, 'This request should have failed!');
-      } catch (error) {
-        const expectedErrorCode = 403;
-        const expectedErrorMessage = /access denied/i;
-        should(error.code).be.match(expectedErrorCode);
-        should(error.message).be.match(expectedErrorMessage);
-      }
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).have.a.lengthOf(0);
     });
   });
 });

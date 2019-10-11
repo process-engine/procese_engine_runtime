@@ -4,7 +4,7 @@ const should = require('should');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Consumer API: POST  ->  /signals/:signal_name/trigger', () => {
+describe('ConsumerAPI: POST  ->  /signals/:signal_name/trigger', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;

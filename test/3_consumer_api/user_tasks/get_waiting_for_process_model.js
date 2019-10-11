@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Consumer API: GetUserTasksForProcessModel', () => {
+describe('ConsumerAPI: GetUserTasksForProcessModel', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -223,6 +223,13 @@ describe('Consumer API: GetUserTasksForProcessModel', () => {
 
   describe('Security Checks', () => {
 
+    const correlationId = uuid.v4();
+
+    before(async () => {
+      await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
+      await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+    });
+
     it('should fail to retrieve the ProcessModel\'s UserTasks, when the user is unauthorized', async () => {
 
       try {
@@ -239,22 +246,16 @@ describe('Consumer API: GetUserTasksForProcessModel', () => {
       }
     });
 
-    it('should fail to retrieve the ProcessModel\'s UserTasks, when the user is forbidden to retrieve it', async () => {
+    it('should return an empty Array, if the user not allowed to access any suspended UserTasks', async () => {
 
       const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+      const userTaskList = await testFixtureProvider
+        .consumerApiClient
+        .getUserTasksForProcessModel(restrictedIdentity, processModelId);
 
-      try {
-        const userTaskList = await testFixtureProvider
-          .consumerApiClient
-          .getUserTasksForProcessModel(restrictedIdentity, processModelId);
-
-        should.fail(userTaskList, undefined, 'This request should have failed!');
-      } catch (error) {
-        const expectedErrorCode = 403;
-        const expectedErrorMessage = /access denied/i;
-        should(error.code).be.match(expectedErrorCode);
-        should(error.message).be.match(expectedErrorMessage);
-      }
+      should(userTaskList).have.property('userTasks');
+      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).have.a.lengthOf(0);
     });
   });
 });
