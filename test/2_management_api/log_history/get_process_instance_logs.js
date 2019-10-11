@@ -4,7 +4,7 @@ const should = require('should');
 
 const {TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: GetProcessInstanceLogs', () => {
+describe('ManagementAPI: GetProcessInstanceLogs', () => {
 
   let testFixtureProvider;
 

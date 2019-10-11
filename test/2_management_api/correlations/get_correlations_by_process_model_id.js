@@ -7,7 +7,7 @@ const StartCallbackType = require('@process-engine/management_api_contracts').Da
 
 const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
-describe('Management API: GetCorrelationsByProcessModelId', () => {
+describe('ManagementAPI: GetCorrelationsByProcessModelId', () => {
 
   let testFixtureProvider;
   let defaultIdentity;
@@ -40,7 +40,7 @@ describe('Management API: GetCorrelationsByProcessModelId', () => {
       await testFixtureProvider.clearDatabases();
     });
 
-    it('should return a correlation by its id for a user through the Management API', async () => {
+    it('should return a correlation by its id for a user through the ManagementAPI', async () => {
 
       const correlationList = await testFixtureProvider
         .managementApiClient

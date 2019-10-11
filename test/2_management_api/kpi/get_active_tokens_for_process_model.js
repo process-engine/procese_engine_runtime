@@ -7,7 +7,7 @@ const StartCallbackType = require('@process-engine/management_api_contracts').Da
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: GetActiveTokensForProcessModel', () => {
+describe('ManagementAPI: GetActiveTokensForProcessModel', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;

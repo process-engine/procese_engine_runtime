@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: GetWaitingEventsForCorrelation', () => {
+describe('ManagementAPI: GetEventsForCorrelation', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -37,7 +37,7 @@ describe('Management API: GetWaitingEventsForCorrelation', () => {
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
     });
 
-    it('should return a correlation\'s events by its correlation_id through the Management API', async () => {
+    it('should return a correlation\'s events by its correlation_id through the management api', async () => {
 
       const eventList = await testFixtureProvider
         .managementApiClient
@@ -99,7 +99,7 @@ describe('Management API: GetWaitingEventsForCorrelation', () => {
     before(async () => {
       // Create a number of ProcessInstances, so we can actually test pagination
       // We will have a grand total of 10 Events after this.
-      for (let i = 0; i < 10; i++) {
+      for(let i = 0; i < 10; i++) {
         await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, correlationIdPaginationTest);
       }
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationIdPaginationTest, processModelId, 10);
@@ -200,6 +200,19 @@ describe('Management API: GetWaitingEventsForCorrelation', () => {
         should(error.message).be.match(expectedErrorMessage);
         should(error.code).be.match(expectedErrorCode);
       }
+    });
+
+    it('should return an empty Array, if the user is not allowed to access any suspended events', async () => {
+
+      const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+      const eventList = await testFixtureProvider
+        .managementApiClient
+        .getWaitingEventsForCorrelation(restrictedIdentity, correlationId);
+
+      should(eventList).have.property('events');
+
+      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).have.a.lengthOf(0);
     });
   });
 });

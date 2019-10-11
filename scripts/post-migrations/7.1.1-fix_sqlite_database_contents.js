@@ -18,6 +18,7 @@
 const SequelizeConnectionManager = require('@essential-projects/sequelize_connection_manager').SequelizeConnectionManager;
 
 const environment = require('./setup/environment_handler');
+const badges = environment.badges;
 
 const connectionManager = new SequelizeConnectionManager();
 
@@ -42,14 +43,14 @@ async function run() {
   const processModelDbHasFlowNodeInstances = await checkIfFixForTableIsNeeded(processModelDbQueryInterface, 'FlowNodeInstances');
 
   if (flowNodeInstanceDbHasProcessModels) {
-    console.log('Moving ProcessModels from FlowNodeInstance DB to ProcessModel DB...');
+    console.log(`${badges.Info}Moving ProcessModels from FlowNodeInstance DB to ProcessModel DB...`);
     await moveProcessModelsFromFlowNodeInstanceDbToProcessModelDb(flowNodeInstanceDbQueryInterface, processModelDbQueryInterface);
   } else {
     await flowNodeInstanceDbQueryInterface.dropTable('ProcessDefinitions');
   }
 
   if (processModelDbHasFlowNodeInstances) {
-    console.log('Moving FlowNodeInstances and ProcessTokens from ProcessModel DB to FlowNodeInstance DB...');
+    console.log(`${badges.Info}Moving FlowNodeInstances and ProcessTokens from ProcessModel DB to FlowNodeInstance DB...`);
     await moveFlowNodeInstancesFromProcessModelDbToFlowNodeInstanceDb(flowNodeInstanceDbQueryInterface, processModelDbQueryInterface);
   } else {
     await processModelDbQueryInterface.dropTable('FlowNodeInstances');
@@ -143,9 +144,8 @@ async function moveFlowNodeInstancesFromProcessModelDbToFlowNodeInstanceDb(flowN
 }
 
 run()
-  .then(() => {
-    console.log('Success!');
-  })
+  .then(() => console.log(`${badges.Info}All Done!`))
   .catch((error) => {
-    console.log('Failed to execute post-migration script: ', error);
+    console.log(`${badges.Error}Failed to execute post-migration script: `, error);
+    process.exit(1);
   });

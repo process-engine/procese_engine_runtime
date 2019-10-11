@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Consumer API:   Receive global UserTask Notifications', () => {
+describe('ConsumerAPI:   Receive global UserTask Notifications', () => {
 
   let eventAggregator;
   let processInstanceHandler;

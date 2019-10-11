@@ -5,7 +5,7 @@ const should = require('should');
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
 const testCase = 'GET  ->  /process_instances/:process_instance_id/flow_node_instances';
-describe(`Management API: ${testCase}`, () => {
+describe(`ManagementAPI: ${testCase}`, () => {
 
   let processInstanceHandler;
   let testFixtureProvider;

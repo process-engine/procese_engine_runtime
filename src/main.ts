@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import {InvocationContainer} from 'addict-ioc';
+import {exec} from 'child_process';
 import * as fs from 'fs';
 import {Logger} from 'loggerhythm';
 import * as os from 'os';
@@ -33,8 +34,14 @@ const httpIsEnabled = process.env.NO_HTTP === undefined;
 // than the one we are using now. The BPMN Studio needs to be able to provide
 // a path to the databases, so that the backend can access them.
 export async function startRuntime(sqlitePath: string): Promise<void> {
-  initializeEnvironment(sqlitePath);
+  setConfigPath();
+  loadConfiguredEnvironmentOrDefault();
+
   await runMigrations(sqlitePath);
+  await runPostMigrations();
+
+  setWorkingDirectory(sqlitePath);
+
   await startProcessEngine();
   if (httpIsEnabled) {
     await configureGlobalRoutes(container);
@@ -43,10 +50,7 @@ export async function startRuntime(sqlitePath: string): Promise<void> {
   await resumeProcessInstances();
 }
 
-function initializeEnvironment(sqlitePath: string): void {
-
-  setConfigPath();
-  loadConfiguredEnvironmentOrDefault();
+function setWorkingDirectory(sqlitePath: string): void {
 
   // set current working directory
   const userDataFolderPath = getUserConfigFolder();
@@ -149,6 +153,20 @@ async function runMigrations(sqlitePath: string): Promise<void> {
     await executeMigrations(repository, sqlitePath);
   }
   logger.info('Migrations successfully executed.');
+}
+
+async function runPostMigrations(): Promise<void> {
+
+  try {
+    logger.info('Running post-migration scripts.');
+
+    await execAsync('npm run postMigrations');
+
+    logger.info('Post-Migrations successfully executed.');
+  } catch (error) {
+    logger.error('Failed to run Post-Migrations', error);
+    process.exit(1);
+  }
 }
 
 async function startProcessEngine(): Promise<void> {
@@ -311,4 +329,21 @@ async function resumeProcessInstances(): Promise<void> {
   const resumeProcessService = await container.resolveAsync<IResumeProcessService>('ResumeProcessService');
   await resumeProcessService.findAndResumeInterruptedProcessInstances(dummyIdentity);
   logger.info('Done.');
+}
+
+async function execAsync(command): Promise<string> {
+
+  return new Promise((resolve, reject): void => {
+    const childProcess = exec(command, (error, stdout, stdErr): void => {
+
+      if (error) {
+        return reject(error);
+      }
+
+      return resolve(stdout);
+    });
+
+    childProcess.stdout.on('data', (data): void => logger.verbose(data));
+    childProcess.stderr.on('data', (data): void => logger.error(data));
+  });
 }

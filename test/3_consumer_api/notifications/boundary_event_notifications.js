@@ -3,7 +3,7 @@ const uuid = require('node-uuid');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('Consumer API:   Receive global BoundaryEvent Notifications', () => {
+describe('ConsumerAPI:   Receive global BoundaryEvent Notifications', () => {
 
   let eventAggregator;
   let processInstanceHandler;

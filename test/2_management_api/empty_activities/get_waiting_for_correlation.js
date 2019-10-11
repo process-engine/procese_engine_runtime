@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: GetEmptyActivitiesForCorrelation', () => {
+describe('ManagementAPI: GetEmptyActivitiesForCorrelation', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -45,7 +45,7 @@ describe('Management API: GetEmptyActivitiesForCorrelation', () => {
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
     });
 
-    it('should return a Correlation\'s EmptyActivities by its CorrelationId through the Management API', async () => {
+    it('should return a Correlation\'s EmptyActivities by its CorrelationId through the ManagementAPI', async () => {
 
       const emptyActivityList = await testFixtureProvider
         .managementApiClient
@@ -69,7 +69,7 @@ describe('Management API: GetEmptyActivitiesForCorrelation', () => {
       should(emptyActivity).not.have.property('identity');
     });
 
-    it('should return a list of EmptyActivities from a call activity, by the given correlationId through the Management API', async () => {
+    it('should return a list of EmptyActivities from a call activity, by the given correlationId through the ManagementAPI', async () => {
 
       const processStartResult = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelIdCallActivity);
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(processStartResult.correlationId, processModelId);
@@ -143,7 +143,7 @@ describe('Management API: GetEmptyActivitiesForCorrelation', () => {
     before(async () => {
       // Create a number of ProcessInstances, so we can actually test pagination
       // We will have a grand total of 10 EmptyActivities after this.
-      for (let i = 0; i < 10; i++) {
+      for(let i = 0; i < 10; i++) {
         await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, correlationIdPaginationTest);
       }
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationIdPaginationTest, processModelId, 10);
@@ -248,22 +248,17 @@ describe('Management API: GetEmptyActivitiesForCorrelation', () => {
       }
     });
 
-    it('should fail to retrieve the Correlation\'s EmptyActivities, when the user is forbidden to retrieve it', async () => {
+    it('should return an empty Array, if the user not allowed to access any suspended EmptyActivities', async () => {
 
       const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
 
-      try {
-        const emptyActivityList = await testFixtureProvider
-          .managementApiClient
-          .getEmptyActivitiesForCorrelation(restrictedIdentity, correlationId);
+      const emptyActivityList = await testFixtureProvider
+        .managementApiClient
+        .getEmptyActivitiesForCorrelation(restrictedIdentity, correlationId);
 
-        should.fail(emptyActivityList, undefined, 'This request should have failed!');
-      } catch (error) {
-        const expectedErrorMessage = /access denied/i;
-        const expectedErrorCode = 403;
-        should(error.message).be.match(expectedErrorMessage);
-        should(error.code).be.match(expectedErrorCode);
-      }
+      should(emptyActivityList).have.property('emptyActivities');
+      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
     });
   });
 });

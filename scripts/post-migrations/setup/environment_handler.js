@@ -1,8 +1,27 @@
 'use strict';
 
+const Bluebird = require('bluebird');
+
+Bluebird.config({
+  cancellation: true,
+});
+
+global.Promise = Bluebird;
+
+const chalk = require('chalk');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+
+const badgeInfo = chalk.blueBright('Info: ');
+const badgeWarn = chalk.yellow('Warn: ');
+const badgeErr = chalk.red('Error: ');
+
+module.exports.badges = {
+  Info: badgeInfo,
+  Warn: badgeWarn,
+  Error: badgeErr,
+}
 
 module.exports.initialize = () => {
 

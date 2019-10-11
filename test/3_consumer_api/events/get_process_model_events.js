@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Consumer API: GetEventsForProcessModel', () => {
+describe('ConsumerAPI: GetEventsForProcessModel', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -192,22 +192,17 @@ describe('Consumer API: GetEventsForProcessModel', () => {
       }
     });
 
-    it('should fail to retrieve the process model\'s events, when the user forbidden to retrieve it', async () => {
+    it('should return an empty Array, if the user is not allowed to access any suspended events', async () => {
 
       const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+      const eventList = await testFixtureProvider
+        .consumerApiClient
+        .getEventsForProcessModel(restrictedIdentity, processModelId);
 
-      try {
-        await testFixtureProvider
-          .consumerApiClient
-          .getEventsForProcessModel(restrictedIdentity, processModelId);
+      should(eventList).have.property('events');
 
-        should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
-      } catch (error) {
-        const expectedErrorCode = 403;
-        const expectedErrorMessage = /access denied/i;
-        should(error.code).be.match(expectedErrorCode);
-        should(error.message).be.match(expectedErrorMessage);
-      }
+      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).have.a.lengthOf(0);
     });
   });
 });

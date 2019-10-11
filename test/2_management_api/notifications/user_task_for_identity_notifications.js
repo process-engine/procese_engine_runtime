@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API:   Receive identity specific UserTask Notifications', () => {
+describe('ManagementAPI:   Receive identity specific UserTask Notifications', () => {
 
   let eventAggregator;
   let processInstanceHandler;

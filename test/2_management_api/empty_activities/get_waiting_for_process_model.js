@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: GetEmptyActivitiesForProcessModel', () => {
+describe('ManagementAPI: GetEmptyActivitiesForProcessModel', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -50,7 +50,7 @@ describe('Management API: GetEmptyActivitiesForProcessModel', () => {
         .managementApiClient
         .getEmptyActivitiesForProcessModel(testFixtureProvider.identities.superAdmin, processModelId);
 
-      for (const emptyActivity of emptyActivityList.emptyActivities) {
+      for(const emptyActivity of emptyActivityList.emptyActivities) {
         const {correlationId, flowNodeInstanceId, processInstanceId} = emptyActivity;
 
         await testFixtureProvider
@@ -59,7 +59,7 @@ describe('Management API: GetEmptyActivitiesForProcessModel', () => {
       }
     });
 
-    it('should return a ProcessModel\'s EmptyActivities by its ProcessModelId through the Management API', async () => {
+    it('should return a ProcessModel\'s EmptyActivities by its ProcessModelId through the management api', async () => {
 
       const emptyActivityList = await testFixtureProvider
         .managementApiClient
@@ -124,7 +124,7 @@ describe('Management API: GetEmptyActivitiesForProcessModel', () => {
       const correlationIdPaginationTest = uuid.v4();
       // Create a number of ProcessInstances, so we can actually test pagination
       // We will have a grand total of 10 EmptyActivities after this.
-      for (let i = 0; i < 10; i++) {
+      for(let i = 0; i < 10; i++) {
         await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, correlationIdPaginationTest);
       }
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationIdPaginationTest, processModelId, 10);
@@ -206,6 +206,13 @@ describe('Management API: GetEmptyActivitiesForProcessModel', () => {
 
   describe('Security Checks', () => {
 
+    const correlationId = uuid.v4();
+
+    before(async () => {
+      await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
+      await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
+    });
+
     it('should fail to retrieve the ProcessModel\'s EmptyActivities, when the user is unauthorized', async () => {
 
       try {
@@ -222,22 +229,16 @@ describe('Management API: GetEmptyActivitiesForProcessModel', () => {
       }
     });
 
-    it('should fail to retrieve the ProcessModel\'s EmptyActivities, when the user is forbidden to retrieve it', async () => {
+    it('should return an empty Array, if the user not allowed to access any suspended EmptyActivities', async () => {
 
       const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+      const emptyActivityList = await testFixtureProvider
+        .managementApiClient
+        .getEmptyActivitiesForProcessModel(restrictedIdentity, processModelId);
 
-      try {
-        const emptyActivityList = await testFixtureProvider
-          .managementApiClient
-          .getEmptyActivitiesForProcessModel(restrictedIdentity, processModelId);
-
-        should.fail(emptyActivityList, undefined, 'This request should have failed!');
-      } catch (error) {
-        const expectedErrorMessage = /access denied/i;
-        const expectedErrorCode = 403;
-        should(error.message).be.match(expectedErrorMessage);
-        should(error.code).be.match(expectedErrorCode);
-      }
+      should(emptyActivityList).have.property('emptyActivities');
+      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
     });
   });
 });

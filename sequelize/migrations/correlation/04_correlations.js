@@ -71,7 +71,7 @@ module.exports = {
     if (flowNodeInstancesTableExists) {
       console.log('Syncing new Correlation-states with FlowNodeInstance states');
       const obtainAllCorrelationsQuery = 'SELECT * FROM Correlations';
-      const allCorrelations = await queryInterface.sequelize.query(obtainAllCorrelationsQuery)[0];
+      const allCorrelations = (await queryInterface.sequelize.query(obtainAllCorrelationsQuery))[0];
 
       for (const currentCorrelationEntry of allCorrelations) {
         const currentProcessInstanceId = currentCorrelationEntry.processInstanceId;

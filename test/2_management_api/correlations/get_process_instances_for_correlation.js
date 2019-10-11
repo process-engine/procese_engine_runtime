@@ -7,7 +7,7 @@ const StartCallbackType = require('@process-engine/management_api_contracts').Da
 
 const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
-describe('Management API: GetProcessInstancesForCorrelation', () => {
+describe('ManagementAPI: GetProcessInstancesForCorrelation', () => {
 
   let testFixtureProvider;
   let defaultIdentity;

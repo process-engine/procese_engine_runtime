@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Consumer API:   Receive ProcessEnded Notification', () => {
+describe('ConsumerAPI:   Receive ProcessEnded Notification', () => {
 
   let eventAggregator;
   let processInstanceHandler;

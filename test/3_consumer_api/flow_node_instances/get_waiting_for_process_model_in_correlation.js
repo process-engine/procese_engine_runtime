@@ -1,9 +1,9 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
-const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
+const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Consumer API: GetSuspendedTasksForProcessModelInCorrelation', () => {
+describe('ConsumerAPI: GetSuspendedTasksForProcessModelInCorrelation', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -215,22 +215,16 @@ describe('Consumer API: GetSuspendedTasksForProcessModelInCorrelation', () => {
       }
     });
 
-    it('should fail to retrieve the correlation\'s Tasks, when the user is forbidden to retrieve it', async () => {
+    it('should return an empty Array, if the user not allowed to access any suspended tasks', async () => {
 
       const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+      const taskList = await testFixtureProvider
+        .consumerApiClient
+        .getSuspendedTasksForProcessModelInCorrelation(restrictedIdentity, processModelId, correlationId);
 
-      try {
-        const taskList = await testFixtureProvider
-          .consumerApiClient
-          .getSuspendedTasksForProcessModelInCorrelation(restrictedIdentity, processModelId, correlationId);
-
-        should.fail(taskList, undefined, 'This request should have failed!');
-      } catch (error) {
-        const expectedErrorCode = 403;
-        const expectedErrorMessage = /access denied/i;
-        should(error.code).be.match(expectedErrorCode);
-        should(error.message).be.match(expectedErrorMessage);
-      }
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).have.a.lengthOf(0);
     });
   });
 });

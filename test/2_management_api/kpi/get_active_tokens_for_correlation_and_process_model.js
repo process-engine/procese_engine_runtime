@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: GetActiveTokensForCorrelationAndProcessModel', () => {
+describe('ManagementAPI: GetActiveTokensForCorrelationAndProcessModel', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;

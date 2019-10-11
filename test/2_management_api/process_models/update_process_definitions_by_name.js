@@ -4,7 +4,7 @@ const should = require('should');
 
 const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
-describe('Management API:   POST  ->  /process_models/:process_model_id/update', () => {
+describe('ManagementAPI:   POST  ->  /process_models/:process_model_id/update', () => {
 
   let testFixtureProvider;
 

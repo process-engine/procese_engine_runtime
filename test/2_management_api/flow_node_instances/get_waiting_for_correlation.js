@@ -1,11 +1,9 @@
-'use strict';
-
 const should = require('should');
 const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: GetSuspendedTasksForCorrelation', () => {
+describe('ManagementAPI: GetSuspendedTasksForCorrelation', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -45,7 +43,7 @@ describe('Management API: GetSuspendedTasksForCorrelation', () => {
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId, 3);
     });
 
-    it('should return a Correlation\'s Tasks by its CorrelationId through the Management API', async () => {
+    it('should return a Correlation\'s Tasks by its CorrelationId through the ManagementAPI', async () => {
 
       const taskList = await testFixtureProvider
         .managementApiClient
@@ -69,7 +67,7 @@ describe('Management API: GetSuspendedTasksForCorrelation', () => {
       should(task).not.have.property('identity');
     });
 
-    it('should return a list of Tasks from a call activity, by the given correlationId through the Management API', async () => {
+    it('should return a list of Tasks from a call activity, by the given correlationId through the ManagementAPI', async () => {
 
       const processStartResult = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelIdCallActivity);
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(processStartResult.correlationId, processModelId, 3);
@@ -242,22 +240,16 @@ describe('Management API: GetSuspendedTasksForCorrelation', () => {
       }
     });
 
-    it('should fail to retrieve the Correlation\'s Tasks, when the user is forbidden to retrieve it', async () => {
+    it('should return an empty Array, if the user not allowed to access any suspended tasks', async () => {
 
       const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+      const taskList = await testFixtureProvider
+        .managementApiClient
+        .getSuspendedTasksForCorrelation(restrictedIdentity, correlationId);
 
-      try {
-        const taskList = await testFixtureProvider
-          .managementApiClient
-          .getSuspendedTasksForCorrelation(restrictedIdentity, correlationId);
-
-        should.fail(taskList, undefined, 'This request should have failed!');
-      } catch (error) {
-        const expectedErrorMessage = /access denied/i;
-        const expectedErrorCode = 403;
-        should(error.message).be.match(expectedErrorMessage);
-        should(error.code).be.match(expectedErrorCode);
-      }
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).have.a.lengthOf(0);
     });
   });
 });
