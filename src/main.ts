@@ -334,13 +334,21 @@ async function resumeProcessInstances(): Promise<void> {
 async function execAsync(command): Promise<string> {
 
   return new Promise((resolve, reject): void => {
-    exec(command, (error, stdout, stdErr): void => {
+    const childProcess = exec(command, (error, stdout, stdErr): void => {
 
       if (error) {
         return reject(error);
       }
 
       return resolve(stdout);
+    });
+
+    childProcess.stdout.on('data', (data) => {
+      console.log(data);
+    });
+
+    childProcess.stderr.on('data', (data) => {
+      console.error(data);
     });
   });
 }
