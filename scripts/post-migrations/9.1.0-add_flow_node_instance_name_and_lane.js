@@ -81,7 +81,7 @@ async function getFlowNodeInstancesWithoutNameOrLane() {
 
 async function addNameAndLaneToFlowNodeInstances(flowNodeInstances) {
 
-  console.log(`${badges.Info}Adding name and lane to each FlowNodeInstance. Depending of the number of records, this may take a while...`);
+  console.log(`${badges.Info}Adding name and lane to each FlowNodeInstance. Depending on the number of records, this may take a while...`);
 
   // for-loops are a lot faster than for...of loops.
   // Since it is very possible that we have to process 10.000+ records here, a for-loop is used to speed things up a bit.
