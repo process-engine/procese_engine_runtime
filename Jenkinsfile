@@ -474,9 +474,11 @@ pipeline {
           }
         }
       }
+      options {skipDefaultCheckout()}
       parallel {
         stage('Create tarball from linux sources') {
           agent {label 'linux'}
+          options {skipDefaultCheckout()}
           steps {
             echo('Creating tarball from compiled sources')
             sh('mkdir linux_sources')
@@ -492,6 +494,7 @@ pipeline {
         }
         stage('Create tarball from macos sources') {
           agent {label 'macos'}
+          options {skipDefaultCheckout()}
           steps {
             echo('Creating tarball from compiled sources')
             sh('mkdir macos_sources')
@@ -510,6 +513,7 @@ pipeline {
           // So the Windows Slave just has to provide the sources (i.e. run npm intall, npm build and npm rebuild) and then we let one of the faster slaves do all the zipping.
           // To prevent collision with the 'Create tarball from macos sources' step, we do this in a subfolder.
           agent {label 'macos'}
+          options {skipDefaultCheckout()}
           steps {
             echo('Creating zip from compiled sources')
             sh('mkdir windows_sources')
@@ -525,6 +529,7 @@ pipeline {
         }
         stage('Build Windows Installer') {
           agent {label 'windows'}
+          options {skipDefaultCheckout()}
           steps {
             unstash('package_json')
             unstash('windows_sources');
@@ -552,6 +557,7 @@ pipeline {
           }
         }
       }
+      options {skipDefaultCheckout()}
       steps {
         unstash('windows_installer_results')
         unstash('linux_application_package');
@@ -572,9 +578,11 @@ pipeline {
       when {
         expression {buildIsRequired == true}
       }
+      options {skipDefaultCheckout()}
       parallel {
         stage('master') {
           agent {label 'master'}
+          options {skipDefaultCheckout()}
           steps {
             script {
               echo('Cleaning up master');
@@ -590,6 +598,7 @@ pipeline {
         }
         stage('macos') {
           agent {label 'macos'}
+          options {skipDefaultCheckout()}
           steps {
             script {
               echo('Cleaning up macos slave');
@@ -605,6 +614,7 @@ pipeline {
         }
         stage('windows') {
           agent {label 'windows'}
+          options {skipDefaultCheckout()}
           steps {
             script {
               echo('Cleaning up windows slave');
@@ -622,6 +632,7 @@ pipeline {
           // Note that there are actually two slaves with that label.
           // So it CAN happen, that this will not run on the actual slave that was used by the integration tests.
           agent {label 'process-engine-tests'}
+          options {skipDefaultCheckout()}
           steps {
             script {
               echo('Cleaning up linux integrationtest slave');
