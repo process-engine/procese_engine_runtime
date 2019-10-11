@@ -4,9 +4,7 @@
 // https://sequelize.readthedocs.io/en/latest/docs/migrations/#functions
 
 // CHANGE NOTES:
-// Changes between 5.0.0 and 6.0.0:
-// - The column eventType was added to store an FNIs BPMN EvntType (Message, Signal, etc.)
-// - The column previousFlowNodeInstanceId was added to store an FNIs BPMN type
+// - Adding 'flowNodeName' and 'flowNodeLane' to FlowNodeInstance table.
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
