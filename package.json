@@ -27,7 +27,8 @@
     "build-windows-executable": "pkg --targets windows .",
     "create-tarball": "node ./scripts/pack_sources/pack_to_tarball.js",
     "create-zipfile": "node ./scripts/pack_sources/pack_to_zip.js",
-    "runPostMigrations": "npm run runPostMigrationV.9.1.0",
+    "runPostMigrations": "npm run runPostMigrationV.7.1.1 && npm run runPostMigrationV.9.1.0",
+    "runPostMigrationV.7.1.1": "node ./scripts/post-migrations/7.1.1-fix_sqlite_database_contents.js",
     "runPostMigrationV.9.1.0": "node ./scripts/post-migrations/9.1.0-add_flow_node_instance_name_and_lane.js"
   },
   "main": "./dist/commonjs/index.js",
