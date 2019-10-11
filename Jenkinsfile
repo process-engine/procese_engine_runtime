@@ -377,7 +377,9 @@ pipeline {
           }
         }
         stage('Lint sources') {
+          agent {label 'any-docker && process-engine-tests'}
           steps {
+            unstash('linux_sources');
             sh('npm run lint')
           }
         }
