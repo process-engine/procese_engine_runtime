@@ -4,7 +4,7 @@ const should = require('should');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: GetActiveCorrelations', () => {
+describe('ManagementAPI: GetActiveCorrelations', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;

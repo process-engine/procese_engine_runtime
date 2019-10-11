@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: GetWaitingEventsForProcessModel', () => {
+describe('ManagementAPI: GetEventsForProcessModel', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -48,7 +48,7 @@ describe('Management API: GetWaitingEventsForProcessModel', () => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     });
 
-    it('should return a process models events by its process_model_id through the Management API', async () => {
+    it('should return a process models events by its process_model_id through the management api', async () => {
 
       const eventList = await testFixtureProvider
         .managementApiClient
@@ -92,7 +92,7 @@ describe('Management API: GetWaitingEventsForProcessModel', () => {
       const correlationIdPaginationTest = uuid.v4();
       // Create a number of ProcessInstances, so we can actually test pagination
       // We will have a grand total of 10 Events after this.
-      for (let i = 0; i < 10; i++) {
+      for(let i = 0; i < 10; i++) {
         await processInstanceHandler.startProcessInstanceAndReturnResult(processModelId, correlationIdPaginationTest);
       }
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationIdPaginationTest, processModelId, 10);
@@ -192,22 +192,17 @@ describe('Management API: GetWaitingEventsForProcessModel', () => {
       }
     });
 
-    it('should fail to retrieve the process model\'s events, when the user forbidden to retrieve it', async () => {
+    it('should return an empty Array, if the user is not allowed to access any suspended events', async () => {
 
       const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+      const eventList = await testFixtureProvider
+        .managementApiClient
+        .getWaitingEventsForProcessModel(restrictedIdentity, processModelId);
 
-      try {
-        await testFixtureProvider
-          .managementApiClient
-          .getWaitingEventsForProcessModel(restrictedIdentity, processModelId);
+      should(eventList).have.property('events');
 
-        should.fail('unexpectedSuccessResult', undefined, 'This request should have failed!');
-      } catch (error) {
-        const expectedErrorCode = 403;
-        const expectedErrorMessage = /access denied/i;
-        should(error.code).be.match(expectedErrorCode);
-        should(error.message).be.match(expectedErrorMessage);
-      }
+      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).have.a.lengthOf(0);
     });
   });
 });

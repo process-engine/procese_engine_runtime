@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: GetManualTasksForCorrelation', () => {
+describe('ManagementAPI: GetManualTasksForCorrelation', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -45,7 +45,7 @@ describe('Management API: GetManualTasksForCorrelation', () => {
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
     });
 
-    it('should return a Correlation\'s ManualTasks by its CorrelationId through the Management API', async () => {
+    it('should return a Correlation\'s ManualTasks by its CorrelationId through the ManagementAPI', async () => {
 
       const manualTaskList = await testFixtureProvider
         .managementApiClient
@@ -69,7 +69,7 @@ describe('Management API: GetManualTasksForCorrelation', () => {
       should(manualTask).not.have.property('identity');
     });
 
-    it('should return a list of ManualTasks from a call activity, by the given correlationId through the Management API', async () => {
+    it('should return a list of ManualTasks from a call activity, by the given correlationId through the ManagementAPI', async () => {
 
       const processStartResult = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelIdCallActivity);
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(processStartResult.correlationId, processModelId);
@@ -249,22 +249,16 @@ describe('Management API: GetManualTasksForCorrelation', () => {
       }
     });
 
-    it('should fail to retrieve the Correlation\'s ManualTasks, when the user is forbidden to retrieve it', async () => {
+    it('should return an empty Array, if the user not allowed to access any suspended ManualTasks', async () => {
 
       const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+      const manualTaskList = await testFixtureProvider
+        .managementApiClient
+        .getManualTasksForCorrelation(restrictedIdentity, correlationId);
 
-      try {
-        const manualTaskList = await testFixtureProvider
-          .managementApiClient
-          .getManualTasksForCorrelation(restrictedIdentity, correlationId);
-
-        should.fail(manualTaskList, undefined, 'This request should have failed!');
-      } catch (error) {
-        const expectedErrorMessage = /access denied/i;
-        const expectedErrorCode = 403;
-        should(error.message).be.match(expectedErrorMessage);
-        should(error.code).be.match(expectedErrorCode);
-      }
+      should(manualTaskList).have.property('manualTasks');
+      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).have.a.lengthOf(0);
     });
   });
 });

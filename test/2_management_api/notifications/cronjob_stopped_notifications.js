@@ -4,7 +4,7 @@ const should = require('should');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API:   Receive CronjobStopped Notification', () => {
+describe('ManagementAPI:   Receive CronjobStopped Notification', () => {
 
   let eventAggregator;
   let processInstanceHandler;

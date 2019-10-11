@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API:   Receive global Activity Notifications', () => {
+describe('ManagementAPI:   Receive global Activity Notifications', () => {
 
   let eventAggregator;
   let processInstanceHandler;

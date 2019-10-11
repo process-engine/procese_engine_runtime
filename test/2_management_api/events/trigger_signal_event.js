@@ -4,7 +4,7 @@ const should = require('should');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: TriggerSignalEvent', () => {
+describe('ManagementAPI: POST  ->  /signals/:signal_name/trigger', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;

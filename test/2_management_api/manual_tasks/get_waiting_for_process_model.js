@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: GetManualTasksForProcessModel', () => {
+describe('ManagementAPI: GetManualTasksForProcessModel', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -59,7 +59,7 @@ describe('Management API: GetManualTasksForProcessModel', () => {
       }
     });
 
-    it('should return a ProcessModel\'s ManualTasks by its ProcessModelId through the Management API', async () => {
+    it('should return a ProcessModel\'s ManualTasks by its ProcessModelId through the management api', async () => {
 
       const manualTaskList = await testFixtureProvider
         .managementApiClient
@@ -222,22 +222,16 @@ describe('Management API: GetManualTasksForProcessModel', () => {
       }
     });
 
-    it('should fail to retrieve the ProcessModel\'s ManualTasks, when the user is forbidden to retrieve it', async () => {
+    it('should return an empty Array, if the user not allowed to access any suspended ManualTasks', async () => {
 
       const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+      const manualTaskList = await testFixtureProvider
+        .managementApiClient
+        .getManualTasksForProcessModel(restrictedIdentity, processModelId);
 
-      try {
-        const manualTaskList = await testFixtureProvider
-          .managementApiClient
-          .getManualTasksForProcessModel(restrictedIdentity, processModelId);
-
-        should.fail(manualTaskList, undefined, 'This request should have failed!');
-      } catch (error) {
-        const expectedErrorMessage = /access denied/i;
-        const expectedErrorCode = 403;
-        should(error.message).be.match(expectedErrorMessage);
-        should(error.code).be.match(expectedErrorCode);
-      }
+      should(manualTaskList).have.property('manualTasks');
+      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).have.a.lengthOf(0);
     });
   });
 });

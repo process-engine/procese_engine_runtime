@@ -4,7 +4,7 @@ const should = require('should');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: FinishEmptyActivity', () => {
+describe(`ManagementAPI: FinishEmptyActivity`, () => {
 
   let processInstanceHandler;
   let testFixtureProvider;

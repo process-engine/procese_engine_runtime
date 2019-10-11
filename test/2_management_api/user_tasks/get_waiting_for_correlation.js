@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: GetUserTasksForCorrelation', () => {
+describe('ManagementAPI: GetUserTasksForCorrelation', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -15,7 +15,7 @@ describe('Management API: GetUserTasksForCorrelation', () => {
 
   const processModelId = 'test_management_api_usertask';
   const processModelIdNoUserTasks = 'test_management_api_usertask_empty';
-  const processModelIdCallActivity = 'test_management_api_usertask_call_acvtivity';
+  const processModelIdCallActivity = 'test_management_api_usertask_call_activity';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -45,7 +45,7 @@ describe('Management API: GetUserTasksForCorrelation', () => {
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
     });
 
-    it('should return a Correlation\'s UserTasks by its CorrelationId through the Management API', async () => {
+    it('should return a Correlation\'s UserTasks by its CorrelationId through the ManagementAPI', async () => {
 
       const userTaskList = await testFixtureProvider
         .managementApiClient
@@ -81,7 +81,7 @@ describe('Management API: GetUserTasksForCorrelation', () => {
       should(formField).have.property('defaultValue');
     });
 
-    it('should return a list of UserTasks from a call activity, by the given correlationId through the Management API', async () => {
+    it('should return a list of UserTasks from a call activity, by the given correlationId through the ManagementAPI', async () => {
 
       const processStartResult = await processInstanceHandler.startProcessInstanceAndReturnResult(processModelIdCallActivity);
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(processStartResult.correlationId, processModelId);
@@ -270,22 +270,16 @@ describe('Management API: GetUserTasksForCorrelation', () => {
       }
     });
 
-    it('should fail to retrieve the Correlation\'s UserTasks, when the user is forbidden to retrieve it', async () => {
+    it('should return an empty Array, if the user not allowed to access any suspended UserTasks', async () => {
 
       const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+      const userTaskList = await testFixtureProvider
+        .managementApiClient
+        .getUserTasksForCorrelation(restrictedIdentity, correlationId);
 
-      try {
-        const userTaskList = await testFixtureProvider
-          .managementApiClient
-          .getUserTasksForCorrelation(restrictedIdentity, correlationId);
-
-        should.fail(userTaskList, undefined, 'This request should have failed!');
-      } catch (error) {
-        const expectedErrorMessage = /access denied/i;
-        const expectedErrorCode = 403;
-        should(error.message).be.match(expectedErrorMessage);
-        should(error.code).be.match(expectedErrorCode);
-      }
+      should(userTaskList).have.property('userTasks');
+      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).have.a.lengthOf(0);
     });
   });
 });

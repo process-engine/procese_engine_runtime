@@ -4,7 +4,7 @@ const should = require('should');
 
 const TestFixtureProvider = require('../../../dist/commonjs/test_setup').TestFixtureProvider;
 
-describe('Management API: GetProcessModels', () => {
+describe('ManagementAPI: GetProcessModels', () => {
 
   let testFixtureProvider;
   let defaultIdentity;
@@ -34,7 +34,7 @@ describe('Management API: GetProcessModels', () => {
       await testFixtureProvider.clearDatabases();
     });
 
-    it('should return process models through the Management API', async () => {
+    it('should return process models through the ManagementAPI', async () => {
 
       const processModelList = await testFixtureProvider
         .managementApiClient

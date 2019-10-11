@@ -1,11 +1,9 @@
-'use strict';
-
 const should = require('should');
 const uuid = require('node-uuid');
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe('Management API: GetAllSuspendedTasks', () => {
+describe('ManagementAPI: GetAllSuspendedTasks', () => {
 
   let processInstanceHandler;
   let testFixtureProvider;
@@ -176,22 +174,16 @@ describe('Management API: GetAllSuspendedTasks', () => {
       }
     });
 
-    it('should fail to retrieve the Correlation\'s Tasks, when the user is forbidden to retrieve it', async () => {
+    it('should return an empty Array, if the user not allowed to access any suspended tasks', async () => {
 
       const restrictedIdentity = testFixtureProvider.identities.restrictedUser;
+      const taskList = await testFixtureProvider
+        .managementApiClient
+        .getAllSuspendedTasks(restrictedIdentity);
 
-      try {
-        const taskList = await testFixtureProvider
-          .managementApiClient
-          .getAllSuspendedTasks(restrictedIdentity);
-
-        should.fail(taskList, undefined, 'This request should have failed!');
-      } catch (error) {
-        const expectedErrorMessage = /access denied/i;
-        const expectedErrorCode = 403;
-        should(error.message).be.match(expectedErrorMessage);
-        should(error.code).be.match(expectedErrorCode);
-      }
+      should(taskList).have.property('tasks');
+      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).have.a.lengthOf(0);
     });
   });
 });
