@@ -26,7 +26,9 @@
     "test-debug": "cross-env NODE_ENV=test-sqlite CONFIG_PATH=config mocha --inspect-brk test/**/*.js test/**/**/*.js  --exit",
     "build-windows-executable": "pkg --targets windows .",
     "create-tarball": "node ./scripts/pack_sources/pack_to_tarball.js",
-    "create-zipfile": "node ./scripts/pack_sources/pack_to_zip.js"
+    "create-zipfile": "node ./scripts/pack_sources/pack_to_zip.js",
+    "runPostMigrations": "npm run runPostMigrationV.9.1.0",
+    "runPostMigrationV.9.1.0": "node ./scripts/post-migrations/9.1.0-add_flow_node_instance_name_and_lane.js"
   },
   "main": "./dist/commonjs/index.js",
   "license": "MIT",
@@ -94,7 +96,6 @@
     "bluebird-global": "~1.0.1",
     "chalk": "^2.4.2",
     "cross-env": "~5.2.0",
-    "glob": "^7.1.4",
     "jsonwebtoken": "~8.5.0",
     "loggerhythm": "~3.0.3",
     "moment": "~2.24.0",
