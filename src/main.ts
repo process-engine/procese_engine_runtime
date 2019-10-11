@@ -160,7 +160,7 @@ async function runPostMigrations(): Promise<void> {
   try {
     logger.info('Running post-migration scripts.');
 
-    await execAsync('npm run runPostMigrationV.9.1.0');
+    await execAsync('npm run postMigrations');
 
     logger.info('Post-Migrations successfully executed.');
   } catch (error) {
