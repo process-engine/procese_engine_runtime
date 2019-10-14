@@ -23,7 +23,7 @@
       </bpmn:extensionElements>
       <bpmn:outgoing>SequenceFlow_1jdocur</bpmn:outgoing>
       <bpmn:timerEventDefinition>
-        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression" />
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">* 1 * * * *</bpmn:timeCycle>
       </bpmn:timerEventDefinition>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0sklcf5" sourceRef="Task_1ka46jy" targetRef="EndEvent_0eie6q6" />
