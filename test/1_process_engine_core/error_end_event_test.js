@@ -2,7 +2,7 @@
 const should = require('should');
 const TestFixtureProver = require('../../dist/commonjs/test_setup').TestFixtureProvider;
 
-describe('Error End Event - ', () => {
+describe('ErrorEndEvent - ', () => {
 
   let testFixtureProvider;
 
@@ -25,7 +25,7 @@ describe('Error End Event - ', () => {
     await testFixtureProvider.tearDown();
   });
 
-  it('should throw a defined error, when the error end event is reached', async () => {
+  it('should throw a defined error, when the ErrorEndEvent is reached', async () => {
 
     const processModelId = 'error_end_event_test';
     const initialToken = {
@@ -40,7 +40,7 @@ describe('Error End Event - ', () => {
     }
   });
 
-  it('should throw an anonymous error, when the error end event is reached', async () => {
+  it('should throw an anonymous error, when the ErrorEndEvent is reached', async () => {
 
     const processModelId = 'error_end_event_test';
     const initialToken = {
@@ -56,7 +56,7 @@ describe('Error End Event - ', () => {
     }
   });
 
-  it('should execute a call activity which ends with an error boundary event', async () => {
+  it('should execute a call activity which ends with an ErrorEndEvent', async () => {
 
     const processModelId = 'error_end_event_subprocess_call_activity_test';
 
@@ -72,7 +72,7 @@ describe('Error End Event - ', () => {
     }
   });
 
-  it('should execute a subprocess which ends with an error end event', async () => {
+  it('should execute a subprocess which ends with an ErrorEndEvent', async () => {
 
     const processModelId = 'error_end_event_subprocess_call_activity_test';
 
