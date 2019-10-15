@@ -84,8 +84,9 @@ describe('ManagementAPI: GetProcessInstanceById', () => {
 
       should.fail(processInstance, undefined, 'This request should have failed, because users cannot access other users ProcessInstances!');
     } catch (error) {
-      const expectedErrorMessage = /access denied/i;
-      const expectedErrorCode = 403;
+      // The 404 is intentional, to prevent any leak of possibly sensitive information.
+      const expectedErrorMessage = /not found/i;
+      const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
       should(error.code).be.equal(expectedErrorCode);
     }

@@ -124,21 +124,15 @@ describe('ManagementAPI: GetCorrelationsByProcessModelId', () => {
       });
     });
 
-    it('should fail to retrieve the Correlations, if no Correlation for the given ProcessModel exists', async () => {
+    it('should return an empty Array, if no Correlations for the given ProcessModel exist', async () => {
       const invalidProcessModelId = 'invalid_id';
 
-      try {
-        const correlationList = await testFixtureProvider
-          .managementApiClient
-          .getCorrelationsByProcessModelId(defaultIdentity, invalidProcessModelId);
+      const correlationList = await testFixtureProvider
+        .managementApiClient
+        .getCorrelationsByProcessModelId(defaultIdentity, invalidProcessModelId);
 
-        should.fail(correlationList, undefined, 'This request should have failed!');
-      } catch (error) {
-        const expectedErrorMessage = /No correlations.*?found/i;
-        const expectedErrorCode = 404;
-        should(error.message).be.match(expectedErrorMessage);
-        should(error.code).be.equal(expectedErrorCode);
-      }
+      should(correlationList.correlations).be.an.Array();
+      should(correlationList.correlations.length).be.equal(0);
     });
   });
 

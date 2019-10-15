@@ -95,21 +95,14 @@ describe('ManagementAPI: GetProcessInstancesByState', () => {
       });
     });
 
-    it('should throw a NotFound error, if no ProcessInstances with the given state exist', async () => {
+    it('should return an empty Array, if no ProcessInstances with the given state exist', async () => {
 
-      try {
-        const processInstanceList = await testFixtureProvider
-          .managementApiClient
-          .getProcessInstancesByState(superAdmin, CorrelationState.error);
+      const processInstanceList = await testFixtureProvider
+        .managementApiClient
+        .getProcessInstancesByState(superAdmin, CorrelationState.error);
 
-          should.fail(processInstanceList, undefined, 'This request should have failed!');
-        } catch (error) {
-          console.log(error);
-          const expectedErrorMessage = /no.*?found/i;
-          const expectedErrorCode = 404;
-          should(error.message).be.match(expectedErrorMessage);
-          should(error.code).be.equal(expectedErrorCode);
-      }
+      should(processInstanceList.processInstances).be.an.Array();
+      should(processInstanceList.processInstances).have.a.lengthOf(0);
     });
   });
 

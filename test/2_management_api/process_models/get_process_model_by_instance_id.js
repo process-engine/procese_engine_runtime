@@ -5,7 +5,7 @@ const uuid = require('node-uuid');
 
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('ManagementAPI:   GET  -> /process_instance/:process_instance_id/process_model/', () => {
+describe('ManagementAPI: GetProcessModelByProcessInstanceId', () => {
 
   let testFixtureProvider;
   let processInstanceHandler;
@@ -97,8 +97,9 @@ describe('ManagementAPI:   GET  -> /process_instance/:process_instance_id/proces
 
       should.fail(processModel, undefined, 'This request should have failed!');
     } catch (error) {
-      const expectedErrorMessage = /access denied/i;
-      const expectedErrorCode = 403;
+      // The 404 is intentional, to prevent any leak of possibly sensitive information.
+      const expectedErrorMessage = /not found/i;
+      const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
       should(error.code).be.equal(expectedErrorCode);
     }
