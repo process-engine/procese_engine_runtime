@@ -166,7 +166,16 @@ async function runPostMigrations(): Promise<void> {
     // To get around this issue, we temporarily change the cwd to the ProcessEngine's location, run the post-migrations
     // and restore the old cwd afterwards.
     const currentWorkingDir = process.cwd();
-    const runtimeDir = path.resolve(__dirname, '..', '..');
+    let runtimeDir = path.normalize(path.resolve(__dirname, '..', '..'));
+
+    // If the runtime is run within the BPMN studio, electron will place it in `app.asar`.
+    // We must account for that fact here, or we won't be able to correctly initialize the runtimes environment.
+    const appAsarPathPart = path.normalize(path.join('.', 'app.asar'));
+
+    if (runtimeDir.includes('app.asar')) {
+      runtimeDir = runtimeDir.replace(appAsarPathPart, '');
+    }
+
     process.chdir(runtimeDir);
     await execAsync('npm run postMigrations');
     process.chdir(currentWorkingDir);
