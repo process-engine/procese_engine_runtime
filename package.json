@@ -86,7 +86,7 @@
     "@process-engine/management_api_http": "5.1.0",
     "@process-engine/metrics_api_core": "2.0.0",
     "@process-engine/metrics.repository.file_system": "2.0.0",
-    "@process-engine/process_engine_core": "feature~fix_double_on_error_notification",
+    "@process-engine/process_engine_core": "12.12.0-alpha.11",
     "@process-engine/persistence_api.repositories.sequelize": "1.1.0-alpha.4",
     "@process-engine/persistence_api.services": "1.1.0-alpha.4",
     "@process-engine/persistence_api.use_cases": "1.1.0-alpha.4",
