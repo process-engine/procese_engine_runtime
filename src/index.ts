@@ -9,6 +9,5 @@ Bluebird.config({
 // This will make Bluebird the default Promise implementation throughout the core package.
 global.Promise = Bluebird;
 
-export * from './global_route_configurator';
+export * from './modules/index';
 export * from './main';
-export * from './migrator';

@@ -1,10 +1,10 @@
-import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import * as Sequelize from 'sequelize';
 import * as Umzug from 'umzug';
 
 import {SequelizeConnectionManager} from '@essential-projects/sequelize_connection_manager';
+
+import * as environment from './environment';
 
 const sequelizeConnectionManager: SequelizeConnectionManager = new SequelizeConnectionManager();
 
@@ -13,7 +13,7 @@ export async function migrate(repositoryName: string, sqlitePath: string): Promi
 
   const env = process.env.NODE_ENV || 'sqlite';
 
-  const fullSqlitePath = getFullSqliteStoragePath(sqlitePath);
+  const fullSqlitePath = environment.getSqliteStoragePath(sqlitePath);
 
   const repositoryConfigFileName = `${repositoryName}_repository.json`;
 
@@ -45,16 +45,16 @@ export async function migrate(repositoryName: string, sqlitePath: string): Promi
 }
 
 function getMysqlConfig(configFileName: string, repositoryName: string): object {
-  return readConfigFile('mysql', configFileName);
+  return environment.readConfigFile('mysql', configFileName);
 }
 
 function getPostgresConfig(configFileName: string, repositoryName: string): object {
-  return readConfigFile('postgres', configFileName);
+  return environment.readConfigFile('postgres', configFileName);
 }
 
 function getSQLiteConfig(sqlitePath: string, configFileName: string, repositoryName: string): object {
 
-  const sqliteConfig = readConfigFile('sqlite', configFileName);
+  const sqliteConfig = environment.readConfigFile('sqlite', configFileName);
 
   const databaseFullPath = path.resolve(sqlitePath, sqliteConfig.storage);
 
@@ -66,7 +66,7 @@ function getSQLiteConfig(sqlitePath: string, configFileName: string, repositoryN
 async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: string): Promise<Umzug.Umzug> {
 
   // Must go two folders back to get out of /dist/commonjs.
-  const rootDirName = path.join(__dirname, '..', '..');
+  const rootDirName = path.join(__dirname, '..', '..', '..');
 
   let dirNameNormalized = path.normalize(rootDirName);
   const appAsarPathPart = path.normalize(path.join('.', 'app.asar'));
@@ -94,50 +94,10 @@ async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: str
       path: migrationsPath,
       pattern: /\.js$/,
     },
-    logging: (args: any): void => {
+    logging: (args: unknown): void => {
       console.log(args);
     },
   });
 
   return umzug;
-}
-
-function getFullSqliteStoragePath(sqlitePath: string): string {
-
-  if (sqlitePath) {
-    return sqlitePath;
-  }
-
-  const userDataFolderPath = getUserConfigFolder();
-
-  const userDataProcessEngineFolderName = 'process_engine_runtime';
-  const processEngineDatabaseFolderName = 'databases';
-
-  const databaseBasePath = path.resolve(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
-
-  return databaseBasePath;
-}
-
-function getUserConfigFolder(): string {
-
-  const userHomeDir = os.homedir();
-  switch (process.platform) {
-    case 'darwin':
-      return path.join(userHomeDir, 'Library', 'Application Support');
-    case 'win32':
-      return path.join(userHomeDir, 'AppData', 'Roaming');
-    default:
-      return path.join(userHomeDir, '.config');
-  }
-}
-
-function readConfigFile(env: string, repositoryConfigFileName: string): Sequelize.Options {
-
-  const configFilePath = path.resolve(process.env.CONFIG_PATH, env, 'process_engine', repositoryConfigFileName);
-
-  const fileContent = fs.readFileSync(configFilePath, 'utf-8');
-
-  const parsedFileContent = JSON.parse(fileContent) as Sequelize.Options;
-
-  return parsedFileContent;
 }
