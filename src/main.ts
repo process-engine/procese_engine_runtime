@@ -3,16 +3,17 @@ import {InvocationContainer} from 'addict-ioc';
 import {exec} from 'child_process';
 import * as fs from 'fs';
 import {Logger} from 'loggerhythm';
-import * as os from 'os';
 import * as path from 'path';
-import * as Sequelize from 'sequelize';
 
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
 import {IIdentity} from '@essential-projects/iam_contracts';
 import {IAutoStartService, ICronjobService, IResumeProcessService} from '@process-engine/process_engine_contracts';
 
-import {configureGlobalRoutes} from './global_route_configurator';
-import {migrate as executeMigrations} from './migrator';
+import * as environment from './modules/environment';
+import {configureGlobalRoutes} from './modules/global_route_configurator';
+import {migrate as executeMigrations} from './modules/migrator';
+
+import * as postMigrations from './post-migrations';
 
 const logger = Logger.createLogger('processengine:runtime:startup');
 
@@ -35,12 +36,17 @@ const httpIsEnabled = process.env.NO_HTTP === undefined;
 // a path to the databases, so that the backend can access them.
 export async function startRuntime(sqlitePath: string): Promise<void> {
   setConfigPath();
-  loadConfiguredEnvironmentOrDefault();
+  validateEnvironment();
+
+  const envIsSqlite = process.env.NODE_ENV === 'sqlite';
+  if (envIsSqlite) {
+    environment.setDatabasePaths(sqlitePath);
+  }
 
   await runMigrations(sqlitePath);
   await runPostMigrations();
 
-  setWorkingDirectory(sqlitePath);
+  setWorkingDirectory();
 
   await startProcessEngine();
   if (httpIsEnabled) {
@@ -50,10 +56,10 @@ export async function startRuntime(sqlitePath: string): Promise<void> {
   await resumeProcessInstances();
 }
 
-function setWorkingDirectory(sqlitePath: string): void {
+function setWorkingDirectory(): void {
 
   // set current working directory
-  const userDataFolderPath = getUserConfigFolder();
+  const userDataFolderPath = environment.getUserConfigFolder();
   const userDataProcessEngineFolderName = 'process_engine_runtime';
 
   const workingDir = path.join(userDataFolderPath, userDataProcessEngineFolderName);
@@ -63,11 +69,6 @@ function setWorkingDirectory(sqlitePath: string): void {
   }
 
   process.chdir(workingDir);
-
-  const envIsSqlite = process.env.NODE_ENV === 'sqlite';
-  if (envIsSqlite) {
-    setDatabasePaths(sqlitePath);
-  }
 }
 
 function setConfigPath(): void {
@@ -104,7 +105,7 @@ function ensureConfigPathExists(configPath: string): void {
   }
 }
 
-function loadConfiguredEnvironmentOrDefault(): void {
+function validateEnvironment(): void {
 
   const selectedEnvironment = process.env.NODE_ENV;
 
@@ -160,25 +161,28 @@ async function runPostMigrations(): Promise<void> {
   try {
     logger.info('Running post-migration scripts.');
 
-    // NOTE:
-    // When embedding the ProcessEngine, the cwd may not necessarily be the directory that contains the runtimes.
-    // However, to access npm scripts, the cwd must be that directory.
-    // To get around this issue, we temporarily change the cwd to the ProcessEngine's location, run the post-migrations
-    // and restore the old cwd afterwards.
-    const currentWorkingDir = process.cwd();
-    let runtimeDir = path.normalize(path.resolve(__dirname, '..', '..'));
+    // // NOTE:
+    // // When embedding the ProcessEngine, the cwd may not necessarily be the directory that contains the runtimes.
+    // // However, to access npm scripts, the cwd must be that directory.
+    // // To get around this issue, we temporarily change the cwd to the ProcessEngine's location, run the post-migrations
+    // // and restore the old cwd afterwards.
+    // const currentWorkingDir = process.cwd();
+    // let runtimeDir = path.normalize(path.resolve(__dirname, '..', '..'));
 
-    // If the runtime is run within the BPMN studio, electron will place it in `app.asar`.
-    // We must account for that fact here, or we won't be able to correctly initialize the runtimes environment.
-    const appAsarPathPart = path.normalize(path.join('.', 'app.asar'));
+    // // If the runtime is run within the BPMN studio, electron will place it in `app.asar`.
+    // // We must account for that fact here, or we won't be able to correctly initialize the runtimes environment.
+    // const appAsarPathPart = path.normalize(path.join('.', 'app.asar'));
 
-    if (runtimeDir.includes('app.asar')) {
-      runtimeDir = runtimeDir.replace(appAsarPathPart, '');
-    }
+    // if (runtimeDir.includes('app.asar')) {
+    //   runtimeDir = runtimeDir.replace(appAsarPathPart, '');
+    // }
 
-    process.chdir(runtimeDir);
-    await execAsync('npm run postMigrations');
-    process.chdir(currentWorkingDir);
+    // process.chdir(runtimeDir);
+    // await execAsync('npm run postMigrations');
+    // process.chdir(currentWorkingDir);
+
+    await postMigrations.runPostMigrationForV711();
+    await postMigrations.runPostMigrationForV910();
 
     logger.info('Post-Migrations successfully executed.');
   } catch (error) {
@@ -267,71 +271,6 @@ function loadIocModules(): Array<any> {
   });
 
   return iocModules;
-}
-
-function setDatabasePaths(sqlitePath: string): void {
-
-  const correlationRepositoryConfig = readConfigFile('sqlite', 'correlation_repository.json');
-  const externalTaskRepositoryConfig = readConfigFile('sqlite', 'external_task_repository.json');
-  const flowNodeInstanceRepositoryConfig = readConfigFile('sqlite', 'flow_node_instance_repository.json');
-  const processModelRepositoryConfig = readConfigFile('sqlite', 'process_model_repository.json');
-
-  const databaseBasePath = getSqliteStoragePath(sqlitePath);
-
-  const correlationRepositoryStoragePath = path.join(databaseBasePath, correlationRepositoryConfig.storage);
-  const externalTaskRepositoryStoragePath = path.join(databaseBasePath, externalTaskRepositoryConfig.storage);
-  const flowNodeRepositoryStoragePath = path.join(databaseBasePath, flowNodeInstanceRepositoryConfig.storage);
-  const processModelRepositoryStoragePath = path.join(databaseBasePath, processModelRepositoryConfig.storage);
-
-  const logsStoragePath = path.join(databaseBasePath, 'logs');
-  const metricsStoragePath = path.join(databaseBasePath, 'metrics');
-
-  process.env.process_engine__correlation_repository__storage = correlationRepositoryStoragePath;
-  process.env.process_engine__external_task_repository__storage = externalTaskRepositoryStoragePath;
-  process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
-  process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
-
-  process.env.process_engine__logging_repository__log_output_path = logsStoragePath;
-  process.env.process_engine__metrics_repository__log_output_path = metricsStoragePath;
-}
-
-function getSqliteStoragePath(sqlitePath?: string): string {
-
-  if (sqlitePath) {
-    return sqlitePath;
-  }
-
-  const userDataFolderPath = getUserConfigFolder();
-  const userDataProcessEngineFolderName = 'process_engine_runtime';
-  const processEngineDatabaseFolderName = 'databases';
-
-  const databaseBasePath = path.resolve(userDataFolderPath, userDataProcessEngineFolderName, processEngineDatabaseFolderName);
-
-  return databaseBasePath;
-}
-
-function getUserConfigFolder(): string {
-
-  const userHomeDir = os.homedir();
-  switch (process.platform) {
-    case 'darwin':
-      return path.join(userHomeDir, 'Library', 'Application Support');
-    case 'win32':
-      return path.join(userHomeDir, 'AppData', 'Roaming');
-    default:
-      return path.join(userHomeDir, '.config');
-  }
-}
-
-function readConfigFile(env: string, repositoryConfigFileName: string): Sequelize.Options {
-
-  const configFilePath = path.resolve(process.env.CONFIG_PATH, env, 'process_engine', repositoryConfigFileName);
-
-  const fileContent = fs.readFileSync(configFilePath, 'utf-8');
-
-  const parsedFileContent = JSON.parse(fileContent) as Sequelize.Options;
-
-  return parsedFileContent;
 }
 
 async function resumeProcessInstances(): Promise<void> {
