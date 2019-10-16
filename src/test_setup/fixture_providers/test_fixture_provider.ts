@@ -19,7 +19,7 @@ import {ExternalTaskSampleWorker} from '../test_services/external_task_sample_wo
 import {initializeBootstrapper} from './setup_ioc_container';
 import {migrate as executeMigrations} from './test_migrator';
 
-import {configureGlobalRoutes} from '../../global_route_configurator';
+import {configureGlobalRoutes} from '../../modules/global_route_configurator';
 
 const logger = Logger.createLogger('test:bootstrapper');
 

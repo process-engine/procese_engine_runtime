@@ -99,7 +99,7 @@ function loadConfig(configDirName: string, configFileName: string): any {
 
 function getInfosFromPackageJson(): IApplicationInfo {
 
-  const pathToPackageJson = path.join(__dirname, '..', '..', 'package.json');
+  const pathToPackageJson = path.join(__dirname, '..', '..', '..', 'package.json');
   const packageJsonAsString = fs.readFileSync(pathToPackageJson, 'utf-8');
 
   const packageJson = JSON.parse(packageJsonAsString);
