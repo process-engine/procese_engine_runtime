@@ -13,18 +13,18 @@
  * This issue only affected those setups that use separate SQLite databases for each data table.
  * Those users that store all their tables in one place are safe and do not need to run this.
  */
-'use strict';
+import {Logger} from 'loggerhythm';
+import {SequelizeConnectionManager} from '@essential-projects/sequelize_connection_manager';
 
-const SequelizeConnectionManager = require('@essential-projects/sequelize_connection_manager').SequelizeConnectionManager;
+import * as environment from '../modules/environment';
 
-const environment = require('./setup/environment_handler');
-const badges = environment.badges;
+const logger = Logger.createLogger('processengine:runtime:post_migration_7.1.1');
 
 const connectionManager = new SequelizeConnectionManager();
 
-async function run() {
+export async function runPostMigrationForV711(): Promise<void> {
 
-  environment.initialize();
+  logger.info('Running Post Migration...');
 
   const pathToFlowNodeInstanceDb = process.env.process_engine__flow_node_instance_repository__storage;
   const pathToProcessModelDb = process.env.process_engine__process_model_repository__storage;
@@ -33,6 +33,7 @@ async function run() {
   // This issue only affected those setups that store FlowNodeInstances and ProcessDefinitions at different locations.
   const dbPathsMatch = pathToProcessModelDb === pathToFlowNodeInstanceDb;
   if (dbPathsMatch) {
+    logger.info('All tables are stored in the same database. Nothing to do here.');
     return;
   }
 
@@ -43,22 +44,24 @@ async function run() {
   const processModelDbHasFlowNodeInstances = await checkIfFixForTableIsNeeded(processModelDbQueryInterface, 'FlowNodeInstances');
 
   if (flowNodeInstanceDbHasProcessModels) {
-    console.log(`${badges.Info}Moving ProcessModels from FlowNodeInstance DB to ProcessModel DB...`);
+    logger.info('Moving ProcessModels from FlowNodeInstance DB to ProcessModel DB...');
     await moveProcessModelsFromFlowNodeInstanceDbToProcessModelDb(flowNodeInstanceDbQueryInterface, processModelDbQueryInterface);
   } else {
     await flowNodeInstanceDbQueryInterface.dropTable('ProcessDefinitions');
   }
 
   if (processModelDbHasFlowNodeInstances) {
-    console.log(`${badges.Info}Moving FlowNodeInstances and ProcessTokens from ProcessModel DB to FlowNodeInstance DB...`);
+    logger.info('Moving FlowNodeInstances and ProcessTokens from ProcessModel DB to FlowNodeInstance DB...');
     await moveFlowNodeInstancesFromProcessModelDbToFlowNodeInstanceDb(flowNodeInstanceDbQueryInterface, processModelDbQueryInterface);
   } else {
     await processModelDbQueryInterface.dropTable('FlowNodeInstances');
     await processModelDbQueryInterface.dropTable('ProcessTokens');
   }
+
+  logger.info('Done.');
 }
 
-async function createConnection(repository, sqliteStoragePath) {
+async function createConnection(repository, sqliteStoragePath): Promise<any> {
 
   const config = environment.readConfigFile('sqlite', repository);
 
@@ -70,7 +73,7 @@ async function createConnection(repository, sqliteStoragePath) {
   return queryInterface;
 }
 
-async function checkIfFixForTableIsNeeded(queryInterface, tableName) {
+async function checkIfFixForTableIsNeeded(queryInterface, tableName): Promise<boolean> {
 
   try {
     // The only way to check if a table exists is to run the call to "describeTable"
@@ -87,7 +90,10 @@ async function checkIfFixForTableIsNeeded(queryInterface, tableName) {
   }
 }
 
-async function moveProcessModelsFromFlowNodeInstanceDbToProcessModelDb(flowNodeInstanceDbQueryInterface, processModelDbQueryInterface) {
+async function moveProcessModelsFromFlowNodeInstanceDbToProcessModelDb(
+  flowNodeInstanceDbQueryInterface,
+  processModelDbQueryInterface,
+): Promise<void> {
 
   const processModelsToMove = (await flowNodeInstanceDbQueryInterface.sequelize.query('SELECT * FROM ProcessDefinitions'))[0];
 
@@ -109,7 +115,10 @@ async function moveProcessModelsFromFlowNodeInstanceDbToProcessModelDb(flowNodeI
   await flowNodeInstanceDbQueryInterface.dropTable('ProcessDefinitions');
 }
 
-async function moveFlowNodeInstancesFromProcessModelDbToFlowNodeInstanceDb(flowNodeInstanceDbQueryInterface, processModelDbQueryInterface) {
+async function moveFlowNodeInstancesFromProcessModelDbToFlowNodeInstanceDb(
+  flowNodeInstanceDbQueryInterface,
+  processModelDbQueryInterface,
+): Promise<void> {
 
   const flowNodeInstancesToMove = (await processModelDbQueryInterface.sequelize.query('SELECT * FROM FlowNodeInstances'))[0];
   const processTokensToMove = (await processModelDbQueryInterface.sequelize.query('SELECT * FROM ProcessTokens'))[0];
@@ -142,10 +151,3 @@ async function moveFlowNodeInstancesFromProcessModelDbToFlowNodeInstanceDb(flowN
   await processModelDbQueryInterface.dropTable('FlowNodeInstances');
   await processModelDbQueryInterface.dropTable('ProcessTokens');
 }
-
-run()
-  .then(() => console.log(`${badges.Info}All Done!`))
-  .catch((error) => {
-    console.log(`${badges.Error}Failed to execute post-migration script: `, error);
-    process.exit(1);
-  });
