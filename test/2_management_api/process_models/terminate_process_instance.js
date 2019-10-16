@@ -47,7 +47,7 @@ describe(`ManagementAPI: POST  ->  /process_instance/:process_instance_id/termin
 
     await testFixtureProvider.managementApiClient.terminateProcessInstance(defaultIdentity, startResult.processInstanceId);
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const list = await testFixtureProvider.managementApiClient.getUserTasksForProcessInstance(defaultIdentity, startResult.processInstanceId);
 
@@ -66,11 +66,39 @@ describe(`ManagementAPI: POST  ->  /process_instance/:process_instance_id/termin
 
     await testFixtureProvider.managementApiClient.terminateProcessInstance(superAdmin, startResult.processInstanceId);
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const list = await testFixtureProvider.managementApiClient.getUserTasksForProcessInstance(superAdmin, startResult.processInstanceId);
 
     should(list.userTasks.length).be.eql(0);
+  });
+
+  it('should send an onProcessTerminated notification', async () => {
+
+    return new Promise(async (resolve, reject) => {
+
+      const returnOn = StartCallbackType.CallbackOnProcessInstanceCreated;
+      const payload = {};
+
+      const startResult = await testFixtureProvider
+        .managementApiClient
+        .startProcessInstance(defaultIdentity, processModelId, payload, returnOn);
+
+      await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(startResult.correlationId);
+
+      const messageReceivedCallback = (processTerminatedMessage) => {
+        should(processTerminatedMessage.processInstanceId).be.equal(startResult.processInstanceId);
+        resolve();
+      };
+
+      const subscribeOnce = true;
+      await testFixtureProvider
+        .managementApiClient
+        .onProcessTerminated(defaultIdentity, messageReceivedCallback, subscribeOnce);
+
+      await testFixtureProvider.managementApiClient.terminateProcessInstance(superAdmin, startResult.processInstanceId);
+    });
+
   });
 
   it('should fail to terminate a ProcessInstance, when the user is unauthorized', async () => {
