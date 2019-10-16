@@ -37,7 +37,6 @@ export async function runPostMigrationForV910(): Promise<void> {
 
     if (flowNodeInstancesToUpdate.length === 0) {
       logger.info('Nothing to do here.');
-      process.exit(0);
     }
 
     await addNameAndLaneToFlowNodeInstances(flowNodeInstancesToUpdate);
@@ -45,7 +44,7 @@ export async function runPostMigrationForV910(): Promise<void> {
     logger.info('Done.');
   } catch (error) {
     logger.error('Failed to execute post-migration script:', error);
-    process.exit(1);
+    throw error;
   }
 }
 
