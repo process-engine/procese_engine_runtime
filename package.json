@@ -26,10 +26,7 @@
     "test-debug": "cross-env NODE_ENV=test-sqlite CONFIG_PATH=config mocha --inspect-brk test/**/*.js test/**/**/*.js  --exit",
     "build-windows-executable": "pkg --targets windows .",
     "create-tarball": "node ./scripts/pack_sources/pack_to_tarball.js",
-    "create-zipfile": "node ./scripts/pack_sources/pack_to_zip.js",
-    "postMigrations": "npm run postMigrationV.7.1.1 && npm run postMigrationV.9.1.0",
-    "postMigrationV.7.1.1": "node ./scripts/post-migrations/7.1.1-fix_sqlite_database_contents.js",
-    "postMigrationV.9.1.0": "node ./scripts/post-migrations/9.1.0-add_flow_node_instance_name_and_lane.js"
+    "create-zipfile": "node ./scripts/pack_sources/pack_to_zip.js"
   },
   "main": "./dist/commonjs/index.js",
   "license": "MIT",
