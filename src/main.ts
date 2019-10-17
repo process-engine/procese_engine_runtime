@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import {InvocationContainer} from 'addict-ioc';
-import {exec} from 'child_process';
 import * as fs from 'fs';
 import {Logger} from 'loggerhythm';
 import * as path from 'path';
@@ -266,21 +265,4 @@ async function resumeProcessInstances(): Promise<void> {
   const resumeProcessService = await container.resolveAsync<IResumeProcessService>('ResumeProcessService');
   await resumeProcessService.findAndResumeInterruptedProcessInstances(dummyIdentity);
   logger.info('Done.');
-}
-
-async function execAsync(command): Promise<string> {
-
-  return new Promise((resolve, reject): void => {
-    const childProcess = exec(command, (error, stdout, stdErr): void => {
-
-      if (error) {
-        return reject(error);
-      }
-
-      return resolve(stdout);
-    });
-
-    childProcess.stdout.on('data', (data): void => logger.verbose(data));
-    childProcess.stderr.on('data', (data): void => logger.error(data));
-  });
 }
