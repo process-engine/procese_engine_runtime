@@ -54,7 +54,10 @@ export async function startRuntime(args: startupArgs | string): Promise<void> {
 
   setWorkingDirectory();
 
+  loadIocModules();
+
   await startProcessEngine();
+
   if (httpIsEnabled) {
     await configureGlobalRoutes(container);
   }
@@ -199,49 +202,7 @@ async function runPostMigrations(): Promise<void> {
   }
 }
 
-async function startProcessEngine(): Promise<void> {
-
-  const iocModules = loadIocModules();
-
-  for (const iocModule of iocModules) {
-    iocModule.registerInContainer(container);
-  }
-
-  container.validateDependencies();
-
-  try {
-    const bootstrapper = await container.resolveAsync<AppBootstrapper>('AppBootstrapper');
-    await bootstrapper.start();
-
-    logger.info('Bootstrapper started successfully.');
-
-  } catch (error) {
-    logger.error('Bootstrapper failed to start.', error);
-    process.exit(1);
-  }
-}
-
-async function startInternalServices(): Promise<void> {
-
-  try {
-    logger.info('Starting Services...');
-
-    const autoStartService = await container.resolveAsync<IAutoStartService>('AutoStartService');
-    await autoStartService.start();
-
-    logger.info('AutoStartService started.');
-
-    const cronjobService = await container.resolveAsync<ICronjobService>('CronjobService');
-    await cronjobService.start();
-
-    logger.info('CronjobService started.');
-  } catch (error) {
-    logger.error('Failed to start the internal services.', error);
-    process.exit(1);
-  }
-}
-
-function loadIocModules(): Array<any> {
+function loadIocModules(): void {
 
   const iocModuleNames = [
     '@essential-projects/bootstrapper',
@@ -278,7 +239,45 @@ function loadIocModules(): Array<any> {
     return require(`${moduleName}/ioc_module`);
   });
 
-  return iocModules;
+  for (const iocModule of iocModules) {
+    iocModule.registerInContainer(container);
+  }
+
+  container.validateDependencies();
+}
+
+async function startProcessEngine(): Promise<void> {
+
+  try {
+    const bootstrapper = await container.resolveAsync<AppBootstrapper>('AppBootstrapper');
+    await bootstrapper.start();
+
+    logger.info('Bootstrapper started successfully.');
+
+  } catch (error) {
+    logger.error('Bootstrapper failed to start.', error);
+    process.exit(1);
+  }
+}
+
+async function startInternalServices(): Promise<void> {
+
+  try {
+    logger.info('Starting Services...');
+
+    const autoStartService = await container.resolveAsync<IAutoStartService>('AutoStartService');
+    await autoStartService.start();
+
+    logger.info('AutoStartService started.');
+
+    const cronjobService = await container.resolveAsync<ICronjobService>('CronjobService');
+    await cronjobService.start();
+
+    logger.info('CronjobService started.');
+  } catch (error) {
+    logger.error('Failed to start the internal services.', error);
+    process.exit(1);
+  }
 }
 
 async function resumeProcessInstances(): Promise<void> {
