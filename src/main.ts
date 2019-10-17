@@ -41,6 +41,11 @@ export async function startRuntime(args: startupArgs | string): Promise<void> {
 
   parseArguments(args);
 
+  if (minimalSetup === true) {
+    logger.warn('MinimalSetup is set to true. Will only load the ioc modules into the container. EVERYTHING else is up to you!');
+    return loadIocModules();
+  }
+
   setConfigPath();
   validateEnvironment();
 
