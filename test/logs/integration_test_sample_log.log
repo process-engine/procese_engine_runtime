@@ -1,3 +1,4 @@
+#SomeRandomCommentaryLine
 ProcessModel;2018-09-13T11:51:00.377Z;sample_correlation;integration_test_sample_log;f936a62c-38d3-453e-bd06-ae26e31649c0;;;info;Process started
 FlowNodeInstance;2018-09-13T11:51:00.377Z;sample_correlation;integration_test_sample_log;f936a62c-38d3-453e-bd06-ae26e31649c0;18dd79e8-448f-45d6-a5cc-072b00731e47;StartEvent_1mox3jl;info;FlowNodeInstance Log Message
 FlowNodeInstance;2018-09-13T11:51:00.377Z;sample_correlation;integration_test_sample_log;f936a62c-38d3-453e-bd06-ae26e31649c0;18dd79e8-448f-45d6-a5cc-072b00731e47;StartEvent_1mox3jl;info;Another Logged Message
@@ -15,6 +16,8 @@ ProcessModel;2018-09-13T11:51:00.377Z;sample_correlation;integration_test_sample
 ProcessModel;2018-09-13T11:51:00.377Z;sample_correlation2;integration_test_sample_log;f936a62c-38d3-453e-bd06-ae26e31649c1;;;info;Process started
 FlowNodeInstance;2018-09-13T11:51:00.377Z;sample_correlation2;integration_test_sample_log;f936a62c-38d3-453e-bd06-ae26e31649c1;18dd79e8-448f-45d6-a5cc-072b00731e47;StartEvent_1mox3jl;info;FlowNodeInstance Log Message
 FlowNodeInstance;2018-09-13T11:51:00.377Z;sample_correlation2;integration_test_sample_log;f936a62c-38d3-453e-bd06-ae26e31649c1;18dd79e8-448f-45d6-a5cc-072b00731e47;StartEvent_1mox3jl;info;Another Logged Message
+
+#SomeRandomCommentaryLine
 FlowNodeInstance;2018-09-13T11:51:00.377Z;sample_correlation2;integration_test_sample_log;f936a62c-38d3-453e-bd06-ae26e31649c1;7eddae8c-b538-4031-bd52-b88d4c3aa8f7;ExclusiveGateway_0fi1ct7;info;FlowNodeInstance Log Message
 FlowNodeInstance;2018-09-13T11:51:00.377Z;sample_correlation2;integration_test_sample_log;f936a62c-38d3-453e-bd06-ae26e31649c1;7eddae8c-b538-4031-bd52-b88d4c3aa8f7;ExclusiveGateway_0fi1ct7;info;Another Logged Message
 FlowNodeInstance;2018-09-13T11:51:00.377Z;sample_correlation2;integration_test_sample_log;f936a62c-38d3-453e-bd06-ae26e31649c1;5ff4259b-3b1b-4ee2-b728-3cac5dc808e9;ScriptTask_1;info;FlowNodeInstance Log Message
@@ -26,3 +29,4 @@ FlowNodeInstance;2018-09-13T11:51:00.377Z;sample_correlation2;integration_test_s
 FlowNodeInstance;2018-09-13T11:51:00.377Z;sample_correlation2;integration_test_sample_log;f936a62c-38d3-453e-bd06-ae26e31649c1;18dd79e8-448f-45d6-a5cc-072b00731e47;EndEvent_0eie6q6;info;FlowNodeInstance Log Message
 FlowNodeInstance;2018-09-13T11:51:00.377Z;sample_correlation2;integration_test_sample_log;f936a62c-38d3-453e-bd06-ae26e31649c1;18dd79e8-448f-45d6-a5cc-072b00731e47;EndEvent_0eie6q6;info;Another Logged Message
 ProcessModel;2018-09-13T11:51:00.377Z;sample_correlation2;integration_test_sample_log;f936a62c-38d3-453e-bd06-ae26e31649c1;;;info;Process finished
+#SomeRandomCommentaryLine
