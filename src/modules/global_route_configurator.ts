@@ -54,10 +54,6 @@ function configureRootRoute(): void {
         return;
       }
 
-      next();
-    });
-
-    httpExtension.app.get('/', (request: Request, response: Response, next: NextFunction): void => {
       response.sendFile(path.resolve(__dirname, '..', '..', '..', 'swagger.html'));
     });
 
