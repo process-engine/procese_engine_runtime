@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/member-naming */
+import {exec} from 'child_process';
 import * as fs from 'fs';
 import * as jsonwebtoken from 'jsonwebtoken';
 import * as path from 'path';
@@ -100,6 +101,7 @@ export class TestFixtureProvider {
     this._sampleExternalTaskWorker.stop();
 
     await this.clearDatabases();
+    await this.clearLogsAndMetrics();
 
     await this.bootstrapper.stop();
     this.container.clear();
@@ -147,6 +149,22 @@ export class TestFixtureProvider {
     for (const processModel of processModels) {
       logger.info(`Removing ProcessModel ${processModel.id} and all related data`);
       await this.processModelUseCases.deleteProcessModel(this.identities.superAdmin, processModel.id);
+    }
+  }
+
+  public async clearLogsAndMetrics(): Promise<void> {
+
+    if (process.env.KEEP_TEST_LOGS) {
+      return;
+    }
+
+    try {
+      const pathToLogs = path.resolve(process.cwd(), 'test', 'logs', 'archive');
+      const pathToMetrics = path.resolve(process.cwd(), 'test', 'metrics', 'archive');
+
+      await this.execAsync(`rm -rf ${pathToLogs} ${pathToMetrics}`);
+    } catch (error) {
+      logger.warn(`Cannot remove archival folders: ${error.message}`);
     }
   }
 
@@ -230,6 +248,23 @@ export class TestFixtureProvider {
     const processModelAsXml = fs.readFileSync(processModelPath, 'utf-8');
 
     return processModelAsXml;
+  }
+
+  private async execAsync(command): Promise<string> {
+
+    return new Promise((resolve, reject): void => {
+      const childProcess = exec(command, (error, stdout, stdErr): void => {
+
+        if (error) {
+          return reject(error);
+        }
+
+        return resolve(stdout);
+      });
+
+      childProcess.stdout.on('data', (data): void => logger.verbose(data));
+      childProcess.stderr.on('data', (data): void => logger.error(data));
+    });
   }
 
 }
