@@ -58,7 +58,7 @@ function configureRootRoute(): void {
     });
 
     httpExtension.app.get('/', (request: Request, response: Response, next: NextFunction): void => {
-      response.sendFile(path.join(__dirname, '..', '..', '..', 'swagger.html'));
+      response.sendFile(path.resolve(__dirname, '..', '..', '..', 'swagger.html'));
     });
 
     httpExtension.app.use(expressStatic(getPathToSwagger()));
