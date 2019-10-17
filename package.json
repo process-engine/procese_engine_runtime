@@ -75,7 +75,7 @@
     "@essential-projects/http_extension": "6.7.0",
     "@essential-projects/timing": "5.0.0",
     "@process-engine/consumer_api_core": "6.2.0-alpha.10",
-    "@process-engine/consumer_api_http": "5.1.0",
+    "@process-engine/consumer_api_http": "feature~add_swagger_generator",
     "@process-engine/iam": "1.7.1",
     "@process-engine/logging_api_core": "2.0.0-alpha.1",
     "@process-engine/logging.repository.file_system": "2.0.0-alpha.1",
