@@ -27,9 +27,9 @@ let sqlitePath: string;
 let minimalSetup = false;
 
 type startupArgs = {
-  sqlitePath?: string,
-  container?: InvocationContainer,
-  minimalSetup?: boolean
+  sqlitePath?: string;
+  container?: InvocationContainer;
+  minimalSetup?: boolean;
 }
 
 const httpIsEnabled = process.env.NO_HTTP === undefined;
@@ -37,6 +37,7 @@ const httpIsEnabled = process.env.NO_HTTP === undefined;
 // The folder location for the skeleton-electron app was a different one,
 // than the one we are using now. The BPMN Studio needs to be able to provide
 // a path to the databases, so that the backend can access them.
+// eslint-disable-next-line consistent-return
 export async function startRuntime(args: startupArgs | string): Promise<void> {
 
   parseArguments(args);
@@ -54,7 +55,7 @@ export async function startRuntime(args: startupArgs | string): Promise<void> {
     environment.setDatabasePaths(sqlitePath);
   }
 
-  await runMigrations(sqlitePath);
+  await runMigrations();
   await runPostMigrations();
 
   setWorkingDirectory();
@@ -87,8 +88,8 @@ function parseArguments(args: startupArgs | string): void {
     : new InvocationContainer(containerSettings);
 
   minimalSetup = typeof args === 'object'
-  ? args.minimalSetup
-  : false;
+    ? args.minimalSetup
+    : false;
 
 }
 
@@ -175,7 +176,7 @@ function validateEnvironment(): void {
   process.exit(1);
 }
 
-async function runMigrations(sqlitePath: string): Promise<void> {
+async function runMigrations(): Promise<void> {
 
   const repositories = [
     'correlation',
