@@ -22,18 +22,25 @@ process.on('unhandledRejection', (err: Error): void => {
   logger.error('-- end of unhandled exception stack trace --');
 });
 
-const container = new InvocationContainer({
-  defaults: {
-    conventionCalls: ['initialize'],
-  },
-});
+let container: InvocationContainer;
+let sqlitePath: string;
+let minimalSetup = false;
+
+type startupArgs = {
+  sqlitePath?: string,
+  container?: InvocationContainer,
+  minimalSetup?: boolean
+}
 
 const httpIsEnabled = process.env.NO_HTTP === undefined;
 
 // The folder location for the skeleton-electron app was a different one,
 // than the one we are using now. The BPMN Studio needs to be able to provide
 // a path to the databases, so that the backend can access them.
-export async function startRuntime(sqlitePath: string): Promise<void> {
+export async function startRuntime(args: startupArgs | string): Promise<void> {
+
+  parseArguments(args);
+
   setConfigPath();
   validateEnvironment();
 
@@ -53,6 +60,28 @@ export async function startRuntime(sqlitePath: string): Promise<void> {
   }
   await startInternalServices();
   await resumeProcessInstances();
+}
+
+function parseArguments(args: startupArgs | string): void {
+
+  const containerSettings = {
+    defaults: {
+      conventionCalls: ['initialize'],
+    },
+  };
+
+  sqlitePath = typeof args === 'object'
+    ? args.sqlitePath
+    : args as string;
+
+  container = typeof args === 'object' && args.container !== undefined
+    ? args.container
+    : new InvocationContainer(containerSettings);
+
+  minimalSetup = typeof args === 'object'
+  ? args.minimalSetup
+  : false;
+
 }
 
 function setWorkingDirectory(): void {
