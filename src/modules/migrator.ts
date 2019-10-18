@@ -22,18 +22,18 @@ export async function migrate(repositoryName: string, sqlitePath: string): Promi
   switch (env) {
     case 'test-mysql':
     case 'mysql':
-      sequelizeInstanceConfig = getMysqlConfig(repositoryConfigFileName, repositoryName);
+      sequelizeInstanceConfig = getMysqlConfig(repositoryConfigFileName);
       break;
     case 'test-postgres':
     case 'postgres':
-      sequelizeInstanceConfig = getPostgresConfig(repositoryConfigFileName, repositoryName);
+      sequelizeInstanceConfig = getPostgresConfig(repositoryConfigFileName);
       break;
     case 'test-sqlite':
     case 'sqlite':
-      sequelizeInstanceConfig = getSQLiteConfig(fullSqlitePath, repositoryConfigFileName, repositoryName);
+      sequelizeInstanceConfig = getSQLiteConfig(fullSqlitePath, repositoryConfigFileName);
       break;
     default:
-      throw new Error(`NODE_ENV '${env}' is not supported!`);
+      sequelizeInstanceConfig = environment.readConfigFile(env, repositoryConfigFileName);
   }
 
   const sequelizeInstance = await sequelizeConnectionManager.getConnection(sequelizeInstanceConfig);
@@ -44,15 +44,15 @@ export async function migrate(repositoryName: string, sqlitePath: string): Promi
   await sequelizeConnectionManager.destroyConnection(sequelizeInstanceConfig);
 }
 
-function getMysqlConfig(configFileName: string, repositoryName: string): object {
+function getMysqlConfig(configFileName: string): object {
   return environment.readConfigFile('mysql', configFileName);
 }
 
-function getPostgresConfig(configFileName: string, repositoryName: string): object {
+function getPostgresConfig(configFileName: string): object {
   return environment.readConfigFile('postgres', configFileName);
 }
 
-function getSQLiteConfig(sqlitePath: string, configFileName: string, repositoryName: string): object {
+function getSQLiteConfig(sqlitePath: string, configFileName: string): object {
 
   const sqliteConfig = environment.readConfigFile('sqlite', configFileName);
 
