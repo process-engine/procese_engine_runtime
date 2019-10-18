@@ -25,6 +25,7 @@ process.on('unhandledRejection', (err: Error): void => {
 let container: InvocationContainer;
 let sqlitePath: string;
 let minimalSetup = false;
+let workDir: string;
 
 // Allows an embedding application like BPMN Studio to pass its own settings to the runtime.
 type startupArgs = {
@@ -32,6 +33,7 @@ type startupArgs = {
   logFilePath?: string;
   container?: InvocationContainer;
   minimalSetup?: boolean;
+  workDir?: string;
 }
 
 const httpIsEnabled = process.env.NO_HTTP === undefined;
@@ -102,26 +104,20 @@ function parseArguments(args: startupArgs | string): void {
     minimalSetup = args.minimalSetup;
   }
 
+  if (typeof args === 'object' && args.workDir !== undefined) {
+    if (!path.isAbsolute(args.workDir)) {
+      logger.error('The path in startup parameter "workDir" must be absolute!');
+      process.exit(1);
+    }
+    logger.verbose(`Using working directory: ${args.workDir}`);
+    workDir = args.workDir;
+  }
+
   if (typeof args === 'object' && args.logFilePath !== undefined) {
     logger.verbose(`Using log file path: ${args.logFilePath}`);
     process.env.process_engine__logging_repository__output_path = path.resolve(args.logFilePath, 'logs');
     process.env.process_engine__metrics_repository__output_path = path.resolve(args.logFilePath, 'metrics');
   }
-}
-
-function setWorkingDirectory(): void {
-
-  // set current working directory
-  const userDataFolderPath = environment.getUserConfigFolder();
-  const userDataProcessEngineFolderName = 'process_engine_runtime';
-
-  const workingDir = path.join(userDataFolderPath, userDataProcessEngineFolderName);
-
-  if (!fs.existsSync(workingDir)) {
-    fs.mkdirSync(workingDir);
-  }
-
-  process.chdir(workingDir);
 }
 
 function setConfigPath(): void {
@@ -190,6 +186,24 @@ function validateEnvironment(): void {
   logger.error(`Configuration for environment "${selectedEnvironment}" is not available.`);
   logger.error(`Please make sure the configuration files are available at: ${process.env.CONFIG_PATH}/${selectedEnvironment}`);
   process.exit(1);
+}
+
+function setWorkingDirectory(): void {
+
+  // set current working directory
+  const userDataFolderPath = environment.getUserConfigFolder();
+  const userDataProcessEngineFolderName = 'process_engine_runtime';
+
+  const workDirToUse = workDir !== undefined
+    ? workDir
+    : path.join(userDataFolderPath, userDataProcessEngineFolderName);
+
+
+  if (!fs.existsSync(workDirToUse)) {
+    fs.mkdirSync(workDirToUse);
+  }
+
+  process.chdir(workDirToUse);
 }
 
 async function runMigrations(): Promise<void> {
