@@ -198,7 +198,6 @@ function setWorkingDirectory(): void {
     ? workDir
     : path.join(userDataFolderPath, userDataProcessEngineFolderName);
 
-
   if (!fs.existsSync(workDirToUse)) {
     fs.mkdirSync(workDirToUse);
   }
