@@ -28,6 +28,7 @@ let minimalSetup = false;
 
 type startupArgs = {
   sqlitePath?: string;
+  logFilePath?: string;
   container?: InvocationContainer;
   minimalSetup?: boolean;
 }
@@ -73,24 +74,35 @@ export async function startRuntime(args: startupArgs | string): Promise<void> {
 
 function parseArguments(args: startupArgs | string): void {
 
-  const containerSettings = {
-    defaults: {
-      conventionCalls: ['initialize'],
-    },
-  };
+  if (typeof args === 'string') {
+    logger.verbose(`Using sqlitePath ${args}`);
+    sqlitePath = args;
+  } else if (typeof args === 'object' && args.sqlitePath !== undefined) {
+    logger.verbose(`Using sqlitePath ${args.sqlitePath}`);
+    sqlitePath = args.sqlitePath;
+  }
 
-  sqlitePath = typeof args === 'object'
-    ? args.sqlitePath
-    : args as string;
+  if (typeof args === 'object' && args.container !== undefined) {
 
-  container = typeof args === 'object' && args.container instanceof InvocationContainer
-    ? args.container
-    : new InvocationContainer(containerSettings);
+    if (!(args.container instanceof InvocationContainer)) {
+      logger.error('Injected containers must be an instance of an addict_ioc InvocationContainer!');
+      process.exit(1);
+    }
 
-  minimalSetup = typeof args === 'object'
-    ? args.minimalSetup
-    : false;
+    logger.verbose('Using provided ioc container');
+    container = args.container;
+  } else {
+    container = new InvocationContainer({
+      defaults: {
+        conventionCalls: ['initialize'],
+      },
+    });
+  }
 
+  if (typeof args === 'object' && args.minimalSetup !== undefined) {
+    logger.verbose(`Minimal Setup: ${args.minimalSetup}`);
+    minimalSetup = args.minimalSetup;
+  }
 }
 
 function setWorkingDirectory(): void {
