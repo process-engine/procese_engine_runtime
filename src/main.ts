@@ -83,7 +83,7 @@ function parseArguments(args: startupArgs | string): void {
     ? args.sqlitePath
     : args as string;
 
-  container = typeof args === 'object' && args.container !== undefined
+  container = typeof args === 'object' && args.container instanceof InvocationContainer
     ? args.container
     : new InvocationContainer(containerSettings);
 
