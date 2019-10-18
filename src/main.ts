@@ -26,6 +26,7 @@ let container: InvocationContainer;
 let sqlitePath: string;
 let minimalSetup = false;
 
+// Allows an embedding application like BPMN Studio to pass its own settings to the runtime.
 type startupArgs = {
   sqlitePath?: string;
   logFilePath?: string;
@@ -35,9 +36,6 @@ type startupArgs = {
 
 const httpIsEnabled = process.env.NO_HTTP === undefined;
 
-// The folder location for the skeleton-electron app was a different one,
-// than the one we are using now. The BPMN Studio needs to be able to provide
-// a path to the databases, so that the backend can access them.
 // eslint-disable-next-line consistent-return
 export async function startRuntime(args: startupArgs | string): Promise<void> {
 
