@@ -103,6 +103,12 @@ function parseArguments(args: startupArgs | string): void {
     logger.verbose(`Minimal Setup: ${args.minimalSetup}`);
     minimalSetup = args.minimalSetup;
   }
+
+  if (typeof args === 'object' && args.logFilePath !== undefined) {
+    logger.verbose(`Using log file path: ${args.logFilePath}`);
+    process.env.process_engine__logging_repository__output_path = path.resolve(args.logFilePath, 'logs');
+    process.env.process_engine__metrics_repository__output_path = path.resolve(args.logFilePath, 'metrics');
+  }
 }
 
 function setWorkingDirectory(): void {
