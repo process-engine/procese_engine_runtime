@@ -22,18 +22,30 @@ process.on('unhandledRejection', (err: Error): void => {
   logger.error('-- end of unhandled exception stack trace --');
 });
 
-const container = new InvocationContainer({
-  defaults: {
-    conventionCalls: ['initialize'],
-  },
-});
+let container: InvocationContainer;
+let sqlitePath: string;
+let minimalSetup = false;
+
+// Allows an embedding application like BPMN Studio to pass its own settings to the runtime.
+type startupArgs = {
+  sqlitePath?: string;
+  logFilePath?: string;
+  container?: InvocationContainer;
+  minimalSetup?: boolean;
+}
 
 const httpIsEnabled = process.env.NO_HTTP === undefined;
 
-// The folder location for the skeleton-electron app was a different one,
-// than the one we are using now. The BPMN Studio needs to be able to provide
-// a path to the databases, so that the backend can access them.
-export async function startRuntime(sqlitePath: string): Promise<void> {
+// eslint-disable-next-line consistent-return
+export async function startRuntime(args: startupArgs | string): Promise<void> {
+
+  parseArguments(args);
+
+  if (minimalSetup === true) {
+    logger.warn('MinimalSetup is set to true. Will only load the ioc modules into the container. EVERYTHING else is up to you!');
+    return loadIocModules();
+  }
+
   setConfigPath();
   validateEnvironment();
 
@@ -42,17 +54,59 @@ export async function startRuntime(sqlitePath: string): Promise<void> {
     environment.setDatabasePaths(sqlitePath);
   }
 
-  await runMigrations(sqlitePath);
+  await runMigrations();
   await runPostMigrations();
 
   setWorkingDirectory();
 
+  loadIocModules();
+
   await startProcessEngine();
+
   if (httpIsEnabled) {
     await configureGlobalRoutes(container);
   }
   await startInternalServices();
   await resumeProcessInstances();
+}
+
+function parseArguments(args: startupArgs | string): void {
+
+  if (typeof args === 'string') {
+    logger.verbose(`Using sqlitePath ${args}`);
+    sqlitePath = args;
+  } else if (typeof args === 'object' && args.sqlitePath !== undefined) {
+    logger.verbose(`Using sqlitePath ${args.sqlitePath}`);
+    sqlitePath = args.sqlitePath;
+  }
+
+  if (typeof args === 'object' && args.container !== undefined) {
+
+    if (!(args.container instanceof InvocationContainer)) {
+      logger.error('Injected containers must be an instance of an addict_ioc InvocationContainer!');
+      process.exit(1);
+    }
+
+    logger.verbose('Using provided ioc container');
+    container = args.container;
+  } else {
+    container = new InvocationContainer({
+      defaults: {
+        conventionCalls: ['initialize'],
+      },
+    });
+  }
+
+  if (typeof args === 'object' && args.minimalSetup !== undefined) {
+    logger.verbose(`Minimal Setup: ${args.minimalSetup}`);
+    minimalSetup = args.minimalSetup;
+  }
+
+  if (typeof args === 'object' && args.logFilePath !== undefined) {
+    logger.verbose(`Using log file path: ${args.logFilePath}`);
+    process.env.process_engine__logging_repository__output_path = path.resolve(args.logFilePath, 'logs');
+    process.env.process_engine__metrics_repository__output_path = path.resolve(args.logFilePath, 'metrics');
+  }
 }
 
 function setWorkingDirectory(): void {
@@ -138,7 +192,7 @@ function validateEnvironment(): void {
   process.exit(1);
 }
 
-async function runMigrations(sqlitePath: string): Promise<void> {
+async function runMigrations(): Promise<void> {
 
   const repositories = [
     'correlation',
@@ -170,49 +224,7 @@ async function runPostMigrations(): Promise<void> {
   }
 }
 
-async function startProcessEngine(): Promise<void> {
-
-  const iocModules = loadIocModules();
-
-  for (const iocModule of iocModules) {
-    iocModule.registerInContainer(container);
-  }
-
-  container.validateDependencies();
-
-  try {
-    const bootstrapper = await container.resolveAsync<AppBootstrapper>('AppBootstrapper');
-    await bootstrapper.start();
-
-    logger.info('Bootstrapper started successfully.');
-
-  } catch (error) {
-    logger.error('Bootstrapper failed to start.', error);
-    process.exit(1);
-  }
-}
-
-async function startInternalServices(): Promise<void> {
-
-  try {
-    logger.info('Starting Services...');
-
-    const autoStartService = await container.resolveAsync<IAutoStartService>('AutoStartService');
-    await autoStartService.start();
-
-    logger.info('AutoStartService started.');
-
-    const cronjobService = await container.resolveAsync<ICronjobService>('CronjobService');
-    await cronjobService.start();
-
-    logger.info('CronjobService started.');
-  } catch (error) {
-    logger.error('Failed to start the internal services.', error);
-    process.exit(1);
-  }
-}
-
-function loadIocModules(): Array<any> {
+function loadIocModules(): void {
 
   const iocModuleNames = [
     '@essential-projects/bootstrapper',
@@ -249,7 +261,45 @@ function loadIocModules(): Array<any> {
     return require(`${moduleName}/ioc_module`);
   });
 
-  return iocModules;
+  for (const iocModule of iocModules) {
+    iocModule.registerInContainer(container);
+  }
+
+  container.validateDependencies();
+}
+
+async function startProcessEngine(): Promise<void> {
+
+  try {
+    const bootstrapper = await container.resolveAsync<AppBootstrapper>('AppBootstrapper');
+    await bootstrapper.start();
+
+    logger.info('Bootstrapper started successfully.');
+
+  } catch (error) {
+    logger.error('Bootstrapper failed to start.', error);
+    process.exit(1);
+  }
+}
+
+async function startInternalServices(): Promise<void> {
+
+  try {
+    logger.info('Starting Services...');
+
+    const autoStartService = await container.resolveAsync<IAutoStartService>('AutoStartService');
+    await autoStartService.start();
+
+    logger.info('AutoStartService started.');
+
+    const cronjobService = await container.resolveAsync<ICronjobService>('CronjobService');
+    await cronjobService.start();
+
+    logger.info('CronjobService started.');
+  } catch (error) {
+    logger.error('Failed to start the internal services.', error);
+    process.exit(1);
+  }
 }
 
 async function resumeProcessInstances(): Promise<void> {
