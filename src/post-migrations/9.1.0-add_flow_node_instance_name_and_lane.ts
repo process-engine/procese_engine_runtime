@@ -37,6 +37,8 @@ export async function runPostMigrationForV910(): Promise<void> {
 
     if (flowNodeInstancesToUpdate.length === 0) {
       logger.info('Nothing to do here.');
+
+      return;
     }
 
     await addNameAndLaneToFlowNodeInstances(flowNodeInstancesToUpdate);
