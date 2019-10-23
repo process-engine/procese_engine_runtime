@@ -83,7 +83,7 @@
     "@process-engine/management_api_http": "5.1.0",
     "@process-engine/metrics_api_core": "3.0.0-alpha.1",
     "@process-engine/metrics.repository.file_system": "3.0.0-alpha.1",
-    "@process-engine/process_engine_core": "12.12.0-alpha.12",
+    "@process-engine/process_engine_core": "12.12.0-alpha.13",
     "@process-engine/persistence_api.repositories.sequelize": "1.1.0-alpha.6",
     "@process-engine/persistence_api.services": "1.1.0-alpha.6",
     "@process-engine/persistence_api.use_cases": "1.1.0-alpha.6",
