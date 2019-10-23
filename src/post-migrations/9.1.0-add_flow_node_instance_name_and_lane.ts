@@ -193,7 +193,7 @@ function getLaneForFlowNodeInstance(flowNodeInstance, processModelFacade): Promi
 async function setLaneAndNameForFlowNodeInstance(flowNodeInstance, name, lane): Promise<any> {
   logger.info('Updating FlowNodeInstance properties');
   const flowNodeName = name ? name.replace(/'/g, '\'\'') : name;
-  const flowNodeLane = name ? lane.replace(/'/g, '\'\'') : name;
+  const flowNodeLane = lane ? lane.replace(/'/g, '\'\'') : lane;
 
   const query = `UPDATE "FlowNodeInstances" SET "flowNodeName" = '${flowNodeName}',
    "flowNodeLane" = '${flowNodeLane}' WHERE "id" = ${flowNodeInstance.id}`;
