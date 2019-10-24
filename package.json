@@ -80,7 +80,7 @@
     "@process-engine/logging_api_core": "2.0.0-alpha.1",
     "@process-engine/logging.repository.file_system": "2.0.0-alpha.1",
     "@process-engine/management_api_core": "6.2.0-alpha.9",
-    "@process-engine/management_api_http": "feature~add_swagger_generator",
+    "@process-engine/management_api_http": "5.2.0-alpha.3",
     "@process-engine/metrics_api_core": "3.0.0-alpha.1",
     "@process-engine/metrics.repository.file_system": "3.0.0-alpha.1",
     "@process-engine/process_engine_core": "12.12.0-alpha.14",
