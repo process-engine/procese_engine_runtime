@@ -1,9 +1,16 @@
 import {InvocationContainer} from 'addict-ioc';
-import {Request, Response} from 'express';
+import {
+  NextFunction,
+  Request,
+  Response,
+  static as expressStatic,
+} from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 
 import {IHttpExtension} from '@essential-projects/http_contracts';
+
+import {absolutePath as getPathToSwagger} from 'swagger-ui-dist';
 
 let httpExtension: IHttpExtension;
 
@@ -37,12 +44,20 @@ function configureRootRoute(): void {
 
   // Note: If the ProcessEngine runs as an embedded service, this route will likely be occupied by another application.
   if (allowUseOfGlobalRoute) {
-    httpExtension.app.get('/', (request: Request, response: Response): void => {
-      response
-        .status(httpStatusCodeSuccess)
-        .header('Content-Type', 'application/json')
-        .send(formattedResponse);
+    httpExtension.app.get('/', (request: Request, response: Response, next: NextFunction): void => {
+      if (request.headers['content-type'] === 'application/json') {
+        response
+          .status(httpStatusCodeSuccess)
+          .header('Content-Type', 'application/json')
+          .send(formattedResponse);
+
+        return;
+      }
+
+      response.sendFile(path.resolve(__dirname, '..', '..', '..', 'swagger.html'));
     });
+
+    httpExtension.app.use(expressStatic(getPathToSwagger()));
   }
 
   httpExtension.app.get('/process_engine', (request: Request, response: Response): void => {
