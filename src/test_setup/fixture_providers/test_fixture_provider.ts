@@ -67,7 +67,7 @@ export class TestFixtureProvider {
     return this._processModelUseCases;
   }
 
-  public async initializeAndStart(): Promise<void> {
+  public async initializeAndStart(noHttp: boolean = false, useHttpRootRoutes: boolean = true): Promise<void> {
 
     await this.runMigrations();
     await this.runPostMigrations();
@@ -76,10 +76,9 @@ export class TestFixtureProvider {
 
     this._sampleExternalTaskWorker = await this.resolveAsync<ExternalTaskSampleWorker>('ExternalTaskSampleWorker');
 
-    const httpIsEnabled = process.env.NO_HTTP === undefined;
-    if (httpIsEnabled) {
+    if (noHttp === false) {
       this._sampleExternalTaskWorker.start();
-      await configureGlobalRoutes(this.container);
+      await configureGlobalRoutes(this.container, useHttpRootRoutes);
     }
 
     await this.createMockIdentities();
