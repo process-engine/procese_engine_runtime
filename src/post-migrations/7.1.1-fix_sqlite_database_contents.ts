@@ -32,8 +32,16 @@ export async function runPostMigrationForV711(): Promise<void> {
   const pathToFlowNodeInstanceDb = process.env.process_engine__flow_node_instance_repository__storage;
   const pathToProcessModelDb = process.env.process_engine__process_model_repository__storage;
 
-  const flowNodeInstanceDbQueryInterface = await createConnection('flow_node_instance_repository.json', pathToFlowNodeInstanceDb);
-  const processModelDbQueryInterface = await createConnection('process_model_repository.json', pathToProcessModelDb);
+  const flowNodeInstanceDbQueryInterface = await createConnection(
+    'flow_node_instance_repository.json',
+    pathToFlowNodeInstanceDb,
+    process.env.process_engine__flow_node_instance_repository__host, // Used by Jenkins
+  );
+  const processModelDbQueryInterface = await createConnection(
+    'process_model_repository.json',
+    pathToProcessModelDb,
+    process.env.process_engine__process_model_repository__host, // Used by Jenkins
+  );
 
   const migrationWasRun = await checkIfMigrationWasRun(processModelDbQueryInterface);
   if (migrationWasRun) {
@@ -74,10 +82,11 @@ export async function runPostMigrationForV711(): Promise<void> {
   logger.info('Done.');
 }
 
-async function createConnection(repository, sqliteStoragePath): Promise<any> {
+async function createConnection(repository, sqliteStoragePath, hostName): Promise<any> {
 
   const config = environment.readConfigFile(nodeEnv, repository);
 
+  config.host = hostName || config.host;
   config.storage = sqliteStoragePath || config.storage;
 
   const sequelizeInstance = await connectionManager.getConnection(config);
