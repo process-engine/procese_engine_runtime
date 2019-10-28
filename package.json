@@ -29,6 +29,7 @@
     "create-zipfile": "node ./scripts/pack_sources/pack_to_zip.js"
   },
   "main": "./dist/commonjs/index.js",
+  "types": "./dist/index.d.ts",
   "license": "MIT",
   "homepage": "https://www.process-engine.io/",
   "author": {
