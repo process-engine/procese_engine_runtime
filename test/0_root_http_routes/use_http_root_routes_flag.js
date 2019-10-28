@@ -5,16 +5,15 @@ const TestFixtureProvider = require('../../dist/commonjs/test_setup').TestFixtur
 
 const HttpClient = require('@essential-projects/http').HttpClient;
 
-describe('Main Route Sanity checks', () => {
+describe('Root Http Route Sanity checks', () => {
 
   let httpClient;
 
   let testFixtureProvider;
 
   before(async () => {
-    process.env.DO_NOT_BLOCK_GLOBAL_ROUTE = true;
     testFixtureProvider = new TestFixtureProvider();
-    await testFixtureProvider.initializeAndStart();
+    await testFixtureProvider.initializeAndStart(true, false);
 
     httpClient = new HttpClient();
     httpClient.config = {
@@ -24,10 +23,9 @@ describe('Main Route Sanity checks', () => {
 
   after(async () => {
     await testFixtureProvider.tearDown();
-    delete process.env.DO_NOT_BLOCK_GLOBAL_ROUTE;
   });
 
-  it(`Should disable '/' route, when DO_NOT_BLOCK_GLOBAL_ROUTE is set to true`, async () => {
+  it(`Should disable '/' route, when useHttpRootRoutes is set to false`, async () => {
 
     const requestHeaders = {
       headers: {
@@ -44,7 +42,7 @@ describe('Main Route Sanity checks', () => {
     }
   });
 
-  it(`Should disable '/security/authority' route, when DO_NOT_BLOCK_GLOBAL_ROUTE is set to true`, async () => {
+  it(`Should disable '/security/authority' route, when useHttpRootRoutes is set to false`, async () => {
 
     const requestHeaders = {
       headers: {
@@ -61,7 +59,7 @@ describe('Main Route Sanity checks', () => {
     }
   });
 
-  it(`Should not disable '/process_engine' route, when DO_NOT_BLOCK_GLOBAL_ROUTE is set to true`, async () => {
+  it(`Should not disable '/process_engine' route, when useHttpRootRoutes is set to false`, async () => {
 
     const requestHeaders = {
       headers: {
@@ -74,7 +72,7 @@ describe('Main Route Sanity checks', () => {
     should(response.status).be.equal(200);
   });
 
-  it(`Should not disable '/process_engine/ routesecurity/authority', when DO_NOT_BLOCK_GLOBAL_ROUTE is set to true`, async () => {
+  it(`Should not disable '/process_engine/ routesecurity/authority', when useHttpRootRoutes is set to false`, async () => {
 
     const requestHeaders = {
       headers: {

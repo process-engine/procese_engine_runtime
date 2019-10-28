@@ -15,6 +15,7 @@
     "skipLibCheck": true,
     "declarationDir": "./dist",
     "sourceMap": true,
+    "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },
   "include": ["src"]
