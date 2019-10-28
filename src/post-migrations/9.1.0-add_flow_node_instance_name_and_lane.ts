@@ -15,6 +15,8 @@ import {BpmnModelParser, ProcessModelFacade} from '@process-engine/process_engin
 
 import * as environment from '../modules/environment';
 
+const scriptName = '9.1.0-add_flow_node_instance_name_and_lane';
+
 const logger = Logger.createLogger('processengine:runtime:post_migration_9.1.0');
 
 const connectionManager = new SequelizeConnectionManager();
@@ -27,19 +29,25 @@ let correlationDbQueryInterface: QueryInterface;
 let flowNodeInstanceDbQueryInterface: QueryInterface;
 let processModelDbQueryInterface: QueryInterface;
 
-let processInstances;
-let processModels;
+let processInstances: Array<any>;
+let processModels: Array<any>;
 
 export async function runPostMigrationForV910(): Promise<void> {
   try {
-    logger.info('Running Post Migration...');
-
     await setup();
+
+    const migrationWasRun = await checkIfMigrationWasRun();
+    if (migrationWasRun) {
+      return;
+    }
+
+    logger.info('Running Post Migration...');
 
     const flowNodeInstancesToUpdate = await getFlowNodeInstancesWithoutNameOrLane();
 
     if (flowNodeInstancesToUpdate.length === 0) {
       logger.info('Nothing to do here.');
+      await markMigrationAsRun();
 
       return;
     }
@@ -47,6 +55,8 @@ export async function runPostMigrationForV910(): Promise<void> {
     await loadProcessInstances();
     await loadProcessModels();
     await addNameAndLaneToFlowNodeInstances(flowNodeInstancesToUpdate);
+
+    await markMigrationAsRun();
 
     logger.info('Done.');
   } catch (error) {
@@ -78,6 +88,18 @@ async function createConnection(repository, sqliteStoragePath): Promise<QueryInt
   const queryInterface = sequelizeInstance.getQueryInterface();
 
   return queryInterface;
+}
+
+async function checkIfMigrationWasRun(): Promise<boolean> {
+
+  const querySqlite = `SELECT * FROM "SequelizeMeta" WHERE "name" = '${scriptName}'`;
+  const queryPostgres = `SELECT * FROM public."SequelizeMeta" WHERE "name" = '${scriptName}'`;
+
+  const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
+
+  const metaEntries = (await flowNodeInstanceDbQueryInterface.sequelize.query(query))[0];
+
+  return metaEntries.length > 0;
 }
 
 async function getFlowNodeInstancesWithoutNameOrLane(): Promise<any> {
@@ -206,4 +228,12 @@ async function setLaneAndNameForFlowNodeInstance(flowNodeInstance, name, lane): 
    "flowNodeLane" = '${flowNodeLane}' WHERE "id" = ${flowNodeInstance.id}`;
 
   await flowNodeInstanceDbQueryInterface.sequelize.query(query);
+}
+
+async function markMigrationAsRun(): Promise<void> {
+
+  const updateQuery = `INSERT INTO "SequelizeMeta" (name) VALUES ('${scriptName}');`;
+
+  await flowNodeInstanceDbQueryInterface.sequelize.query(updateQuery);
+
 }

@@ -18,27 +18,38 @@ import {SequelizeConnectionManager} from '@essential-projects/sequelize_connecti
 
 import * as environment from '../modules/environment';
 
+const scriptName = '7.1.1-fix_sqlite_database_contents';
+
+const nodeEnv = process.env.NODE_ENV || 'sqlite';
+const nodeEnvIsPostgres = nodeEnv === 'postgres' || nodeEnv === 'test-postgres';
+
 const logger = Logger.createLogger('processengine:runtime:post_migration_7.1.1');
 
 const connectionManager = new SequelizeConnectionManager();
 
 export async function runPostMigrationForV711(): Promise<void> {
 
-  logger.info('Running Post Migration...');
-
   const pathToFlowNodeInstanceDb = process.env.process_engine__flow_node_instance_repository__storage;
   const pathToProcessModelDb = process.env.process_engine__process_model_repository__storage;
+
+  const flowNodeInstanceDbQueryInterface = await createConnection('flow_node_instance_repository.json', pathToFlowNodeInstanceDb);
+  const processModelDbQueryInterface = await createConnection('process_model_repository.json', pathToProcessModelDb);
+
+  const migrationWasRun = await checkIfMigrationWasRun(processModelDbQueryInterface);
+  if (migrationWasRun) {
+    return;
+  }
+
+  logger.info('Running Post Migration...');
 
   // If all data is stored in the same database, then everything is fine.
   // This issue only affected those setups that store FlowNodeInstances and ProcessDefinitions at different locations.
   const dbPathsMatch = pathToProcessModelDb === pathToFlowNodeInstanceDb;
   if (dbPathsMatch) {
     logger.info('All tables are stored in the same database. Nothing to do here.');
+    await markMigrationAsRun(processModelDbQueryInterface);
     return;
   }
-
-  const flowNodeInstanceDbQueryInterface = await createConnection('flow_node_instance_repository.json', pathToFlowNodeInstanceDb);
-  const processModelDbQueryInterface = await createConnection('process_model_repository.json', pathToProcessModelDb);
 
   const flowNodeInstanceDbHasProcessModels = await checkIfFixForTableIsNeeded(flowNodeInstanceDbQueryInterface, 'ProcessDefinitions');
   const processModelDbHasFlowNodeInstances = await checkIfFixForTableIsNeeded(processModelDbQueryInterface, 'FlowNodeInstances');
@@ -58,12 +69,14 @@ export async function runPostMigrationForV711(): Promise<void> {
     await processModelDbQueryInterface.dropTable('ProcessTokens');
   }
 
+  await markMigrationAsRun(processModelDbQueryInterface);
+
   logger.info('Done.');
 }
 
 async function createConnection(repository, sqliteStoragePath): Promise<any> {
 
-  const config = environment.readConfigFile('sqlite', repository);
+  const config = environment.readConfigFile(nodeEnv, repository);
 
   config.storage = sqliteStoragePath;
 
@@ -71,6 +84,18 @@ async function createConnection(repository, sqliteStoragePath): Promise<any> {
   const queryInterface = sequelizeInstance.getQueryInterface();
 
   return queryInterface;
+}
+
+async function checkIfMigrationWasRun(processModelDbQueryInterface): Promise<boolean> {
+
+  const querySqlite = `SELECT * FROM "SequelizeMeta" WHERE "name" = '${scriptName}'`;
+  const queryPostgres = `SELECT * FROM public."SequelizeMeta" WHERE "name" = '${scriptName}'`;
+
+  const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
+
+  const metaEntries = (await processModelDbQueryInterface.sequelize.query(query))[0];
+
+  return metaEntries.length > 0;
 }
 
 async function checkIfFixForTableIsNeeded(queryInterface, tableName): Promise<boolean> {
@@ -150,4 +175,12 @@ async function moveFlowNodeInstancesFromProcessModelDbToFlowNodeInstanceDb(
 
   await processModelDbQueryInterface.dropTable('FlowNodeInstances');
   await processModelDbQueryInterface.dropTable('ProcessTokens');
+}
+
+async function markMigrationAsRun(processModelDbQueryInterface): Promise<void> {
+
+  const updateQuery = `INSERT INTO "SequelizeMeta" (name) VALUES ('${scriptName}');`;
+
+  await processModelDbQueryInterface.sequelize.query(updateQuery);
+
 }
