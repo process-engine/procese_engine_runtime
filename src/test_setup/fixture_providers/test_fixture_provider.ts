@@ -41,6 +41,8 @@ export class TestFixtureProvider {
 
   private _identities: IdentityCollection;
 
+  private enableHttp: boolean;
+
   public get identities(): IdentityCollection {
     return this._identities;
   }
@@ -67,16 +69,18 @@ export class TestFixtureProvider {
     return this._processModelUseCases;
   }
 
-  public async initializeAndStart(noHttp: boolean = false, useHttpRootRoutes: boolean = true): Promise<void> {
+  public async initializeAndStart(enableHttp: boolean = true, useHttpRootRoutes: boolean = true): Promise<void> {
+
+    this.enableHttp = enableHttp;
 
     await this.runMigrations();
     await this.runPostMigrations();
-    await this.initializeBootstrapper();
+    await this.initializeBootstrapper(enableHttp);
     await this.bootstrapper.start();
 
     this._sampleExternalTaskWorker = await this.resolveAsync<ExternalTaskSampleWorker>('ExternalTaskSampleWorker');
 
-    if (noHttp === false) {
+    if (enableHttp) {
       this._sampleExternalTaskWorker.start();
       await configureGlobalRoutes(this.container, useHttpRootRoutes);
     }
@@ -93,8 +97,7 @@ export class TestFixtureProvider {
 
   public async tearDown(): Promise<void> {
 
-    const httpIsEnabled = process.env.NO_HTTP === undefined;
-    if (httpIsEnabled) {
+    if (this.enableHttp) {
       const httpExtension = await this.container.resolveAsync<any>('HttpExtension');
       await httpExtension.close();
     }
@@ -201,10 +204,10 @@ export class TestFixtureProvider {
     }
   }
 
-  private async initializeBootstrapper(): Promise<void> {
+  private async initializeBootstrapper(httpIsEnabled: boolean): Promise<void> {
 
     try {
-      this.container = await initializeBootstrapper();
+      this.container = await initializeBootstrapper(httpIsEnabled);
 
       const appPath = path.resolve(__dirname);
       this.bootstrapper = await this.container.resolveAsync<AppBootstrapper>('AppBootstrapper', [appPath]);

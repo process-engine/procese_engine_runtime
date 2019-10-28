@@ -15,9 +15,8 @@ describe('Disable HttpEndpoints - ', () => {
   let testFixtureProvider;
 
   before(async () => {
-    process.env.NO_HTTP = true;
     testFixtureProvider = new TestFixtureProvider();
-    await testFixtureProvider.initializeAndStart();
+    await testFixtureProvider.initializeAndStart(false);
 
     httpClient = new HttpClient();
     httpClient.config = {
@@ -27,7 +26,6 @@ describe('Disable HttpEndpoints - ', () => {
 
   after(async () => {
     await testFixtureProvider.tearDown();
-    delete process.env.NO_HTTP;
   });
 
   it(`Global route '/' should not be available`, async () => {

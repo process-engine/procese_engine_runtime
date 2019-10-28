@@ -1,6 +1,6 @@
 import {InvocationContainer} from 'addict-ioc';
 
-export async function initializeBootstrapper(): Promise<InvocationContainer> {
+export async function initializeBootstrapper(httpIsEnabled: boolean): Promise<InvocationContainer> {
 
   const container: InvocationContainer = new InvocationContainer({
     defaults: {
@@ -8,7 +8,7 @@ export async function initializeBootstrapper(): Promise<InvocationContainer> {
     },
   });
 
-  const iocModules = loadIocModules();
+  const iocModules = loadIocModules(httpIsEnabled);
 
   for (const iocModule of iocModules) {
     iocModule.registerInContainer(container);
@@ -19,7 +19,7 @@ export async function initializeBootstrapper(): Promise<InvocationContainer> {
   return container;
 }
 
-function loadIocModules(): Array<any> {
+function loadIocModules(httpIsEnabled: boolean): Array<any> {
 
   const iocModuleNames = [
     '@essential-projects/bootstrapper',
@@ -42,14 +42,12 @@ function loadIocModules(): Array<any> {
     '.',
   ];
 
-  const httpIocModules = [
-    '@essential-projects/http_extension',
-    '@process-engine/consumer_api_http',
-    '@process-engine/management_api_http',
-  ];
-
-  const httpIsEnabled = process.env.NO_HTTP === undefined;
   if (httpIsEnabled) {
+    const httpIocModules = [
+      '@essential-projects/http_extension',
+      '@process-engine/consumer_api_http',
+      '@process-engine/management_api_http',
+    ];
     iocModuleNames.push(...httpIocModules);
   }
 
