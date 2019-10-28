@@ -107,7 +107,7 @@ async function createConnection(repository, sqliteStoragePath, hostName): Promis
 
 async function checkIfMigrationWasRun(): Promise<boolean> {
 
-  const querySqlite = `SELECT * FROM "SequelizeMeta" WHERE "name" = '${scriptName}'`;
+  const querySqlite = `SELECT * FROM SequelizeMeta WHERE name = '${scriptName}'`;
   const queryPostgres = `SELECT * FROM public."SequelizeMeta" WHERE "name" = '${scriptName}'`;
 
   const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
@@ -247,7 +247,10 @@ async function setLaneAndNameForFlowNodeInstance(flowNodeInstance, name, lane): 
 
 async function markMigrationAsRun(): Promise<void> {
 
-  const updateQuery = `INSERT INTO "SequelizeMeta" (name) VALUES ('${scriptName}');`;
+  const querySqlite = `INSERT INTO SequelizeMeta (name) VALUES ('${scriptName}');`;
+  const queryPostgres = `INSERT INTO public."SequelizeMeta" (name) VALUES ('${scriptName}');`;
+
+  const updateQuery = nodeEnvIsPostgres ? queryPostgres : querySqlite;
 
   await flowNodeInstanceDbQueryInterface.sequelize.query(updateQuery);
 

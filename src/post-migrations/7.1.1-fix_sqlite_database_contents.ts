@@ -97,7 +97,7 @@ async function createConnection(repository, sqliteStoragePath, hostName): Promis
 
 async function checkIfMigrationWasRun(processModelDbQueryInterface): Promise<boolean> {
 
-  const querySqlite = `SELECT * FROM "SequelizeMeta" WHERE "name" = '${scriptName}'`;
+  const querySqlite = `SELECT * FROM SequelizeMeta WHERE name = '${scriptName}'`;
   const queryPostgres = `SELECT * FROM public."SequelizeMeta" WHERE "name" = '${scriptName}'`;
 
   const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
@@ -188,7 +188,10 @@ async function moveFlowNodeInstancesFromProcessModelDbToFlowNodeInstanceDb(
 
 async function markMigrationAsRun(processModelDbQueryInterface): Promise<void> {
 
-  const updateQuery = `INSERT INTO "SequelizeMeta" (name) VALUES ('${scriptName}');`;
+  const querySqlite = `INSERT INTO SequelizeMeta (name) VALUES ('${scriptName}');`;
+  const queryPostgres = `INSERT INTO public."SequelizeMeta" (name) VALUES ('${scriptName}');`;
+
+  const updateQuery = nodeEnvIsPostgres ? queryPostgres : querySqlite;
 
   await processModelDbQueryInterface.sequelize.query(updateQuery);
 
