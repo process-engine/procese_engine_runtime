@@ -42,7 +42,7 @@ let httpIsEnabled = true;
 let useHttpRootRoutes = true;
 
 // eslint-disable-next-line consistent-return
-export async function startRuntime(args: startupArgs | string): Promise<void> {
+export async function startRuntime(args?: startupArgs | string): Promise<void> {
 
   parseArguments(args);
 
