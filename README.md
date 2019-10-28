@@ -73,8 +73,8 @@ The route `http://localhost:8000/process_engine` ensures that the studio can do 
 In other words: These routes allow you to access an embedded ProcessEngine through BPMN Studio.
 
 **Note:**
-See the [Other Environment Parameters](#other_environment_parameters) section for instructions
-on how to prevent the ProcessEngine from using these global routes.
+See the [Embedding instructions](#embedding_the_processengineruntime_into_another_application) section
+on how to prevent the ProcessEngine from using `/` and `/security/authority`.
 
 ### Switching the database
 
@@ -147,24 +147,13 @@ The full start command will then look like this:
 - Linux: `CONFIG_PATH=/home/{{YOUR_USERNAME}}/runtime NODE_ENV=production process-engine`
 - Windows: `CONFIG_PATH=C:\Users\{{YOUR_USERNAME}}\runtime NODE_ENV=production process-engine`
 
-### Other Environment Parameters
-
-There are various other parameters you can provide at startup:
-
-- `NO_HTTP`: Providing this flag will disable all HTTP endpoints of the ProcessEngine.
-  This can be useful if you are embedding the ProcessEngine into another application
-  and you do not intend for the ProcessEngine to expose its own HTTP routes
-- `DO_NOT_BLOCK_GLOBAL_ROUTE`: Disables the global routes `http://localhost:8000/` and `http://localhost:8000/security/authority`.
-  This can be useful, if you are embedding the ProcessEngine into another web application,
-  where you would usually want to reserve such routes for your own purposes
-
 ## Embedding the ProcessEngineRuntime into another application
 
-The ProcessEngineRuntime is published at npm with the name `@process-engine/process_engine_runtime`.
+The ProcessEngineRuntime is published at npm under the name `@process-engine/process_engine_runtime`.
 
-You can install the package into your own application with `npm i @process-engine/process_engine_runtime`, like you would any other npm package.
+You can add it to your package.json like any other npm package.
 
-To start the runtime, you need to run this command once:
+To start the runtime, you need to run this command once from inside your application:
 
 ```ts
 import * as ProcessEngine from '@process-engine/process_engine_runtime';
@@ -176,14 +165,21 @@ await ProcessEngine.startRuntime(args);
 
 The `startRuntime` function takes an object with the following optional parameters:
 
-- workDir: A path to where the runtime will store its working data (i.e. 'workspace'). The path must be absolute.
-- sqlitePath: A path to where the runtime should store its SQlite databases
+- `workDir`: A path to where the runtime will store its working data (i.e. 'workspace'). The path must be absolute
+- `sqlitePath`: A path to where the runtime should store its SQlite databases
     - Works in conjunction with `NODE_ENV=sqlite`
     - The path must be absolute
-- logFilePath: A path to where the runtime should store its logfiles. The path must be absolute.
-- container: An `addict-ioc` InvocationContainer, where the runtime should register its dependencies at
-- minimalSetup: If set to true, the runtime will only perform ioc registrations, but nothing else.
-  Use this, if you use a customized startup that is not compatible with the runtime's own startup routine
+- `logFilePath`: A path to where the runtime should store its logfiles. The path must be absolute
+- `container`: An `addict-ioc` InvocationContainer, where the runtime should register its dependencies at
+- `minimalSetup`: If set to true, the runtime will only perform ioc registrations, but nothing else
+    - Use this, if you want to launch the ProcessEngineRuntime manually
+    - Defaults to `false`
+- `noHttp`: If set to true, the ProcessEngineRuntime will not register any of its HTTP modules at the ioc container
+    - This effectively disables all http routes that the ProcessEngine employs
+    - Defaults to `false`
+- `useRootRoutes`: If set to `true`, the routes `/` and `/security/authority` will be set by the ProcessEngineRuntime
+    - Set to `false` if you want to use these routes for other purposes
+    - Defaults to `true`
 
 Example:
 
@@ -199,6 +195,8 @@ await ProcessEngine.startRuntime({
   logFilePath: `var/log/somepath`,
   container: myInvocationContainer,
   minimalSetup: true,
+  noHttp: true,
+  useRootRoutes: false,
 });
 ```
 
