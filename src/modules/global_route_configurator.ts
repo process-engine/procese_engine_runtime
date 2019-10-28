@@ -28,22 +28,21 @@ interface IApplicationInfo {
   bugs: string | object;
 }
 
-export async function configureGlobalRoutes(container: InvocationContainer): Promise<void> {
+export async function configureGlobalRoutes(container: InvocationContainer, useHttpRootRoutes: boolean): Promise<void> {
   httpExtension = await container.resolveAsync<IHttpExtension>('HttpExtension');
 
-  configureRootRoute();
-  configureAuthorityRoute();
+  configureRootRoute(useHttpRootRoutes);
+  configureAuthorityRoute(useHttpRootRoutes);
 }
 
-function configureRootRoute(): void {
+function configureRootRoute(useHttpRootRoutes: boolean): void {
 
-  const allowUseOfGlobalRoute = !process.env.DO_NOT_BLOCK_GLOBAL_ROUTE;
   const packageInfo = getInfosFromPackageJson();
 
   const formattedResponse = JSON.stringify(packageInfo, undefined, 2);
 
   // Note: If the ProcessEngine runs as an embedded service, this route will likely be occupied by another application.
-  if (allowUseOfGlobalRoute) {
+  if (useHttpRootRoutes) {
     httpExtension.app.get('/', (request: Request, response: Response, next: NextFunction): void => {
       if (request.headers['content-type'] === 'application/json') {
         response
@@ -68,9 +67,8 @@ function configureRootRoute(): void {
   });
 }
 
-function configureAuthorityRoute(): void {
+function configureAuthorityRoute(useHttpRootRoutes: boolean): void {
 
-  const allowUseOfGlobalRoute = process.env.DO_NOT_BLOCK_GLOBAL_ROUTE === undefined;
   const iamConfig = loadConfig('iam', 'iam_service');
 
   const responseBody = {
@@ -81,7 +79,7 @@ function configureAuthorityRoute(): void {
   const formattedResponse = JSON.stringify(responseBody, undefined, 2);
 
   // Note: If the ProcessEngine runs as an embedded service, the root namespace should not be occupied.
-  if (allowUseOfGlobalRoute) {
+  if (useHttpRootRoutes) {
     httpExtension.app.get(authorityRoute, (request: Request, response: Response): void => {
       response
         .status(httpStatusCodeSuccess)

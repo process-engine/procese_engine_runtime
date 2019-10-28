@@ -34,9 +34,12 @@ type startupArgs = {
   container?: InvocationContainer;
   minimalSetup?: boolean;
   workDir?: string;
+  noHttp?: boolean;
+  useHttpRootRoutes?: boolean;
 }
 
-const httpIsEnabled = process.env.NO_HTTP === undefined;
+let httpIsEnabled = true;
+let useHttpRootRoutes = true;
 
 // eslint-disable-next-line consistent-return
 export async function startRuntime(args: startupArgs | string): Promise<void> {
@@ -66,7 +69,7 @@ export async function startRuntime(args: startupArgs | string): Promise<void> {
   await startProcessEngine();
 
   if (httpIsEnabled) {
-    await configureGlobalRoutes(container);
+    await configureGlobalRoutes(container, useHttpRootRoutes);
   }
   await startInternalServices();
   await resumeProcessInstances();
@@ -117,6 +120,16 @@ function parseArguments(args: startupArgs | string): void {
     logger.verbose(`Using log file path: ${args.logFilePath}`);
     process.env.process_engine__logging_repository__output_path = path.resolve(args.logFilePath, 'logs');
     process.env.process_engine__metrics_repository__output_path = path.resolve(args.logFilePath, 'metrics');
+  }
+
+  if (typeof args === 'object' && args.noHttp !== undefined) {
+    logger.verbose(`Provide http endpoints: ${args.noHttp}`);
+    httpIsEnabled = args.noHttp;
+  }
+
+  if (typeof args === 'object' && args.useHttpRootRoutes !== undefined) {
+    logger.verbose(`Using / and /security/authority http routes: ${args.useHttpRootRoutes}`);
+    useHttpRootRoutes = args.useHttpRootRoutes;
   }
 }
 
