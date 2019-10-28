@@ -16,6 +16,7 @@ import {IManagementApiClient} from '@process-engine/management_api_contracts';
 import {IExecuteProcessService} from '@process-engine/process_engine_contracts';
 import {IProcessModelUseCases} from '@process-engine/persistence_api.contracts';
 
+import * as postMigrations from '../../post-migrations';
 import {ExternalTaskSampleWorker} from '../test_services/external_task_sample_worker';
 import {initializeBootstrapper} from './setup_ioc_container';
 import {migrate as executeMigrations} from './test_migrator';
@@ -69,6 +70,7 @@ export class TestFixtureProvider {
   public async initializeAndStart(): Promise<void> {
 
     await this.runMigrations();
+    await this.runPostMigrations();
     await this.initializeBootstrapper();
     await this.bootstrapper.start();
 
@@ -183,6 +185,21 @@ export class TestFixtureProvider {
       await executeMigrations(repository);
     }
     logger.info('Migrations successfully finished!');
+  }
+
+  private async runPostMigrations(): Promise<void> {
+
+    try {
+      logger.info('Running post-migration scripts.');
+
+      await postMigrations.runPostMigrationForV711();
+      await postMigrations.runPostMigrationForV910();
+
+      logger.info('Post-Migrations successfully executed.');
+    } catch (error) {
+      logger.error('Failed to run Post-Migrations', error);
+      process.exit(1);
+    }
   }
 
   private async initializeBootstrapper(): Promise<void> {

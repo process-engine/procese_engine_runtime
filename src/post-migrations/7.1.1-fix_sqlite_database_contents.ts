@@ -78,7 +78,7 @@ async function createConnection(repository, sqliteStoragePath): Promise<any> {
 
   const config = environment.readConfigFile(nodeEnv, repository);
 
-  config.storage = sqliteStoragePath;
+  config.storage = sqliteStoragePath || config.storage;
 
   const sequelizeInstance = await connectionManager.getConnection(config);
   const queryInterface = sequelizeInstance.getQueryInterface();
