@@ -174,9 +174,9 @@ The `startRuntime` function takes an object with the following optional paramete
 - `minimalSetup`: If set to true, the runtime will only perform ioc registrations, but nothing else
     - Use this, if you want to launch the ProcessEngineRuntime manually
     - Defaults to `false`
-- `noHttp`: If set to true, the ProcessEngineRuntime will not register any of its HTTP modules at the ioc container
-    - This effectively disables all http routes that the ProcessEngine employs
-    - Defaults to `false`
+- `enableHttp`: If set to true, all HTTP endpoints the ProcessEngineRuntime uses will be loaded
+    - Use `false` to prevent the ProcessEngineRuntime from providing HTTP endpoints
+    - Defaults to `true`
 - `useRootRoutes`: If set to `true`, the routes `/` and `/security/authority` will be set by the ProcessEngineRuntime
     - Set to `false` if you want to use these routes for other purposes
     - Defaults to `true`
@@ -195,7 +195,7 @@ await ProcessEngine.startRuntime({
   logFilePath: `var/log/somepath`,
   container: myInvocationContainer,
   minimalSetup: true,
-  noHttp: true,
+  enableHttp: false,
   useRootRoutes: false,
 });
 ```

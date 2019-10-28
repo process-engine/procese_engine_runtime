@@ -34,7 +34,7 @@ type startupArgs = {
   container?: InvocationContainer;
   minimalSetup?: boolean;
   workDir?: string;
-  noHttp?: boolean;
+  enableHttp?: boolean;
   useHttpRootRoutes?: boolean;
 }
 
@@ -122,9 +122,9 @@ function parseArguments(args: startupArgs | string): void {
     process.env.process_engine__metrics_repository__output_path = path.resolve(args.logFilePath, 'metrics');
   }
 
-  if (typeof args === 'object' && args.noHttp !== undefined) {
-    logger.verbose(`Provide http endpoints: ${args.noHttp}`);
-    httpIsEnabled = args.noHttp;
+  if (typeof args === 'object' && args.enableHttp !== undefined) {
+    logger.verbose(`Enable http endpoints: ${args.enableHttp}`);
+    httpIsEnabled = args.enableHttp;
   }
 
   if (typeof args === 'object' && args.useHttpRootRoutes !== undefined) {
