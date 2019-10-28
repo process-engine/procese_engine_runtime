@@ -27,6 +27,9 @@ let correlationDbQueryInterface: QueryInterface;
 let flowNodeInstanceDbQueryInterface: QueryInterface;
 let processModelDbQueryInterface: QueryInterface;
 
+let processInstances;
+let processModels;
+
 export async function runPostMigrationForV910(): Promise<void> {
   try {
     logger.info('Running Post Migration...');
@@ -41,6 +44,8 @@ export async function runPostMigrationForV910(): Promise<void> {
       return;
     }
 
+    await loadProcessInstances();
+    await loadProcessModels();
     await addNameAndLaneToFlowNodeInstances(flowNodeInstancesToUpdate);
 
     logger.info('Done.');
@@ -91,6 +96,28 @@ async function getFlowNodeInstancesWithoutNameOrLane(): Promise<any> {
   return flowNodeInstances;
 }
 
+async function loadProcessInstances(): Promise<void> {
+
+  const querySqlite = 'SELECT * FROM "Correlations"';
+  const queryPostgres = 'SELECT * FROM public."Correlations"';
+
+  const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
+
+  logger.info('Querying Processinstances');
+  processInstances = (await correlationDbQueryInterface.sequelize.query(query))[0];
+}
+
+async function loadProcessModels(): Promise<void> {
+
+  const querySqlite = 'SELECT * FROM "ProcessDefinitions"';
+  const queryPostgres = 'SELECT * FROM public."ProcessDefinitions"';
+
+  const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
+
+  logger.info('Querying ProcessModels');
+  processModels = (await processModelDbQueryInterface.sequelize.query(query))[0];
+}
+
 async function addNameAndLaneToFlowNodeInstances(flowNodeInstances): Promise<void> {
 
   logger.info('Adding name and lane to each FlowNodeInstance. Depending on the number of records, this may take a while...');
@@ -129,37 +156,17 @@ async function addNameAndLaneToFlowNodeInstances(flowNodeInstances): Promise<voi
 }
 
 async function getProcessInstanceById(processInstanceId): Promise<any> {
-
-  const querySqlite = `SELECT * FROM "Correlations" WHERE "processInstanceId" = '${processInstanceId}'`;
-  const queryPostgres = `SELECT * FROM public."Correlations" WHERE "processInstanceId" = '${processInstanceId}'`;
-
-  const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
-
   logger.info(`Querying Processinstance ${processInstanceId}`);
-  const processInstances = (await correlationDbQueryInterface.sequelize.query(query))[0];
+  const processInstance = processInstances.find((entry): boolean => entry.processInstanceId === processInstanceId);
 
-  if (processInstances.length === 0) {
-    return undefined;
-  }
-
-  return processInstances[0];
+  return processInstance;
 }
 
 async function getProcessDefinitionByHash(hash): Promise<any> {
-
-  const querySqlite = `SELECT * FROM "ProcessDefinitions" WHERE "hash" = '${hash}'`;
-  const queryPostgres = `SELECT * FROM public."ProcessDefinitions" WHERE "hash" = '${hash}'`;
-
-  const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
-
   logger.info(`Querying ProcessModel with hash ${hash}`);
-  const processModels = (await processModelDbQueryInterface.sequelize.query(query))[0];
+  const processModel = processModels.find((entry): boolean => entry.hash === hash);
 
-  if (processModels.length === 0) {
-    return undefined;
-  }
-
-  return processModels[0];
+  return processModel;
 }
 
 function getFlowNodeNameForFlowNodeInstance(flowNodeInstance, processModelFacade): Promise<any> {
