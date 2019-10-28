@@ -78,7 +78,7 @@ async function createConnection(repository, sqliteStoragePath): Promise<QueryInt
 async function getFlowNodeInstancesWithoutNameOrLane(): Promise<any> {
 
   const querySqlite = 'SELECT * FROM "FlowNodeInstances" WHERE "flowNodeName" IS NULL OR "flowNodeLane" IS NULL';
-  const queryPostgres = 'SELECT * FROM public."FlowNodeInstances" AS src; WHERE src."flowNodeName" IS NULL OR src."flowNodeLane" IS NULL';
+  const queryPostgres = 'SELECT * FROM public."FlowNodeInstances" WHERE "flowNodeName" IS NULL OR "flowNodeLane" IS NULL';
 
   const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
 
@@ -131,7 +131,7 @@ async function addNameAndLaneToFlowNodeInstances(flowNodeInstances): Promise<voi
 async function getProcessInstanceById(processInstanceId): Promise<any> {
 
   const querySqlite = `SELECT * FROM "Correlations" WHERE "processInstanceId" = '${processInstanceId}'`;
-  const queryPostgres = `SELECT * FROM public."Correlations" AS src; WHERE src."processInstanceId" = '${processInstanceId}'`;
+  const queryPostgres = `SELECT * FROM public."Correlations" WHERE "processInstanceId" = '${processInstanceId}'`;
 
   const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
 
@@ -148,7 +148,7 @@ async function getProcessInstanceById(processInstanceId): Promise<any> {
 async function getProcessDefinitionByHash(hash): Promise<any> {
 
   const querySqlite = `SELECT * FROM "ProcessDefinitions" WHERE "hash" = '${hash}'`;
-  const queryPostgres = `SELECT * FROM public."ProcessDefinitions" AS src; WHERE src."hash" = '${hash}'`;
+  const queryPostgres = `SELECT * FROM public."ProcessDefinitions" WHERE "hash" = '${hash}'`;
 
   const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
 
