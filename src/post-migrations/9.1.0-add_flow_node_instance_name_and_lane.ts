@@ -119,7 +119,7 @@ async function checkIfMigrationWasRun(): Promise<boolean> {
 
 async function getFlowNodeInstancesWithoutNameOrLane(): Promise<any> {
 
-  const querySqlite = 'SELECT * FROM "FlowNodeInstances" WHERE "flowNodeName" IS NULL OR "flowNodeLane" IS NULL';
+  const querySqlite = 'SELECT * FROM FlowNodeInstances WHERE flowNodeName IS NULL OR flowNodeLane IS NULL';
   const queryPostgres = 'SELECT * FROM public."FlowNodeInstances" WHERE "flowNodeName" IS NULL OR "flowNodeLane" IS NULL';
 
   const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
@@ -135,7 +135,7 @@ async function getFlowNodeInstancesWithoutNameOrLane(): Promise<any> {
 
 async function loadProcessInstances(): Promise<void> {
 
-  const querySqlite = 'SELECT * FROM "Correlations"';
+  const querySqlite = 'SELECT * FROM Correlations';
   const queryPostgres = 'SELECT * FROM public."Correlations"';
 
   const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
@@ -146,7 +146,7 @@ async function loadProcessInstances(): Promise<void> {
 
 async function loadProcessModels(): Promise<void> {
 
-  const querySqlite = 'SELECT * FROM "ProcessDefinitions"';
+  const querySqlite = 'SELECT * FROM ProcessDefinitions';
   const queryPostgres = 'SELECT * FROM public."ProcessDefinitions"';
 
   const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
@@ -239,8 +239,13 @@ async function setLaneAndNameForFlowNodeInstance(flowNodeInstance, name, lane): 
   const flowNodeName = name ? name.replace(/'/g, '\'\'') : name;
   const flowNodeLane = lane ? lane.replace(/'/g, '\'\'') : lane;
 
-  const query = `UPDATE "FlowNodeInstances" SET "flowNodeName" = '${flowNodeName}',
+  const querySqlite = `UPDATE FlowNodeInstances SET flowNodeName = '${flowNodeName}',
+   flowNodeLane = '${flowNodeLane}' WHERE id = ${flowNodeInstance.id}`;
+
+  const queryPostgres = `UPDATE public"FlowNodeInstances" SET "flowNodeName" = '${flowNodeName}',
    "flowNodeLane" = '${flowNodeLane}' WHERE "id" = ${flowNodeInstance.id}`;
+
+  const query = nodeEnvIsPostgres ? queryPostgres : querySqlite;
 
   await flowNodeInstanceDbQueryInterface.sequelize.query(query);
 }
