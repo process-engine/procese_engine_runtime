@@ -177,7 +177,7 @@ The `startRuntime` function takes an object with the following optional paramete
 - `enableHttp`: If set to true, all HTTP endpoints the ProcessEngineRuntime uses will be loaded
     - Use `false` to prevent the ProcessEngineRuntime from providing HTTP endpoints
     - Defaults to `true`
-- `useRootRoutes`: If set to `true`, the routes `/` and `/security/authority` will be set by the ProcessEngineRuntime
+- `useHttpRootRoutes`: If set to `true`, the routes `/` and `/security/authority` will be set by the ProcessEngineRuntime
     - Set to `false` if you want to use these routes for other purposes
     - Defaults to `true`
 
@@ -196,7 +196,7 @@ await ProcessEngine.startRuntime({
   container: myInvocationContainer,
   minimalSetup: true,
   enableHttp: false,
-  useRootRoutes: false,
+  useHttpRootRoutes: false,
 });
 ```
 
