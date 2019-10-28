@@ -2,17 +2,16 @@
 
 This is a stand-alone Server of the ProcessEngine, that can be installed and started globally.
 
-## What are the goals of this project?
+## What are the goals of this project
 
-The goal is to provide a runtime for local development utilizing the Process
-Engine.
+The goal is to provide a ready-to-use environment for utilizing the ProcessEngine.
 
-### Requirements
+## Requirements
 
-- Node >= `7.6.0`
+- Node >= `10.15.0`
 - Python 2.7.x
 
-### Setup/Installation
+## Setup/Installation
 
 Install the runtime as a global npm package:
 
@@ -22,20 +21,16 @@ npm install -g @process-engine/process_engine_runtime
 
 __Note:__ If you experience problems during installation on Windows, you can try
 installing the [Windows Build
-Tools](https://www.npmjs.com/package/windows-build-tools) and run the above
-installation command again.
-Please make sure that you run the shell you use for
-the installation as **Administrator**.
+Tools](https://www.npmjs.com/package/windows-build-tools) and run the installation command again.
+Please make sure that you run the shell you use for the installation as **Administrator**.
 
-Also, each full release provides ready-to-use source files for each platform.
+Also, each full release provides ready-to-use source files for each supported platform.
 These are stored in a `.tar.gz` archive (for macOS and Linux) and a zip file (for windows).
 
 All these sources have been fully installed and build.
 You only need to download and unpack them and you are good to go.
 
-## How to use this project
-
-### Starting the ProcessEngineRuntime
+## Starting the ProcessEngineRuntime
 
 You can start the application with the following command:
 
@@ -78,10 +73,10 @@ The route `http://localhost:8000/process_engine` ensures that the studio can do 
 In other words: These routes allow you to access an embedded ProcessEngine through BPMN Studio.
 
 **Note:**
-See the [Other startup parameters](#other_startup_parameters) section for instructions
+See the [Other Environment Parameters](#other_environment_parameters) section for instructions
 on how to prevent the ProcessEngine from using these global routes.
 
-#### Switching the database
+### Switching the database
 
 By default, the ProcessEngine will use `SQLite` as its database.
 
@@ -107,7 +102,7 @@ See:
 **Note:**
 Switching to MySQL or Postgres requires an instance of the respective database to be running and accessible!
 
-#### Customized Configuration
+### Customized Configuration
 
 By default, the runtime will use a set of configurations located within an integrated `config`
 folder.
@@ -152,7 +147,7 @@ The full start command will then look like this:
 - Linux: `CONFIG_PATH=/home/{{YOUR_USERNAME}}/runtime NODE_ENV=production process-engine`
 - Windows: `CONFIG_PATH=C:\Users\{{YOUR_USERNAME}}\runtime NODE_ENV=production process-engine`
 
-#### Other startup parameters
+### Other Environment Parameters
 
 There are various other parameters you can provide at startup:
 
@@ -163,16 +158,62 @@ There are various other parameters you can provide at startup:
   This can be useful, if you are embedding the ProcessEngine into another web application,
   where you would usually want to reserve such routes for your own purposes
 
-### Automatically starting the ProcessEngineRuntime on system startup
+## Embedding the ProcessEngineRuntime into another application
+
+The ProcessEngineRuntime is published at npm with the name `@process-engine/process_engine_runtime`.
+
+You can install the package into your own application with `npm i @process-engine/process_engine_runtime`, like you would any other npm package.
+
+To start the runtime, you need to run this command once:
+
+```ts
+import * as ProcessEngine from '@process-engine/process_engine_runtime';
+
+await ProcessEngine.startRuntime(args);
+```
+
+### Parameters
+
+The `startRuntime` function takes an object with the following optional parameters:
+
+- workDir: A path to where the runtime will store its working data (i.e. 'workspace'). The path must be absolute.
+- sqlitePath: A path to where the runtime should store its SQlite databases
+    - Works in conjunction with `NODE_ENV=sqlite`
+    - The path must be absolute
+- logFilePath: A path to where the runtime should store its logfiles. The path must be absolute.
+- container: An `addict-ioc` InvocationContainer, where the runtime should register its dependencies at
+- minimalSetup: If set to true, the runtime will only perform ioc registrations, but nothing else.
+  Use this, if you use a customized startup that is not compatible with the runtime's own startup routine
+
+Example:
+
+```ts
+import {InvocationContainer} from 'addict-ioc';
+import * as ProcessEngine from '@process-engine/process_engine_runtime';
+
+const myInvocationContainer = new InvocationContainer();
+
+await ProcessEngine.startRuntime({
+  workDir: `/home/myfancyusername/somedirectory`,
+  sqlitePath: `/var/lib/somepath`,
+  logFilePath: `var/log/somepath`,
+  container: myInvocationContainer,
+  minimalSetup: true,
+});
+```
+
+## Automatically starting the ProcessEngineRuntime on system startup
+
+We provide scripts that let you start the ProcessEngineRuntime automatically as a service.
+
+Currently supported platforms are `macOS` and `windows`.
 
 **macOS**
 
-In order to start the ProcessEngine on system start, we provide a script.
-
 There are two scripts:
 
-1. start_runtime_after_system_boot.sh
-1. do_not_start_runtime_after_system_boot.sh
+1. `start_runtime_after_system_boot.sh` - Causes the ProcessEngineRuntime to be started automatically as a service
+1. `do_not_start_runtime_after_system_boot.sh` - Prevents the ProcessEngineRuntime from being started automatically
 
 If you installed Node.js as a standalone application, you can find the scripts
 at:
@@ -188,13 +229,13 @@ find the scripts at:
 /Users/{{YOUR_USERNAME}}/.nvm/versions/node/{{YOUR_NODE_VERSION}}/lib/node_modules/@process-engine/process_engine_runtime/scripts/autostart
 ```
 
-Use:
+Usage:
 
 ```bash
 bash autostart/start_runtime_after_system_boot.sh
 ```
 
-This will use pm2 to setup the ProcessEngine as automatically started service.
+ The scripts use pm2 to setup the ProcessEngine as an automatically started service.
 
 __Note:__ Currently the `do_not_start_runtime_after_system_boot.sh`-script
 doesn't work under macOS due to a bug in a third party package. As soon as the
@@ -202,35 +243,24 @@ bug is fixed, we will update the script and release a fix.
 
 **Windows**
 
-In order to start the ProcessEngine on system start, we provide a script.
+We also provide `.bat` scripts to setup the Runtime as a global service on windows.
 
-There are two scripts:
-
-1. start_runtime_after_system_boot.bat
-1. do_not_start_runtime_after_system_boot.bat
-
-You can find the scripts at:
+These scripts are located at:
 
 ```
 C:\Users\{{YOUR_USERNAME}}\AppData\Roaming\npm\node_modules\@process-engine\process_engine_runtime\scripts\autostart
 ```
 
-Please make sure to execute the scripts as __Administrator__.
+Make sure you run these scripts as __Administrator__.
 
-If you run the `start_runtime_after_system_boot.bat`-script to automatically
-start the `process_engine_runtime`, you will be asked several questions.
+During execution of the `start_runtime_after_system_boot.bat` script, you will be asked several questions.
 
-Please use the default values on every question by:
-1. Typing `Y` and confirm your choice by pressing the `Enter`-key if it is a
-  yes/no question.
-1. Just pressing the `Enter`-key on all other questions.
+Please use the default values on every question.
 
+1. Typing `Y` and pressing the `Enter`-key for `yes/no` questions
+2. Just pressing the `Enter`-key on all other questions.
 
-**Other Platforms**
-
-Currently we have no scripts for setup the service for autostart.
-
-### Application Files <a name="application_files"></a>
+## Application Files <a name="application_files"></a>
 
 The application files are stored in:
 
@@ -248,7 +278,7 @@ Contained in the application files are the following folders:
 | `logs/`      | Logfiles              |
 | `metrics/`   | Recorded metrics      |
 
-### Authors/Contact information
+## Authors/Contact information
 
 1. [Christian Werner](mailto:christian.werner@5minds.de)
 2. [René Föhring](mailto:rene.foehring@5minds.de)
