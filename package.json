@@ -69,12 +69,12 @@
     ]
   },
   "dependencies": {
-    "@essential-projects/bootstrapper": "3.4.0",
-    "@essential-projects/bootstrapper_node": "3.3.0",
-    "@essential-projects/event_aggregator": "4.1.0",
-    "@essential-projects/http": "2.4.0",
-    "@essential-projects/http_extension": "6.7.0",
-    "@essential-projects/timing": "5.0.0",
+    "@essential-projects/bootstrapper": "3.4.2",
+    "@essential-projects/bootstrapper_node": "3.3.2",
+    "@essential-projects/event_aggregator": "4.1.2",
+    "@essential-projects/http": "2.4.2",
+    "@essential-projects/http_extension": "6.7.2",
+    "@essential-projects/timing": "5.0.2",
     "@process-engine/consumer_api_core": "6.2.0-alpha.11",
     "@process-engine/consumer_api_http": "5.2.0-alpha.2",
     "@process-engine/iam": "1.7.1",
