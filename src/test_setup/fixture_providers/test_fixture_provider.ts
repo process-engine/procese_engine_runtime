@@ -25,6 +25,8 @@ import {configureGlobalRoutes} from '../../modules/global_route_configurator';
 
 const logger = Logger.createLogger('test:bootstrapper');
 
+process.on('unhandledRejection', (err: Error): void => logger.error('Unhandled Rejection Error: ', err));
+
 export type IdentityCollection = {[userName: string]: IIdentity};
 
 export class TestFixtureProvider {
