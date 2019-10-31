@@ -572,15 +572,6 @@ pipeline {
         }
       }
     }
-    stage('Pack Runtime') {
-      steps  {
-        unstash('linux_sources')
-        sh('npm run create-tarball')
-
-        stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'packed_runtime')
-        archiveArtifacts('process_engine_runtime_linux.tar.gz')
-      }
-    }
     stage('Build Docker') {
       when {
         allOf {
@@ -595,7 +586,10 @@ pipeline {
         }
       }
       steps {
+        unstash('linux_application_package')
+
         script {
+          linux_application_package
           def docker_image_name = '5minds/process_engine_runtime';
           def docker_node_version = '10-alpine';
 
