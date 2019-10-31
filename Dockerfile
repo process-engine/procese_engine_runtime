@@ -8,11 +8,11 @@ RUN apk add --no-cache tini python make g++
 FROM base as process_engine
 
 ARG PROCESS_ENGINE_VERSION
-# Hack to compromise priviliges error https://github.com/npm/npm/issues/17851
-RUN npm config set user 0 &&\
-  npm config set unsafe-perm true
 
-RUN npm install -g @process-engine/process_engine_runtime@${PROCESS_ENGINE_VERSION}
+COPY 'process_engine_runtime_linux.tar.gz' ./
+RUN tar zxvf process_engine_runtime_linux.tar.gz
+
+RUN npm link
 
 # Create release
 FROM process_engine as release
