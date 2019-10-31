@@ -575,10 +575,10 @@ pipeline {
     stage('Pack Runtime') {
       steps  {
         unstash('linux_sources')
-        sh('npm pack')
+        sh('npm run create-tarball')
 
-        stash(includes: 'process-engine-process_engine_runtime-*.tgz', name: 'packed_runtime')
-        archiveArtifacts('process-engine-process_engine_runtime-*.tgz')
+        stash(includes: 'process_engine_runtime_linux.tar.gz', name: 'packed_runtime')
+        archiveArtifacts('process_engine_runtime_linux.tar.gz')
       }
     }
     stage('Build Docker') {
