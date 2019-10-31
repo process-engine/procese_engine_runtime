@@ -582,18 +582,18 @@ pipeline {
       }
     }
     stage('Build Docker') {
-      // when {
-      //   allOf {
-      //     expression {
-      //       currentBuild.result == 'SUCCESS'
-      //     }
-      //     anyOf {
-      //       branch "master"
-      //       branch "beta"
-      //       branch "develop"
-      //     }
-      //   }
-      // }
+      when {
+        allOf {
+          expression {
+            currentBuild.result == 'SUCCESS'
+          }
+          anyOf {
+            branch "master"
+            branch "beta"
+            branch "develop"
+          }
+        }
+      }
       steps {
         script {
           def docker_image_name = '5minds/process_engine_runtime';
@@ -616,18 +616,18 @@ pipeline {
       }
     }
     stage('Publish Docker') {
-      // when {
-      //   allOf {
-      //     expression {
-      //       currentBuild.result == 'SUCCESS'
-      //     }
-      //     anyOf {
-      //       branch "master"
-      //       branch "beta"
-      //       branch "develop"
-      //     }
-      //   }
-      // }
+      when {
+        allOf {
+          expression {
+            currentBuild.result == 'SUCCESS'
+          }
+          anyOf {
+            branch "master"
+            branch "beta"
+            branch "develop"
+          }
+        }
+      }
       steps {
         script {
           try {
