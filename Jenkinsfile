@@ -601,7 +601,7 @@ pipeline {
 
           def process_engine_version = full_release_version_string
 
-          full_image_name = "${docker_image_name}:${process_engine_version}";
+          full_image_name = "${docker_image_name}:${process_engine_version}-test";
 
           sh("docker build --build-arg NODE_IMAGE_VERSION=${docker_node_version} \
                           --build-arg PROCESS_ENGINE_VERSION=${process_engine_version} \
@@ -615,7 +615,7 @@ pipeline {
         }
       }
     }
-    // stage('Publish Docker') {
+    stage('Publish Docker') {
       // when {
       //   allOf {
       //     expression {
@@ -628,20 +628,20 @@ pipeline {
       //     }
       //   }
       // }
-    //   steps {
-    //     script {
-    //       try {
-    //         def process_engine_version = full_release_version_string
+      steps {
+        script {
+          try {
+            def process_engine_version = full_release_version_string
 
-    //         withDockerRegistry([ credentialsId: "5mio-docker-hub-username-and-password" ]) {
-    //           docker_image.push("${process_engine_version}");
-    //         }
-    //       } finally {
-    //         sh("docker rmi ${full_image_name} || true");
-    //       }
-    //     }
-    //   }
-    // }
+            withDockerRegistry([ credentialsId: "5mio-docker-hub-username-and-password" ]) {
+              docker_image.push("${process_engine_version}");
+            }
+          } finally {
+            sh("docker rmi ${full_image_name} || true");
+          }
+        }
+      }
+    }
     stage('Cleanup') {
       when {
         expression {buildIsRequired == true}
