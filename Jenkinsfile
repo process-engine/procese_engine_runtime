@@ -589,7 +589,6 @@ pipeline {
         unstash('linux_application_package')
 
         script {
-          linux_application_package
           def docker_image_name = '5minds/process_engine_runtime';
           def docker_node_version = '10-alpine';
 
