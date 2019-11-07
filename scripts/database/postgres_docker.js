@@ -11,8 +11,8 @@ const dbUserPassword = 'admin';
 const dbName = 'processengine';
 const dbPort = 5432;
 
-const dbDockerImageName = 'process_engine_postrgres';
-const dbContainerName = 'process_engine_postrgres_container';
+const dbDockerImageName = 'process_engine_postgres';
+const dbContainerName = 'process_engine_postgres_container';
 const dbVolumeName = 'process_engine_postgres_volume';
 
 let logPath = '/dev/null';
