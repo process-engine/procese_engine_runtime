@@ -30,3 +30,11 @@ node_modules
 Dockerfile
 Jenkinsfile
 .github
+.eslintignore
+.eslintrc
+.editorconfig
+reinstall.sh
+bpmn
+test
+src
+tsconfig.json
