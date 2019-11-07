@@ -13,57 +13,30 @@ export async function migrate(repositoryName: string, sqlitePath: string): Promi
 
   const env = process.env.NODE_ENV || 'sqlite';
 
-  const fullSqlitePath = environment.getSqliteStoragePath(sqlitePath);
-
-  const repositoryConfigFileName = `${repositoryName}_repository.json`;
-
-  let sequelizeInstanceConfig: Sequelize.Options;
-
-  switch (env) {
-    case 'test-mysql':
-    case 'mysql':
-      sequelizeInstanceConfig = getMysqlConfig(repositoryConfigFileName);
-      break;
-    case 'test-postgres':
-    case 'postgres':
-      sequelizeInstanceConfig = getPostgresConfig(repositoryConfigFileName);
-      break;
-    case 'test-sqlite':
-    case 'sqlite':
-      sequelizeInstanceConfig = getSQLiteConfig(fullSqlitePath, repositoryConfigFileName);
-      break;
-    default:
-      sequelizeInstanceConfig = environment.readConfigFile(env, repositoryConfigFileName);
-  }
+  const sequelizeInstanceConfig = getConfig(env, repositoryName, sqlitePath);
 
   const sequelizeInstance = await sequelizeConnectionManager.getConnection(sequelizeInstanceConfig);
 
-  const umzugInstance = await createUmzugInstance(sequelizeInstance, repositoryName);
+  const umzugInstance = await createUmzugInstance(sequelizeInstance, repositoryName, sequelizeInstanceConfig.dialect);
   await umzugInstance.up();
 
   await sequelizeConnectionManager.destroyConnection(sequelizeInstanceConfig);
 }
 
-function getMysqlConfig(configFileName: string): object {
-  return environment.readConfigFile('mysql', configFileName);
+function getConfig(env: string, repositoryName: string, sqlitePath?: string): Sequelize.Options {
+
+  const repositoryConfigFileName = `${repositoryName}_repository.json`;
+  const config = environment.readConfigFile(env, repositoryConfigFileName);
+
+  if (config.dialect === 'sqlite') {
+    const fullSqlitePath = environment.getSqliteStoragePath(sqlitePath);
+    config.storage = path.resolve(fullSqlitePath, config.storage);
+  }
+
+  return config;
 }
 
-function getPostgresConfig(configFileName: string): object {
-  return environment.readConfigFile('postgres', configFileName);
-}
-
-function getSQLiteConfig(sqlitePath: string, configFileName: string): object {
-
-  const sqliteConfig = environment.readConfigFile('sqlite', configFileName);
-
-  const databaseFullPath = path.resolve(sqlitePath, sqliteConfig.storage);
-
-  sqliteConfig.storage = `${databaseFullPath}`;
-
-  return sqliteConfig;
-}
-
-async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: string): Promise<Umzug.Umzug> {
+async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: string, dbDialect: string): Promise<Umzug.Umzug> {
 
   // Must go two folders back to get out of /dist/commonjs.
   const rootDirName = path.join(__dirname, '..', '..', '..');
@@ -87,9 +60,7 @@ async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: str
       params: [
         sequelize.getQueryInterface(),
         sequelize.constructor,
-        (): void => {
-          throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.');
-        },
+        dbDialect,
       ],
       path: migrationsPath,
       pattern: /\.js$/,
