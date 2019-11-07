@@ -12,81 +12,42 @@ export async function migrate(repositoryName: string): Promise<void> {
 
   const env = process.env.NODE_ENV || 'test-postgres';
 
-  const repositoryConfigFileName = `${repositoryName}_repository.json`;
-
-  let sequelizeInstanceConfig: Sequelize.Options;
-
-  switch (env) {
-    case 'test-mysql':
-      sequelizeInstanceConfig = getMysqlConfig(repositoryConfigFileName, repositoryName);
-      break;
-    case 'test-postgres':
-      sequelizeInstanceConfig = getPostgresConfig(repositoryConfigFileName, repositoryName);
-      break;
-    case 'test-sqlite':
-      sequelizeInstanceConfig = getSQLiteConfig(repositoryConfigFileName, repositoryName);
-      break;
-    default:
-      throw new Error(`Selected NODE_ENV ${env} is not valid for integration tests!`);
-  }
+  const sequelizeInstanceConfig = getConfig(env, repositoryName);
 
   const sequelizeInstance = await sequelizeConnectionManager.getConnection(sequelizeInstanceConfig);
 
-  const umzugInstance = await createUmzugInstance(sequelizeInstance, repositoryName);
+  const umzugInstance = await createUmzugInstance(sequelizeInstance, repositoryName, sequelizeInstanceConfig.dialect);
   await umzugInstance.up();
 
   await sequelizeConnectionManager.destroyConnection(sequelizeInstanceConfig);
 }
 
-function getMysqlConfig(configFileName: string, repositoryName: string): Sequelize.Options {
+function getConfig(env: string, repositoryName: string): Sequelize.Options {
 
-  let mysqlConfig = readConfigFile('test-mysql', configFileName);
+  const config = readConfigFile(env, `${repositoryName}_repository.json`);
 
-  mysqlConfig = applyCustomHostNameFromEnv(mysqlConfig, repositoryName);
+  if (config.dialect === 'sqlite') {
+    // Jenkins stores its sqlite databases in a separate workspace folder.
+    // We must account for this here.
+    const sqlitePath = process.env.jenkinsDbStoragePath
+      ? `${process.env.jenkinsDbStoragePath}/${repositoryName}.sqlite`
+      : `test/sqlite_repositories/${repositoryName}.sqlite`;
 
-  return mysqlConfig;
-}
-
-function getPostgresConfig(configFileName: string, repositoryName: string): Sequelize.Options {
-
-  let postgresConfig = readConfigFile('test-postgres', configFileName);
-
-  postgresConfig = applyCustomHostNameFromEnv(postgresConfig, repositoryName);
-
-  return postgresConfig;
-}
-
-function getSQLiteConfig(configFileName: string, repositoryName: string): Sequelize.Options {
-
-  const sqliteConfig = readConfigFile('test-sqlite', configFileName);
-
-  // Jenkins stores its sqlite databases in a separate workspace folder.
-  // We must account for this here.
-  const sqlitePath = process.env.jenkinsDbStoragePath
-    ? `${process.env.jenkinsDbStoragePath}/${repositoryName}.sqlite`
-    : `test/sqlite_repositories/${repositoryName}.sqlite`;
-
-  sqliteConfig.storage = `${sqlitePath}`;
-
-  return sqliteConfig;
-}
-
-function applyCustomHostNameFromEnv(config: Sequelize.Options, repositoryName: string): Sequelize.Options {
+    config.storage = sqlitePath;
+  }
 
   // Jenkins uses customized host names for mysql and postgres. We need to account for that fact here,
   // or the migrations will fail.
   const customHostName = process.env[`process_engine__${repositoryName}_repository__host`];
 
-  const customHostNameSet = customHostName !== undefined;
-  if (customHostNameSet) {
-    // eslint-disable-next-line
+  if (customHostName !== undefined) {
     config.host = customHostName;
   }
 
   return config;
 }
 
-async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: string): Promise<Umzug.Umzug> {
+async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: string, dbDialect: string): Promise<Umzug.Umzug> {
 
   let dirNameNormalized = path.normalize(process.cwd());
   const appAsarPathPart = path.normalize(path.join('.', 'app.asar'));
@@ -107,9 +68,7 @@ async function createUmzugInstance(sequelize: Sequelize.Sequelize, database: str
       params: [
         sequelize.getQueryInterface(),
         sequelize.constructor,
-        (): void => {
-          throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.');
-        },
+        dbDialect,
       ],
       path: migrationsPath,
       pattern: /\.js$/,
