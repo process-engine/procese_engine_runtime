@@ -7,7 +7,7 @@
 // Changes between 1.2.0 and 2.0.0:
 // - Added new column: parentProcessInstanceId
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize, dialect) => {
 
     console.log('Running updating migrations');
 

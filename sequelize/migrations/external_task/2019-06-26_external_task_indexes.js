@@ -6,7 +6,7 @@
 // CHANGE NOTES:
 // - Adding indexes to ExternalTask table for each commonly used query operation
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize, dialect) => {
 
     console.log('Adding indexes to ExternalTask table for each commonly used query operation');
 

@@ -8,7 +8,7 @@
 // - The column eventType was added to store an FNIs BPMN EvntType (Message, Signal, etc.)
 // - The column previousFlowNodeInstanceId was added to store an FNIs BPMN type
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize, dialect) => {
 
     console.log('Running updating migrations');
 

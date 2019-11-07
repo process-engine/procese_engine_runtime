@@ -8,7 +8,7 @@
 // Added the "version" column.
 // Added the "processModelId" column.
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize, dialect) => {
 
     console.log('Running updating migrations');
 

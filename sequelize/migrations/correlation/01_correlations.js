@@ -7,7 +7,7 @@
 // Changes between 1.0.0 and 1.2.0:
 // - Added new columns: identity, processModelId and processInstanceId
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize, dialect) => {
 
     console.log('Running updating migrations');
 

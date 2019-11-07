@@ -12,11 +12,11 @@
 //    - identity
 //    - callerId => was renamend to "parentProcessInstanceId"
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize, dialect) => {
 
     console.log('Running updating migrations');
 
-    const environmentIsPostgres = process.env.NODE_ENV === 'postgres' || process.env.NODE_ENV === 'test-postgres';
+    const environmentIsPostgres = dialect === 'postgres' || dialect === 'test-postgres';
 
     console.log('Moving unique ID columns from ProcessTokens table to FlowNodeInstance table.');
 

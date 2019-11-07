@@ -8,7 +8,7 @@
 // - Remove custom definition for primaryKey column "id"
 // - Use a column based on what Sequelize auto-generates
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize, dialect) => {
 
     console.log('Running updating migrations');
 
@@ -21,7 +21,7 @@ module.exports = {
       return;
     }
 
-    const environmentIsPostgres = process.env.NODE_ENV === 'postgres' || process.env.NODE_ENV === 'test-postgres';
+    const environmentIsPostgres = dialect === 'postgres' || dialect === 'test-postgres';
 
     console.log('Changing PrimaryKey column ID to integer based column');
 

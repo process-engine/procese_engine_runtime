@@ -6,7 +6,7 @@
 // CHANGE NOTES:
 // - Change type of column "error" to "TEXT", since "STRING" is insufficent when used in conjunction with postgres.
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize, dialect) => {
 
     console.log('Changing type of "error" column to TEXT');
 

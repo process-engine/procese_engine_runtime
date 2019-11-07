@@ -8,7 +8,7 @@
 // - Remove custom definition for primaryKey column "id" for ProcessTokens and FlowNodeInstances
 // - Use a column based on what Sequelize auto-generates for both tables
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize, dialect) => {
 
     console.log('Running updating migrations');
 
@@ -23,7 +23,7 @@ module.exports = {
       return;
     }
 
-    const environmentIsPostgres = process.env.NODE_ENV === 'postgres' || process.env.NODE_ENV === 'test-postgres';
+    const environmentIsPostgres = dialect === 'postgres' || dialect === 'test-postgres';
 
     if (!processTokenIdHasMatchingType) {
       console.log('Changing PrimaryKey column ID of ProcessToken table to integer based column');

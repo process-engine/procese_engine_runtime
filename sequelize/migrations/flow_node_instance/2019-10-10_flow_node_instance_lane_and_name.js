@@ -6,7 +6,7 @@
 // CHANGE NOTES:
 // - Adding 'flowNodeName' and 'flowNodeLane' to FlowNodeInstance table.
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize, dialect) => {
 
     console.log('Running updating migrations');
 

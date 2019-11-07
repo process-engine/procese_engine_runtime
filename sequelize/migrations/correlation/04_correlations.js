@@ -7,7 +7,7 @@
 // Changes for version 4.0.0:
 // - Added new state and error columns to the Correlation data model.
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize, dialect) => {
 
     console.log('Running updating migrations');
 
