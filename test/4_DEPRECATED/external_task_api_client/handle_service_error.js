@@ -167,7 +167,7 @@ describe('DEPRECATED - ExternalTask API Client:  ExternalTask Service Error', ()
     should(externalTask.state).be.equal('finished');
     should(externalTask).have.property('error');
     should(externalTask.error.message).be.match(/red alert/i);
-    should(externalTask.error._additionalInformation).be.equal(errorDetails); //eslint-disable-line
+    should(externalTask.error.additionalInformation).be.equal(errorDetails); //eslint-disable-line
 
     should(externalTask).have.property('flowNodeInstanceId');
     should(externalTask).have.property('correlationId');
