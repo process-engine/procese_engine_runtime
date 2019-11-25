@@ -319,7 +319,7 @@ jobs:
         GH_USER: ${{ secrets.GH_USER }}
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-build_docker:
+  build_docker:
     name: "Build & Publish Docker Image"
     needs: prepare_and_tag_version
     runs-on: ubuntu-18.04
