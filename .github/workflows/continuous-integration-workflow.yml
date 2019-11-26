@@ -208,10 +208,7 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: windows_installer_results
-        path: installer/Output/**.exe
-
-        #path: installer\\Output\\*.exe
-        # geht das so?
+        path: installer/Output
 
   prepare_and_tag_version:
     name: "Commit & Tag Version"
