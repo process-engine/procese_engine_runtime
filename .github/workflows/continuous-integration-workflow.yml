@@ -194,7 +194,7 @@ jobs:
       run: npm run build-windows-executable
 
     - name: Build Installer
-      run: iscc /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss
+      run: iscc /DProcessEngineRuntimeVersion=%full_release_version_string% installer\\inno-installer.iss
       shell: cmd
       env:
         full_release_version_string: ${{ steps.package_version.outputs.version }}
@@ -204,7 +204,9 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: windows_installer_results
-        path: installer\\Output\\*.exe
+        path: installer/Output/*.exe
+
+        #path: installer\\Output\\*.exe
         # geht das so?
 
   prepare_and_tag_version:
