@@ -109,6 +109,7 @@ pipeline {
       }
     }
     stage('Prepare version') {
+      options {skipDefaultCheckout()}
       when {
         expression {buildIsRequired == true}
       }
@@ -132,6 +133,7 @@ pipeline {
       }
     }
     stage('Installation & Build') {
+      options {skipDefaultCheckout()}
       when {
         expression {buildIsRequired == true}
       }
@@ -384,6 +386,7 @@ pipeline {
       }
     }
     stage('Check test results & notify Slack') {
+      options {skipDefaultCheckout()}
       when {
         expression {buildIsRequired == true}
       }
@@ -424,6 +427,7 @@ pipeline {
       }
     }
     stage('Commit & tag version') {
+      options {skipDefaultCheckout()}
       when {
         allOf {
           expression {buildIsRequired == true}
@@ -445,6 +449,7 @@ pipeline {
       }
     }
     stage('Publish to npm') {
+      options {skipDefaultCheckout()}
       when {
         allOf {
           expression {buildIsRequired == true}
@@ -472,7 +477,6 @@ pipeline {
           }
         }
       }
-      options {skipDefaultCheckout()}
       parallel {
         stage('Create tarball from linux sources') {
           agent {label 'linux'}
@@ -573,6 +577,7 @@ pipeline {
       }
     }
     stage('Build Docker') {
+      options {skipDefaultCheckout()}
       when {
         allOf {
           expression {
@@ -609,6 +614,7 @@ pipeline {
       }
     }
     stage('Publish Docker') {
+      options {skipDefaultCheckout()}
       when {
         allOf {
           expression {
