@@ -311,7 +311,11 @@ jobs:
         path: "dist"
 
     - name: Test
-      run: ls -la
+      run: |
+        ls -la
+        cd dist
+        ls -la
+        pwd
 
     - name: Install ci tools
       #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
@@ -349,7 +353,7 @@ jobs:
       uses: actions/download-artifact@master
       with:
         name: process_engine_runtime_linux_tar
-        path: "dist"
+        path: "."
 
     - name: Get package version
       run: echo "##[set-output name=version;]$(node --print --eval "require('./package.json').version")"
