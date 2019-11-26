@@ -205,7 +205,7 @@ jobs:
 
   prepare_and_tag_version:
     name: "Commit & Tag Version"
-    needs: lint_linux
+    needs: [lint_linux, build_windows_installer, create_sources_windows, create_sources_linux, create_sources_macos]
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@master
