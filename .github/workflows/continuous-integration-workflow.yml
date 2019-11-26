@@ -57,6 +57,34 @@ jobs:
         ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/
     - run: npm run lint
 
+
+  runtime_tests:
+    name: "Test with MySQL"
+    needs: prepare_version
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Unstash package.json
+    uses: actions/download-artifact@master
+    with:
+      name: package_json
+      path: "."
+
+    - name: Install npm dependencies
+      run: |
+        cat package.json
+        npm ci
+        ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/
+
+    - name: Build
+      run: |
+        npm run build
+        npm rebuild
+
+    - name: Run tests
+      run: npm run test-all
+
   create_sources_linux:
     name: "Create tarball from linux sources"
     needs: prepare_version
