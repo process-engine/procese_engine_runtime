@@ -326,10 +326,10 @@ jobs:
       run: |
         ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag
         ./node_modules/.bin/ci_tools update-github-release \
-                              --assets "installer/Output/*.exe" \
-                              --assets process_engine_runtime_macos.tar.gz \
-                              --assets process_engine_runtime_linux.tar.gz \
-                              --assets process_engine_runtime_windows.zip
+                              --assets dist/Install ProcessEngine Runtime**.exe \
+                              --assets dist/process_engine_runtime_macos.tar.gz \
+                              --assets dist/process_engine_runtime_linux.tar.gz \
+                              --assets dist/process_engine_runtime_windows.zip
       env:
         GH_USER: ${{ secrets.GH_USER }}
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
