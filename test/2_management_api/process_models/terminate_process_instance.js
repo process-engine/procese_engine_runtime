@@ -47,11 +47,9 @@ describe(`ManagementAPI: POST  ->  /process_instance/:process_instance_id/termin
 
     await testFixtureProvider.managementApiClient.terminateProcessInstance(defaultIdentity, startResult.processInstanceId);
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 250));
 
-    const list = await testFixtureProvider.managementApiClient.getUserTasksForProcessInstance(defaultIdentity, startResult.processInstanceId);
-
-    should(list.userTasks.length).be.eql(0);
+    await assertProcessTerminationWasSuccessful(startResult.processInstanceId, defaultIdentity);
   });
 
   it('should stop a previously started process instance, if the user is a SuperAdmin.', async () => {
@@ -66,39 +64,48 @@ describe(`ManagementAPI: POST  ->  /process_instance/:process_instance_id/termin
 
     await testFixtureProvider.managementApiClient.terminateProcessInstance(superAdmin, startResult.processInstanceId);
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 250));
 
-    const list = await testFixtureProvider.managementApiClient.getUserTasksForProcessInstance(superAdmin, startResult.processInstanceId);
+    await assertProcessTerminationWasSuccessful(startResult.processInstanceId, defaultIdentity);
 
-    should(list.userTasks.length).be.eql(0);
+    await assertProcessTerminationWasSuccessful(startResult.processInstanceId, defaultIdentity);
   });
 
-  it('should send an onProcessTerminated notification', async () => {
+  it('should fail to terminate a ProcessInstance for a normal user, when the ProcessInstance belongs to another user', async () => {
 
-    return new Promise(async (resolve, reject) => {
-
-      const returnOn = StartCallbackType.CallbackOnProcessInstanceCreated;
-      const payload = {};
-
+    try {
       const startResult = await testFixtureProvider
         .managementApiClient
-        .startProcessInstance(defaultIdentity, processModelId, payload, returnOn);
+        .startProcessInstance(superAdmin, processModelId, {}, StartCallbackType.CallbackOnProcessInstanceCreated);
 
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(startResult.correlationId);
 
-      const messageReceivedCallback = (processTerminatedMessage) => {
-        should(processTerminatedMessage.processInstanceId).be.equal(startResult.processInstanceId);
-        resolve();
-      };
+      await testFixtureProvider.managementApiClient.terminateProcessInstance(defaultIdentity, startResult.processInstanceId);
 
-      const subscribeOnce = true;
+      should.fail('processModel', undefined, 'This request should have failed!');
+    } catch (error) {
+      // The 404 is intentional, to hide the existence of the ProcessInstance from the user entirely.
+      const expectedErrorMessage = /not found/i;
+      const expectedErrorCode = 404;
+      should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.equal(expectedErrorCode);
+    }
+  });
+
+  it('should fail to terminate a ProcessInstance, when the ProcessInstance does not exist', async () => {
+
+    try {
       await testFixtureProvider
         .managementApiClient
-        .onProcessTerminated(defaultIdentity, messageReceivedCallback, subscribeOnce);
+        .terminateProcessInstance(defaultIdentity, 'randomprocessInstanceId');
 
-      await testFixtureProvider.managementApiClient.terminateProcessInstance(superAdmin, startResult.processInstanceId);
-    });
-
+      should.fail('processModel', undefined, 'This request should have failed!');
+    } catch (error) {
+      const expectedErrorMessage = /No correlations.*?found/i;
+      const expectedErrorCode = 404;
+      should(error.message).be.match(expectedErrorMessage);
+      should(error.code).be.equal(expectedErrorCode);
+    }
   });
 
   it('should fail to terminate a ProcessInstance, when the user is unauthorized', async () => {
@@ -136,5 +143,16 @@ describe(`ManagementAPI: POST  ->  /process_instance/:process_instance_id/termin
       should(error.code).be.equal(expectedErrorCode);
     }
   });
+
+  async function assertProcessTerminationWasSuccessful(processInstanceId, expectedOwnerIdentity) {
+
+    const list = await testFixtureProvider.managementApiClient.getUserTasksForProcessInstance(superAdmin, processInstanceId);
+    should(list.userTasks.length).be.eql(0);
+
+    const processInstance = await testFixtureProvider.managementApiClient.getProcessInstanceById(superAdmin, processInstanceId);
+
+    should(processInstance.state).be.equal('error');
+    should(processInstance.identity).be.eql(expectedOwnerIdentity);
+  }
 
 });
