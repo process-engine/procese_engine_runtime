@@ -77,7 +77,7 @@
     "@essential-projects/timing": "5.0.2",
     "@process-engine/consumer_api_core": "6.2.0",
     "@process-engine/consumer_api_http": "5.2.0",
-    "@process-engine/iam": "feature~increase_log_verbosity",
+    "@process-engine/iam": "1.7.3",
     "@process-engine/logging_api_core": "2.0.0",
     "@process-engine/logging.repository.file_system": "2.0.0",
     "@process-engine/management_api_core": "6.2.0",
