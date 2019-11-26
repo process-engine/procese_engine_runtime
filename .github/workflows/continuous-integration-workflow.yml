@@ -66,10 +66,10 @@ jobs:
     - uses: actions/checkout@master
 
     - name: Unstash package.json
-    uses: actions/download-artifact@master
-    with:
-      name: package_json
-      path: "."
+      uses: actions/download-artifact@master
+      with:
+        name: package_json
+        path: "."
 
     - name: Install npm dependencies
       run: |
