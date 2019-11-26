@@ -153,7 +153,7 @@ jobs:
       run: |
         npm run build
         npm rebuild
-        npm run create-tarball
+        npm run create-zipfile
 
     - name: Stash Tarball
       #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
