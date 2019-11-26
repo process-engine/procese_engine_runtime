@@ -193,17 +193,15 @@ jobs:
     - name: Build Executable
       run: npm run build-windows-executable
 
-    - name: Log version
-      run: echo %VERSION%
-      shell: cmd
-      env:
-        VERSION: ${{ jobs.prepare_version.steps.package_version.outputs.version }}
+    - name: Get package version
+      run: echo "##[set-output name=version;]$(node --print --eval "require('./package.json').version")"
+      id: package_version
 
     - name: Build Installer
       run: iscc "/DProcessEngineRuntimeVersion=%full_release_version_string%" installer\\inno-installer.iss
       shell: cmd
       env:
-        full_release_version_string: ${{ jobs.prepare_version.steps.package_version.outputs.version }}
+        full_release_version_string: ${{ steps.package_version.outputs.version }}
 
     - name: Stash Installer
       #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
