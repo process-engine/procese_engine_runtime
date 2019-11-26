@@ -184,6 +184,7 @@ jobs:
         ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/
 
     - name: Build
+      shell: cmd
       #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: |
         npm run build
