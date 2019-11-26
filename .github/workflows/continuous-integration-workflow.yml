@@ -194,8 +194,8 @@ jobs:
       run: npm run build-windows-executable
 
     - name: Build Installer
-      run: iscc "/DProcessEngineRuntimeVersion=%full_release_version_string%" installer\\inno-installer.iss
-      shell: cmd
+      run: iscc /DProcessEngineRuntimeVersion=${env:full_release_version_string} installer\\inno-installer.iss
+      shell: pwsh
       env:
         full_release_version_string: ${{ steps.package_version.outputs.version }}
 
