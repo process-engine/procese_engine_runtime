@@ -12,7 +12,8 @@ ARG PROCESS_ENGINE_VERSION
 COPY 'process_engine_runtime_linux.tar.gz' ./
 RUN tar zxvf process_engine_runtime_linux.tar.gz
 
-RUN npm link
+RUN npm prune --production && \
+    npm link --only=production
 
 # Create release
 FROM process_engine as release
