@@ -192,11 +192,15 @@ jobs:
       run: |
         npm run build
         npm rebuild
-        npm run build-windows-executable
-        iscc /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss
+
+    - name: Build Executable
+      run: npm run build-windows-executable
+
+    - name: Build Installer
+      run: iscc /DProcessEngineRuntimeVersion=$full_release_version_string installer\\inno-installer.iss
+      shell: cmd
       env:
         full_release_version_string: ${{ steps.package_version.outputs.version }}
-        ## INNO_SETUP ist installiert.
 
     - name: Stash Installer
       #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
