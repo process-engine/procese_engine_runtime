@@ -109,6 +109,11 @@ jobs:
         npm run build
         npm rebuild
 
+    - name: Start Postgres Docker Container
+      run: |
+        docker run -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=admin -e POSTGRES_DB=processengine -d postgres:11
+        docker ps
+
     - name: Run tests
       run: npm run test-postgres
 
