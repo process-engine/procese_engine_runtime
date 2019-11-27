@@ -43,6 +43,9 @@ describe('ManagementAPI: GetProcessInstancesByState', () => {
       await createSuspendedProcessInstance(defaultIdentity, correlationId);
       await createFinishedProcessInstance(defaultIdentity, correlationId);
       await createFinishedProcessInstance(secondIdentity, correlationId);
+      // TODO - BUG: The ProcessEngine resolves at the same time its state is being persisted in the database.
+      // This can lead to sync errors, unless we allow for some leniency here.
+      await new Promise((resolve) => {setTimeout(resolve, 200)});
     });
 
     after(async () => {
