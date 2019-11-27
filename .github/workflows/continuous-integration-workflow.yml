@@ -444,7 +444,7 @@ jobs:
         name: windows_installer_results
         path: "dist"
 
-      - name: Cache node modules
+    - name: Cache node modules
       uses: actions/cache@v1
       with:
         path: node_modules
