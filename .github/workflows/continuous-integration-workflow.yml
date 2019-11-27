@@ -131,6 +131,7 @@ jobs:
       run: npm run test-postgres
 
     - run: docker ps -a
+      if: always()
 
   test_mysql:
     name: "Test with MySQL"
@@ -171,6 +172,7 @@ jobs:
       run: npm run test-mysql
 
     - run: docker ps -a
+      if: always()
 
   create_sources_linux:
     name: "Create tarball from linux sources"
