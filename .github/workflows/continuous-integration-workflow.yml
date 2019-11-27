@@ -117,6 +117,38 @@ jobs:
     - name: Run tests
       run: npm run test-postgres
 
+  test_mysql:
+    name: "Test with MySQL"
+    needs: prepare_version
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Unstash package.json
+      uses: actions/download-artifact@master
+      with:
+        name: package_json
+        path: "."
+
+    - name: Install npm dependencies
+      run: |
+        cat package.json
+        npm ci
+        ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/
+
+    - name: Build
+      run: |
+        npm run build
+        npm rebuild
+
+    - name: Start MySQL Docker Container
+      run: |
+        docker run -p 3306:3306 --name mysql -e MYSQL_HOST=db -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=processengine -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -d mysql:5
+        docker ps
+
+    - name: Run tests
+      run: npm run test-mysql
+
   create_sources_linux:
     name: "Create tarball from linux sources"
     needs: prepare_version
