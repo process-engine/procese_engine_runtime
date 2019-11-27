@@ -59,7 +59,7 @@ jobs:
 
 
   runtime_tests:
-    name: "Test with MySQL"
+    name: "Test with SQLite"
     needs: prepare_version
     runs-on: ubuntu-18.04
     steps:
@@ -83,7 +83,7 @@ jobs:
         npm rebuild
 
     - name: Run tests
-      run: npm run test-all
+      run: npm run test-sqlite
 
   create_sources_linux:
     name: "Create tarball from linux sources"
