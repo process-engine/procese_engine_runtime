@@ -127,6 +127,9 @@ jobs:
         docker run -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=admin -e POSTGRES_DB=processengine -d postgres:11
         docker ps
 
+    - name: Check online
+      run: PORT=5432 npm run check-online-status
+
     - name: Run tests
       run: npm run test-postgres
 
@@ -169,6 +172,9 @@ jobs:
       run: |
         docker run -p 3306:3306 --name mysql -e MYSQL_HOST=db -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=processengine -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -d mysql:5
         docker ps
+
+    - name: Check online
+      run: PORT=3306 npm run check-online-status
 
     - name: Run tests
       run: npm run test-mysql
