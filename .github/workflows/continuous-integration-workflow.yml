@@ -58,7 +58,7 @@ jobs:
     - run: npm run lint
 
 
-  runtime_tests:
+  test_sqlite:
     name: "Test with SQLite"
     needs: prepare_version
     runs-on: ubuntu-18.04
@@ -84,6 +84,33 @@ jobs:
 
     - name: Run tests
       run: npm run test-sqlite
+
+  test_postgres:
+    name: "Test with Postgres"
+    needs: prepare_version
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Unstash package.json
+      uses: actions/download-artifact@master
+      with:
+        name: package_json
+        path: "."
+
+    - name: Install npm dependencies
+      run: |
+        cat package.json
+        npm ci
+        ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/
+
+    - name: Build
+      run: |
+        npm run build
+        npm rebuild
+
+    - name: Run tests
+      run: npm run test-postgres
 
   create_sources_linux:
     name: "Create tarball from linux sources"
@@ -240,7 +267,7 @@ jobs:
 
   prepare_and_tag_version:
     name: "Commit & Tag Version"
-    needs: [lint_linux, build_windows_installer, create_sources_windows, create_sources_linux, create_sources_macos]
+    needs: [lint_linux, build_windows_installer, create_sources_windows, create_sources_linux, create_sources_macos, test_sqlite, test_postgres]
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@master
