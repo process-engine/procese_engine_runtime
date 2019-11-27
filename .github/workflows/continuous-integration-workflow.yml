@@ -86,11 +86,16 @@ jobs:
         name: package_json
         path: "."
 
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: npm-${{ hashFiles('package-lock.json') }}
+
     - name: Install npm dependencies
       run: |
         cat package.json
-        npm ci
-        ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/
+        npm i
 
     - name: Build
       run: |
@@ -113,16 +118,19 @@ jobs:
         name: package_json
         path: "."
 
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: npm-${{ hashFiles('package-lock.json') }}
+
     - name: Install npm dependencies
       run: |
         cat package.json
-        npm ci
-        ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/
+        npm i
 
     - name: Build
-      run: |
-        npm run build
-        npm rebuild
+      run: npm run build
 
     - name: Start Postgres Docker Container
       run: |
@@ -145,16 +153,19 @@ jobs:
         name: package_json
         path: "."
 
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: npm-${{ hashFiles('package-lock.json') }}
+
     - name: Install npm dependencies
       run: |
         cat package.json
-        npm ci
-        ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/
+        npm i
 
     - name: Build
-      run: |
-        npm run build
-        npm rebuild
+      run: npm run build
 
     - name: Start MySQL Docker Container
       run: |
@@ -178,18 +189,22 @@ jobs:
         name: package_json
         path: "."
 
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: npm-${{ hashFiles('package-lock.json') }}
+
     - name: Install npm dependencies
       #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: |
         cat package.json
-        npm ci
-        ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/
+        npm i
 
     - name: Build
       #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: |
         npm run build
-        npm rebuild
         npm run create-tarball
 
     - name: Stash Tarball
@@ -334,8 +349,14 @@ jobs:
         name: package_json
         path: "."
 
-    - name: Install ci tools
-      run: npm i @process-engine/ci_tools
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: npm-${{ hashFiles('package-lock.json') }}
+
+    - name: Install Dependencies
+      run: npm i
 
     - name: Commit and Tag
       run: |
@@ -361,8 +382,14 @@ jobs:
         name: package_json
         path: "."
 
-    - name: Install ci tools
-      run: npm i @process-engine/ci_tools
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: npm-${{ hashFiles('package-lock.json') }}
+
+    - name: Install Dependencies
+      run: npm i
 
     - name: Publish npm package
       run: ./node_modules/.bin/ci_tools publish-npm-package --create-tag-from-branch-name
@@ -417,6 +444,12 @@ jobs:
         name: windows_installer_results
         path: "dist"
 
+      - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: npm-${{ hashFiles('package-lock.json') }}
+
     - name: Test
       run: |
         ls -la
@@ -424,9 +457,9 @@ jobs:
         ls -la
         pwd
 
-    - name: Install ci tools
+    - name: Install Dependencies
       #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
-      run: npm i @process-engine/ci_tools
+      run: npm i
 
     - name: Upload to GitHub
       if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
