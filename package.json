@@ -19,6 +19,7 @@
     "test-external-sqlite": "cross-env API_ACCESS_TYPE=external NODE_ENV=test-sqlite CONFIG_PATH=config mocha -t 15000 test/**/*.js test/**/**/*.js  --exit",
     "test-internal-postgres": "cross-env API_ACCESS_TYPE=internal NODE_ENV=test-postgres CONFIG_PATH=config mocha -t 15000 test/**/*.js test/**/**/*.js  --exit",
     "test-external-postgres": "cross-env API_ACCESS_TYPE=external NODE_ENV=test-postgres CONFIG_PATH=config mocha -t 15000 test/**/*.js test/**/**/*.js  --exit",
+    "test-internal-mysql": "cross-env API_ACCESS_TYPE=internal NODE_ENV=test-mysql CONFIG_PATH=config mocha -t 15000 test/**/*.js test/**/**/*.js  --exit",
     "test-sqlite": "npm run test-internal-sqlite && npm run test-external-sqlite",
     "test-postgres": "npm run test-internal-postgres && npm run test-external-postgres",
     "test": "npm run test-sqlite",
