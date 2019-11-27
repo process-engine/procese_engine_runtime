@@ -65,11 +65,6 @@ jobs:
         path: node_modules
         key: npm-${{ hashFiles('package-lock.json') }}
 
-    - name: Install npm dependencies
-      run: |
-        cat package.json
-        npm i
-
     - run: npm run lint
       name: Lint sources
 
@@ -91,11 +86,6 @@ jobs:
       with:
         path: node_modules
         key: npm-${{ hashFiles('package-lock.json') }}
-
-    - name: Install npm dependencies
-      run: |
-        cat package.json
-        npm i
 
     - name: Build
       run: |
@@ -123,11 +113,6 @@ jobs:
       with:
         path: node_modules
         key: npm-${{ hashFiles('package-lock.json') }}
-
-    - name: Install npm dependencies
-      run: |
-        cat package.json
-        npm i
 
     - name: Build
       run: npm run build
@@ -159,11 +144,6 @@ jobs:
         path: node_modules
         key: npm-${{ hashFiles('package-lock.json') }}
 
-    - name: Install npm dependencies
-      run: |
-        cat package.json
-        npm i
-
     - name: Build
       run: npm run build
 
@@ -194,12 +174,6 @@ jobs:
       with:
         path: node_modules
         key: npm-${{ hashFiles('package-lock.json') }}
-
-    - name: Install npm dependencies
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
-      run: |
-        cat package.json
-        npm i
 
     - name: Build
       #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
@@ -355,9 +329,6 @@ jobs:
         path: node_modules
         key: npm-${{ hashFiles('package-lock.json') }}
 
-    - name: Install Dependencies
-      run: npm i
-
     - name: Commit and Tag
       run: |
         ./node_modules/.bin/ci_tools commit-and-tag-version --only-on-primary-branches
@@ -387,9 +358,6 @@ jobs:
       with:
         path: node_modules
         key: npm-${{ hashFiles('package-lock.json') }}
-
-    - name: Install Dependencies
-      run: npm i
 
     - name: Publish npm package
       run: ./node_modules/.bin/ci_tools publish-npm-package --create-tag-from-branch-name
@@ -456,10 +424,6 @@ jobs:
         cd dist
         ls -la
         pwd
-
-    - name: Install Dependencies
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
-      run: npm i
 
     - name: Upload to GitHub
       if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
