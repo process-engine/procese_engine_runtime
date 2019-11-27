@@ -158,7 +158,7 @@ jobs:
 
     - name: Start MySQL Docker Container
       run: |
-        docker run -p 3306:3306 --name mysql -e MYSQL_HOST=db -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=processengine -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -d mysql:5
+        docker run -p 3306:3306 --name mysql -e MYSQL_HOST=db -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=processengine -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -d --rm mysql:5
         docker ps
 
     - name: Run tests
