@@ -47,9 +47,9 @@ describe(`ManagementAPI: POST  ->  /process_instance/:process_instance_id/termin
 
     await testFixtureProvider.managementApiClient.terminateProcessInstance(defaultIdentity, startResult.processInstanceId);
 
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-    await assertProcessTerminationWasSuccessful(startResult.processInstanceId, defaultIdentity);
+    await assertProcessTerminationWasSuccessful(startResult.processInstanceId, defaultIdentity, defaultIdentity);
   });
 
   it('should stop a previously started process instance, if the user is a SuperAdmin.', async () => {
@@ -64,11 +64,9 @@ describe(`ManagementAPI: POST  ->  /process_instance/:process_instance_id/termin
 
     await testFixtureProvider.managementApiClient.terminateProcessInstance(superAdmin, startResult.processInstanceId);
 
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-    await assertProcessTerminationWasSuccessful(startResult.processInstanceId, defaultIdentity);
-
-    await assertProcessTerminationWasSuccessful(startResult.processInstanceId, defaultIdentity);
+    await assertProcessTerminationWasSuccessful(startResult.processInstanceId, defaultIdentity, superAdmin);
   });
 
   it('should fail to terminate a ProcessInstance for a normal user, when the ProcessInstance belongs to another user', async () => {
@@ -144,7 +142,7 @@ describe(`ManagementAPI: POST  ->  /process_instance/:process_instance_id/termin
     }
   });
 
-  async function assertProcessTerminationWasSuccessful(processInstanceId, expectedOwnerIdentity) {
+  async function assertProcessTerminationWasSuccessful(processInstanceId, expectedOwnerIdentity, expectedTerminatorIdentity) {
 
     const list = await testFixtureProvider.managementApiClient.getUserTasksForProcessInstance(superAdmin, processInstanceId);
     should(list.userTasks.length).be.eql(0);
@@ -153,6 +151,8 @@ describe(`ManagementAPI: POST  ->  /process_instance/:process_instance_id/termin
 
     should(processInstance.state).be.equal('error');
     should(processInstance.identity).be.eql(expectedOwnerIdentity);
+    should(processInstance.terminatedBy).be.eql(expectedTerminatorIdentity);
+    should(processInstance).have.a.property('finishedAt');
   }
 
 });
