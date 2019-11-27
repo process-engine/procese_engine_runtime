@@ -130,7 +130,9 @@ jobs:
     - name: Run tests
       run: npm run test-postgres
 
-    - run: docker ps -a
+    - run: |
+        docker ps -a
+        docker logs postgres
       if: always()
 
   test_mysql:
@@ -171,7 +173,9 @@ jobs:
     - name: Run tests
       run: npm run test-mysql
 
-    - run: docker ps -a
+    - run: |
+        docker ps -a
+        docker logs mysql
       if: always()
 
   create_sources_linux:
