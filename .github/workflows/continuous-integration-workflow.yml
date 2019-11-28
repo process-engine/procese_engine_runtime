@@ -170,8 +170,9 @@ jobs:
     - name: Build
       run: npm run build
 
-    - run: cat ~/.my.cnf
+    - run: mv .my.cnf ~/.my.cnf
 
+    - run: echo "create database `processengine`" | mysql
     #- name: Status mysql
     #  run: sudo service mysql status
    # - name: Shutdown Ubuntu MySQL (SUDO)
@@ -189,8 +190,8 @@ jobs:
    #     exit
       #run: PORT=3306 npm run check-online-status
 
-    #- name: Run tests
-    #  run: npm run test-mysql
+    - name: Run tests
+      run: npm run test-mysql
 #
     #- run: |
     #    docker ps -a
