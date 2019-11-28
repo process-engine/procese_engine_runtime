@@ -115,9 +115,7 @@ jobs:
           POSTGRES_PASSWORD: admin
           POSTGRES_DB: processengine
         ports:
-        # will assign a random free host port
         - 5432:5432
-        # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
@@ -138,18 +136,8 @@ jobs:
     - name: Build
       run: npm run build
 
-    #- name: Start Postgres Docker Container
-    #  run: |
-    #    docker run -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=admin -e POSTGRES_DB=processengine -d postgres:11
-    #    docker ps
-
     - name: Run tests
       run: npm run test-postgres
-
-    #- run: |
-    #    docker ps -a
-    #    docker logs postgres
-    #  if: always()
 
   test_mysql:
     name: "Test with MySQL"
