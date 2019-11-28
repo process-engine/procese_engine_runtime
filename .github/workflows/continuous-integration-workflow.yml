@@ -172,7 +172,7 @@ jobs:
 
     - run: mv .my.cnf ~/.my.cnf
 
-    - run: echo "create database 'processengine'" | mysql
+    - run: echo "create database processengine" | mysql
     #- name: Status mysql
     #  run: sudo service mysql status
    # - name: Shutdown Ubuntu MySQL (SUDO)
