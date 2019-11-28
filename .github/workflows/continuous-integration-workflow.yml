@@ -233,10 +233,10 @@ jobs:
         name: process_engine_runtime_macos_tar
         path: process_engine_runtime_macos.tar.gz
 
-  create_sources_windows:
-    name: "Create zip file from Windows sources"
+  create_windows_sources:
+    name: "Create Windows Sources"
     needs: prepare_version
-    runs-on: macos-latest
+    runs-on: windows-latest
     if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
 
     steps:
@@ -258,7 +258,37 @@ jobs:
       run: |
         npm run build
         npm rebuild
-        npm run create-zipfile
+
+    - name: Cache sources
+      uses: actions/cache@v1
+      with:
+        path: '.'
+        key: workdir-windows
+        # stash sources
+        #${{ github.workspace }}
+    #- name: Stash Tarball
+    #  uses: actions/upload-artifact@master
+    #  with:
+    #    name: process_engine_runtime_windows_zip
+    #    path: process_engine_runtime_windows.zip
+
+  create_windows_zip:
+    name: "Create zip file from Windows sources"
+    needs: create_windows_sources
+    runs-on: macos-latest
+    if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Cache sources
+      uses: actions/cache@v1
+      with:
+        path: '.'
+        key: workdir-windows
+# cache einsetzen
+    - name: Create zip file
+      run: npm run create-zipfile
 
     - name: Stash Tarball
       uses: actions/upload-artifact@master
@@ -313,7 +343,7 @@ jobs:
 
   prepare_and_tag_version:
     name: "Commit & Tag Version"
-    needs: [lint_linux, build_windows_installer, create_sources_windows, create_sources_linux, create_sources_macos, test_sqlite, test_postgres]
+    needs: [lint_linux, build_windows_installer, create_windows_zip, create_sources_linux, create_sources_macos, test_sqlite, test_postgres]
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@master
