@@ -186,7 +186,12 @@ export class TestFixtureProvider {
     ];
 
     for (const repository of repositories) {
-      await executeMigrations(repository);
+      try {
+        await executeMigrations(repository);
+
+      } catch (error) {
+        console.log('@@@@@@@@@ FEHLER', error);
+      }
     }
     logger.info('Migrations successfully finished!');
   }

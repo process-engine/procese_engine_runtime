@@ -10,10 +10,11 @@ const sequelizeConnectionManager: SequelizeConnectionManager = new SequelizeConn
 // Based on: https://github.com/abelnation/sequelize-migration-hello/blob/master/migrate.js
 export async function migrate(repositoryName: string): Promise<void> {
 
+  console.log('wird das hier aufgerufen?');
   const env = process.env.NODE_ENV || 'test-postgres';
-
+  console.log(env);
   const sequelizeInstanceConfig = getConfig(env, repositoryName);
-
+  console.log(JSON.stringify(sequelizeInstanceConfig));
   let sequelizeInstance;
   try {
     sequelizeInstance = await sequelizeConnectionManager.getConnection(sequelizeInstanceConfig);
