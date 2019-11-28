@@ -195,8 +195,10 @@ export class TestFixtureProvider {
 
       } catch (error) {
         console.log('@@@@@@@@@ FEHLER', error);
-        await new Promise((cb) => { setTimeout(cb, 300); });
-        await runMigrationsFor(repository);
+        if (error.message.contains('Connection') || error.code === 'ECONNRESET') {
+          await new Promise((cb) => { setTimeout(cb, 300); });
+          await runMigrationsFor(repository);
+        }
       }
     }
 
