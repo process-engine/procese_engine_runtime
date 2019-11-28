@@ -248,11 +248,10 @@ jobs:
         name: package_json
         path: "."
 
-    - name: Cache node modules
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: npm-${{ hashFiles('package-lock.json') }}
+    - name: Install npm dependencies
+      run: |
+        cat package.json
+        npm i
 
     - name: Build
       run: |
