@@ -1,6 +1,6 @@
 {
-  "username": "admin",
-  "password": "admin",
+  "username": "root",
+  "password": "root",
   "database": "processengine",
   "host": "localhost",
   "port": 3306,
