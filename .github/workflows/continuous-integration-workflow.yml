@@ -170,7 +170,6 @@ jobs:
     - name: Build
       run: npm run build
 
-    - run: mysql
     - run: cat ~/.my.cnf
 
     #- name: Status mysql
