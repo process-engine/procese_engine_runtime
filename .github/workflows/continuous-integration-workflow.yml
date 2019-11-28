@@ -163,11 +163,12 @@ jobs:
     name: "Create tarball from linux sources"
     needs: prepare_version
     runs-on: ubuntu-18.04
+    if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
+
     steps:
     - uses: actions/checkout@master
 
     - name: Unstash package.json
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/download-artifact@master
       with:
         name: package_json
@@ -180,13 +181,11 @@ jobs:
         key: npm-${{ hashFiles('package-lock.json') }}
 
     - name: Build
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: |
         npm run build
         npm run create-tarball
 
     - name: Stash Tarball
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/upload-artifact@master
       with:
         name: process_engine_runtime_linux_tar
@@ -196,11 +195,12 @@ jobs:
     name: "Create tarball from macOS sources"
     needs: prepare_version
     runs-on: macOS-latest
+    if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
+
     steps:
     - uses: actions/checkout@master
 
     - name: Unstash package.json
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/download-artifact@master
       with:
         name: package_json
@@ -213,14 +213,12 @@ jobs:
         key: npm-${{ hashFiles('package-lock.json') }}
 
     - name: Build
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: |
         npm run build
         npm rebuild
         npm run create-tarball
 
     - name: Stash Tarball
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/upload-artifact@master
       with:
         name: process_engine_runtime_macos_tar
@@ -230,11 +228,12 @@ jobs:
     name: "Create zip file from Windows sources"
     needs: prepare_version
     runs-on: macos-latest
+    if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
+
     steps:
     - uses: actions/checkout@master
 
     - name: Unstash package.json
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/download-artifact@master
       with:
         name: package_json
@@ -247,14 +246,12 @@ jobs:
         key: npm-${{ hashFiles('package-lock.json') }}
 
     - name: Build
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: |
         npm run build
         npm rebuild
         npm run create-zipfile
 
     - name: Stash Tarball
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/upload-artifact@master
       with:
         name: process_engine_runtime_windows_zip
@@ -264,25 +261,24 @@ jobs:
     name: "Build Windows installer"
     needs: prepare_version
     runs-on: windows-latest
+    if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
+
     steps:
     - uses: actions/checkout@master
 
     - name: Unstash package.json
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/download-artifact@master
       with:
         name: package_json
         path: "."
 
     - name: Install npm dependencies
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: |
         cat package.json
         npm i
 
     - name: Build
       shell: cmd
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: |
         npm run build
         npm rebuild
@@ -301,7 +297,6 @@ jobs:
         full_release_version_string: ${{ steps.package_version.outputs.version }}
 
     - name: Stash Installer
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/upload-artifact@master
       with:
         name: windows_installer_results
@@ -369,45 +364,41 @@ jobs:
     name: "Publish GitHub Release"
     needs: prepare_and_tag_version
     runs-on: ubuntu-18.04
+    if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
+
     steps:
     - uses: actions/checkout@master
 
     - name: Use Node.js 12.x
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/setup-node@v1
       with:
         node-version: 12.x
 
     - name: Unstash package.json
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/download-artifact@master
       with:
         name: package_json
         path: "."
 
     - name: Unstash Linux Sources
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/download-artifact@master
       with:
         name: process_engine_runtime_linux_tar
         path: "dist"
 
     - name: Unstash macOS Sources
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/download-artifact@master
       with:
         name: process_engine_runtime_macos_tar
         path: "dist"
 
     - name: Unstash Windows Sources
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/download-artifact@master
       with:
         name: process_engine_runtime_windows_zip
         path: "dist"
 
     - name: Unstash Windows Installer
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/download-artifact@master
       with:
         name: windows_installer_results
@@ -419,15 +410,7 @@ jobs:
         path: node_modules
         key: npm-${{ hashFiles('package-lock.json') }}
 
-    - name: Test
-      run: |
-        ls -la
-        cd dist
-        ls -la
-        pwd
-
     - name: Upload to GitHub
-      if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: |
         ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag
         ./node_modules/.bin/ci_tools update-github-release \
@@ -443,18 +426,17 @@ jobs:
     name: "Build & Publish Docker Image"
     needs: prepare_and_tag_version
     runs-on: ubuntu-18.04
+    if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
     steps:
     - uses: actions/checkout@master
 
     - name: Unstash package.json
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/download-artifact@master
       with:
         name: package_json
         path: "."
 
     - name: Unstash Linux Sources
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       uses: actions/download-artifact@master
       with:
         name: process_engine_runtime_linux_tar
@@ -465,7 +447,6 @@ jobs:
       id: package_version
 
     - name: Build Docker Image
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: |
         docker build --build-arg NODE_IMAGE_VERSION=10-alpine \
                     --build-arg PROCESS_ENGINE_VERSION=$VERSION \
@@ -475,16 +456,13 @@ jobs:
         VERSION: ${{ steps.package_version.outputs.version }}
 
     - name: Show Docker Images
-      #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: docker images
 
     - name: Login to Docker
-      if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
 
     - name: Push Docker Image
-      if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: docker push 5minds/process_engine_runtime
