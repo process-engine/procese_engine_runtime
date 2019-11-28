@@ -128,11 +128,11 @@ jobs:
         docker ps
 
         #while ! pg_isready; do sleep 1; done
-    - name: Check online
-      run: |
-        docker exec -i postgres bash
-        while ! pg_isready; do sleep 1; done
-        exit
+   # - name: Check online
+   #   run: |
+   #     docker exec -i postgres bash
+   #     while ! pg_isready; do sleep 1; done
+   #     exit
       #run: PORT=5432 npm run check-online-status
 
     - name: Run tests
@@ -170,19 +170,21 @@ jobs:
     - name: Build
       run: npm run build
 
-    - name: Shutdown Ubuntu MySQL (SUDO)
-      run: sudo service mysql stop
+    - name: Status mysql
+      run: sudo service mysql status
+  #  - name: Shutdown Ubuntu MySQL (SUDO)
+  #    run: sudo service mysql stop
+#
+    #- name: Start MySQL Docker Container
+    #  run: |
+    #    docker run -p 3306:3306 --name mysql -e MYSQL_HOST=db -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=processengine -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -d mysql:5 --connect-timeout=800
+    #    docker ps
 
-    - name: Start MySQL Docker Container
-      run: |
-        docker run -p 3306:3306 --name mysql -e MYSQL_HOST=db -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=processengine -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -d mysql:5 --connect-timeout=800
-        docker ps
-
-    - name: Check online
-      run: |
-        docker exec -i mysql bash
-        while ! mysqladmin ping -hdb --silent; do sleep 1; done
-        exit
+   # - name: Check online
+   #   run: |
+   #     docker exec -i mysql bash
+   #     while ! mysqladmin ping -hdb --silent; do sleep 1; done
+   #     exit
       #run: PORT=3306 npm run check-online-status
 
     - name: Run tests
