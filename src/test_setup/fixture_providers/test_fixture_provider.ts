@@ -186,17 +186,17 @@ export class TestFixtureProvider {
     ];
 
     for (const repository of repositories) {
-      await runMigrations(repository);
+      await runMigrationsFor(repository);
     }
 
-    async function runMigrations(repository): Promise<void> {
+    async function runMigrationsFor(repository): Promise<void> {
       try {
         await executeMigrations(repository);
 
       } catch (error) {
         console.log('@@@@@@@@@ FEHLER', error);
         await new Promise((cb) => { setTimeout(cb, 300); });
-        await runMigrations(repository);
+        await runMigrationsFor(repository);
       }
     }
 
