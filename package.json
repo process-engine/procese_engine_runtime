@@ -27,7 +27,6 @@
     "test-all": "npm run test-sqlite && npm run test-postgres",
     "test-debug": "cross-env NODE_ENV=test-sqlite CONFIG_PATH=config mocha --inspect-brk test/**/*.js test/**/**/*.js  --exit",
     "build-windows-executable": "pkg --targets windows .",
-    "check-online-status": "node ./scripts/database/check_online_status.js",
     "create-tarball": "node ./scripts/pack_sources/pack_to_tarball.js",
     "create-zipfile": "node ./scripts/pack_sources/pack_to_zip.js"
   },

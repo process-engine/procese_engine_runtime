@@ -114,11 +114,6 @@ jobs:
         path: node_modules
         key: npm-${{ hashFiles('package-lock.json') }}
 
-  #  - name: Install Dependencies
-  #    run: |
-  #      npm ci
-  #      ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/
-
     - name: Build
       run: npm run build
 
@@ -126,14 +121,6 @@ jobs:
       run: |
         docker run -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=admin -e POSTGRES_DB=processengine -d postgres:11
         docker ps
-
-        #while ! pg_isready; do sleep 1; done
-   # - name: Check online
-   #   run: |
-   #     docker exec -i postgres bash
-   #     while ! pg_isready; do sleep 1; done
-   #     exit
-      #run: PORT=5432 npm run check-online-status
 
     - name: Run tests
       run: npm run test-postgres
@@ -162,41 +149,15 @@ jobs:
         path: node_modules
         key: npm-${{ hashFiles('package-lock.json') }}
 
-  #  - name: Install Dependencies
-  #    run: |
-  #      npm ci
-  #      ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/
-
     - name: Build
       run: npm run build
 
     - run: mv config/test-mysql/.my.cnf ~/.my.cnf
 
     - run: echo "create database processengine" | mysql
-    #- name: Status mysql
-    #  run: sudo service mysql status
-   # - name: Shutdown Ubuntu MySQL (SUDO)
-   #   run: sudo service mysql stop
-
-   # - name: Start MySQL Docker Container
-   #   run: |
-   #     docker run -p 3306:3306 --name mysql -e MYSQL_HOST=db -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=processengine -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -d mysql:5 --connect-timeout=800
-   #     docker ps
-
-   # - name: Check online
-   #   run: |
-   #     docker exec -i mysql bash
-   #     while ! mysqladmin ping -hdb --silent; do sleep 1; done
-   #     exit
-      #run: PORT=3306 npm run check-online-status
 
     - name: Run tests
       run: npm run test-mysql
-#
-    #- run: |
-    #    docker ps -a
-    #    docker logs mysql
-    #  if: always()
 
   create_sources_linux:
     name: "Create tarball from linux sources"
@@ -251,13 +212,6 @@ jobs:
         path: node_modules
         key: npm-${{ hashFiles('package-lock.json') }}
 
-  #  - name: Install npm dependencies
-  #    #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
-  #    run: |
-  #      cat package.json
-  #      npm ci
-  #      ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/
-
     - name: Build
       #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: |
@@ -291,13 +245,6 @@ jobs:
       with:
         path: node_modules
         key: npm-${{ hashFiles('package-lock.json') }}
-
-  #  - name: Install npm dependencies
-  #    #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
-  #    run: |
-  #      cat package.json
-  #      npm ci
-  #      ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/
 
     - name: Build
       #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
