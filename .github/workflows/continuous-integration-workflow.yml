@@ -127,8 +127,13 @@ jobs:
         docker run -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=admin -e POSTGRES_DB=processengine -d postgres:11
         docker ps
 
+        #while ! pg_isready; do sleep 1; done
     - name: Check online
-      run: PORT=5432 npm run check-online-status
+      run: |
+        docker exec -it postgres bash
+        while ! pg_isready; do sleep 1; done
+        exit
+      #run: PORT=5432 npm run check-online-status
 
     - name: Run tests
       run: npm run test-postgres
@@ -174,7 +179,11 @@ jobs:
         docker ps
 
     - name: Check online
-      run: PORT=3306 npm run check-online-status
+      run: |
+        docker exec -it mysql bash
+        while ! mysqladmin ping -hdb --silent; do sleep 1; done
+        exit
+      #run: PORT=3306 npm run check-online-status
 
     - name: Run tests
       run: npm run test-mysql
