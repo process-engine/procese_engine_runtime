@@ -106,6 +106,20 @@ jobs:
     name: "Test with Postgres"
     needs: prepare_version
     runs-on: ubuntu-18.04
+
+    services:
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: processengine
+        ports:
+        # will assign a random free host port
+        - 5432/tcp
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
     - uses: actions/checkout@master
 
@@ -124,18 +138,18 @@ jobs:
     - name: Build
       run: npm run build
 
-    - name: Start Postgres Docker Container
-      run: |
-        docker run -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=admin -e POSTGRES_DB=processengine -d postgres:11
-        docker ps
+    #- name: Start Postgres Docker Container
+    #  run: |
+    #    docker run -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=admin -e POSTGRES_DB=processengine -d postgres:11
+    #    docker ps
 
     - name: Run tests
       run: npm run test-postgres
 
-    - run: |
-        docker ps -a
-        docker logs postgres
-      if: always()
+    #- run: |
+    #    docker ps -a
+    #    docker logs postgres
+    #  if: always()
 
   test_mysql:
     name: "Test with MySQL"
