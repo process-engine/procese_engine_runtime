@@ -45,7 +45,7 @@ describe('ConsumerAPI:   POST  ->  /external_tasks/fetch_and_lock', () => {
     should(availableExternalTasks).have.a.lengthOf(0);
   });
 
-  it('should successfully get a list of ExternalTasks, if there is at least one ExternalTask available', async () => {
+  it('should successfully get a list of ExternalTasks that do not have any payloads', async () => {
 
     await createWaitingExternalTask('without_payload', topicName);
 
@@ -73,7 +73,6 @@ describe('ConsumerAPI:   POST  ->  /external_tasks/fetch_and_lock', () => {
     should(externalTask).have.property('flowNodeInstanceId');
     should(externalTask).have.property('correlationId');
     should(externalTask).have.property('processInstanceId');
-    should(externalTask).have.property('payload');
     should(externalTask).have.property('createdAt');
   });
 

@@ -45,7 +45,7 @@ describe('DEPRECATED - ExternalTask API Client:  Fetch and lock ExternalTasks', 
     should(availableExternalTasks.length).be.equal(0);
   });
 
-  it('should successfully get a list of ExternalTasks, if there is at least one ExternalTask available', async () => {
+  it('should successfully get a list of ExternalTasks that do not have any payloads', async () => {
 
     await createWaitingExternalTask('without_payload', topicName);
 
@@ -75,7 +75,6 @@ describe('DEPRECATED - ExternalTask API Client:  Fetch and lock ExternalTasks', 
     should(externalTask).have.property('flowNodeInstanceId');
     should(externalTask).have.property('correlationId');
     should(externalTask).have.property('processInstanceId');
-    should(externalTask).have.property('payload');
     should(externalTask).have.property('createdAt');
   });
 
