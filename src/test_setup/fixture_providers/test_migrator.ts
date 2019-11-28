@@ -14,7 +14,14 @@ export async function migrate(repositoryName: string): Promise<void> {
 
   const sequelizeInstanceConfig = getConfig(env, repositoryName);
 
-  const sequelizeInstance = await sequelizeConnectionManager.getConnection(sequelizeInstanceConfig);
+  let sequelizeInstance;
+  try {
+    sequelizeInstance = await sequelizeConnectionManager.getConnection(sequelizeInstanceConfig);
+
+  } catch (error) {
+    console.log('@@@@@@@@ HIER ERROR');
+    console.log(error);
+  }
 
   const umzugInstance = await createUmzugInstance(sequelizeInstance, repositoryName, sequelizeInstanceConfig.dialect);
   await umzugInstance.up();
