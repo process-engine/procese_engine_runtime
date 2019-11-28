@@ -236,7 +236,7 @@ jobs:
     name: "Create Windows Sources"
     needs: prepare_version
     runs-on: windows-latest
-    #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
+    if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
 
     steps:
     - uses: actions/checkout@master
@@ -262,19 +262,12 @@ jobs:
       with:
         path: '.'
         key: workdir-windows-${{ github.sha }}
-        # stash sources
-        #${{ github.workspace }}
-    #- name: Stash Tarball
-    #  uses: actions/upload-artifact@master
-    #  with:
-    #    name: process_engine_runtime_windows_zip
-    #    path: process_engine_runtime_windows.zip
 
   create_windows_zip:
     name: "Create zip file from Windows sources"
     needs: create_windows_sources
     runs-on: macos-latest
-    #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
+    if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
 
     steps:
     - uses: actions/checkout@master
@@ -284,7 +277,7 @@ jobs:
       with:
         path: '.'
         key: workdir-windows-${{ github.sha }}
-# cache einsetzen
+
     - name: Create zip file
       run: npm run create-zipfile
 
