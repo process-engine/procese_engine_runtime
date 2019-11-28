@@ -331,8 +331,7 @@ jobs:
       #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
       run: |
         cat package.json
-        npm ci
-        ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/
+        npm i
 
     - name: Build
       shell: cmd
