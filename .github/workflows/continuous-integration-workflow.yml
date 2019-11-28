@@ -284,7 +284,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: '.'
-        key: workdir-windows
+        key: workdir-windows-${{ github.sha }}
 # cache einsetzen
     - name: Create zip file
       run: npm run create-zipfile
