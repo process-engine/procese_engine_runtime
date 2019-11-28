@@ -6,6 +6,7 @@ jobs:
   prepare_version:
     name: Prepare Version
     runs-on: ubuntu-18.04
+    if: "!contains(github.actor, 'process-engine-ci') || contains(github.actor, 'admin')"
 
     steps:
     - uses: actions/checkout@master
