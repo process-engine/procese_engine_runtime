@@ -170,15 +170,18 @@ jobs:
     - name: Build
       run: npm run build
 
-    - name: Status mysql
-      run: sudo service mysql status
-    - name: Shutdown Ubuntu MySQL (SUDO)
-      run: sudo service mysql stop
+    - run: mysql
+    - run: cat ~/.my.cnf
 
-    - name: Start MySQL Docker Container
-      run: |
-        docker run -p 3306:3306 --name mysql -e MYSQL_HOST=db -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=processengine -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -d mysql:5 --connect-timeout=800
-        docker ps
+    #- name: Status mysql
+    #  run: sudo service mysql status
+   # - name: Shutdown Ubuntu MySQL (SUDO)
+   #   run: sudo service mysql stop
+
+   # - name: Start MySQL Docker Container
+   #   run: |
+   #     docker run -p 3306:3306 --name mysql -e MYSQL_HOST=db -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=processengine -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin -d mysql:5 --connect-timeout=800
+   #     docker ps
 
    # - name: Check online
    #   run: |
@@ -187,13 +190,13 @@ jobs:
    #     exit
       #run: PORT=3306 npm run check-online-status
 
-    - name: Run tests
-      run: npm run test-mysql
-
-    - run: |
-        docker ps -a
-        docker logs mysql
-      if: always()
+    #- name: Run tests
+    #  run: npm run test-mysql
+#
+    #- run: |
+    #    docker ps -a
+    #    docker logs mysql
+    #  if: always()
 
   create_sources_linux:
     name: "Create tarball from linux sources"
