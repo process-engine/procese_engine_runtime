@@ -130,7 +130,7 @@ jobs:
         #while ! pg_isready; do sleep 1; done
     - name: Check online
       run: |
-        docker exec -it postgres bash
+        docker exec -i postgres bash
         while ! pg_isready; do sleep 1; done
         exit
       #run: PORT=5432 npm run check-online-status
@@ -180,7 +180,7 @@ jobs:
 
     - name: Check online
       run: |
-        docker exec -it mysql bash
+        docker exec -i mysql bash
         while ! mysqladmin ping -hdb --silent; do sleep 1; done
         exit
       #run: PORT=3306 npm run check-online-status
