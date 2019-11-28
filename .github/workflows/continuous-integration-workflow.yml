@@ -168,6 +168,10 @@ jobs:
     - name: Run tests
       run: npm run test-mysql
 
+      ##
+      ##  Notify slack channel
+      ##
+      ##
   create_sources_linux:
     name: "Create tarball from linux sources"
     needs: prepare_version
