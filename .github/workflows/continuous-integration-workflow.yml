@@ -191,6 +191,7 @@ jobs:
     - name: Build
       run: |
         npm run build
+        npm rebuild
         npm run create-tarball
 
     - name: Stash Tarball
