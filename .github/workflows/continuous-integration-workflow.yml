@@ -168,10 +168,21 @@ jobs:
     - name: Run tests
       run: npm run test-mysql
 
-      ##
-      ##  Notify slack channel
-      ##
-      ##
+  notify_slack:
+    name: "Send Slack Notification"
+    needs: [test_mysql, test_postgres, test_sqlite]
+    runs-on: ubuntu-18.04
+    if: always()
+
+    steps:
+      - uses: actions/checkout@master
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_TITLE: 'Test from Actions'
+          SLACK_MESSAGE: 'Test from Actions'
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
   create_sources_linux:
     name: "Create tarball from linux sources"
     needs: prepare_version
