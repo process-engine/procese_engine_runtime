@@ -179,6 +179,8 @@ jobs:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@master
         env:
+          #SLACK_ICON: ''
+          SLACK_USERNAME: 'GH-Actions'
           SLACK_TITLE: 'Test from Actions'
           SLACK_MESSAGE: 'Test from Actions'
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
