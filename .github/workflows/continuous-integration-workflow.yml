@@ -102,6 +102,17 @@ jobs:
     - name: Run tests
       run: npm run test-sqlite
 
+    - name: Slack Notification
+      uses: homoluctus/slatify@master
+      if: always()
+      with:
+        type: ${{ job.status }}
+        job_name: 'Test with SQLite'
+        mention_if: 'always'
+        url: ${{ secrets.SLACK_WEBHOOK }}
+        commit: true
+        token: ${{ secrets.GH_TOKEN }}
+
   test_postgres:
     name: "Test with Postgres"
     needs: prepare_version
@@ -139,6 +150,17 @@ jobs:
     - name: Run tests
       run: npm run test-postgres
 
+    - name: Slack Notification
+      uses: homoluctus/slatify@master
+      if: always()
+      with:
+        type: ${{ job.status }}
+        job_name: 'Test with Postgres'
+        mention_if: 'always'
+        url: ${{ secrets.SLACK_WEBHOOK }}
+        commit: true
+        token: ${{ secrets.GH_TOKEN }}
+
   test_mysql:
     name: "Test with MySQL"
     needs: prepare_version
@@ -168,25 +190,35 @@ jobs:
     - name: Run tests
       run: npm run test-mysql
 
-  notify_slack:
-    name: "Send Slack Notification"
-    needs: [test_mysql, test_postgres, test_sqlite]
-    runs-on: ubuntu-18.04
-    if: always()
-
-    steps:
     - name: Slack Notification
       uses: homoluctus/slatify@master
       if: always()
       with:
-        type: ${{ job.test_mysql.status }}
+        type: ${{ job.status }}
         job_name: 'Test with MySQL'
-        mention: 'here'
         mention_if: 'always'
         url: ${{ secrets.SLACK_WEBHOOK }}
         commit: true
         token: ${{ secrets.GH_TOKEN }}
 
+#  notify_slack:
+#    name: "Send Slack Notification"
+#    needs: [test_mysql, test_postgres, test_sqlite]
+#    runs-on: ubuntu-18.04
+#    if: always()
+#
+#    steps:
+#    - name: Slack Notification
+#      uses: homoluctus/slatify@master
+#      if: always()
+#      with:
+#        type: ${{ job.status }}
+#        job_name: 'Test with MySQL'
+#        mention_if: 'always'
+#        url: ${{ secrets.SLACK_WEBHOOK }}
+#        commit: true
+#        token: ${{ secrets.GH_TOKEN }}
+#
   create_sources_linux:
     name: "Create tarball from linux sources"
     needs: prepare_version
