@@ -480,7 +480,7 @@ jobs:
       run: |
         ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag
         ./node_modules/.bin/ci_tools update-github-release \
-                              --assets dist/Install ProcessEngine Runtime**.exe \
+                              --assets "dist/Install ProcessEngine Runtime**.exe" \
                               --assets dist/process_engine_runtime_macos.tar.gz \
                               --assets dist/process_engine_runtime_linux.tar.gz \
                               --assets dist/process_engine_runtime_windows.zip
