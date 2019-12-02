@@ -175,15 +175,17 @@ jobs:
     if: always()
 
     steps:
-      - uses: actions/checkout@master
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@master
-        env:
-          #SLACK_ICON: ''
-          SLACK_USERNAME: 'GH-Actions'
-          SLACK_TITLE: 'Test from Actions'
-          SLACK_MESSAGE: 'Test from Actions'
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    - name: Slack Notification
+      uses: homoluctus/slatify@master
+      if: always()
+      with:
+        type: ${{ job.test_mysql.status }}
+        job_name: 'Test with MySQL'
+        mention: 'here'
+        mention_if: 'always'
+        url: ${{ secrets.SLACK_WEBHOOK }}
+        commit: true
+        token: ${{ secrets.GH_TOKEN }}
 
   create_sources_linux:
     name: "Create tarball from linux sources"
