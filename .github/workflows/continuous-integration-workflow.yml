@@ -33,11 +33,11 @@ jobs:
         path: node_modules
         key: npm-${{ hashFiles('package-lock.json') }}
 
-    - name: Prepare version
+    - name: Prepare Version
       run: |
         ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir
 
-    - name: Get package version
+    - name: Get Package Version
       run: echo "##[set-output name=version;]$(node --print --eval "require('./package.json').version")"
       id: package_version
 
@@ -54,7 +54,7 @@ jobs:
         path: package.json
 
   lint_linux:
-    name: "Lint sources"
+    name: "Lint Sources"
     needs: prepare_version
     runs-on: ubuntu-18.04
     steps:
@@ -73,7 +73,7 @@ jobs:
         key: npm-${{ hashFiles('package-lock.json') }}
 
     - run: npm run lint
-      name: Lint sources
+      name: Lint Sources
 
   test_sqlite:
     name: "Test with SQLite"
@@ -99,7 +99,7 @@ jobs:
         npm run build
         npm rebuild
 
-    - name: Run tests
+    - name: Run Tests
       run: npm run test-sqlite
 
     - name: Slack Notification
@@ -147,7 +147,7 @@ jobs:
     - name: Build
       run: npm run build
 
-    - name: Run tests
+    - name: Run Tests
       run: npm run test-postgres
 
     - name: Slack Notification
@@ -187,7 +187,7 @@ jobs:
 
     - run: echo "create database processengine" | mysql
 
-    - name: Run tests
+    - name: Run Tests
       run: npm run test-mysql
 
     - name: Slack Notification
@@ -202,7 +202,7 @@ jobs:
         token: ${{ secrets.GH_TOKEN }}
 
   create_sources_linux:
-    name: "Create tarball from linux sources"
+    name: "Create Tarball from Linux Sources"
     needs: prepare_version
     runs-on: ubuntu-18.04
     if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
@@ -235,7 +235,7 @@ jobs:
         path: process_engine_runtime_linux.tar.gz
 
   create_sources_macos:
-    name: "Create tarball from macOS sources"
+    name: "Create Tarball from macOS Sources"
     needs: prepare_version
     runs-on: macOS-latest
     if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
@@ -282,7 +282,7 @@ jobs:
         name: package_json
         path: "."
 ##### hier nochmal wegen cache gucken
-    - name: Install npm dependencies
+    - name: Install npm Dependencies
       run: |
         cat package.json
         npm i
@@ -292,14 +292,14 @@ jobs:
         npm run build
         npm rebuild
 
-    - name: Cache sources
+    - name: Cache Sources
       uses: actions/cache@v1
       with:
         path: '.'
         key: workdir-windows-${{ github.sha }}
 
   create_windows_zip:
-    name: "Create zip file from Windows sources"
+    name: "Create Zip File from Windows Sources"
     needs: create_windows_sources
     runs-on: macos-latest
     if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
@@ -313,17 +313,17 @@ jobs:
         path: '.'
         key: workdir-windows-${{ github.sha }}
 
-    - name: Create zip file
+    - name: Create Zip File
       run: npm run create-zipfile
 
-    - name: Stash Tarball
+    - name: Stash Zip File
       uses: actions/upload-artifact@master
       with:
         name: process_engine_runtime_windows_zip
         path: process_engine_runtime_windows.zip
 
   build_windows_installer:
-    name: "Build Windows installer"
+    name: "Build Windows Installer"
     needs: prepare_version
     runs-on: windows-latest
     if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
@@ -338,7 +338,7 @@ jobs:
         path: "."
 
 #### hier nochmal wegen caching gucken
-    - name: Install npm dependencies
+    - name: Install npm Dependencies
       run: |
         cat package.json
         npm i
@@ -352,7 +352,7 @@ jobs:
     - name: Build Executable
       run: npm run build-windows-executable
 
-    - name: Get package version
+    - name: Get Package Version
       run: echo "##[set-output name=version;]$(node --print --eval "require('./package.json').version")"
       id: package_version
 
@@ -399,7 +399,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
   publish_npm:
-    name: "Publish npm package"
+    name: "Publish npm Package"
     needs: prepare_and_tag_version
     runs-on: ubuntu-18.04
     steps:
@@ -421,7 +421,7 @@ jobs:
         path: node_modules
         key: npm-${{ hashFiles('package-lock.json') }}
 
-    - name: Publish npm package
+    - name: Publish npm Package
       run: ./node_modules/.bin/ci_tools publish-npm-package --create-tag-from-branch-name
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -519,7 +519,7 @@ jobs:
         name: process_engine_runtime_linux_tar
         path: "."
 
-    - name: Get package version
+    - name: Get Package Version
       run: echo "##[set-output name=version;]$(node --print --eval "require('./package.json').version")"
       id: package_version
 
