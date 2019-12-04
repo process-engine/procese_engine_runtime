@@ -30,8 +30,8 @@ function getConfig(env: string, repositoryName: string): Sequelize.Options {
     // Jenkins stores its sqlite databases in a separate workspace folder.
     // We must account for this here.
     const sqlitePath = process.env.jenkinsDbStoragePath
-      ? `${process.env.jenkinsDbStoragePath}/${repositoryName}.sqlite`
-      : `test/sqlite_repositories/${repositoryName}.sqlite`;
+      ? path.resolve(`${process.env.jenkinsDbStoragePath}, ${config.storage}`)
+      : config.storage;
 
     config.storage = sqlitePath;
   }
