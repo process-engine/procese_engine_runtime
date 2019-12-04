@@ -408,11 +408,6 @@ pipeline {
         allOf {
           expression {buildIsRequired == true}
           expression {currentBuild.result == 'SUCCESS'}
-          anyOf {
-            branch "master"
-            branch "beta"
-            branch "develop"
-          }
         }
       }
       parallel {
@@ -468,6 +463,13 @@ pipeline {
           }
         }
         stage('Build Windows Installer') {
+          when {
+            anyOf {
+              branch "master"
+              branch "beta"
+              branch "develop"
+            }
+          }
           agent {label 'windows'}
           options {skipDefaultCheckout()}
           steps {
