@@ -138,109 +138,47 @@ pipeline {
         expression {buildIsRequired == true}
       }
       parallel {
-        stage('Linux') {
-          agent {label 'master'}
-          stages {
-            stage('Install Dependencies') {
-              steps {
-                unstash('package_json');
+        stage('Build Linux sources') {
+          agent {label 'linux-slave-05 || linux-slave-06'}
+          steps {
+            unstash('package_json');
 
-                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-                  sh('npm ci')
-                }
-                archiveArtifacts('package-lock.json')
-              }
+            nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+              sh('npm ci')
+              sh('npm rebuild')
+              sh('npm run build')
             }
-            stage('Build Sources') {
-              when {
-                expression {buildIsRequired == true}
-              }
-              steps {
-                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-                  sh('npm run build')
-                  sh('npm rebuild')
-                }
-              }
-            }
-            stage('stash sources') {
-              when {
-                expression {buildIsRequired == true}
-              }
-              steps {
-                stash(includes: '*, **/**', name: 'linux_sources');
-              }
-            }
+            stash(includes: '*, **/**', name: 'linux_sources');
+            archiveArtifacts('package-lock.json')
           }
         }
-        stage('MacOS') {
+        stage('Build MacOS sources') {
           agent {label 'macos'}
-          stages {
-            stage('Install Dependencies') {
-              steps {
-                unstash('package_json');
+          steps {
+            unstash('package_json');
 
-                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-                  sh('npm ci')
-                }
-                archiveArtifacts('package-lock.json')
-              }
+            nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+              sh('npm ci')
+              sh('npm rebuild')
+              sh('npm run build')
             }
-            stage('Build Sources') {
-              when {
-                expression {buildIsRequired == true}
-              }
-              steps {
-                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-                  sh('npm run build')
-                  sh('npm rebuild')
-                }
-              }
-            }
-            stage('stash sources') {
-              when {
-                expression {buildIsRequired == true}
-              }
-              steps {
-                stash(includes: '*, **/**', name: 'macos_sources');
-              }
-            }
+            stash(includes: '*, **/**', name: 'macos_sources');
           }
         }
-        stage('Windows') {
+        stage('Build Windows sources') {
           agent {label 'windows'}
-          stages {
-            stage('Install Dependencies') {
-              steps {
-                unstash('package_json');
+          steps {
+            unstash('package_json');
 
-                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-                  // TODO: this throws an error on Windows
-                  // bat('npm ci')
-                  // bat('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
-                  bat('npm ci')
-                }
-                archiveArtifacts('package-lock.json')
-              }
+            nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
+              // TODO: this throws an error on Windows
+              // bat('npm ci')
+              // bat('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
+              bat('npm ci')
+              bat('npm rebuild')
+              bat('npm run build')
             }
-            stage('Build Sources') {
-              when {
-                expression {buildIsRequired == true}
-              }
-              steps {
-                nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-                  bat('npm run build')
-                  bat('npm rebuild')
-                }
-              }
-            }
-            stage('stash sources') {
-              when {
-                expression {buildIsRequired == true}
-              }
-              steps {
-                stash(includes: '*, **/**', name: 'windows_sources');
-              }
-            }
+            stash(includes: '*, **/**', name: 'windows_sources');
           }
         }
       }
