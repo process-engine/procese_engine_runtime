@@ -5,7 +5,7 @@
   "host": null,
   "port": null,
   "dialect": "sqlite",
-  "storage": "test/sqlite_repositories/external_task.sqlite",
+  "storage": "test/sqlite_repositories/processengine.sqlite",
   "supportBigNumbers": true,
   "resetPasswordRequestTimeToLive": 12,
   "logging": false
