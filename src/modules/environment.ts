@@ -6,26 +6,34 @@ import * as Sequelize from 'sequelize';
 
 export function setDatabasePaths(sqlitePath: string): void {
 
-  const correlationRepositoryConfig = readConfigFile('sqlite', 'correlation_repository.json');
-  const externalTaskRepositoryConfig = readConfigFile('sqlite', 'external_task_repository.json');
-  const flowNodeInstanceRepositoryConfig = readConfigFile('sqlite', 'flow_node_instance_repository.json');
-  const processModelRepositoryConfig = readConfigFile('sqlite', 'process_model_repository.json');
-
   const databaseBasePath = getSqliteStoragePath(sqlitePath);
 
-  const correlationRepositoryStoragePath = path.join(databaseBasePath, correlationRepositoryConfig.storage);
-  const externalTaskRepositoryStoragePath = path.join(databaseBasePath, externalTaskRepositoryConfig.storage);
-  const flowNodeRepositoryStoragePath = path.join(databaseBasePath, flowNodeInstanceRepositoryConfig.storage);
-  const processModelRepositoryStoragePath = path.join(databaseBasePath, processModelRepositoryConfig.storage);
-
   const logsStoragePath = path.join(databaseBasePath, 'logs');
-
-  process.env.process_engine__correlation_repository__storage = correlationRepositoryStoragePath;
-  process.env.process_engine__external_task_repository__storage = externalTaskRepositoryStoragePath;
-  process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
-  process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
-
   process.env.process_engine__logging_repository__log_output_path = logsStoragePath;
+
+  const correlationRepositoryConfig = readConfigFile(process.env.NODE_ENV, 'correlation_repository.json');
+  if (correlationRepositoryConfig.storage) {
+    const correlationRepositoryStoragePath = path.join(databaseBasePath, correlationRepositoryConfig.storage);
+    process.env.process_engine__correlation_repository__storage = correlationRepositoryStoragePath;
+  }
+
+  const externalTaskRepositoryConfig = readConfigFile(process.env.NODE_ENV, 'external_task_repository.json');
+  if (externalTaskRepositoryConfig.storage) {
+    const externalTaskRepositoryStoragePath = path.join(databaseBasePath, externalTaskRepositoryConfig.storage);
+    process.env.process_engine__external_task_repository__storage = externalTaskRepositoryStoragePath;
+  }
+
+  const flowNodeInstanceRepositoryConfig = readConfigFile(process.env.NODE_ENV, 'flow_node_instance_repository.json');
+  if (flowNodeInstanceRepositoryConfig.storage) {
+    const flowNodeRepositoryStoragePath = path.join(databaseBasePath, flowNodeInstanceRepositoryConfig.storage);
+    process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
+  }
+
+  const processModelRepositoryConfig = readConfigFile(process.env.NODE_ENV, 'process_model_repository.json');
+  if (processModelRepositoryConfig.storage) {
+    const processModelRepositoryStoragePath = path.join(databaseBasePath, processModelRepositoryConfig.storage);
+    process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
+  }
 }
 
 export function getSqliteStoragePath(sqlitePath?: string): string {
