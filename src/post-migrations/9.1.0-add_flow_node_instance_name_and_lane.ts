@@ -1,4 +1,4 @@
-/* eslint-disable no-null/no-null */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * At version 9.1.0, the columns "flowNodeLane" and "flowNodenNme" were added to the "FlowNodeInstance" model.
  *
@@ -8,7 +8,7 @@
  * If the FlowNode belongs to a ProcessModel without lanes, or if it simply was not placed on a lane, the property will remain empty.
  */
 import {Logger} from 'loggerhythm';
-import {QueryInterface} from 'sequelize';
+import * as Sequelize from 'sequelize';
 
 import {SequelizeConnectionManager} from '@essential-projects/sequelize_connection_manager';
 import {BpmnModelParser, ProcessModelFacade} from '@process-engine/process_engine_core';
@@ -23,18 +23,18 @@ const connectionManager = new SequelizeConnectionManager();
 const parser = new BpmnModelParser();
 
 const nodeEnv = process.env.NODE_ENV || 'sqlite';
-const nodeEnvIsPostgres = nodeEnv === 'postgres' || nodeEnv === 'test-postgres';
+let nodeEnvIsPostgres = false;
 
-let correlationDbQueryInterface: QueryInterface;
-let flowNodeInstanceDbQueryInterface: QueryInterface;
-let processModelDbQueryInterface: QueryInterface;
+let correlationDbQueryInterface: Sequelize.QueryInterface;
+let flowNodeInstanceDbQueryInterface: Sequelize.QueryInterface;
+let processModelDbQueryInterface: Sequelize.QueryInterface;
 
 let processInstances: Array<any>;
 let processModels: Array<any>;
 
-export async function runPostMigrationForV910(): Promise<void> {
+export async function runPostMigrationForV910(sqlitePath?: string): Promise<void> {
   try {
-    await setup();
+    await setup(sqlitePath);
 
     const migrationWasRun = await checkIfMigrationWasRun();
     if (migrationWasRun) {
@@ -65,9 +65,15 @@ export async function runPostMigrationForV910(): Promise<void> {
   }
 }
 
-async function setup(): Promise<void> {
+async function setup(sqlitePath?: string): Promise<void> {
 
   await parser.initialize();
+
+  const correlationRepoConfig = environment.readConfigFile(nodeEnv, 'correlation_repository.json');
+  const flowNodeInstanceRepoConfig = environment.readConfigFile(nodeEnv, 'flow_node_instance_repository.json');
+  const processModelRepoConfig = environment.readConfigFile(nodeEnv, 'correlation_repository.json');
+
+  nodeEnvIsPostgres = flowNodeInstanceRepoConfig.dialect === 'postgres';
 
   // These will only be set, when using SQLite
   const pathToCorrelationDb = process.env.process_engine__correlation_repository__storage;
@@ -75,29 +81,27 @@ async function setup(): Promise<void> {
   const pathToProcessModelDb = process.env.process_engine__process_model_repository__storage;
 
   correlationDbQueryInterface = await createConnection(
-    'correlation_repository.json',
+    correlationRepoConfig,
     pathToCorrelationDb,
     process.env.process_engine__correlation_repository__host, // Used by Jenkins
   );
 
   flowNodeInstanceDbQueryInterface = await createConnection(
-    'flow_node_instance_repository.json',
+    flowNodeInstanceRepoConfig,
     pathToFlowNodeInstanceDb,
     process.env.process_engine__flow_node_instance_repository__host, // Used by Jenkins
   );
   processModelDbQueryInterface = await createConnection(
-    'process_model_repository.json',
+    processModelRepoConfig,
     pathToProcessModelDb,
     process.env.process_engine__process_model_repository__host, // Used by Jenkins
   );
 }
 
-async function createConnection(repository, sqliteStoragePath, hostName): Promise<QueryInterface> {
+async function createConnection(config: Sequelize.Options, sqliteStoragePath: string, hostName: string): Promise<Sequelize.QueryInterface> {
 
-  const config = environment.readConfigFile(nodeEnv, repository);
-
-  config.host = hostName || config.host;
-  config.storage = sqliteStoragePath || config.storage;
+  config.host = hostName ?? config.host;
+  config.storage = sqliteStoragePath ?? config.storage;
 
   const sequelizeInstance = await connectionManager.getConnection(config);
   const queryInterface = sequelizeInstance.getQueryInterface();
@@ -155,7 +159,7 @@ async function loadProcessModels(): Promise<void> {
   processModels = (await processModelDbQueryInterface.sequelize.query(query))[0];
 }
 
-async function addNameAndLaneToFlowNodeInstances(flowNodeInstances): Promise<void> {
+async function addNameAndLaneToFlowNodeInstances(flowNodeInstances: Array<any>): Promise<void> {
 
   logger.info('Adding name and lane to each FlowNodeInstance. Depending on the number of records, this may take a while...');
 
