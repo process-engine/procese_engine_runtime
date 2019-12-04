@@ -19,7 +19,6 @@ export function setDatabasePaths(sqlitePath: string): void {
   const processModelRepositoryStoragePath = path.join(databaseBasePath, processModelRepositoryConfig.storage);
 
   const logsStoragePath = path.join(databaseBasePath, 'logs');
-  const metricsStoragePath = path.join(databaseBasePath, 'metrics');
 
   process.env.process_engine__correlation_repository__storage = correlationRepositoryStoragePath;
   process.env.process_engine__external_task_repository__storage = externalTaskRepositoryStoragePath;
@@ -27,7 +26,6 @@ export function setDatabasePaths(sqlitePath: string): void {
   process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
 
   process.env.process_engine__logging_repository__log_output_path = logsStoragePath;
-  process.env.process_engine__metrics_repository__log_output_path = metricsStoragePath;
 }
 
 export function getSqliteStoragePath(sqlitePath?: string): string {
