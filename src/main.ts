@@ -54,10 +54,7 @@ export async function startRuntime(args?: startupArgs | string): Promise<void> {
   setConfigPath();
   validateEnvironment();
 
-  const envIsSqlite = process.env.NODE_ENV === 'sqlite';
-  if (envIsSqlite) {
-    environment.setDatabasePaths(sqlitePath);
-  }
+  environment.setDatabasePaths(sqlitePath);
 
   await runMigrations();
   await runPostMigrations();
@@ -240,8 +237,7 @@ async function runPostMigrations(): Promise<void> {
   try {
     logger.info('Running post-migration scripts.');
 
-    await postMigrations.runPostMigrationForV711();
-    await postMigrations.runPostMigrationForV910();
+    await postMigrations.runPostMigrationForV910(sqlitePath);
 
     logger.info('Post-Migrations successfully executed.');
   } catch (error) {

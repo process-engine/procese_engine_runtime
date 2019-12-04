@@ -196,7 +196,6 @@ export class TestFixtureProvider {
     try {
       logger.info('Running post-migration scripts.');
 
-      await postMigrations.runPostMigrationForV711();
       await postMigrations.runPostMigrationForV910();
 
       logger.info('Post-Migrations successfully executed.');
