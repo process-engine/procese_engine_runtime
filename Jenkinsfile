@@ -171,9 +171,6 @@ pipeline {
             unstash('package_json');
 
             nodejs(configId: NPM_RC_FILE, nodeJSInstallationName: NODE_JS_VERSION) {
-              // TODO: this throws an error on Windows
-              // bat('npm ci')
-              // bat('node ./node_modules/.bin/ci_tools npm-install-only --except-on-primary-branches @process-engine/ @essential-projects/')
               bat('npm ci')
               bat('npm rebuild')
               bat('npm run build')
