@@ -6,12 +6,32 @@ This is a stand-alone Server of the ProcessEngine, that can be installed and sta
 
 The goal is to provide a ready-to-use environment for utilizing the ProcessEngine.
 
+## Table of contents
+
+- [Requirements](#requirements)
+- [Setup](#setup)
+    - [Using npm](#using-npm)
+    - [Using pre-build sources](#using-pre-build-sources)
+- [Starting the ProcessEngineRuntime](#starting-the-processengineruntime)
+    - [Global Routes](#global-routes)
+    - [Switching the database](#switching-the-database)
+    - [Customized Configuration](#customized-configuration)
+- [Embedding the ProcessEngineRuntime into another application](#embedding-the-processengineruntime-into-another-application)
+    - [Parameters](#parameters)
+- [Starting the ProcessEngineRuntime on system boot](#starting-the-processengineruntime-on-system-boot)
+    - [macOS](#macos)
+    - [Windows](#windows)
+- [Application Files](#application-files)
+- [Authors](#authors)
+
 ## Requirements
 
 - Node >= `10.15.0`
 - Python 2.7.x
 
-## Setup/Installation
+## Setup
+
+### Using npm
 
 Install the runtime as a global npm package:
 
@@ -19,16 +39,35 @@ Install the runtime as a global npm package:
 npm install -g @process-engine/process_engine_runtime
 ```
 
-__Note:__ If you experience problems during installation on Windows, you can try
-installing the [Windows Build
-Tools](https://www.npmjs.com/package/windows-build-tools) and run the installation command again.
-Please make sure that you run the shell you use for the installation as **Administrator**.
+**Note:**
+If you are experiencing problems during installation on Windows,
+you can try installing the [Windows Build Tools](https://www.npmjs.com/package/windows-build-tools) and run the installation command again.
 
-Also, each full release provides ready-to-use source files for each supported platform.
-These are stored in a `.tar.gz` archive (for macOS and Linux) and a zip file (for windows).
+Also make sure that you run the command shell as **Administrator**.
 
-All these sources have been fully installed and build.
+### Using pre-build sources
+
+We provide ready-to-use sources with all our GitHub releases and pre-releases.
+
+These are stored in a `.tar.gz` archive (for macOS and Linux) and a `.zip` file (for windows).
+
+All sources have been fully installed and build.
+
 You only need to download and unpack them and you are good to go.
+
+The linux sources have been build on an ubuntu machine, but they should work on any other distribution as well.
+
+**NOTE:**
+
+The sources were build with NodeJS v10.
+
+If you are using a different major NodeJS version (i.e. v11 or higher), you may encounter errors such as this:
+
+```sh
+2019-12-04T13:00:43.421Z - error: [processengine:runtime:startup] Error:  Error: Please install sqlite3 package manually
+```
+
+If that is the case, you will need to run `npm rebuild`, before you can use the sources.
 
 ## Starting the ProcessEngineRuntime
 
@@ -200,13 +239,13 @@ await ProcessEngine.startRuntime({
 });
 ```
 
-## Automatically starting the ProcessEngineRuntime on system startup
+## Starting the ProcessEngineRuntime on system boot
 
 We provide scripts that let you start the ProcessEngineRuntime automatically as a service.
 
 Currently supported platforms are `macOS` and `windows`.
 
-**macOS**
+### macOS
 
 There are two scripts:
 
@@ -239,7 +278,7 @@ __Note:__ Currently the `do_not_start_runtime_after_system_boot.sh`-script
 doesn't work under macOS due to a bug in a third party package. As soon as the
 bug is fixed, we will update the script and release a fix.
 
-**Windows**
+### Windows
 
 We also provide `.bat` scripts to setup the Runtime as a global service on windows.
 
@@ -258,7 +297,7 @@ Please use the default values on every question.
 1. Typing `Y` and pressing the `Enter`-key for `yes/no` questions
 2. Just pressing the `Enter`-key on all other questions.
 
-## Application Files <a name="application_files"></a>
+## Application Files
 
 The application files are stored in:
 
@@ -276,7 +315,7 @@ Contained in the application files are the following folders:
 | `logs/`      | Logfiles              |
 | `metrics/`   | Recorded metrics      |
 
-## Authors/Contact information
+## Authors
 
 1. [Christian Werner](mailto:christian.werner@5minds.de)
 2. [René Föhring](mailto:rene.foehring@5minds.de)
