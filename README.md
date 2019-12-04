@@ -128,18 +128,18 @@ If you want to use a different database, you must provide a `NODE_ENV` parameter
 NODE_ENV=postgres process-engine
 ```
 
-Currently supported values are `postgres` and `mysql`.
-
-Each environment comes with its own config.
-
-See:
+We provide presets for `sqlite`, `postgres` and `mysql`:
 
 - [Configuration for mysql repositories](./config/mysql/process_engine)
 - [Configuration for postgres repositories](./config/postgres/process_engine)
 - [Configuration for sqlite repositories](./config/sqlite/process_engine)
 
+But you can use any other name for your config environment as well. `develop`, `production`, etc. will work just fine, as long as the settings are valid.
+
+If you want to setup your own config environment, you can use one of the configs linked above as a template.
+
 **Note:**
-Switching to MySQL or Postgres requires an instance of the respective database to be running and accessible!
+Using MySQL or Postgres requires an instance of the respective database to be running and accessible!
 
 ### Customized Configuration
 
