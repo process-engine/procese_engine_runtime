@@ -96,8 +96,8 @@ jobs:
 
     - name: Build
       run: |
-        npm run build
         npm rebuild
+        npm run build
 
     - name: Run Tests
       run: npm run test-sqlite
@@ -224,8 +224,8 @@ jobs:
 
     - name: Build
       run: |
-        npm run build
         npm rebuild
+        npm run build
         npm run create-tarball
 
     - name: Stash Tarball
@@ -257,8 +257,8 @@ jobs:
 
     - name: Build
       run: |
-        npm run build
         npm rebuild
+        npm run build
         npm run create-tarball
 
     - name: Stash Tarball
@@ -289,8 +289,8 @@ jobs:
 
     - name: Build
       run: |
-        npm run build
         npm rebuild
+        npm run build
 
     - name: Cache Sources
       uses: actions/cache@v1
@@ -346,8 +346,8 @@ jobs:
     - name: Build
       shell: cmd
       run: |
-        npm run build
         npm rebuild
+        npm run build
 
     - name: Build Executable
       run: npm run build-windows-executable
