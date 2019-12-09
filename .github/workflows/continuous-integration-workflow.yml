@@ -278,7 +278,7 @@ jobs:
       with:
         name: package_json
         path: "."
-##### hier nochmal wegen cache gucken
+
     - name: Install npm Dependencies
       run: |
         cat package.json
@@ -321,9 +321,9 @@ jobs:
 
   build_windows_installer:
     name: "Build Windows Installer"
-    needs: prepare_version
+    needs: create_windows_sources
     runs-on: windows-latest
-    if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
+    #if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
 
     steps:
     - uses: actions/checkout@master
@@ -334,17 +334,11 @@ jobs:
         name: package_json
         path: "."
 
-#### hier nochmal wegen caching gucken
-    - name: Install npm Dependencies
-      run: |
-        cat package.json
-        npm i
-
-    - name: Build
-      shell: cmd
-      run: |
-        npm rebuild
-        npm run build
+    - name: Cache Sources
+      uses: actions/cache@v1
+      with:
+        path: '.'
+        key: workdir-windows-${{ github.sha }}
 
     - name: Build Executable
       run: npm run build-windows-executable
