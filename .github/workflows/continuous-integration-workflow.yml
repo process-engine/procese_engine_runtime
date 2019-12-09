@@ -15,10 +15,10 @@ jobs:
     steps:
     - uses: actions/checkout@master
 
-    - name: Use Node.js 12.x
+    - name: Use Node.js 10.x
       uses: actions/setup-node@v1
       with:
-        node-version: 12.x
+        node-version: 10.x
 
     - name: Install Dependencies
       run: |
@@ -371,10 +371,10 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@master
-    - name: Use Node.js 12.x
+    - name: Use Node.js 10.x
       uses: actions/setup-node@v1
       with:
-        node-version: 12.x
+        node-version: 10.x
 
     - name: Unstash package.json
       uses: actions/download-artifact@master
@@ -401,10 +401,10 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@master
-    - name: Use Node.js 12.x
+    - name: Use Node.js 10.x
       uses: actions/setup-node@v1
       with:
-        node-version: 12.x
+        node-version: 10.x
 
     - name: Unstash package.json
       uses: actions/download-artifact@master
@@ -432,10 +432,10 @@ jobs:
     steps:
     - uses: actions/checkout@master
 
-    - name: Use Node.js 12.x
+    - name: Use Node.js 10.x
       uses: actions/setup-node@v1
       with:
-        node-version: 12.x
+        node-version: 10.x
 
     - name: Unstash package.json
       uses: actions/download-artifact@master
