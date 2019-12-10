@@ -61,7 +61,8 @@
     "assets": [
       "config/**/",
       "sequelize/**/",
-      "node_modules/**/"
+      "node_modules/**/",
+      "swagger.html"
     ],
     "scripts": [
       "node_modules/**/ioc_module.js"
