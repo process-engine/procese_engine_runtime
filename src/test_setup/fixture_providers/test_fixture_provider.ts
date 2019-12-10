@@ -188,6 +188,7 @@ export class TestFixtureProvider {
     for (const repository of repositories) {
       await executeMigrations(repository);
     }
+
     logger.info('Migrations successfully finished!');
   }
 

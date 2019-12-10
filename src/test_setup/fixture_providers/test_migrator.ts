@@ -11,7 +11,6 @@ const sequelizeConnectionManager: SequelizeConnectionManager = new SequelizeConn
 export async function migrate(repositoryName: string): Promise<void> {
 
   const env = process.env.NODE_ENV || 'test-postgres';
-
   const sequelizeInstanceConfig = getConfig(env, repositoryName);
 
   const sequelizeInstance = await sequelizeConnectionManager.getConnection(sequelizeInstanceConfig);

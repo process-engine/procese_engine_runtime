@@ -1,6 +1,6 @@
 {
   "name": "@process-engine/process_engine_runtime",
-  "version": "9.2.1",
+  "version": "9.3.0",
   "description": "Standalone application that provides access to the .TS implementation of the ProcessEngine.",
   "bin": {
     "process-engine": "./bin/index.js"
@@ -19,8 +19,10 @@
     "test-external-sqlite": "cross-env API_ACCESS_TYPE=external NODE_ENV=test-sqlite CONFIG_PATH=config mocha -t 15000 test/**/*.js test/**/**/*.js  --exit",
     "test-internal-postgres": "cross-env API_ACCESS_TYPE=internal NODE_ENV=test-postgres CONFIG_PATH=config mocha -t 15000 test/**/*.js test/**/**/*.js  --exit",
     "test-external-postgres": "cross-env API_ACCESS_TYPE=external NODE_ENV=test-postgres CONFIG_PATH=config mocha -t 15000 test/**/*.js test/**/**/*.js  --exit",
+    "test-internal-mysql": "cross-env API_ACCESS_TYPE=internal NODE_ENV=test-mysql CONFIG_PATH=config mocha -t 15000 test/**/*.js test/**/**/*.js  --exit",
     "test-sqlite": "npm run test-internal-sqlite && npm run test-external-sqlite",
     "test-postgres": "npm run test-internal-postgres && npm run test-external-postgres",
+    "test-mysql": "npm run test-internal-mysql",
     "test": "npm run test-sqlite",
     "test-all": "npm run test-sqlite && npm run test-postgres",
     "test-debug": "cross-env NODE_ENV=test-sqlite CONFIG_PATH=config mocha --inspect-brk test/**/*.js test/**/**/*.js  --exit",
