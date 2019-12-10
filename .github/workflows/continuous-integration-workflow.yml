@@ -359,7 +359,7 @@ jobs:
         name: windows_installer_results
         path: installer/Output
 
-  prepare_and_tag_version:
+  commit_and_tag_version:
     name: "Commit & Tag Version"
     needs: [lint_linux, build_windows_installer, create_windows_zip, create_sources_linux, create_sources_macos, test_sqlite, test_postgres]
     runs-on: ubuntu-18.04
@@ -391,7 +391,7 @@ jobs:
 
   publish_npm:
     name: "Publish npm Package"
-    needs: prepare_and_tag_version
+    needs: commit_and_tag_version
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v1
@@ -419,7 +419,7 @@ jobs:
 
   publish_github:
     name: "Publish GitHub Release"
-    needs: prepare_and_tag_version
+    needs: commit_and_tag_version
     runs-on: ubuntu-18.04
     if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
 
@@ -492,7 +492,7 @@ jobs:
 
   build_docker:
     name: "Build & Publish Docker Image"
-    needs: prepare_and_tag_version
+    needs: commit_and_tag_version
     runs-on: ubuntu-18.04
     if: contains(github.ref, 'master') || contains(github.ref, 'develop') || contains(github.ref, 'beta')
     steps:
