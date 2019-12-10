@@ -57,14 +57,12 @@
   "bugs": {
     "url": "https://github.com/process-engine/procese_engine_runtime/issues"
   },
-  "publishConfig": {
-    "registry": "https://www.npmjs.com"
-  },
   "pkg": {
     "assets": [
       "config/**/",
       "sequelize/**/",
-      "node_modules/**/"
+      "node_modules/**/",
+      "swagger.html"
     ],
     "scripts": [
       "node_modules/**/ioc_module.js"
