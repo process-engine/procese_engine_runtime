@@ -101,7 +101,7 @@ jobs:
 
     - name: Slack Notification
       uses: homoluctus/slatify@master
-      if: always()
+      if: failure()
       with:
         type: ${{ job.status }}
         job_name: 'Test with SQLite'
@@ -149,7 +149,7 @@ jobs:
 
     - name: Slack Notification
       uses: homoluctus/slatify@master
-      if: always()
+      if: failure()
       with:
         type: ${{ job.status }}
         job_name: 'Test with Postgres'
@@ -189,7 +189,7 @@ jobs:
 
     - name: Slack Notification
       uses: homoluctus/slatify@master
-      if: always()
+      if: failure()
       with:
         type: ${{ job.status }}
         job_name: 'Test with MySQL'
@@ -361,9 +361,19 @@ jobs:
 
   commit_and_tag_version:
     name: "Commit & Tag Version"
-    needs: [lint_linux, build_windows_installer, create_windows_zip, create_sources_linux, create_sources_macos, test_sqlite, test_postgres]
+    needs: [lint_linux, test_sqlite, test_postgres, test_mysql]
     runs-on: ubuntu-18.04
     steps:
+
+    - name: Slack Notification
+      uses: homoluctus/slatify@master
+      with:
+        type: success
+        job_name: 'Tests'
+        url: ${{ secrets.SLACK_WEBHOOK }}
+        commit: true
+        token: ${{ secrets.GH_TOKEN }}
+
     - uses: actions/checkout@v1
     - name: Use Node.js 10.x
       uses: actions/setup-node@v1
