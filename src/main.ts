@@ -70,6 +70,8 @@ export async function startRuntime(args?: startupArgs | string): Promise<void> {
   }
   await startInternalServices();
   await resumeProcessInstances();
+
+  process.send('started');
 }
 
 function parseArguments(args: startupArgs | string): void {
