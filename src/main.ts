@@ -71,7 +71,9 @@ export async function startRuntime(args?: startupArgs | string): Promise<void> {
   await startInternalServices();
   await resumeProcessInstances();
 
-  process.send('started');
+  if (typeof process.send === 'function') {
+    process.send('started');
+  }
 }
 
 function parseArguments(args: startupArgs | string): void {
