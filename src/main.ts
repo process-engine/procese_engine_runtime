@@ -68,12 +68,14 @@ export async function startRuntime(args?: startupArgs | string): Promise<void> {
   if (httpIsEnabled) {
     await configureGlobalRoutes(container, useHttpRootRoutes);
   }
+
   await startInternalServices();
-  await resumeProcessInstances();
 
   if (typeof process.send === 'function') {
     process.send('started');
   }
+
+  await resumeProcessInstances();
 }
 
 function parseArguments(args: startupArgs | string): void {
