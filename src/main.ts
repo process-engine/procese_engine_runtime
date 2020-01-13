@@ -68,7 +68,13 @@ export async function startRuntime(args?: startupArgs | string): Promise<void> {
   if (httpIsEnabled) {
     await configureGlobalRoutes(container, useHttpRootRoutes);
   }
+
   await startInternalServices();
+
+  if (typeof process.send === 'function') {
+    process.send('started');
+  }
+
   await resumeProcessInstances();
 }
 
