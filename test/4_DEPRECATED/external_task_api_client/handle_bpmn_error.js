@@ -20,6 +20,7 @@ describe('DEPRECATED - ExternalTask API Client:  ExternalTask BPMN Error', () =>
   const workerId = 'handle_bpmn_error_sample_worker';
   const topicName = 'external_task_sample_topic';
   const errorCode = 'Red alert';
+  const errorMessage = 'Red alert';
 
   before(async () => {
     testFixtureProvider = new TestFixtureProvider();
@@ -45,7 +46,7 @@ describe('DEPRECATED - ExternalTask API Client:  ExternalTask BPMN Error', () =>
 
     await testFixtureProvider
       .externalTaskApiClient
-      .handleBpmnError(defaultIdentity, workerId, externalTaskHappyPathTest.id, errorCode);
+      .handleBpmnError(defaultIdentity, workerId, externalTaskHappyPathTest.id, errorCode, errorMessage);
 
     await assertThatErrorHandlingWasSuccessful(externalTaskHappyPathTest.id, errorCode);
   });
