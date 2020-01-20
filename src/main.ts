@@ -85,7 +85,7 @@ export async function startRuntime(args?: startupArgs | string): Promise<void> {
   await resumeProcessInstances();
   printHttpInfo();
 
-  consoleInterface.intialize(container, httpIsEnabled);
+  consoleInterface.initialize(container, httpIsEnabled);
 }
 
 function parseArguments(args: startupArgs | string): void {

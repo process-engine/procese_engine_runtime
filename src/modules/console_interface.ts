@@ -19,7 +19,7 @@ const commandDelegates = {
 
 let httpIsEnabled: boolean;
 
-export function intialize(iocContainer: InvocationContainer, httpEnabled: boolean): void {
+export function initialize(iocContainer: InvocationContainer, httpEnabled: boolean): void {
 
   container = iocContainer;
   httpIsEnabled = httpEnabled;
