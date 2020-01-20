@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import {InvocationContainer} from 'addict-ioc';
-import * as chalk from 'chalk';
 import * as fs from 'fs';
 import {Logger} from 'loggerhythm';
 import {AddressInfo} from 'net';

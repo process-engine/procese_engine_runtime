@@ -274,7 +274,7 @@ export class TestFixtureProvider {
   private async execAsync(command): Promise<string> {
 
     return new Promise((resolve, reject): void => {
-      const childProcess = exec(command, (error, stdout, stdErr): void => {
+      const childProcess = exec(command, (error, stdout): void => {
 
         if (error) {
           return reject(error);
