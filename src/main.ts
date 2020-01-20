@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import {InvocationContainer} from 'addict-ioc';
+import * as chalk from 'chalk';
 import * as fs from 'fs';
 import {Logger} from 'loggerhythm';
+import {AddressInfo} from 'net';
 import * as path from 'path';
 
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
+import {HttpExtension} from '@essential-projects/http_extension';
 import {IIdentity} from '@essential-projects/iam_contracts';
 import {IAutoStartService, ICronjobService, IResumeProcessService} from '@process-engine/process_engine_contracts';
 
@@ -77,6 +80,7 @@ export async function startRuntime(args?: startupArgs | string): Promise<void> {
   }
 
   await resumeProcessInstances();
+  printHttpInfo();
 
   consoleInterface.intialize(container, httpIsEnabled);
 }
@@ -343,4 +347,15 @@ async function resumeProcessInstances(): Promise<void> {
   const resumeProcessService = await container.resolveAsync<IResumeProcessService>('ResumeProcessService');
   await resumeProcessService.findAndResumeInterruptedProcessInstances(dummyIdentity);
   logger.info('Done.');
+}
+
+function printHttpInfo(): void {
+  if (!httpIsEnabled) {
+    return;
+  }
+  const httpExtension = container.resolve<HttpExtension>('HttpExtension');
+
+  const httpInfo = (httpExtension.httpServer.address() as AddressInfo);
+
+  logger.info(`Now listening for HTTP requests on port ${httpInfo.port}`);
 }
