@@ -11,6 +11,7 @@ import {IAutoStartService, ICronjobService, IResumeProcessService} from '@proces
 import * as environment from './modules/environment';
 import {configureGlobalRoutes} from './modules/global_route_configurator';
 import {migrate as executeMigrations} from './modules/migrator';
+import * as consoleInterface from './modules/console_interface';
 
 import * as postMigrations from './post-migrations';
 
@@ -76,6 +77,8 @@ export async function startRuntime(args?: startupArgs | string): Promise<void> {
   }
 
   await resumeProcessInstances();
+
+  consoleInterface.intialize(container, httpIsEnabled);
 }
 
 function parseArguments(args: startupArgs | string): void {
@@ -122,7 +125,6 @@ function parseArguments(args: startupArgs | string): void {
   if (typeof args === 'object' && args.logFilePath !== undefined) {
     logger.verbose(`Using log file path: ${args.logFilePath}`);
     process.env.process_engine__logging_repository__output_path = path.resolve(args.logFilePath, 'logs');
-    process.env.process_engine__metrics_repository__output_path = path.resolve(args.logFilePath, 'metrics');
   }
 
   if (typeof args === 'object' && args.enableHttp !== undefined) {
