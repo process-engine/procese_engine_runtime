@@ -55,6 +55,9 @@ export async function startRuntime(args?: startupArgs | string): Promise<void> {
     return loadIocModules();
   }
 
+  const packageJson = environment.readPackageJson();
+  logger.info(`Starting up ProcessEngineRuntime version ${packageJson.version}...`);
+
   setConfigPath();
   validateEnvironment();
 
