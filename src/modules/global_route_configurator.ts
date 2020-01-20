@@ -5,28 +5,16 @@ import {
   Response,
   static as expressStatic,
 } from 'express';
-import * as fs from 'fs';
 import * as path from 'path';
+import {absolutePath as getPathToSwagger} from 'swagger-ui-dist';
 
 import {IHttpExtension} from '@essential-projects/http_contracts';
 
-import {absolutePath as getPathToSwagger} from 'swagger-ui-dist';
+import * as environment from './environment';
 
 let httpExtension: IHttpExtension;
 
 const httpStatusCodeSuccess = 200;
-
-interface IApplicationInfo {
-  name: string;
-  version: string;
-  description: string;
-  license: string;
-  homepage: string;
-  author: string | object;
-  contributors: Array<string>;
-  repository: string | object;
-  bugs: string | object;
-}
 
 export async function configureGlobalRoutes(container: InvocationContainer, useHttpRootRoutes: boolean): Promise<void> {
   httpExtension = await container.resolveAsync<IHttpExtension>('HttpExtension');
@@ -110,35 +98,20 @@ function loadConfig(configDirName: string, configFileName: string): any {
   return loadedConfig;
 }
 
-function getInfosFromPackageJson(): IApplicationInfo {
+function getInfosFromPackageJson(): environment.IApplicationInfo {
 
-  const pathToPackageJson = path.join(__dirname, '..', '..', '..', 'package.json');
-  const packageJsonAsString = fs.readFileSync(pathToPackageJson, 'utf-8');
-
-  const packageJson = JSON.parse(packageJsonAsString);
-
-  const {
-    name,
-    version,
-    description,
-    license,
-    homepage,
-    author,
-    contributors,
-    repository,
-    bugs,
-  } = packageJson;
+  const packageJson = environment.readPackageJson();
 
   const applicationInfo = {
-    name: name,
-    version: version,
-    description: description,
-    license: license,
-    homepage: homepage,
-    author: author,
-    contributors: contributors,
-    repository: repository,
-    bugs: bugs,
+    name: packageJson.name,
+    version: packageJson.version,
+    description: packageJson.description,
+    license: packageJson.license,
+    homepage: packageJson.homepage,
+    author: packageJson.author,
+    contributors: packageJson.contributors,
+    repository: packageJson.repository,
+    bugs: packageJson.bugs,
   };
 
   return applicationInfo;

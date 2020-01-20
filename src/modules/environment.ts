@@ -4,6 +4,18 @@ import * as os from 'os';
 import * as path from 'path';
 import * as Sequelize from 'sequelize';
 
+export interface IApplicationInfo {
+  name: string;
+  version: string;
+  description: string;
+  license: string;
+  homepage: string;
+  author: string | object;
+  contributors: Array<string>;
+  repository: string | object;
+  bugs: string | object;
+}
+
 export function setDatabasePaths(sqlitePath: string): void {
 
   const databaseBasePath = getSqliteStoragePath(sqlitePath);
@@ -73,4 +85,14 @@ export function readConfigFile(env: string, repositoryConfigFileName: string): S
   const parsedFileContent = JSON.parse(fileContent) as Sequelize.Options;
 
   return parsedFileContent;
+}
+
+export function readPackageJson(): IApplicationInfo {
+
+  const pathToPackageJson = path.join(__dirname, '..', '..', '..', 'package.json');
+  const packageJsonAsString = fs.readFileSync(pathToPackageJson, 'utf-8');
+
+  const packageJson = JSON.parse(packageJsonAsString);
+
+  return packageJson;
 }

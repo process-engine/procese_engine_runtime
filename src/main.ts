@@ -2,15 +2,18 @@
 import {InvocationContainer} from 'addict-ioc';
 import * as fs from 'fs';
 import {Logger} from 'loggerhythm';
+import {AddressInfo} from 'net';
 import * as path from 'path';
 
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
+import {HttpExtension} from '@essential-projects/http_extension';
 import {IIdentity} from '@essential-projects/iam_contracts';
 import {IAutoStartService, ICronjobService, IResumeProcessService} from '@process-engine/process_engine_contracts';
 
 import * as environment from './modules/environment';
 import {configureGlobalRoutes} from './modules/global_route_configurator';
 import {migrate as executeMigrations} from './modules/migrator';
+import * as consoleInterface from './modules/console_interface';
 
 import * as postMigrations from './post-migrations';
 
@@ -51,6 +54,9 @@ export async function startRuntime(args?: startupArgs | string): Promise<void> {
     return loadIocModules();
   }
 
+  const packageJson = environment.readPackageJson();
+  logger.info(`Starting up ProcessEngineRuntime version ${packageJson.version}...`);
+
   setConfigPath();
   validateEnvironment();
 
@@ -76,6 +82,9 @@ export async function startRuntime(args?: startupArgs | string): Promise<void> {
   }
 
   await resumeProcessInstances();
+  printHttpInfo();
+
+  consoleInterface.initialize(container, httpIsEnabled);
 }
 
 function parseArguments(args: startupArgs | string): void {
@@ -122,7 +131,6 @@ function parseArguments(args: startupArgs | string): void {
   if (typeof args === 'object' && args.logFilePath !== undefined) {
     logger.verbose(`Using log file path: ${args.logFilePath}`);
     process.env.process_engine__logging_repository__output_path = path.resolve(args.logFilePath, 'logs');
-    process.env.process_engine__metrics_repository__output_path = path.resolve(args.logFilePath, 'metrics');
   }
 
   if (typeof args === 'object' && args.enableHttp !== undefined) {
@@ -341,4 +349,15 @@ async function resumeProcessInstances(): Promise<void> {
   const resumeProcessService = await container.resolveAsync<IResumeProcessService>('ResumeProcessService');
   await resumeProcessService.findAndResumeInterruptedProcessInstances(dummyIdentity);
   logger.info('Done.');
+}
+
+function printHttpInfo(): void {
+  if (!httpIsEnabled) {
+    return;
+  }
+  const httpExtension = container.resolve<HttpExtension>('HttpExtension');
+
+  const httpInfo = (httpExtension.httpServer.address() as AddressInfo);
+
+  logger.info(`Now listening for HTTP requests on port ${httpInfo.port}`);
 }
