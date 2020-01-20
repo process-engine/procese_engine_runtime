@@ -29,6 +29,9 @@ export function intialize(iocContainer: InvocationContainer, httpEnabled: boolea
   });
 
   rl.on('line', processCommand);
+  console.log('');
+  console.log(chalk.yellowBright('Type \'help\' to get a list of available console commands.'));
+  console.log('');
 }
 
 function processCommand(command: string): void {
@@ -70,7 +73,7 @@ function printVersion(): void {
 
 function printHttpInfo(): void {
 
-  if (!httpIsEnabled) {
+  if (httpIsEnabled === false) {
     console.log('');
     console.log(chalk.blueBright('Http is disabled.'));
     console.log('');
