@@ -9,11 +9,12 @@ import * as environment from './environment';
 
 let container: InvocationContainer;
 
-const commands = ['help', 'version', 'httpconfig'];
+const commands = ['exit', 'help', 'httpconfig', 'version'];
 const commandDelegates = {
+  exit: (): void => exitApplication(),
   help: (): void => printHelp(),
-  version: (): void => printVersion(),
   httpconfig: (): void => printHttpInfo(),
+  version: (): void => printVersion(),
 };
 
 let httpIsEnabled: boolean;
@@ -51,24 +52,24 @@ function processCommand(command: string): void {
   }
 }
 
+function exitApplication(): void {
+  console.log('');
+  console.log(chalk.blueBright('Sending shutdown signal...'));
+  console.log('');
+  process.exit(0);
+}
+
 function printHelp(): void {
 
   const help = `${chalk.yellow('Available Commands')}:
 
+  ${chalk.blueBright('exit')}:       Shuts the ProcessEngineRuntime down
   ${chalk.blueBright('version')}:    Prints the version of the ProcessEngineRuntime
   ${chalk.blueBright('httpconfig')}: Prints the ProcessEngineRuntime's http settings (port, address and IP protocol)
   ${chalk.blueBright('help')}:       Prints this dialog
   `;
 
   console.log(help);
-}
-
-function printVersion(): void {
-  const packageJson = environment.readPackageJson();
-
-  console.log('');
-  console.log(`${chalk.blueBright('ProcessEngineRuntime version')}: `, packageJson.version);
-  console.log('');
 }
 
 function printHttpInfo(): void {
@@ -88,4 +89,12 @@ function printHttpInfo(): void {
     console.log(chalk.blueBright('IP protocol: '), httpInfo.family);
     console.log('');
   }
+}
+
+function printVersion(): void {
+  const packageJson = environment.readPackageJson();
+
+  console.log('');
+  console.log(`${chalk.blueBright('ProcessEngineRuntime version')}: `, packageJson.version);
+  console.log('');
 }
