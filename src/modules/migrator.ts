@@ -26,7 +26,7 @@ export async function migrate(repositoryName: string, sqlitePath: string): Promi
 function getConfig(env: string, repositoryName: string, sqlitePath?: string): Sequelize.Options {
 
   const repositoryConfigFileName = `${repositoryName}_repository.json`;
-  const config = environment.readConfigFile(env, repositoryConfigFileName);
+  const config = environment.readConfigFile<Sequelize.Options>(env, 'process_engine', repositoryConfigFileName);
 
   if (config.dialect === 'sqlite') {
     const fullSqlitePath = environment.getSqliteStoragePath(sqlitePath);

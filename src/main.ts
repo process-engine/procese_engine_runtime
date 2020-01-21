@@ -2,11 +2,9 @@
 import {InvocationContainer} from 'addict-ioc';
 import * as fs from 'fs';
 import {Logger} from 'loggerhythm';
-import {AddressInfo} from 'net';
 import * as path from 'path';
 
 import {AppBootstrapper} from '@essential-projects/bootstrapper_node';
-import {HttpExtension} from '@essential-projects/http_extension';
 import {IIdentity} from '@essential-projects/iam_contracts';
 import {IAutoStartService, ICronjobService, IResumeProcessService} from '@process-engine/process_engine_contracts';
 
@@ -54,11 +52,12 @@ export async function startRuntime(args?: startupArgs | string): Promise<void> {
     return loadIocModules();
   }
 
-  const packageJson = environment.readPackageJson();
-  logger.info(`Starting up ProcessEngineRuntime version ${packageJson.version}...`);
-
   setConfigPath();
   validateEnvironment();
+
+  const packageJson = environment.readPackageJson();
+  logger.info(`Starting up ProcessEngineRuntime version ${packageJson.version}...`);
+  printHttpInfo();
 
   environment.setDatabasePaths(sqlitePath);
 
@@ -82,7 +81,6 @@ export async function startRuntime(args?: startupArgs | string): Promise<void> {
   }
 
   await resumeProcessInstances();
-  printHttpInfo();
 
   consoleInterface.initialize(container, httpIsEnabled);
 }
@@ -355,9 +353,23 @@ function printHttpInfo(): void {
   if (!httpIsEnabled) {
     return;
   }
-  const httpExtension = container.resolve<HttpExtension>('HttpExtension');
 
-  const httpInfo = (httpExtension.httpServer.address() as AddressInfo);
+  type HttpConfig = {
+    server: {
+      host: string;
+      port: number;
+    };
+  };
+  // NOTE:
+  // The configured port may not necessarily be the actual port used by the HttpExtension!
+  // We do not yet make use of port discovery, but as soon as we do, these values may differ!
+  // The long-term solution would be to get these informations from the HttpExtension directly,
+  // but in order to do that, the ProcessEngine must have been started up first.
+  const httpConfig = environment.readConfigFile<HttpConfig>(process.env.NODE_ENV, 'http', 'http_extension.json');
 
-  logger.info(`Now listening for HTTP requests on port ${httpInfo.port}`);
+  const configuredAddress = process.env.http__http_extension__server__host ?? httpConfig.server.host;
+  const configuredPort = process.env.http__http_extension__server__port ?? httpConfig.server.port;
+
+  logger.info(`Using HTTP endpoint ${configuredAddress}:${configuredPort}`);
+  logger.info(`Using websocket endpoint ${configuredAddress}:${configuredPort}`);
 }
