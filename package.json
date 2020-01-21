@@ -1,6 +1,6 @@
 {
   "name": "@process-engine/process_engine_runtime",
-  "version": "9.4.0-alpha.4",
+  "version": "9.4.0-alpha.5",
   "description": "Standalone application that provides access to the .TS implementation of the ProcessEngine.",
   "bin": {
     "process-engine": "./bin/index.js"
