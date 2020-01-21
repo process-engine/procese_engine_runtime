@@ -23,27 +23,27 @@ export function setDatabasePaths(sqlitePath: string): void {
   const logsStoragePath = path.join(databaseBasePath, 'logs');
   process.env.process_engine__logging_repository__log_output_path = logsStoragePath;
 
-  const correlationRepositoryConfig = readConfigFile(process.env.NODE_ENV, 'correlation_repository.json');
-  if (correlationRepositoryConfig.storage) {
-    const correlationRepositoryStoragePath = path.join(databaseBasePath, correlationRepositoryConfig.storage);
+  const correlationRepoConfig = readConfigFile<Sequelize.Options>(process.env.NODE_ENV, 'process_engine', 'correlation_repository.json');
+  if (correlationRepoConfig.storage) {
+    const correlationRepositoryStoragePath = path.join(databaseBasePath, correlationRepoConfig.storage);
     process.env.process_engine__correlation_repository__storage = correlationRepositoryStoragePath;
   }
 
-  const externalTaskRepositoryConfig = readConfigFile(process.env.NODE_ENV, 'external_task_repository.json');
-  if (externalTaskRepositoryConfig.storage) {
-    const externalTaskRepositoryStoragePath = path.join(databaseBasePath, externalTaskRepositoryConfig.storage);
+  const externalTaskRepoConfig = readConfigFile<Sequelize.Options>(process.env.NODE_ENV, 'process_engine', 'external_task_repository.json');
+  if (externalTaskRepoConfig.storage) {
+    const externalTaskRepositoryStoragePath = path.join(databaseBasePath, externalTaskRepoConfig.storage);
     process.env.process_engine__external_task_repository__storage = externalTaskRepositoryStoragePath;
   }
 
-  const flowNodeInstanceRepositoryConfig = readConfigFile(process.env.NODE_ENV, 'flow_node_instance_repository.json');
-  if (flowNodeInstanceRepositoryConfig.storage) {
-    const flowNodeRepositoryStoragePath = path.join(databaseBasePath, flowNodeInstanceRepositoryConfig.storage);
+  const flowNodeInstanceRepoConfig = readConfigFile<Sequelize.Options>(process.env.NODE_ENV, 'process_engine', 'flow_node_instance_repository.json');
+  if (flowNodeInstanceRepoConfig.storage) {
+    const flowNodeRepositoryStoragePath = path.join(databaseBasePath, flowNodeInstanceRepoConfig.storage);
     process.env.process_engine__flow_node_instance_repository__storage = flowNodeRepositoryStoragePath;
   }
 
-  const processModelRepositoryConfig = readConfigFile(process.env.NODE_ENV, 'process_model_repository.json');
-  if (processModelRepositoryConfig.storage) {
-    const processModelRepositoryStoragePath = path.join(databaseBasePath, processModelRepositoryConfig.storage);
+  const processModelRepoConfig = readConfigFile<Sequelize.Options>(process.env.NODE_ENV, 'process_engine', 'process_model_repository.json');
+  if (processModelRepoConfig.storage) {
+    const processModelRepositoryStoragePath = path.join(databaseBasePath, processModelRepoConfig.storage);
     process.env.process_engine__process_model_repository__storage = processModelRepositoryStoragePath;
   }
 }
@@ -76,13 +76,13 @@ export function getUserConfigFolder(): string {
   }
 }
 
-export function readConfigFile(env: string, repositoryConfigFileName: string): Sequelize.Options {
+export function readConfigFile<TResult>(env: string, ...pathSegments: Array<string>): TResult {
 
-  const configFilePath = path.resolve(process.env.CONFIG_PATH, env, 'process_engine', repositoryConfigFileName);
+  const configFilePath = path.resolve(process.env.CONFIG_PATH, env, ...pathSegments);
 
   const fileContent = fs.readFileSync(configFilePath, 'utf-8');
 
-  const parsedFileContent = JSON.parse(fileContent) as Sequelize.Options;
+  const parsedFileContent = JSON.parse(fileContent) as TResult;
 
   return parsedFileContent;
 }

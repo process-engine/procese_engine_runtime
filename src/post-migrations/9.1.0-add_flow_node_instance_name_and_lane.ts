@@ -69,9 +69,9 @@ async function setup(sqlitePath?: string): Promise<void> {
 
   await parser.initialize();
 
-  const correlationRepoConfig = environment.readConfigFile(nodeEnv, 'correlation_repository.json');
-  const flowNodeInstanceRepoConfig = environment.readConfigFile(nodeEnv, 'flow_node_instance_repository.json');
-  const processModelRepoConfig = environment.readConfigFile(nodeEnv, 'correlation_repository.json');
+  const correlationRepoConfig = environment.readConfigFile<Sequelize.Options>(nodeEnv, 'process_engine', 'correlation_repository.json');
+  const flowNodeInstanceRepoConfig = environment.readConfigFile<Sequelize.Options>(nodeEnv, 'process_engine', 'flow_node_instance_repository.json');
+  const processModelRepoConfig = environment.readConfigFile<Sequelize.Options>(nodeEnv, 'process_engine', 'correlation_repository.json');
 
   nodeEnvIsPostgres = flowNodeInstanceRepoConfig.dialect === 'postgres';
 
