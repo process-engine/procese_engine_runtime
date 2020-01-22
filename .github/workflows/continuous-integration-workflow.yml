@@ -505,6 +505,7 @@ jobs:
 
 
     - name: Announce Release Notes
+      if: github.ref == 'refs/heads/master'
       run: |
         ./node_modules/.bin/ci_tools publish-releasenotes-on-slack
       env:
