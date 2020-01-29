@@ -85,7 +85,7 @@
     "@process-engine/persistence_api.repositories.sequelize": "1.4.0-beta.1",
     "@process-engine/persistence_api.services": "1.4.0-beta.1",
     "@process-engine/persistence_api.use_cases": "1.4.0-beta.1",
-    "@process-engine/process_engine_core": "feature~fix_external_task_decoration",
+    "@process-engine/process_engine_core": "12.15.0-beta.3",
     "@types/socket.io": "^2.1.0",
     "@types/socket.io-client": "^1.4.32",
     "addict-ioc": "^2.5.3",
