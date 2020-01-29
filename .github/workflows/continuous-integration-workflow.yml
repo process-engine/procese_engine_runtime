@@ -28,7 +28,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: node_modules
-        key: npm-${{ hashFiles('package-lock.json') }}
+        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
     - name: Prepare Version
       run: |
@@ -67,7 +67,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: node_modules
-        key: npm-${{ hashFiles('package-lock.json') }}
+        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
     - run: npm run lint
       name: Lint Sources
@@ -89,7 +89,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: node_modules
-        key: npm-${{ hashFiles('package-lock.json') }}
+        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
     - name: Build
       run: |
@@ -139,7 +139,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: node_modules
-        key: npm-${{ hashFiles('package-lock.json') }}
+        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
     - name: Build
       run: npm run build
@@ -175,7 +175,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: node_modules
-        key: npm-${{ hashFiles('package-lock.json') }}
+        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
     - name: Build
       run: npm run build
@@ -217,7 +217,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: node_modules
-        key: npm-${{ hashFiles('package-lock.json') }}
+        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
     - name: Build
       run: |
@@ -250,7 +250,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: node_modules
-        key: npm-${{ hashFiles('package-lock.json') }}
+        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
     - name: Build
       run: |
@@ -390,7 +390,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: node_modules
-        key: npm-${{ hashFiles('package-lock.json') }}
+        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
     - name: Commit and Tag
       run: |
@@ -420,7 +420,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: node_modules
-        key: npm-${{ hashFiles('package-lock.json') }}
+        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
     - name: Build Sources
       run: npm run build
@@ -478,7 +478,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: node_modules
-        key: npm-${{ hashFiles('package-lock.json') }}
+        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
     - name: Upload to GitHub
       run: |
