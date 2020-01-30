@@ -317,7 +317,7 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: process_engine_runtime_windows_zip
-    #     path: process_engine_runtime_windows.zip
+        path: process_engine_runtime_windows.zip
 
   build_windows_installer:
     name: "Build Windows Installer"
