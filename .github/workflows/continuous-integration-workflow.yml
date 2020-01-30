@@ -365,20 +365,20 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
 
-    # - name: Slack Notification
-    #   uses: homoluctus/slatify@master
-    #   with:
-    #     type: success
-    #     job_name: 'Tests'
-    #     url: ${{ secrets.SLACK_WEBHOOK }}
-    #     commit: true
-    #     token: ${{ secrets.GH_TOKEN }}
+    - name: Slack Notification
+      uses: homoluctus/slatify@master
+      with:
+        type: success
+        job_name: 'Tests'
+        url: ${{ secrets.SLACK_WEBHOOK }}
+        commit: true
+        token: ${{ secrets.GH_TOKEN }}
 
-    # - uses: actions/checkout@v1
-    # - name: Use Node.js 10.x
-    #   uses: actions/setup-node@v1
-    #   with:
-    #     node-version: 10.x
+    - uses: actions/checkout@v1
+    - name: Use Node.js 10.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 10.x
 
     # - name: Unstash package.json
     #   uses: actions/download-artifact@master
