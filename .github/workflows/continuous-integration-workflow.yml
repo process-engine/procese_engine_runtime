@@ -539,6 +539,8 @@ jobs:
       #if: github.ref == 'refs/heads/master'
       run: echo "##[set-output name=major_version;]$(VERSION=$VERSION node --print --eval "const indexOfDot = process.env.VERSION.indexOf('.'); process.env.VERSION.substr(0, indexOfDot)")"
       id: major_package_version
+      env:
+        VERSION: ${{ steps.package_version.outputs.version }}
 
     - name: Log Major Studio Version
       #if: github.ref == 'refs/heads/master'
@@ -548,7 +550,7 @@ jobs:
         VERSION: ${{ steps.major_package_version.outputs.major_version }}
 
     - name: Build Docker Image
-      #if: github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
+      if: github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
       run: |
         docker build --build-arg NODE_IMAGE_VERSION=10-alpine \
                     --build-arg PROCESS_ENGINE_VERSION=$VERSION \
