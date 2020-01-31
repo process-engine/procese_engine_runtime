@@ -112,7 +112,7 @@
   "devDependencies": {
     "@essential-projects/eslint-config": "^1.0.0",
     "@essential-projects/iam_contracts": "^3.6.0",
-    "@process-engine/ci_tools": "^2.2.0",
+    "@process-engine/ci_tools": "feature~add_get-version_command",
     "@process-engine/consumer_api_client": "^6.3.0",
     "@process-engine/consumer_api_contracts": "^9.2.0",
     "@process-engine/external_task_api_client": "^2.2.0",
