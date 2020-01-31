@@ -35,7 +35,7 @@ jobs:
         ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir
 
     - name: Get Package Version
-      run: echo "##[set-output name=version;]$(node --print --eval "require('./package.json').version")"
+      run: echo "##[set-output name=version;]$(./node_modules/.bin/ci_tools get-version)"
       id: package_version
 
     - name: Log Version
@@ -344,7 +344,7 @@ jobs:
       run: npm run build-windows-executable
 
     - name: Get Package Version
-      run: echo "##[set-output name=version;]$(node --print --eval "require('./package.json').version")"
+      run: echo "##[set-output name=version;]$(./node_modules/.bin/ci_tools get-version)"
       id: package_version
 
     - name: Build Installer
@@ -532,12 +532,12 @@ jobs:
         path: "."
 
     - name: Get Package Version
-      run: echo "##[set-output name=version;]$(node --print --eval "require('./package.json').version")"
+      run: echo "##[set-output name=version;]$(./node_modules/.bin/ci_tools get-version)"
       id: package_version
 
     - name: Get Package Major Version
       if: github.ref == 'refs/heads/master'
-      run: echo "##[set-output name=major_version;]$(VERSION=$VERSION node --print --eval "const indexOfDot = process.env.VERSION.indexOf('.'); process.env.VERSION.substr(0, indexOfDot)")"
+      run: echo "##[set-output name=major_version;]$(./node_modules/.bin/ci_tools get-version --major)"
       id: major_package_version
       env:
         VERSION: ${{ steps.package_version.outputs.version }}
