@@ -15,6 +15,7 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
   let secondaryIdentity;
   let restrictedIdentity;
 
+  const correlationId = uuid.v4();
   const processModelId = 'test_consumer_api_usertask';
 
   before(async () => {
@@ -37,7 +38,6 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
   describe('Execution', () => {
 
     before(async () => {
-      const correlationId = uuid.v4();
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
     });
@@ -56,9 +56,9 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
 
       for (const processInstance of processInstances) {
         should(processInstance).have.property('id');
-        should(processInstance).have.property('correlationId');
-        should(processInstance).have.property('processModelId');
         should(processInstance).have.property('owner');
+        should(processInstance.correlationId).be.equal(correlationId);
+        should(processInstance.processModelId).be.equal(processModelId);
 
         const decodedRequestingIdentity = jsonwebtoken.decode(processInstance.owner.token);
         const decodedProcessInstanceIdentity = jsonwebtoken.decode(defaultIdentity.token);
