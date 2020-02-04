@@ -1,6 +1,6 @@
 {
   "name": "@process-engine/process_engine_runtime",
-  "version": "9.4.0",
+  "version": "9.4.1",
   "description": "Standalone application that provides access to the .TS implementation of the ProcessEngine.",
   "bin": {
     "process-engine": "./bin/index.js"
@@ -75,12 +75,12 @@
     "@essential-projects/http": "2.5.0",
     "@essential-projects/http_extension": "7.1.0",
     "@essential-projects/timing": "5.0.2",
-    "@process-engine/consumer_api_core": "6.3.0",
+    "@process-engine/consumer_api_core": "6.3.1",
     "@process-engine/consumer_api_http": "5.3.0",
     "@process-engine/iam": "1.7.4",
     "@process-engine/logging_api_core": "2.0.1",
     "@process-engine/logging.repository.file_system": "2.0.1",
-    "@process-engine/management_api_core": "6.3.0",
+    "@process-engine/management_api_core": "6.3.1",
     "@process-engine/management_api_http": "5.2.0",
     "@process-engine/persistence_api.repositories.sequelize": "1.4.0",
     "@process-engine/persistence_api.services": "1.4.0",
