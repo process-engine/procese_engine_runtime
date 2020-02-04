@@ -15,7 +15,6 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
   let secondaryIdentity;
   let restrictedIdentity;
 
-  const correlationId = uuid.v4();
   const processModelId = 'test_consumer_api_usertask';
 
   before(async () => {
@@ -36,6 +35,7 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
   });
 
   describe('Execution', () => {
+    const correlationId = uuid.v4();
 
     before(async () => {
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
@@ -100,7 +100,7 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
     before(async () => {
       // Create a number of ProcessInstances so we can actually test the pagination.
       const correlationId = uuid.v4();
-      for(let i = 0; i < 10; i++) {
+      for (let i = 0; i < 10; i++) {
         await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, undefined, secondaryIdentity);
       }
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId, 10);
