@@ -35,9 +35,9 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
   });
 
   describe('Execution', () => {
+    const correlationId = uuid.v4();
 
     before(async () => {
-      const correlationId = uuid.v4();
       await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId);
     });
@@ -56,9 +56,9 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
 
       for (const processInstance of processInstances) {
         should(processInstance).have.property('id');
-        should(processInstance).have.property('correlationId');
-        should(processInstance).have.property('processModelId');
         should(processInstance).have.property('owner');
+        should(processInstance.correlationId).be.equal(correlationId);
+        should(processInstance.processModelId).be.equal(processModelId);
 
         const decodedRequestingIdentity = jsonwebtoken.decode(processInstance.owner.token);
         const decodedProcessInstanceIdentity = jsonwebtoken.decode(defaultIdentity.token);
@@ -100,7 +100,7 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
     before(async () => {
       // Create a number of ProcessInstances so we can actually test the pagination.
       const correlationId = uuid.v4();
-      for(let i = 0; i < 10; i++) {
+      for (let i = 0; i < 10; i++) {
         await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId, undefined, secondaryIdentity);
       }
       await processInstanceHandler.waitForProcessInstanceToReachSuspendedTask(correlationId, processModelId, 10);
