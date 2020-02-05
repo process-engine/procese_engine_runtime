@@ -34,16 +34,6 @@ jobs:
       run: |
         ./node_modules/.bin/ci_tools prepare-version --allow-dirty-workdir
 
-    - name: Get Package Version
-      run: echo "##[set-output name=version;]$(node --print --eval "require('./package.json').version")"
-      id: package_version
-
-    - name: Log Version
-      run: |
-        echo $VERSION
-      env:
-        VERSION: ${{ steps.package_version.outputs.version }}
-
     - name: Stash package.json
       uses: actions/upload-artifact@master
       with:
@@ -531,18 +521,30 @@ jobs:
         name: process_engine_runtime_linux_tar
         path: "."
 
-    - name: Get Package Version
-      run: echo "##[set-output name=version;]$(node --print --eval "require('./package.json').version")"
-      id: package_version
+    - name: Get node_modules from Cache
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
     - name: Build Docker Image
+      if: github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
       run: |
+        VERSION="$(./node_modules/.bin/ci_tools get-version)"
         docker build --build-arg NODE_IMAGE_VERSION=10-alpine \
                     --build-arg PROCESS_ENGINE_VERSION=$VERSION \
                     --no-cache \
                     --tag 5minds/process_engine_runtime:$VERSION .
-      env:
-        VERSION: ${{ steps.package_version.outputs.version }}
+
+    - name: Build Docker Image
+      if: github.ref == 'refs/heads/master'
+      run: |
+        VERSION="$(./node_modules/.bin/ci_tools get-version)"
+        MAJOR_VERSION="$(./node_modules/.bin/ci_tools get-version --major)"
+        docker build --build-arg NODE_IMAGE_VERSION=10-alpine \
+                    --build-arg PROCESS_ENGINE_VERSION=$VERSION \
+                    --no-cache \
+                    --tag 5minds/process_engine_runtime:latest --tag 5minds/process_engine_runtime:$MAJOR_VERSION --tag 5minds/process_engine_runtime:$VERSION .
 
     - name: Show Docker Images
       run: docker images
