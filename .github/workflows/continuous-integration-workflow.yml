@@ -198,38 +198,38 @@ jobs:
     #     commit: true
     #     token: ${{ secrets.GH_TOKEN }}
 
-  # create_sources_linux:
-  #   name: "Create Tarball from Linux Sources"
-  #   needs: prepare_version
-  #   runs-on: ubuntu-18.04
-  #   if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
+  create_sources_linux:
+    name: "Create Tarball from Linux Sources"
+    needs: prepare_version
+    runs-on: ubuntu-18.04
+    #if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
 
-  #   steps:
-  #   - uses: actions/checkout@v1
+    steps:
+    - uses: actions/checkout@v1
 
-  #   - name: Unstash package.json
-  #     uses: actions/download-artifact@master
-  #     with:
-  #       name: package_json
-  #       path: "."
+    - name: Unstash package.json
+      uses: actions/download-artifact@master
+      with:
+        name: package_json
+        path: "."
 
-  #   - name: Get node_modules from Cache
-  #     uses: actions/cache@v1
-  #     with:
-  #       path: node_modules
-  #       key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
+    - name: Get node_modules from Cache
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
-  #   - name: Build
-  #     run: |
-  #       npm rebuild
-  #       npm run build
-  #       npm run create-tarball
+    - name: Build
+      run: |
+        npm rebuild
+        npm run build
+        npm run create-tarball
 
-  #   - name: Stash Tarball
-  #     uses: actions/upload-artifact@master
-  #     with:
-  #       name: process_engine_runtime_linux_tar
-  #       path: process_engine_runtime_linux.tar.gz
+    - name: Stash Tarball
+      uses: actions/upload-artifact@master
+      with:
+        name: process_engine_runtime_linux_tar
+        path: process_engine_runtime_linux.tar.gz
 
   # create_sources_macos:
   #   name: "Create Tarball from macOS Sources"
