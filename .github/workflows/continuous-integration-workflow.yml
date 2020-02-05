@@ -63,14 +63,14 @@ jobs:
         name: package_json
         path: "."
 
-    - name: Get node_modules from Cache
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
+    # - name: Get node_modules from Cache
+    #   uses: actions/cache@v1
+    #   with:
+    #     path: node_modules
+    #     key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
-    - run: npm run lint
-      name: Lint Sources
+    # - run: npm run lint
+    #   name: Lint Sources
 
   test_sqlite:
     name: "Test with SQLite"
@@ -85,30 +85,30 @@ jobs:
         name: package_json
         path: "."
 
-    - name: Get node_modules from Cache
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
+    # - name: Get node_modules from Cache
+    #   uses: actions/cache@v1
+    #   with:
+    #     path: node_modules
+    #     key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
-    - name: Build
-      run: |
-        npm rebuild
-        npm run build
+    # - name: Build
+    #   run: |
+    #     npm rebuild
+    #     npm run build
 
-    - name: Run Tests
-      run: npm run test-sqlite
+    # - name: Run Tests
+    #   run: npm run test-sqlite
 
-    - name: Slack Notification
-      uses: homoluctus/slatify@master
-      if: failure()
-      with:
-        type: ${{ job.status }}
-        job_name: 'Test with SQLite'
-        mention_if: 'always'
-        url: ${{ secrets.SLACK_WEBHOOK }}
-        commit: true
-        token: ${{ secrets.GH_TOKEN }}
+    # - name: Slack Notification
+    #   uses: homoluctus/slatify@master
+    #   if: failure()
+    #   with:
+    #     type: ${{ job.status }}
+    #     job_name: 'Test with SQLite'
+    #     mention_if: 'always'
+    #     url: ${{ secrets.SLACK_WEBHOOK }}
+    #     commit: true
+    #     token: ${{ secrets.GH_TOKEN }}
 
   test_postgres:
     name: "Test with Postgres"
@@ -135,28 +135,28 @@ jobs:
         name: package_json
         path: "."
 
-    - name: Get node_modules from Cache
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
+    # - name: Get node_modules from Cache
+    #   uses: actions/cache@v1
+    #   with:
+    #     path: node_modules
+    #     key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
-    - name: Build
-      run: npm run build
+    # - name: Build
+    #   run: npm run build
 
-    - name: Run Tests
-      run: npm run test-postgres
+    # - name: Run Tests
+    #   run: npm run test-postgres
 
-    - name: Slack Notification
-      uses: homoluctus/slatify@master
-      if: failure()
-      with:
-        type: ${{ job.status }}
-        job_name: 'Test with Postgres'
-        mention_if: 'always'
-        url: ${{ secrets.SLACK_WEBHOOK }}
-        commit: true
-        token: ${{ secrets.GH_TOKEN }}
+    # - name: Slack Notification
+    #   uses: homoluctus/slatify@master
+    #   if: failure()
+    #   with:
+    #     type: ${{ job.status }}
+    #     job_name: 'Test with Postgres'
+    #     mention_if: 'always'
+    #     url: ${{ secrets.SLACK_WEBHOOK }}
+    #     commit: true
+    #     token: ${{ secrets.GH_TOKEN }}
 
   test_mysql:
     name: "Test with MySQL"
@@ -171,193 +171,193 @@ jobs:
         name: package_json
         path: "."
 
-    - name: Get node_modules from Cache
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
+    # - name: Get node_modules from Cache
+    #   uses: actions/cache@v1
+    #   with:
+    #     path: node_modules
+    #     key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
-    - name: Build
-      run: npm run build
+    # - name: Build
+    #   run: npm run build
 
-    - run: mv config/test-mysql/.my.cnf ~/.my.cnf
+    # - run: mv config/test-mysql/.my.cnf ~/.my.cnf
 
-    - run: echo "create database processengine" | mysql
+    # - run: echo "create database processengine" | mysql
 
-    - name: Run Tests
-      run: npm run test-mysql
+    # - name: Run Tests
+    #   run: npm run test-mysql
 
-    - name: Slack Notification
-      uses: homoluctus/slatify@master
-      if: failure()
-      with:
-        type: ${{ job.status }}
-        job_name: 'Test with MySQL'
-        mention_if: 'always'
-        url: ${{ secrets.SLACK_WEBHOOK }}
-        commit: true
-        token: ${{ secrets.GH_TOKEN }}
+    # - name: Slack Notification
+    #   uses: homoluctus/slatify@master
+    #   if: failure()
+    #   with:
+    #     type: ${{ job.status }}
+    #     job_name: 'Test with MySQL'
+    #     mention_if: 'always'
+    #     url: ${{ secrets.SLACK_WEBHOOK }}
+    #     commit: true
+    #     token: ${{ secrets.GH_TOKEN }}
 
-  create_sources_linux:
-    name: "Create Tarball from Linux Sources"
-    needs: prepare_version
-    runs-on: ubuntu-18.04
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
+  # create_sources_linux:
+  #   name: "Create Tarball from Linux Sources"
+  #   needs: prepare_version
+  #   runs-on: ubuntu-18.04
+  #   if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
 
-    steps:
-    - uses: actions/checkout@v1
+  #   steps:
+  #   - uses: actions/checkout@v1
 
-    - name: Unstash package.json
-      uses: actions/download-artifact@master
-      with:
-        name: package_json
-        path: "."
+  #   - name: Unstash package.json
+  #     uses: actions/download-artifact@master
+  #     with:
+  #       name: package_json
+  #       path: "."
 
-    - name: Get node_modules from Cache
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
+  #   - name: Get node_modules from Cache
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: node_modules
+  #       key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
-    - name: Build
-      run: |
-        npm rebuild
-        npm run build
-        npm run create-tarball
+  #   - name: Build
+  #     run: |
+  #       npm rebuild
+  #       npm run build
+  #       npm run create-tarball
 
-    - name: Stash Tarball
-      uses: actions/upload-artifact@master
-      with:
-        name: process_engine_runtime_linux_tar
-        path: process_engine_runtime_linux.tar.gz
+  #   - name: Stash Tarball
+  #     uses: actions/upload-artifact@master
+  #     with:
+  #       name: process_engine_runtime_linux_tar
+  #       path: process_engine_runtime_linux.tar.gz
 
-  create_sources_macos:
-    name: "Create Tarball from macOS Sources"
-    needs: prepare_version
-    runs-on: macOS-latest
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
+  # create_sources_macos:
+  #   name: "Create Tarball from macOS Sources"
+  #   needs: prepare_version
+  #   runs-on: macOS-latest
+  #   if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
 
-    steps:
-    - uses: actions/checkout@v1
+  #   steps:
+  #   - uses: actions/checkout@v1
 
-    - name: Unstash package.json
-      uses: actions/download-artifact@master
-      with:
-        name: package_json
-        path: "."
+  #   - name: Unstash package.json
+  #     uses: actions/download-artifact@master
+  #     with:
+  #       name: package_json
+  #       path: "."
 
-    - name: Get node_modules from Cache
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
+  #   - name: Get node_modules from Cache
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: node_modules
+  #       key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
-    - name: Build
-      run: |
-        npm rebuild
-        npm run build
-        npm run create-tarball
+  #   - name: Build
+  #     run: |
+  #       npm rebuild
+  #       npm run build
+  #       npm run create-tarball
 
-    - name: Stash Tarball
-      uses: actions/upload-artifact@master
-      with:
-        name: process_engine_runtime_macos_tar
-        path: process_engine_runtime_macos.tar.gz
+  #   - name: Stash Tarball
+  #     uses: actions/upload-artifact@master
+  #     with:
+  #       name: process_engine_runtime_macos_tar
+  #       path: process_engine_runtime_macos.tar.gz
 
-  create_windows_sources:
-    name: "Create Windows Sources"
-    needs: prepare_version
-    runs-on: windows-latest
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
+  # create_windows_sources:
+  #   name: "Create Windows Sources"
+  #   needs: prepare_version
+  #   runs-on: windows-latest
+  #   if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
 
-    steps:
-    - uses: actions/checkout@v1
+  #   steps:
+  #   - uses: actions/checkout@v1
 
-    - name: Unstash package.json
-      uses: actions/download-artifact@master
-      with:
-        name: package_json
-        path: "."
+  #   - name: Unstash package.json
+  #     uses: actions/download-artifact@master
+  #     with:
+  #       name: package_json
+  #       path: "."
 
-    - name: Install npm Dependencies
-      run: |
-        cat package.json
-        npm i
+  #   - name: Install npm Dependencies
+  #     run: |
+  #       cat package.json
+  #       npm i
 
-    - name: Build
-      run: |
-        npm rebuild
-        npm run build
+  #   - name: Build
+  #     run: |
+  #       npm rebuild
+  #       npm run build
 
-    - name: Cache Sources
-      uses: actions/cache@v1
-      with:
-        path: '.'
-        key: workdir-windows-${{ github.sha }}
+  #   - name: Cache Sources
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: '.'
+  #       key: workdir-windows-${{ github.sha }}
 
-  create_windows_zip:
-    name: "Create Zip File from Windows Sources"
-    needs: create_windows_sources
-    runs-on: macos-latest
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
+  # create_windows_zip:
+  #   name: "Create Zip File from Windows Sources"
+  #   needs: create_windows_sources
+  #   runs-on: macos-latest
+  #   if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
 
-    steps:
-    - uses: actions/checkout@v1
+  #   steps:
+  #   - uses: actions/checkout@v1
 
-    - name: Cache sources
-      uses: actions/cache@v1
-      with:
-        path: '.'
-        key: workdir-windows-${{ github.sha }}
+  #   - name: Cache sources
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: '.'
+  #       key: workdir-windows-${{ github.sha }}
 
-    - name: Create Zip File
-      run: npm run create-zipfile
+  #   - name: Create Zip File
+  #     run: npm run create-zipfile
 
-    - name: Stash Zip File
-      uses: actions/upload-artifact@master
-      with:
-        name: process_engine_runtime_windows_zip
-        path: process_engine_runtime_windows.zip
+  #   - name: Stash Zip File
+  #     uses: actions/upload-artifact@master
+  #     with:
+  #       name: process_engine_runtime_windows_zip
+  #       path: process_engine_runtime_windows.zip
 
-  build_windows_installer:
-    name: "Build Windows Installer"
-    needs: create_windows_sources
-    runs-on: windows-latest
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
+  # build_windows_installer:
+  #   name: "Build Windows Installer"
+  #   needs: create_windows_sources
+  #   runs-on: windows-latest
+  #   if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
 
-    steps:
-    - uses: actions/checkout@v1
+  #   steps:
+  #   - uses: actions/checkout@v1
 
-    - name: Unstash package.json
-      uses: actions/download-artifact@master
-      with:
-        name: package_json
-        path: "."
+  #   - name: Unstash package.json
+  #     uses: actions/download-artifact@master
+  #     with:
+  #       name: package_json
+  #       path: "."
 
-    - name: Cache Sources
-      uses: actions/cache@v1
-      with:
-        path: '.'
-        key: workdir-windows-${{ github.sha }}
+  #   - name: Cache Sources
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: '.'
+  #       key: workdir-windows-${{ github.sha }}
 
-    - name: Build Executable
-      run: npm run build-windows-executable
+  #   - name: Build Executable
+  #     run: npm run build-windows-executable
 
-    - name: Get Package Version
-      run: echo "##[set-output name=version;]$(./node_modules/.bin/ci_tools get-version)"
-      id: package_version
+  #   - name: Get Package Version
+  #     run: echo "##[set-output name=version;]$(./node_modules/.bin/ci_tools get-version)"
+  #     id: package_version
 
-    - name: Build Installer
-      run: iscc "/DProcessEngineRuntimeVersion=%full_release_version_string%" installer\\inno-installer.iss
-      shell: cmd
-      env:
-        full_release_version_string: ${{ steps.package_version.outputs.version }}
+  #   - name: Build Installer
+  #     run: iscc "/DProcessEngineRuntimeVersion=%full_release_version_string%" installer\\inno-installer.iss
+  #     shell: cmd
+  #     env:
+  #       full_release_version_string: ${{ steps.package_version.outputs.version }}
 
-    - name: Stash Installer
-      uses: actions/upload-artifact@master
-      with:
-        name: windows_installer_results
-        path: installer/Output
+  #   - name: Stash Installer
+  #     uses: actions/upload-artifact@master
+  #     with:
+  #       name: windows_installer_results
+  #       path: installer/Output
 
   commit_and_tag_version:
     name: "Commit & Tag Version"
@@ -365,14 +365,14 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
 
-    - name: Slack Notification
-      uses: homoluctus/slatify@master
-      with:
-        type: success
-        job_name: 'Tests'
-        url: ${{ secrets.SLACK_WEBHOOK }}
-        commit: true
-        token: ${{ secrets.GH_TOKEN }}
+    # - name: Slack Notification
+    #   uses: homoluctus/slatify@master
+    #   with:
+    #     type: success
+    #     job_name: 'Tests'
+    #     url: ${{ secrets.SLACK_WEBHOOK }}
+    #     commit: true
+    #     token: ${{ secrets.GH_TOKEN }}
 
     - uses: actions/checkout@v1
     - name: Use Node.js 10.x
@@ -380,142 +380,142 @@ jobs:
       with:
         node-version: 10.x
 
-    - name: Unstash package.json
-      uses: actions/download-artifact@master
-      with:
-        name: package_json
-        path: "."
+    # - name: Unstash package.json
+    #   uses: actions/download-artifact@master
+    #   with:
+    #     name: package_json
+    #     path: "."
 
-    - name: Get node_modules from Cache
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
+    # - name: Get node_modules from Cache
+    #   uses: actions/cache@v1
+    #   with:
+    #     path: node_modules
+    #     key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
-    - name: Commit and Tag
-      run: |
-        ./node_modules/.bin/ci_tools commit-and-tag-version --only-on-primary-branches
-      env:
-        GH_USER: ${{ secrets.GH_USER }}
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    # - name: Commit and Tag
+    #   run: |
+    #     ./node_modules/.bin/ci_tools commit-and-tag-version --only-on-primary-branches
+    #   env:
+    #     GH_USER: ${{ secrets.GH_USER }}
+    #     GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-  publish_npm:
-    name: "Publish npm Package"
-    needs: commit_and_tag_version
-    runs-on: ubuntu-18.04
-    steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js 10.x
-      uses: actions/setup-node@v1
-      with:
-        node-version: 10.x
+  # publish_npm:
+  #   name: "Publish npm Package"
+  #   needs: commit_and_tag_version
+  #   runs-on: ubuntu-18.04
+  #   steps:
+  #   - uses: actions/checkout@v1
+  #   - name: Use Node.js 10.x
+  #     uses: actions/setup-node@v1
+  #     with:
+  #       node-version: 10.x
 
-    - name: Unstash package.json
-      uses: actions/download-artifact@master
-      with:
-        name: package_json
-        path: "."
+  #   - name: Unstash package.json
+  #     uses: actions/download-artifact@master
+  #     with:
+  #       name: package_json
+  #       path: "."
 
-    - name: Get node_modules from Cache
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
+  #   - name: Get node_modules from Cache
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: node_modules
+  #       key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
-    - name: Build Sources
-      run: npm run build
+  #   - name: Build Sources
+  #     run: npm run build
 
-    - name: Publish npm Package
-      run: ./node_modules/.bin/ci_tools publish-npm-package --create-tag-from-branch-name
-      env:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  #   - name: Publish npm Package
+  #     run: ./node_modules/.bin/ci_tools publish-npm-package --create-tag-from-branch-name
+  #     env:
+  #       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  publish_github:
-    name: "Publish GitHub Release"
-    needs: commit_and_tag_version
-    runs-on: ubuntu-18.04
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
+  # publish_github:
+  #   name: "Publish GitHub Release"
+  #   needs: commit_and_tag_version
+  #   runs-on: ubuntu-18.04
+  #   if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
 
-    steps:
-    - uses: actions/checkout@v1
+  #   steps:
+  #   - uses: actions/checkout@v1
 
-    - name: Use Node.js 10.x
-      uses: actions/setup-node@v1
-      with:
-        node-version: 10.x
+  #   - name: Use Node.js 10.x
+  #     uses: actions/setup-node@v1
+  #     with:
+  #       node-version: 10.x
 
-    - name: Unstash package.json
-      uses: actions/download-artifact@master
-      with:
-        name: package_json
-        path: "."
+  #   - name: Unstash package.json
+  #     uses: actions/download-artifact@master
+  #     with:
+  #       name: package_json
+  #       path: "."
 
-    - name: Unstash Linux Sources
-      uses: actions/download-artifact@master
-      with:
-        name: process_engine_runtime_linux_tar
-        path: "dist"
+  #   - name: Unstash Linux Sources
+  #     uses: actions/download-artifact@master
+  #     with:
+  #       name: process_engine_runtime_linux_tar
+  #       path: "dist"
 
-    - name: Unstash macOS Sources
-      uses: actions/download-artifact@master
-      with:
-        name: process_engine_runtime_macos_tar
-        path: "dist"
+  #   - name: Unstash macOS Sources
+  #     uses: actions/download-artifact@master
+  #     with:
+  #       name: process_engine_runtime_macos_tar
+  #       path: "dist"
 
-    - name: Unstash Windows Sources
-      uses: actions/download-artifact@master
-      with:
-        name: process_engine_runtime_windows_zip
-        path: "dist"
+  #   - name: Unstash Windows Sources
+  #     uses: actions/download-artifact@master
+  #     with:
+  #       name: process_engine_runtime_windows_zip
+  #       path: "dist"
 
-    - name: Unstash Windows Installer
-      uses: actions/download-artifact@master
-      with:
-        name: windows_installer_results
-        path: "dist"
+  #   - name: Unstash Windows Installer
+  #     uses: actions/download-artifact@master
+  #     with:
+  #       name: windows_installer_results
+  #       path: "dist"
 
-    - name: Get node_modules from Cache
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
+  #   - name: Get node_modules from Cache
+  #     uses: actions/cache@v1
+  #     with:
+  #       path: node_modules
+  #       key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
-    - name: Upload to GitHub
-      run: |
-        ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag
-        ./node_modules/.bin/ci_tools update-github-release \
-                              --assets "dist/Install ProcessEngine Runtime**.exe" \
-                              --assets dist/process_engine_runtime_macos.tar.gz \
-                              --assets dist/process_engine_runtime_linux.tar.gz \
-                              --assets dist/process_engine_runtime_windows.zip
-      env:
-        GH_USER: ${{ secrets.GH_USER }}
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  #   - name: Upload to GitHub
+  #     run: |
+  #       ./node_modules/.bin/ci_tools update-github-release --only-on-primary-branches --use-title-and-text-from-git-tag
+  #       ./node_modules/.bin/ci_tools update-github-release \
+  #                             --assets "dist/Install ProcessEngine Runtime**.exe" \
+  #                             --assets dist/process_engine_runtime_macos.tar.gz \
+  #                             --assets dist/process_engine_runtime_linux.tar.gz \
+  #                             --assets dist/process_engine_runtime_windows.zip
+  #     env:
+  #       GH_USER: ${{ secrets.GH_USER }}
+  #       GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-    - name: Slack Notification
-      uses: homoluctus/slatify@master
-      if: always()
-      with:
-        type: ${{ job.status }}
-        job_name: 'GitHub Release'
-        mention_if: 'always'
-        url: ${{ secrets.SLACK_WEBHOOK }}
-        commit: true
-        token: ${{ secrets.GH_TOKEN }}
+  #   - name: Slack Notification
+  #     uses: homoluctus/slatify@master
+  #     if: always()
+  #     with:
+  #       type: ${{ job.status }}
+  #       job_name: 'GitHub Release'
+  #       mention_if: 'always'
+  #       url: ${{ secrets.SLACK_WEBHOOK }}
+  #       commit: true
+  #       token: ${{ secrets.GH_TOKEN }}
 
 
-    - name: Announce Release Notes
-      if: github.ref == 'refs/heads/master'
-      run: |
-        ./node_modules/.bin/ci_tools publish-releasenotes-on-slack
-      env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_ANNOUNCER_WEBHOOK }}
+  #   - name: Announce Release Notes
+  #     if: github.ref == 'refs/heads/master'
+  #     run: |
+  #       ./node_modules/.bin/ci_tools publish-releasenotes-on-slack
+  #     env:
+  #       SLACK_WEBHOOK: ${{ secrets.SLACK_ANNOUNCER_WEBHOOK }}
 
   build_docker:
     name: "Build & Publish Docker Image"
     needs: commit_and_tag_version
     runs-on: ubuntu-18.04
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
+    #if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
     steps:
     - uses: actions/checkout@v1
 
@@ -531,46 +531,39 @@ jobs:
         name: process_engine_runtime_linux_tar
         path: "."
 
-    - name: Get Package Version
-      run: echo "##[set-output name=version;]$(./node_modules/.bin/ci_tools get-version)"
-      id: package_version
-
-    - name: Get Package Major Version
-      if: github.ref == 'refs/heads/master'
-      run: echo "##[set-output name=major_version;]$(./node_modules/.bin/ci_tools get-version --major)"
-      id: major_package_version
-      env:
-        VERSION: ${{ steps.package_version.outputs.version }}
+    - name: Get node_modules from Cache
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
 
     - name: Build Docker Image
       if: github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/develop'
       run: |
+        VERSION="$(./node_modules/.bin/ci_tools get-version)"
         docker build --build-arg NODE_IMAGE_VERSION=10-alpine \
                     --build-arg PROCESS_ENGINE_VERSION=$VERSION \
                     --no-cache \
                     --tag 5minds/process_engine_runtime:$VERSION .
-      env:
-        VERSION: ${{ steps.package_version.outputs.version }}
 
     - name: Build Docker Image
-      if: github.ref == 'refs/heads/master'
+      #if: github.ref == 'refs/heads/master'
       run: |
+        VERSION="$(./node_modules/.bin/ci_tools get-version)"
+        MAJOR_VERSION="$(./node_modules/.bin/ci_tools get-version --major)"
         docker build --build-arg NODE_IMAGE_VERSION=10-alpine \
                     --build-arg PROCESS_ENGINE_VERSION=$VERSION \
                     --no-cache \
                     --tag 5minds/process_engine_runtime:latest --tag 5minds/process_engine_runtime:$MAJOR_VERSION --tag 5minds/process_engine_runtime:$VERSION .
-      env:
-        VERSION: ${{ steps.package_version.outputs.version }}
-        MAJOR_VERSION: ${{ steps.major_package_version.outputs.major_version }}
 
     - name: Show Docker Images
       run: docker images
 
-    - name: Login to Docker
-      run: echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-      env:
-        DOCKER_USER: ${{ secrets.DOCKER_USER }}
-        DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+    # - name: Login to Docker
+    #   run: echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+    #   env:
+    #     DOCKER_USER: ${{ secrets.DOCKER_USER }}
+    #     DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
 
-    - name: Push Docker Image
-      run: docker push 5minds/process_engine_runtime
+    # - name: Push Docker Image
+    #   run: docker push 5minds/process_engine_runtime
