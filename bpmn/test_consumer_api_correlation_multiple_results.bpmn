@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definition_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.15.1">
-  <bpmn:collaboration id="Collaboration_1cidyxu">
+  <bpmn:collaboration id="Collaboration_1cidyxu" name="">
     <bpmn:participant id="Participant_0px403d" name="test_consumer_api_correlation_multiple_results" processRef="test_consumer_api_correlation_multiple_results" />
   </bpmn:collaboration>
   <bpmn:process id="test_consumer_api_correlation_multiple_results" name="test_consumer_api_correlation_multiple_results" isExecutable="true">
@@ -12,56 +12,82 @@
           </camunda:properties>
         </bpmn:extensionElements>
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>EndEvent_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>PartallelSplitGateway_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ScriptTask_DoSomething</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ServiceTask_Delay</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_0lj25yu</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ScriptTask_CreateSecondSampleResult</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>BoundaryEvent_0f1g1cb</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ScriptTask_FirstBranchResult</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>IntermediateTimerCatchEvent1</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>PartallelSplitGateway_1</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:sequenceFlow id="SequenceFlow_0vspoh6" sourceRef="StartEvent_1" targetRef="PartallelSplitGateway_1" />
     <bpmn:startEvent id="StartEvent_1" name="Start_Event_1">
       <bpmn:outgoing>SequenceFlow_0vspoh6</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:endEvent id="EndEvent_2" name="EndEvent_2">
-      <bpmn:incoming>SequenceFlow_025k3ra</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:scriptTask id="ScriptTask_CreateSecondSampleResult" name="Create another sample result">
-      <bpmn:incoming>SequenceFlow_18evlpw</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_025k3ra</bpmn:outgoing>
-      <bpmn:script>return 'second result';</bpmn:script>
-    </bpmn:scriptTask>
-    <bpmn:endEvent id="EndEvent_1" name="EndEvent_1">
-      <bpmn:incoming>SequenceFlow_1hsgv5b</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:scriptTask id="ScriptTask_FirstBranchResult" name="Create sample result">
-      <bpmn:incoming>SequenceFlow_19245ex</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_1hsgv5b</bpmn:outgoing>
-      <bpmn:script>return 'first result';</bpmn:script>
-    </bpmn:scriptTask>
-    <bpmn:intermediateCatchEvent id="IntermediateTimerCatchEvent1" name="Wait 1 second">
-      <bpmn:incoming>SequenceFlow_1fm7tzb</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_18evlpw</bpmn:outgoing>
-      <bpmn:timerEventDefinition>
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P0Y0M0DT0H0M1S</bpmn:timeDuration>
-      </bpmn:timerEventDefinition>
-    </bpmn:intermediateCatchEvent>
     <bpmn:parallelGateway id="PartallelSplitGateway_1" name="">
       <bpmn:incoming>SequenceFlow_0vspoh6</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1fm7tzb</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_19245ex</bpmn:outgoing>
     </bpmn:parallelGateway>
-    <bpmn:sequenceFlow id="SequenceFlow_1fm7tzb" sourceRef="PartallelSplitGateway_1" targetRef="IntermediateTimerCatchEvent1" />
-    <bpmn:sequenceFlow id="SequenceFlow_18evlpw" sourceRef="IntermediateTimerCatchEvent1" targetRef="ScriptTask_CreateSecondSampleResult" />
-    <bpmn:sequenceFlow id="SequenceFlow_025k3ra" sourceRef="ScriptTask_CreateSecondSampleResult" targetRef="EndEvent_2" />
-    <bpmn:sequenceFlow id="SequenceFlow_19245ex" sourceRef="PartallelSplitGateway_1" targetRef="ScriptTask_FirstBranchResult" />
-    <bpmn:sequenceFlow id="SequenceFlow_1hsgv5b" sourceRef="ScriptTask_FirstBranchResult" targetRef="EndEvent_1" />
+    <bpmn:sequenceFlow id="SequenceFlow_1fm7tzb" sourceRef="PartallelSplitGateway_1" targetRef="ScriptTask_DoSomething" />
+    <bpmn:sequenceFlow id="SequenceFlow_025k3ra" name="" sourceRef="ScriptTask_DoSomething" targetRef="ExclusiveGateway_0lj25yu" />
+    <bpmn:sequenceFlow id="SequenceFlow_19245ex" sourceRef="PartallelSplitGateway_1" targetRef="ServiceTask_Delay" />
+    <bpmn:sequenceFlow id="SequenceFlow_1hsgv5b" name="" sourceRef="BoundaryEvent_0f1g1cb" targetRef="ScriptTask_FirstBranchResult" />
+    <bpmn:sequenceFlow id="SequenceFlow_0uz6kqo" name="" sourceRef="ExclusiveGateway_0lj25yu" targetRef="ScriptTask_CreateSecondSampleResult" />
+    <bpmn:scriptTask id="ScriptTask_DoSomething" name="Do something">
+      <bpmn:incoming>SequenceFlow_1fm7tzb</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_025k3ra</bpmn:outgoing>
+      <bpmn:script>console.log('Hello World');</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:serviceTask id="ServiceTask_Delay" name="Wait 2 Seconds">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="module" value="ServiceTaskTestService" />
+          <camunda:property name="method" value="delay" />
+          <camunda:property name="params" value="[2]" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_19245ex</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1n7v2p1</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:boundaryEvent id="BoundaryEvent_0f1g1cb" name="Wait 1 Second" cancelActivity="false" attachedToRef="ServiceTask_Delay">
+      <bpmn:outgoing>SequenceFlow_1hsgv5b</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P0Y0M0DT0H0M1S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1cvtugq" sourceRef="ScriptTask_CreateSecondSampleResult" targetRef="EndEvent_2" />
+    <bpmn:sequenceFlow id="SequenceFlow_1nb0g3s" sourceRef="ScriptTask_FirstBranchResult" targetRef="EndEvent_1" />
+    <bpmn:sequenceFlow id="SequenceFlow_1n7v2p1" sourceRef="ServiceTask_Delay" targetRef="ExclusiveGateway_0lj25yu" />
+    <bpmn:parallelGateway id="ExclusiveGateway_0lj25yu" name="">
+      <bpmn:incoming>SequenceFlow_025k3ra</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1n7v2p1</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0uz6kqo</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:scriptTask id="ScriptTask_CreateSecondSampleResult" name="Create another sample result">
+      <bpmn:incoming>SequenceFlow_0uz6kqo</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1cvtugq</bpmn:outgoing>
+      <bpmn:script>return 'second result';</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="EndEvent_1" name="EndEvent_1">
+      <bpmn:incoming>SequenceFlow_1nb0g3s</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndEvent_2" name="EndEvent_2">
+      <bpmn:incoming>SequenceFlow_1cvtugq</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:scriptTask id="ScriptTask_FirstBranchResult" name="Return Sample Result">
+      <bpmn:incoming>SequenceFlow_1hsgv5b</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1nb0g3s</bpmn:outgoing>
+      <bpmn:script>return 'first result';</bpmn:script>
+    </bpmn:scriptTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1cidyxu">
-      <bpmndi:BPMNShape id="Participant_0px403d_di" bpmnElement="Participant_0px403d">
-        <dc:Bounds x="5" y="4" width="588" height="338" />
+      <bpmndi:BPMNShape id="Participant_0px403d_di" bpmnElement="Participant_0px403d" isHorizontal="true">
+        <dc:Bounds x="5" y="-76" width="831" height="408" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="96" y="136" width="36" height="36" />
@@ -69,8 +95,8 @@
           <dc:Bounds x="79" y="86" width="70" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3">
-        <dc:Bounds x="35" y="4" width="558" height="338" />
+      <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3" isHorizontal="true">
+        <dc:Bounds x="35" y="-76" width="801" height="408" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0vspoh6_di" bpmnElement="SequenceFlow_0vspoh6">
         <di:waypoint x="132" y="154" />
@@ -79,28 +105,19 @@
           <dc:Bounds x="154" y="109.5" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="ScriptTask_183p48e_di" bpmnElement="ScriptTask_CreateSecondSampleResult">
-        <dc:Bounds x="321" y="225" width="100" height="80" />
+      <bpmndi:BPMNShape id="ScriptTask_183p48e_di" bpmnElement="ScriptTask_DoSomething">
+        <dc:Bounds x="321" y="191" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_0by117k_di" bpmnElement="EndEvent_2">
-        <dc:Bounds x="511" y="247" width="36" height="36" />
+        <dc:Bounds x="727" y="136" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="499" y="286" width="60" height="14" />
+          <dc:Bounds x="715" y="175" width="60" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_1d9qu0e_di" bpmnElement="EndEvent_1">
-        <dc:Bounds x="511" y="62" width="36" height="36" />
+        <dc:Bounds x="727" y="-47" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="499" y="105" width="60" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ScriptTask_0zarrxa_di" bpmnElement="ScriptTask_FirstBranchResult">
-        <dc:Bounds x="321" y="40" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="IntermediateCatchEvent_1nz2bzq_di" bpmnElement="IntermediateTimerCatchEvent1">
-        <dc:Bounds x="179" y="247" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="163" y="290" width="70" height="14" />
+          <dc:Bounds x="715" y="-4" width="60" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ParallelGateway_1pq8bhb_di" bpmnElement="PartallelSplitGateway_1">
@@ -108,24 +125,58 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1fm7tzb_di" bpmnElement="SequenceFlow_1fm7tzb">
         <di:waypoint x="197" y="179" />
-        <di:waypoint x="197" y="247" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_18evlpw_di" bpmnElement="SequenceFlow_18evlpw">
-        <di:waypoint x="215" y="265" />
-        <di:waypoint x="321" y="265" />
+        <di:waypoint x="197" y="231" />
+        <di:waypoint x="321" y="231" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_025k3ra_di" bpmnElement="SequenceFlow_025k3ra">
-        <di:waypoint x="421" y="265" />
-        <di:waypoint x="511" y="265" />
+        <di:waypoint x="421" y="231" />
+        <di:waypoint x="502" y="231" />
+        <di:waypoint x="502" y="179" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_19245ex_di" bpmnElement="SequenceFlow_19245ex">
         <di:waypoint x="197" y="129" />
-        <di:waypoint x="197" y="80" />
-        <di:waypoint x="321" y="80" />
+        <di:waypoint x="197" y="54" />
+        <di:waypoint x="251" y="54" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1hsgv5b_di" bpmnElement="SequenceFlow_1hsgv5b">
-        <di:waypoint x="421" y="80" />
-        <di:waypoint x="511" y="80" />
+        <di:waypoint x="351" y="-4" />
+        <di:waypoint x="351" y="-29" />
+        <di:waypoint x="566" y="-29" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BoundaryEvent_1yup243_di" bpmnElement="BoundaryEvent_0f1g1cb">
+        <dc:Bounds x="333" y="-4" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="265" y="-24" width="72" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0uz6kqo_di" bpmnElement="SequenceFlow_0uz6kqo">
+        <di:waypoint x="527" y="154" />
+        <di:waypoint x="566" y="154" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ParallelGateway_1m66iye_di" bpmnElement="ExclusiveGateway_0lj25yu">
+        <dc:Bounds x="477" y="129" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_0mz1be2_di" bpmnElement="ServiceTask_Delay">
+        <dc:Bounds x="251" y="14" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ScriptTask_198k947_di" bpmnElement="ScriptTask_FirstBranchResult">
+        <dc:Bounds x="566" y="-69" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ScriptTask_1l291y2_di" bpmnElement="ScriptTask_CreateSecondSampleResult">
+        <dc:Bounds x="566" y="114" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1cvtugq_di" bpmnElement="SequenceFlow_1cvtugq">
+        <di:waypoint x="666" y="154" />
+        <di:waypoint x="727" y="154" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1nb0g3s_di" bpmnElement="SequenceFlow_1nb0g3s">
+        <di:waypoint x="666" y="-29" />
+        <di:waypoint x="727" y="-29" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1n7v2p1_di" bpmnElement="SequenceFlow_1n7v2p1">
+        <di:waypoint x="351" y="54" />
+        <di:waypoint x="502" y="54" />
+        <di:waypoint x="502" y="129" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
