@@ -7,7 +7,7 @@ const StartCallbackType = require('@process-engine/consumer_api_contracts').Data
 
 const {TestFixtureProvider, ProcessInstanceHandler} = require('../../../dist/commonjs/test_setup');
 
-describe.only('ConsumerAPI:   Receive ProcessTerminated Notification', () => {
+describe('ConsumerAPI:   Receive ProcessTerminated Notification', () => {
 
   let eventAggregator;
   let processInstanceHandler;
