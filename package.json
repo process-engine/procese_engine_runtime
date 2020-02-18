@@ -89,6 +89,7 @@
     "@types/socket.io": "^2.1.0",
     "@types/socket.io-client": "^1.4.32",
     "addict-ioc": "^2.5.6",
+    "async-lock": "^1.2.2",
     "chalk": "^3.0.0",
     "bluebird": "^3.7.2",
     "bluebird-global": "^1.0.1",
