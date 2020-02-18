@@ -3,9 +3,11 @@
 const should = require('should');
 const uuid = require('node-uuid');
 
+const StartCallbackType = require('@process-engine/management_api_contracts').DataModels.ProcessModels.StartCallbackType;
+
 const {ProcessInstanceHandler, TestFixtureProvider} = require('../../../dist/commonjs/test_setup');
 
-describe('ManagementAPI:   Receive ProcessTerminated Notification', () => {
+describe.only('ManagementAPI:   Receive ProcessTerminated Notification', () => {
 
   let eventAggregator;
   let processInstanceHandler;
@@ -49,27 +51,30 @@ describe('ManagementAPI:   Receive ProcessTerminated Notification', () => {
 
   it('should send a notification when a process is terminated', async () => {
 
-    return new Promise(async (resolve, reject) => {
+    let notificationReceived = false;
 
-      const messageReceivedCallback = (processTerminatedMessage) => {
-        const expectedEndEventId = 'EndEvent_1';
+    const messageReceivedCallback = (message) => {
+      should.exist(message);
+      should(message.correlationId).be.equal(correlationId);
+      should(message.flowNodeId).be.equal('EndEvent_1');
 
-        should(processTerminatedMessage).not.be.undefined();
-        should(processTerminatedMessage).have.property('correlationId');
-        should(processTerminatedMessage.correlationId).be.equal(correlationId);
-        should(processTerminatedMessage).have.property('flowNodeId');
-        should(processTerminatedMessage.flowNodeId).be.equal(expectedEndEventId);
+      notificationReceived = true;
+    };
 
-        resolve();
-      };
+    const subscribeOnce = true;
+    await testFixtureProvider
+      .managementApiClient
+      .onProcessTerminated(defaultIdentity, messageReceivedCallback, subscribeOnce);
 
-      const subscribeOnce = true;
+    try {
+      const returnOn = StartCallbackType.CallbackOnProcessInstanceFinished;
+
       await testFixtureProvider
         .managementApiClient
-        .onProcessTerminated(defaultIdentity, messageReceivedCallback, subscribeOnce);
-
-      await processInstanceHandler.startProcessInstanceAndReturnCorrelationId(processModelId, correlationId);
-    });
+        .startProcessInstance(defaultIdentity, processModelId, {correlationId: correlationId}, returnOn, 'StartEvent_1');
+    } catch {} finally { // eslint-disable-line
+      should(notificationReceived).be.true('Did not receive the expected notification!');
+    }
   });
 
   it('should fail to subscribe for the ProcessTerminated notification, if the user is unauthorized', async () => {
@@ -91,7 +96,7 @@ describe('ManagementAPI:   Receive ProcessTerminated Notification', () => {
 
     let receivedNotifications = 0;
 
-    const notificationReceivedCallback = async (message) => {
+    const notificationReceivedCallback = (message) => {
       receivedNotifications++;
     };
 
