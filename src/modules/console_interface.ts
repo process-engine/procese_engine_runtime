@@ -83,8 +83,13 @@ function printHttpInfo(): void {
 
     const httpInfo = (httpExtension.httpServer.address() as AddressInfo);
 
+    const addressHasHttpPrefix = httpInfo.address.startsWith('http://') || httpInfo.address.startsWith('https://');
+    const showcaseHttpAddress = addressHasHttpPrefix
+      ? httpInfo.address
+      : `http://${httpInfo.address}`;
+
     console.log('');
-    console.log(chalk.blueBright('Http address: '), httpInfo.address);
+    console.log(chalk.blueBright('Http address: '), showcaseHttpAddress);
     console.log(chalk.blueBright('Http port: '), httpInfo.port);
     console.log(chalk.blueBright('IP protocol: '), httpInfo.family);
     console.log('');
