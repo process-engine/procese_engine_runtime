@@ -370,6 +370,11 @@ function printHttpInfo(): void {
   const configuredAddress = process.env.http__http_extension__server__host ?? httpConfig.server.host;
   const configuredPort = process.env.http__http_extension__server__port ?? httpConfig.server.port;
 
-  logger.info(`Using HTTP endpoint ${configuredAddress}:${configuredPort}`);
-  logger.info(`Using websocket endpoint ${configuredAddress}:${configuredPort}`);
+  const addressHasHttpPrefix = configuredAddress.startsWith('http://') || configuredAddress.startsWith('https://');
+  const showcaseHttpAddress = addressHasHttpPrefix
+    ? configuredAddress
+    : `http://${configuredAddress}`;
+
+  logger.info(`Using HTTP endpoint ${showcaseHttpAddress}:${configuredPort}`);
+  logger.info(`Using websocket endpoint ${showcaseHttpAddress}:${configuredPort}`);
 }
