@@ -51,6 +51,7 @@ function registerApisWithInternalAccessors(container: InvocationContainer): void
 
   container.register('ConsumerApiInternalAccessor', ConsumerApiInternalAccessor)
     .dependencies(
+      'ConsumerApiApplicationInfoService',
       'ConsumerApiEmptyActivityService',
       'ConsumerApiEventService',
       'ConsumerApiExternalTaskService',
