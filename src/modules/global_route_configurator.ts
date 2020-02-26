@@ -53,20 +53,6 @@ function configureRootRoute(useHttpRootRoutes: boolean): void {
       .header('Content-Type', 'application/json')
       .send(formattedResponse);
   });
-
-  // This is meant as a compatibility route to ensure a consumer api client can communicate with the ProcessEngine and the AtlasEngine Proxy.
-  httpExtension.app.get('/api/consumer/v1/info', (request: Request, response: Response): void => {
-
-    const trimmedResponse = {
-      name: packageInfo.name,
-      version: packageInfo.version,
-    };
-
-    response
-      .status(httpStatusCodeSuccess)
-      .header('Content-Type', 'application/json')
-      .send(trimmedResponse);
-  });
 }
 
 function configureAuthorityRoute(useHttpRootRoutes: boolean): void {
