@@ -55,7 +55,7 @@ function configureRootRoute(useHttpRootRoutes: boolean): void {
   });
 
   // This is meant as a compatibility route to ensure a consumer api client can communicate with the ProcessEngine and the AtlasEngine Proxy.
-  httpExtension.app.get('/api/v1/consumer_api/info', (request: Request, response: Response): void => {
+  httpExtension.app.get('/api/consumer/v1/info', (request: Request, response: Response): void => {
 
     const trimmedResponse = {
       name: packageInfo.name,
