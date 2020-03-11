@@ -76,7 +76,7 @@
     "@essential-projects/http_extension": "7.1.0",
     "@essential-projects/timing": "5.0.2",
     "@process-engine/consumer_api_core": "6.4.0",
-    "@process-engine/consumer_api_http": "feature~mark_external_task_routes_as_deprecated",
+    "@process-engine/consumer_api_http": "5.5.0-alpha.1",
     "@process-engine/iam": "1.7.4",
     "@process-engine/logging_api_core": "2.0.1",
     "@process-engine/logging.repository.file_system": "2.0.1",
