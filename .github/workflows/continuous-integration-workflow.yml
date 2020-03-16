@@ -105,19 +105,11 @@ jobs:
     needs: prepare_version
     runs-on: ubuntu-18.04
 
-    services:
-      postgres:
-        image: postgres:11
-        env:
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: admin
-          POSTGRES_DB: processengine
-        ports:
-        - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
     - uses: actions/checkout@v1
+
+    - name: Setup Postgres Container
+      run: node scripts/setup_postgres/postgres_docker.js start
 
     - name: Unstash package.json
       uses: actions/download-artifact@master

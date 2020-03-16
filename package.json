@@ -85,7 +85,7 @@
     "@process-engine/persistence_api.repositories.sequelize": "1.4.2",
     "@process-engine/persistence_api.services": "1.4.1",
     "@process-engine/persistence_api.use_cases": "1.4.0",
-    "@process-engine/process_engine_core": "12.16.2",
+    "@process-engine/process_engine_core": "12.17.0-alpha.1",
     "@types/socket.io": "^2.1.0",
     "@types/socket.io-client": "^1.4.32",
     "addict-ioc": "^2.5.6",
@@ -128,7 +128,6 @@
     "@types/validator": "^12.0.0",
     "eslint": "^6.8.0",
     "mocha": "^7.0.0",
-    "mocha-jenkins-reporter": "^0.4.1",
     "pkg": "^4.4.3",
     "should": "^13.2.3",
     "typescript": "^3.7.5"
