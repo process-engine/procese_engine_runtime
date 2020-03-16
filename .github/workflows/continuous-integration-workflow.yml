@@ -174,10 +174,6 @@ jobs:
     - name: Build
       run: npm run build
 
-    # - run: mv config/test-mysql/.my.cnf ~/.my.cnf
-
-    # - run: echo "create database processengine" | mysql
-
     - name: Run Tests
       run: npm run test-mysql
 
