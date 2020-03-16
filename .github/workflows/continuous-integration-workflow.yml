@@ -152,9 +152,13 @@ jobs:
     name: "Test with MySQL"
     needs: prepare_version
     runs-on: ubuntu-18.04
+
     steps:
+
     - uses: actions/checkout@v1
 
+    - name: Setup MySQL Container
+      run: node scripts/setup_mysql/mysql_docker.js start
     - name: Unstash package.json
       uses: actions/download-artifact@master
       with:
@@ -169,10 +173,6 @@ jobs:
 
     - name: Build
       run: npm run build
-
-    - run: mv config/test-mysql/.my.cnf ~/.my.cnf
-
-    - run: echo "create database processengine" | mysql
 
     - name: Run Tests
       run: npm run test-mysql
