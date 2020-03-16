@@ -166,7 +166,7 @@ jobs:
     - name: Verify MySQL connection and create database
       run: |
         sudo apt-get install -y mysql-client
-        mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -proot -e "SHOW DATABASES" -e "CREATE DATABASE processengine"
+        mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -proot -e "CREATE DATABASE processengine; SHOW DATABASES"
 
     - uses: actions/checkout@v1
 
