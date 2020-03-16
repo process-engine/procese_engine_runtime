@@ -156,7 +156,7 @@ jobs:
     steps:
 
     - name: Setup MySQL Container
-      run: docker run -p 3306:3306 --name mysql --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5 -e MYSQL_HOST=db -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=processengine -e MYSQL_USER=root -e MYSQL_PASSWORD=root -d mysql:5
+      run: node scripts/setup_mysql/mysql_docker.js start
 
     - uses: actions/checkout@v1
 
