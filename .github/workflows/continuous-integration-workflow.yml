@@ -153,24 +153,8 @@ jobs:
     needs: prepare_version
     runs-on: ubuntu-18.04
 
-    services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_HOST: db
-          MYSQL_DATABASE: processengine
-          MYSQL_USER: root
-          MYSQL_PASSWORD: root
-        ports:
-        - 3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
-
-    steps:
-    - name: Verify MySQL connection and create database
-      run: |
-        sudo apt-get install -y mysql-client
-        mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -proot -e "CREATE DATABASE processengine; SHOW DATABASES"
+    - name: Setup MySQL Container
+      run: docker run -p 3306:3306 --name mysql --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5 -e MYSQL_HOST=db -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=processengine -e MYSQL_USER=root -e MYSQL_PASSWORD=root -d mysql:5
 
     - uses: actions/checkout@v1
 
