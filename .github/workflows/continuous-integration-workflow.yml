@@ -155,11 +155,10 @@ jobs:
 
     steps:
 
-    - name: Setup MySQL Container
-      run: node scripts/setup_mysql/mysql_docker.js start
-
     - uses: actions/checkout@v1
 
+    - name: Setup MySQL Container
+      run: node scripts/setup_mysql/mysql_docker.js start
     - name: Unstash package.json
       uses: actions/download-artifact@master
       with:
