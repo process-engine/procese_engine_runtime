@@ -152,7 +152,22 @@ jobs:
     name: "Test with MySQL"
     needs: prepare_version
     runs-on: ubuntu-18.04
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
     steps:
+    - name: Verify MySQL connection from host
+      run: |
+        sudo apt-get install -y mysql-client
+        mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u root -p root -e "SHOW DATABASES"
+
     - uses: actions/checkout@v1
 
     - name: Unstash package.json
@@ -170,9 +185,9 @@ jobs:
     - name: Build
       run: npm run build
 
-    - run: mv config/test-mysql/.my.cnf ~/.my.cnf
+    # - run: mv config/test-mysql/.my.cnf ~/.my.cnf
 
-    - run: echo "create database processengine" | mysql
+    # - run: echo "create database processengine" | mysql
 
     - name: Run Tests
       run: npm run test-mysql
