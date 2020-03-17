@@ -22,6 +22,8 @@ CMD ["process-engine"]
 VOLUME [ "/root/.config/process_engine_runtime/" ]
 VOLUME [ "/usr/local/lib/node_modules/@process-engine/process_engine_runtime/config/" ]
 
+COPY package.json /root/.config/process_engine_runtime/
+
 HEALTHCHECK --interval=5s \
   --timeout=5s \
   CMD curl -f http://127.0.0.1:8000 || exit 1
