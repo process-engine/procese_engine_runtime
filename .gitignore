@@ -19,6 +19,9 @@ logs
 # build directories
 dist
 
+# archive files
+*.tar*
+
 # auto-generated schemas and documentation
 doc
 schemas
