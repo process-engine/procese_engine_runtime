@@ -86,8 +86,8 @@ describe('Call activity tests', () => {
     const finalToken = result.currentToken;
 
     const expectedResult = {
-      bla: 'Hello World'
-    }
+      bla: 'Hello World',
+    };
 
     should(finalToken.result).be.eql(expectedResult, `Unexpected result: ${finalToken.result}`);
     should(finalToken.endEventId).be.eql('EndEvent_1obbzk2', `Unexpected EndEventId: ${finalToken.endEventId}`);
@@ -150,7 +150,7 @@ describe('Call activity tests', () => {
       const result = await testFixtureProvider.executeProcess(processModelId, 'StartEvent_TestInvalidStartEventId', correlationId, initialToken);
       should.fail(result, undefined, 'This should have failed, because the CallActivity does not have the configured start event!');
     } catch (error) {
-      const expectedErrorMessage = /no matching startevent/i
+      const expectedErrorMessage = /no matching startevent/i;
       const expectedErrorCode = 404;
       should(error.message).be.match(expectedErrorMessage);
       should(error.code).be.equal(expectedErrorCode);
@@ -167,7 +167,7 @@ describe('Call activity tests', () => {
 
       const result = await testFixtureProvider.executeProcess(processModelId, 'StartEvent_TestInvalidPayload', correlationId, initialToken);
     } catch (error) {
-      const expectedErrorMessage = /payload configuration.*?invalid/i
+      const expectedErrorMessage = /payload configuration.*?invalid/i;
       const expectedErrorCode = 500;
       should(error.message).be.match(expectedErrorMessage);
       should(error.code).be.equal(expectedErrorCode);
