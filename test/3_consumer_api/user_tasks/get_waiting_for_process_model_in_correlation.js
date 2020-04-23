@@ -48,7 +48,7 @@ describe(`ConsumerAPI: GetUserTasksForProcessModelInCorrelation`, () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks.length).be.greaterThan(0);
 
       const userTask = userTaskList.userTasks[0];
@@ -64,7 +64,7 @@ describe(`ConsumerAPI: GetUserTasksForProcessModelInCorrelation`, () => {
       should(userTask).not.have.property('identity');
 
       should(userTask.data).have.property('formFields');
-      should(userTask.data.formFields).be.an.instanceOf(Array);
+      should(userTask.data.formFields).be.an.Array();
       should(userTask.data.formFields).have.a.lengthOf(1);
 
       const formField = userTask.data.formFields[0];
@@ -90,8 +90,8 @@ describe(`ConsumerAPI: GetUserTasksForProcessModelInCorrelation`, () => {
           .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelIdNoUserTasks, correlationId);
 
         should(userTaskList).have.property('userTasks');
-        should(userTaskList.userTasks).be.an.instanceOf(Array);
-        should(userTaskList.userTasks).have.a.lengthOf(0);
+        should(userTaskList.userTasks).be.an.Array();
+        should(userTaskList.userTasks).be.empty();
 
         eventAggregator.publish('/processengine/process/signal/Continue', {});
       });
@@ -106,8 +106,8 @@ describe(`ConsumerAPI: GetUserTasksForProcessModelInCorrelation`, () => {
         .getUserTasksForProcessModelInCorrelation(defaultIdentity, invalidProcessModelId, correlationId);
 
       should(userTaskList).have.property('userTasks');
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
-      should(userTaskList.userTasks).have.a.lengthOf(0);
+      should(userTaskList.userTasks).be.an.Array();
+      should(userTaskList.userTasks).be.empty();
     });
 
     it('should return an empty Array, if the correlationId does not exist', async () => {
@@ -119,8 +119,8 @@ describe(`ConsumerAPI: GetUserTasksForProcessModelInCorrelation`, () => {
         .getUserTasksForProcessModelInCorrelation(defaultIdentity, processModelId, invalidCorrelationId);
 
       should(userTaskList).have.property('userTasks');
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
-      should(userTaskList.userTasks).have.a.lengthOf(0);
+      should(userTaskList.userTasks).be.an.Array();
+      should(userTaskList.userTasks).be.empty();
     });
   });
 
@@ -145,7 +145,7 @@ describe(`ConsumerAPI: GetUserTasksForProcessModelInCorrelation`, () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(5);
     });
 
@@ -157,7 +157,7 @@ describe(`ConsumerAPI: GetUserTasksForProcessModelInCorrelation`, () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(2);
     });
 
@@ -169,7 +169,7 @@ describe(`ConsumerAPI: GetUserTasksForProcessModelInCorrelation`, () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(2);
     });
 
@@ -181,7 +181,7 @@ describe(`ConsumerAPI: GetUserTasksForProcessModelInCorrelation`, () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(3);
     });
 
@@ -193,7 +193,7 @@ describe(`ConsumerAPI: GetUserTasksForProcessModelInCorrelation`, () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(10);
 
     });
@@ -206,8 +206,8 @@ describe(`ConsumerAPI: GetUserTasksForProcessModelInCorrelation`, () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
-      should(userTaskList.userTasks).have.a.lengthOf(0);
+      should(userTaskList.userTasks).be.an.Array();
+      should(userTaskList.userTasks).be.empty();
     });
   });
 
@@ -244,8 +244,8 @@ describe(`ConsumerAPI: GetUserTasksForProcessModelInCorrelation`, () => {
         .getUserTasksForProcessModelInCorrelation(restrictedIdentity, processModelId, correlationId);
 
       should(userTaskList).have.property('userTasks');
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
-      should(userTaskList.userTasks).have.a.lengthOf(0);
+      should(userTaskList.userTasks).be.an.Array();
+      should(userTaskList.userTasks).be.empty();
     });
   });
 });

@@ -89,7 +89,7 @@ describe('ManagementAPI: GetAllSuspendedTasks', () => {
         .getAllSuspendedTasks(defaultIdentity, 5);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(4);
     });
 
@@ -100,7 +100,7 @@ describe('ManagementAPI: GetAllSuspendedTasks', () => {
         .getAllSuspendedTasks(defaultIdentity, 0, 2);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(2);
     });
 
@@ -111,7 +111,7 @@ describe('ManagementAPI: GetAllSuspendedTasks', () => {
         .getAllSuspendedTasks(defaultIdentity, 5, 2);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(2);
     });
 
@@ -122,7 +122,7 @@ describe('ManagementAPI: GetAllSuspendedTasks', () => {
         .getAllSuspendedTasks(defaultIdentity, 6, 5);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(3);
     });
 
@@ -133,7 +133,7 @@ describe('ManagementAPI: GetAllSuspendedTasks', () => {
         .getAllSuspendedTasks(defaultIdentity, 0, 11);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(9);
     });
 
@@ -144,8 +144,8 @@ describe('ManagementAPI: GetAllSuspendedTasks', () => {
         .getAllSuspendedTasks(defaultIdentity, 1000);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
-      should(taskList.tasks).have.a.lengthOf(0);
+      should(taskList.tasks).be.an.Array();
+      should(taskList.tasks).be.empty();
     });
   });
 
@@ -182,8 +182,8 @@ describe('ManagementAPI: GetAllSuspendedTasks', () => {
         .getAllSuspendedTasks(restrictedIdentity);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
-      should(taskList.tasks).have.a.lengthOf(0);
+      should(taskList.tasks).be.an.Array();
+      should(taskList.tasks).be.empty();
     });
   });
 });

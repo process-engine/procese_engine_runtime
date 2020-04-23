@@ -85,7 +85,7 @@ describe('ManagementAPI: GetTokensForCorrelationAndProcessModel', () => {
       .getTokensForCorrelationAndProcessModel(defaultIdentity, 'invalid_correlation_id', processModelId);
 
     should(tokenHistories).be.an.Object();
-    should(Object.keys(tokenHistories)).have.a.lengthOf(0);
+    should(Object.keys(tokenHistories)).be.empty();
   });
 
   it('should return an empty result set, if the ProcessModel does not exist', async () => {
@@ -94,7 +94,7 @@ describe('ManagementAPI: GetTokensForCorrelationAndProcessModel', () => {
       .getTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, 'invalid_process_model');
 
     should(tokenHistories).be.an.Object();
-    should(Object.keys(tokenHistories)).have.a.lengthOf(0);
+    should(Object.keys(tokenHistories)).be.empty();
   });
 
   it('should fail to retrieve the token history, when the user is unauthorized', async () => {

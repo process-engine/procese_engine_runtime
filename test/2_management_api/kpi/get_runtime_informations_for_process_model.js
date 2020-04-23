@@ -71,7 +71,7 @@ describe('ManagementAPI: GetRuntimeInformationForProcessModel ', () => {
         .managementApiClient
         .getRuntimeInformationForProcessModel(defaultIdentity, processModelId, 5);
 
-      should(runtimeInfos.flowNodeRuntimeInformation).be.an.instanceOf(Array);
+      should(runtimeInfos.flowNodeRuntimeInformation).be.an.Array();
       should(runtimeInfos.flowNodeRuntimeInformation).have.a.lengthOf(5);
     });
 
@@ -81,7 +81,7 @@ describe('ManagementAPI: GetRuntimeInformationForProcessModel ', () => {
         .managementApiClient
         .getRuntimeInformationForProcessModel(defaultIdentity, processModelId, 0, 2);
 
-      should(runtimeInfos.flowNodeRuntimeInformation).be.an.instanceOf(Array);
+      should(runtimeInfos.flowNodeRuntimeInformation).be.an.Array();
       should(runtimeInfos.flowNodeRuntimeInformation).have.a.lengthOf(2);
     });
 
@@ -91,7 +91,7 @@ describe('ManagementAPI: GetRuntimeInformationForProcessModel ', () => {
         .managementApiClient
         .getRuntimeInformationForProcessModel(defaultIdentity, processModelId, 5, 2);
 
-      should(runtimeInfos.flowNodeRuntimeInformation).be.an.instanceOf(Array);
+      should(runtimeInfos.flowNodeRuntimeInformation).be.an.Array();
       should(runtimeInfos.flowNodeRuntimeInformation).have.a.lengthOf(2);
     });
 
@@ -101,7 +101,7 @@ describe('ManagementAPI: GetRuntimeInformationForProcessModel ', () => {
         .managementApiClient
         .getRuntimeInformationForProcessModel(defaultIdentity, processModelId, 7, 5);
 
-      should(runtimeInfos.flowNodeRuntimeInformation).be.an.instanceOf(Array);
+      should(runtimeInfos.flowNodeRuntimeInformation).be.an.Array();
       should(runtimeInfos.flowNodeRuntimeInformation).have.a.lengthOf(3);
     });
 
@@ -111,7 +111,7 @@ describe('ManagementAPI: GetRuntimeInformationForProcessModel ', () => {
         .managementApiClient
         .getRuntimeInformationForProcessModel(defaultIdentity, processModelId, 0, 20);
 
-      should(runtimeInfos.flowNodeRuntimeInformation).be.an.instanceOf(Array);
+      should(runtimeInfos.flowNodeRuntimeInformation).be.an.Array();
       should(runtimeInfos.flowNodeRuntimeInformation).have.a.lengthOf(10);
 
     });
@@ -122,8 +122,8 @@ describe('ManagementAPI: GetRuntimeInformationForProcessModel ', () => {
         .managementApiClient
         .getRuntimeInformationForProcessModel(defaultIdentity, processModelId, 1000);
 
-      should(runtimeInfos.flowNodeRuntimeInformation).be.an.instanceOf(Array);
-      should(runtimeInfos.flowNodeRuntimeInformation).have.a.lengthOf(0);
+      should(runtimeInfos.flowNodeRuntimeInformation).be.an.Array();
+      should(runtimeInfos.flowNodeRuntimeInformation).be.empty();
     });
   });
 

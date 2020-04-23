@@ -56,7 +56,7 @@ describe('ConsumerAPI: GetEventsForProcessModel', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events.length).be.greaterThan(0);
 
       eventList.events.forEach((event) => {
@@ -81,8 +81,8 @@ describe('ConsumerAPI: GetEventsForProcessModel', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
-      should(eventList.events).have.a.lengthOf(0);
+      should(eventList.events).be.an.Array();
+      should(eventList.events).be.empty();
     });
   });
 
@@ -106,7 +106,7 @@ describe('ConsumerAPI: GetEventsForProcessModel', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(5);
     });
 
@@ -118,7 +118,7 @@ describe('ConsumerAPI: GetEventsForProcessModel', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(2);
     });
 
@@ -130,7 +130,7 @@ describe('ConsumerAPI: GetEventsForProcessModel', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(2);
     });
 
@@ -142,7 +142,7 @@ describe('ConsumerAPI: GetEventsForProcessModel', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(3);
     });
 
@@ -154,7 +154,7 @@ describe('ConsumerAPI: GetEventsForProcessModel', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(10);
 
     });
@@ -167,8 +167,8 @@ describe('ConsumerAPI: GetEventsForProcessModel', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
-      should(eventList.events).have.a.lengthOf(0);
+      should(eventList.events).be.an.Array();
+      should(eventList.events).be.empty();
     });
   });
 
@@ -201,8 +201,8 @@ describe('ConsumerAPI: GetEventsForProcessModel', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
-      should(eventList.events).have.a.lengthOf(0);
+      should(eventList.events).be.an.Array();
+      should(eventList.events).be.empty();
     });
   });
 });

@@ -147,7 +147,7 @@ describe('ManagementAPI: GetActiveTokensForFlowNode', () => {
         .managementApiClient
         .getActiveTokensForFlowNode(defaultIdentity, userTask1Id, 2);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(3);
     });
 
@@ -157,7 +157,7 @@ describe('ManagementAPI: GetActiveTokensForFlowNode', () => {
         .managementApiClient
         .getActiveTokensForFlowNode(defaultIdentity, userTask1Id, 0, 2);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(2);
     });
 
@@ -167,7 +167,7 @@ describe('ManagementAPI: GetActiveTokensForFlowNode', () => {
         .managementApiClient
         .getActiveTokensForFlowNode(defaultIdentity, userTask1Id, 2, 2);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(2);
     });
 
@@ -177,7 +177,7 @@ describe('ManagementAPI: GetActiveTokensForFlowNode', () => {
         .managementApiClient
         .getActiveTokensForFlowNode(defaultIdentity, userTask1Id, 2, 5);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(3);
     });
 
@@ -187,7 +187,7 @@ describe('ManagementAPI: GetActiveTokensForFlowNode', () => {
         .managementApiClient
         .getActiveTokensForFlowNode(defaultIdentity, userTask1Id, 0, 20);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(5);
 
     });
@@ -198,8 +198,8 @@ describe('ManagementAPI: GetActiveTokensForFlowNode', () => {
         .managementApiClient
         .getActiveTokensForFlowNode(defaultIdentity, userTask1Id, 1000);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
-      should(activeTokenList.activeTokens).have.a.lengthOf(0);
+      should(activeTokenList.activeTokens).be.an.Array();
+      should(activeTokenList.activeTokens).be.empty();
     });
   });
 

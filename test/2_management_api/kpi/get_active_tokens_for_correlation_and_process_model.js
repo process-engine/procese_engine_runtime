@@ -97,7 +97,7 @@ describe('ManagementAPI: GetActiveTokensForCorrelationAndProcessModel', () => {
         .managementApiClient
         .getActiveTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId, 5);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(5);
     });
 
@@ -107,7 +107,7 @@ describe('ManagementAPI: GetActiveTokensForCorrelationAndProcessModel', () => {
         .managementApiClient
         .getActiveTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId, 0, 2);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(2);
     });
 
@@ -117,7 +117,7 @@ describe('ManagementAPI: GetActiveTokensForCorrelationAndProcessModel', () => {
         .managementApiClient
         .getActiveTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId, 5, 2);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(2);
     });
 
@@ -127,7 +127,7 @@ describe('ManagementAPI: GetActiveTokensForCorrelationAndProcessModel', () => {
         .managementApiClient
         .getActiveTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId, 7, 5);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(3);
     });
 
@@ -137,7 +137,7 @@ describe('ManagementAPI: GetActiveTokensForCorrelationAndProcessModel', () => {
         .managementApiClient
         .getActiveTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId, 0, 20);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(10);
 
     });
@@ -148,8 +148,8 @@ describe('ManagementAPI: GetActiveTokensForCorrelationAndProcessModel', () => {
         .managementApiClient
         .getActiveTokensForCorrelationAndProcessModel(defaultIdentity, correlationId, processModelId, 1000);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
-      should(activeTokenList.activeTokens).have.a.lengthOf(0);
+      should(activeTokenList.activeTokens).be.an.Array();
+      should(activeTokenList.activeTokens).be.empty();
     });
   });
 

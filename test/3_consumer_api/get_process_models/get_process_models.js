@@ -42,15 +42,15 @@ describe('ConsumerAPI: GetProcessModels', () => {
 
       should(processModelList).have.property('processModels');
 
-      should(processModelList.processModels).be.an.instanceOf(Array);
+      should(processModelList.processModels).be.an.Array();
       should(processModelList.processModels.length).be.greaterThan(0);
 
       processModelList.processModels.forEach((processModel) => {
         should(processModel).have.property('id');
         should(processModel).have.property('startEvents');
         should(processModel).have.property('endEvents');
-        should(processModel.startEvents).be.an.instanceOf(Array);
-        should(processModel.endEvents).be.an.instanceOf(Array);
+        should(processModel.startEvents).be.an.Array();
+        should(processModel.endEvents).be.an.Array();
       });
     });
 
@@ -64,15 +64,15 @@ describe('ConsumerAPI: GetProcessModels', () => {
 
       should(processModelList).have.property('processModels');
 
-      should(processModelList.processModels).be.an.instanceOf(Array);
+      should(processModelList.processModels).be.an.Array();
 
       processModelList.processModels.forEach((processModel) => {
         should(processModel).have.property('id');
         should(processModel.id).not.be.equal('test_consumer_api_process_start');
         should(processModel).have.property('startEvents');
         should(processModel).have.property('endEvents');
-        should(processModel.startEvents).be.an.instanceOf(Array);
-        should(processModel.endEvents).be.an.instanceOf(Array);
+        should(processModel.startEvents).be.an.Array();
+        should(processModel.endEvents).be.an.Array();
       });
     });
 
@@ -84,18 +84,18 @@ describe('ConsumerAPI: GetProcessModels', () => {
 
       should(processModelList).have.property('processModels');
 
-      should(processModelList.processModels).be.an.instanceOf(Array);
+      should(processModelList.processModels).be.an.Array();
 
       processModelList.processModels.forEach((processModel) => {
         should(processModel).have.property('id');
         should(processModel).have.property('startEvents');
         should(processModel).have.property('endEvents');
-        should(processModel.startEvents).be.an.instanceOf(Array);
-        should(processModel.endEvents).be.an.instanceOf(Array);
+        should(processModel.startEvents).be.an.Array();
+        should(processModel.endEvents).be.an.Array();
 
         if (processModel.id === 'test_consumer_api_non_executable_process') {
-          should(processModel.startEvents).have.a.lengthOf(0);
-          should(processModel.endEvents).have.a.lengthOf(0);
+          should(processModel.startEvents).be.empty();
+          should(processModel.endEvents).be.empty();
         }
       });
     });
@@ -128,7 +128,7 @@ describe('ConsumerAPI: GetProcessModels', () => {
 
       should(processModelList).have.property('processModels');
 
-      should(processModelList.processModels).be.an.instanceOf(Array);
+      should(processModelList.processModels).be.an.Array();
       should(processModelList.processModels).have.a.lengthOf(5);
     });
 
@@ -140,7 +140,7 @@ describe('ConsumerAPI: GetProcessModels', () => {
 
       should(processModelList).have.property('processModels');
 
-      should(processModelList.processModels).be.an.instanceOf(Array);
+      should(processModelList.processModels).be.an.Array();
       should(processModelList.processModels).have.a.lengthOf(2);
     });
 
@@ -152,7 +152,7 @@ describe('ConsumerAPI: GetProcessModels', () => {
 
       should(processModelList).have.property('processModels');
 
-      should(processModelList.processModels).be.an.instanceOf(Array);
+      should(processModelList.processModels).be.an.Array();
       should(processModelList.processModels).have.a.lengthOf(2);
     });
 
@@ -164,7 +164,7 @@ describe('ConsumerAPI: GetProcessModels', () => {
 
       should(processModelList).have.property('processModels');
 
-      should(processModelList.processModels).be.an.instanceOf(Array);
+      should(processModelList.processModels).be.an.Array();
       should(processModelList.processModels).have.a.lengthOf(3);
     });
 
@@ -176,7 +176,7 @@ describe('ConsumerAPI: GetProcessModels', () => {
 
       should(processModelList).have.property('processModels');
 
-      should(processModelList.processModels).be.an.instanceOf(Array);
+      should(processModelList.processModels).be.an.Array();
       should(processModelList.processModels).have.a.lengthOf(10);
 
     });
@@ -189,8 +189,8 @@ describe('ConsumerAPI: GetProcessModels', () => {
 
       should(processModelList).have.property('processModels');
 
-      should(processModelList.processModels).be.an.instanceOf(Array);
-      should(processModelList.processModels).have.a.lengthOf(0);
+      should(processModelList.processModels).be.an.Array();
+      should(processModelList.processModels).be.empty();
     });
   });
 

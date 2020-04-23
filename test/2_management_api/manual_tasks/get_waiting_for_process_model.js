@@ -67,7 +67,7 @@ describe('ManagementAPI: GetManualTasksForProcessModel', () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks.length).be.greaterThan(0);
 
       const manualTask = manualTaskList.manualTasks[0];
@@ -97,8 +97,8 @@ describe('ManagementAPI: GetManualTasksForProcessModel', () => {
           .getManualTasksForProcessModel(defaultIdentity, processModelIdNoManualTasks);
 
         should(manualTaskList).have.property('manualTasks');
-        should(manualTaskList.manualTasks).be.an.instanceOf(Array);
-        should(manualTaskList.manualTasks).have.a.lengthOf(0);
+        should(manualTaskList.manualTasks).be.an.Array();
+        should(manualTaskList.manualTasks).be.empty();
 
         eventAggregator.publish('/processengine/process/signal/Continue', {});
       });
@@ -113,8 +113,8 @@ describe('ManagementAPI: GetManualTasksForProcessModel', () => {
         .getManualTasksForProcessModel(defaultIdentity, invalidprocessModelId);
 
       should(manualTaskList).have.property('manualTasks');
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
-      should(manualTaskList.manualTasks).have.a.lengthOf(0);
+      should(manualTaskList.manualTasks).be.an.Array();
+      should(manualTaskList.manualTasks).be.empty();
     });
   });
 
@@ -138,7 +138,7 @@ describe('ManagementAPI: GetManualTasksForProcessModel', () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(5);
     });
 
@@ -150,7 +150,7 @@ describe('ManagementAPI: GetManualTasksForProcessModel', () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(2);
     });
 
@@ -162,7 +162,7 @@ describe('ManagementAPI: GetManualTasksForProcessModel', () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(2);
     });
 
@@ -174,7 +174,7 @@ describe('ManagementAPI: GetManualTasksForProcessModel', () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(3);
     });
 
@@ -186,7 +186,7 @@ describe('ManagementAPI: GetManualTasksForProcessModel', () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(10);
 
     });
@@ -199,8 +199,8 @@ describe('ManagementAPI: GetManualTasksForProcessModel', () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
-      should(manualTaskList.manualTasks).have.a.lengthOf(0);
+      should(manualTaskList.manualTasks).be.an.Array();
+      should(manualTaskList.manualTasks).be.empty();
     });
   });
 
@@ -230,8 +230,8 @@ describe('ManagementAPI: GetManualTasksForProcessModel', () => {
         .getManualTasksForProcessModel(restrictedIdentity, processModelId);
 
       should(manualTaskList).have.property('manualTasks');
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
-      should(manualTaskList.manualTasks).have.a.lengthOf(0);
+      should(manualTaskList.manualTasks).be.an.Array();
+      should(manualTaskList.manualTasks).be.empty();
     });
   });
 });

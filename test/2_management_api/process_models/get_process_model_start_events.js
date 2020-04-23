@@ -29,7 +29,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/events', (
       .getStartEventsForProcessModel(testFixtureProvider.identities.defaultUser, processModelId);
 
     should(processModel).have.property('events');
-    should(processModel.events).be.an.instanceOf(Array);
+    should(processModel.events).be.an.Array();
     should(processModel.events.length).be.greaterThan(0);
 
     for (const event of processModel.events) {
@@ -44,7 +44,7 @@ describe('ManagementAPI:   GET  ->  /process_models/:process_model_id/events', (
       .getStartEventsForProcessModel(testFixtureProvider.identities.superAdmin, processModelId);
 
     should(processModel).have.property('events');
-    should(processModel.events).be.an.instanceOf(Array);
+    should(processModel.events).be.an.Array();
     should(processModel.events.length).be.greaterThan(0);
 
     for (const event of processModel.events) {

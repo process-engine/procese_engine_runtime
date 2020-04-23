@@ -165,7 +165,7 @@ describe('ManagementAPI: GetCronjobExecutionHistoryForProcessModel', () => {
         .managementApiClient
         .getCronjobExecutionHistoryForProcessModel(defaultIdentity, processModelId, startEventId, 4);
 
-      should(cronjobHistoryList.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistoryList.cronjobHistories).be.an.Array();
       should(cronjobHistoryList.cronjobHistories).have.a.lengthOf(3);
     });
 
@@ -175,7 +175,7 @@ describe('ManagementAPI: GetCronjobExecutionHistoryForProcessModel', () => {
         .managementApiClient
         .getCronjobExecutionHistoryForProcessModel(defaultIdentity, processModelId, startEventId, 0, 2);
 
-      should(cronjobHistoryList.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistoryList.cronjobHistories).be.an.Array();
       should(cronjobHistoryList.cronjobHistories).have.a.lengthOf(2);
     });
 
@@ -185,7 +185,7 @@ describe('ManagementAPI: GetCronjobExecutionHistoryForProcessModel', () => {
         .managementApiClient
         .getCronjobExecutionHistoryForProcessModel(defaultIdentity, processModelId, startEventId, 3, 2);
 
-      should(cronjobHistoryList.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistoryList.cronjobHistories).be.an.Array();
       should(cronjobHistoryList.cronjobHistories).have.a.lengthOf(2);
     });
 
@@ -195,7 +195,7 @@ describe('ManagementAPI: GetCronjobExecutionHistoryForProcessModel', () => {
         .managementApiClient
         .getCronjobExecutionHistoryForProcessModel(defaultIdentity, processModelId, startEventId, 5, 5);
 
-      should(cronjobHistoryList.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistoryList.cronjobHistories).be.an.Array();
       should(cronjobHistoryList.cronjobHistories).have.a.lengthOf(2);
     });
 
@@ -205,7 +205,7 @@ describe('ManagementAPI: GetCronjobExecutionHistoryForProcessModel', () => {
         .managementApiClient
         .getCronjobExecutionHistoryForProcessModel(defaultIdentity, processModelId, startEventId, 0, 20);
 
-      should(cronjobHistoryList.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistoryList.cronjobHistories).be.an.Array();
       should(cronjobHistoryList.cronjobHistories).have.a.lengthOf(7);
 
     });
@@ -216,8 +216,8 @@ describe('ManagementAPI: GetCronjobExecutionHistoryForProcessModel', () => {
         .managementApiClient
         .getCronjobExecutionHistoryForProcessModel(defaultIdentity, processModelId, startEventId, 1000);
 
-      should(cronjobHistoryList.cronjobHistories).be.an.instanceOf(Array);
-      should(cronjobHistoryList.cronjobHistories).have.a.lengthOf(0);
+      should(cronjobHistoryList.cronjobHistories).be.an.Array();
+      should(cronjobHistoryList.cronjobHistories).be.empty();
     });
   });
 

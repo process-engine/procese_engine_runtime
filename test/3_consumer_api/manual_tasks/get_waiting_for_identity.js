@@ -49,7 +49,7 @@ describe('ConsumerAPI: GetWaitingManualTasksByIdentity', () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks.length).be.greaterThan(0);
 
       const manualTask = manualTaskList.manualTasks[0];
@@ -74,8 +74,8 @@ describe('ConsumerAPI: GetWaitingManualTasksByIdentity', () => {
         .getWaitingManualTasksByIdentity(restrictedIdentity);
 
       should(manualTaskList).have.property('manualTasks');
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
-      should(manualTaskList.manualTasks).have.a.lengthOf(0);
+      should(manualTaskList.manualTasks).be.an.Array();
+      should(manualTaskList.manualTasks).be.empty();
     });
   });
 
@@ -99,7 +99,7 @@ describe('ConsumerAPI: GetWaitingManualTasksByIdentity', () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(5);
     });
 
@@ -111,7 +111,7 @@ describe('ConsumerAPI: GetWaitingManualTasksByIdentity', () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(2);
     });
 
@@ -123,7 +123,7 @@ describe('ConsumerAPI: GetWaitingManualTasksByIdentity', () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(2);
     });
 
@@ -135,7 +135,7 @@ describe('ConsumerAPI: GetWaitingManualTasksByIdentity', () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(3);
     });
 
@@ -147,7 +147,7 @@ describe('ConsumerAPI: GetWaitingManualTasksByIdentity', () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(10);
 
     });
@@ -160,8 +160,8 @@ describe('ConsumerAPI: GetWaitingManualTasksByIdentity', () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
-      should(manualTaskList.manualTasks).have.a.lengthOf(0);
+      should(manualTaskList.manualTasks).be.an.Array();
+      should(manualTaskList.manualTasks).be.empty();
     });
   });
 

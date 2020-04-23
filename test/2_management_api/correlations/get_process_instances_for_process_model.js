@@ -124,7 +124,7 @@ describe('ManagementAPI: GetProcessInstancesForProcessModel', () => {
         .managementApiClient
         .getProcessInstancesForProcessModel(defaultIdentity, processModelId, 5);
 
-      should(processInstanceList.processInstances).be.an.instanceOf(Array);
+      should(processInstanceList.processInstances).be.an.Array();
       should(processInstanceList.processInstances).have.a.lengthOf(5);
     });
 
@@ -134,7 +134,7 @@ describe('ManagementAPI: GetProcessInstancesForProcessModel', () => {
         .managementApiClient
         .getProcessInstancesForProcessModel(defaultIdentity, processModelId, 0, 2);
 
-      should(processInstanceList.processInstances).be.an.instanceOf(Array);
+      should(processInstanceList.processInstances).be.an.Array();
       should(processInstanceList.processInstances).have.a.lengthOf(2);
     });
 
@@ -144,7 +144,7 @@ describe('ManagementAPI: GetProcessInstancesForProcessModel', () => {
         .managementApiClient
         .getProcessInstancesForProcessModel(defaultIdentity, processModelId, 5, 2);
 
-      should(processInstanceList.processInstances).be.an.instanceOf(Array);
+      should(processInstanceList.processInstances).be.an.Array();
       should(processInstanceList.processInstances).have.a.lengthOf(2);
     });
 
@@ -154,7 +154,7 @@ describe('ManagementAPI: GetProcessInstancesForProcessModel', () => {
         .managementApiClient
         .getProcessInstancesForProcessModel(defaultIdentity, processModelId, 7, 5);
 
-      should(processInstanceList.processInstances).be.an.instanceOf(Array);
+      should(processInstanceList.processInstances).be.an.Array();
       should(processInstanceList.processInstances).have.a.lengthOf(3);
     });
 
@@ -164,7 +164,7 @@ describe('ManagementAPI: GetProcessInstancesForProcessModel', () => {
         .managementApiClient
         .getProcessInstancesForProcessModel(defaultIdentity, processModelId, 0, 20);
 
-      should(processInstanceList.processInstances).be.an.instanceOf(Array);
+      should(processInstanceList.processInstances).be.an.Array();
       should(processInstanceList.processInstances).have.a.lengthOf(10);
 
     });
@@ -175,8 +175,8 @@ describe('ManagementAPI: GetProcessInstancesForProcessModel', () => {
         .managementApiClient
         .getProcessInstancesForProcessModel(defaultIdentity, processModelId, 1000);
 
-      should(processInstanceList.processInstances).be.an.instanceOf(Array);
-      should(processInstanceList.processInstances).have.a.lengthOf(0);
+      should(processInstanceList.processInstances).be.an.Array();
+      should(processInstanceList.processInstances).be.empty();
     });
   });
 

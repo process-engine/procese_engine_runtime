@@ -67,7 +67,7 @@ describe('ManagementAPI: GetEmptyActivitiesForProcessModel', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(1);
 
       const emptyActivity = emptyActivityList.emptyActivities[0];
@@ -97,8 +97,8 @@ describe('ManagementAPI: GetEmptyActivitiesForProcessModel', () => {
           .getEmptyActivitiesForProcessModel(defaultIdentity, processModelIdNoEmptyActivities);
 
         should(emptyActivityList).have.property('emptyActivities');
-        should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-        should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+        should(emptyActivityList.emptyActivities).be.an.Array();
+        should(emptyActivityList.emptyActivities).be.empty();
 
         eventAggregator.publish('/processengine/process/signal/Continue', {});
       });
@@ -113,8 +113,8 @@ describe('ManagementAPI: GetEmptyActivitiesForProcessModel', () => {
         .getEmptyActivitiesForProcessModel(defaultIdentity, invalidprocessModelId);
 
       should(emptyActivityList).have.property('emptyActivities');
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-      should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+      should(emptyActivityList.emptyActivities).be.an.Array();
+      should(emptyActivityList.emptyActivities).be.empty();
     });
   });
 
@@ -138,7 +138,7 @@ describe('ManagementAPI: GetEmptyActivitiesForProcessModel', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(5);
     });
 
@@ -150,7 +150,7 @@ describe('ManagementAPI: GetEmptyActivitiesForProcessModel', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(2);
     });
 
@@ -162,7 +162,7 @@ describe('ManagementAPI: GetEmptyActivitiesForProcessModel', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(2);
     });
 
@@ -174,7 +174,7 @@ describe('ManagementAPI: GetEmptyActivitiesForProcessModel', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(3);
     });
 
@@ -186,7 +186,7 @@ describe('ManagementAPI: GetEmptyActivitiesForProcessModel', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(10);
 
     });
@@ -199,8 +199,8 @@ describe('ManagementAPI: GetEmptyActivitiesForProcessModel', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-      should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+      should(emptyActivityList.emptyActivities).be.an.Array();
+      should(emptyActivityList.emptyActivities).be.empty();
     });
   });
 
@@ -237,8 +237,8 @@ describe('ManagementAPI: GetEmptyActivitiesForProcessModel', () => {
         .getEmptyActivitiesForProcessModel(restrictedIdentity, processModelId);
 
       should(emptyActivityList).have.property('emptyActivities');
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-      should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+      should(emptyActivityList.emptyActivities).be.an.Array();
+      should(emptyActivityList.emptyActivities).be.empty();
     });
   });
 });

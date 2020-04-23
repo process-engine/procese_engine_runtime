@@ -46,7 +46,7 @@ describe('ManagementAPI: GetActiveCorrelations', () => {
         .managementApiClient
         .getActiveCorrelations(defaultIdentity);
 
-      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).be.an.Array();
       should(correlationList.correlations.length).be.greaterThan(0);
 
       correlationList.correlations.forEach((correlation) => {
@@ -77,7 +77,7 @@ describe('ManagementAPI: GetActiveCorrelations', () => {
         .managementApiClient
         .getActiveCorrelations(testFixtureProvider.identities.superAdmin);
 
-      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).be.an.Array();
       should(correlationList.correlations.length).be.greaterThan(0);
 
       correlationList.correlations.forEach((correlation) => {
@@ -141,7 +141,7 @@ describe('ManagementAPI: GetActiveCorrelations', () => {
         .managementApiClient
         .getActiveCorrelations(defaultIdentity, 5);
 
-      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).be.an.Array();
       should(correlationList.correlations).have.a.lengthOf(5);
     });
 
@@ -151,7 +151,7 @@ describe('ManagementAPI: GetActiveCorrelations', () => {
         .managementApiClient
         .getActiveCorrelations(defaultIdentity, 0, 2);
 
-      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).be.an.Array();
       should(correlationList.correlations).have.a.lengthOf(2);
     });
 
@@ -161,7 +161,7 @@ describe('ManagementAPI: GetActiveCorrelations', () => {
         .managementApiClient
         .getActiveCorrelations(defaultIdentity, 5, 2);
 
-      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).be.an.Array();
       should(correlationList.correlations).have.a.lengthOf(2);
     });
 
@@ -171,7 +171,7 @@ describe('ManagementAPI: GetActiveCorrelations', () => {
         .managementApiClient
         .getActiveCorrelations(defaultIdentity, 7, 5);
 
-      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).be.an.Array();
       should(correlationList.correlations).have.a.lengthOf(3);
     });
 
@@ -181,7 +181,7 @@ describe('ManagementAPI: GetActiveCorrelations', () => {
         .managementApiClient
         .getActiveCorrelations(defaultIdentity, 0, 20);
 
-      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).be.an.Array();
       should(correlationList.correlations).have.a.lengthOf(10);
 
     });
@@ -192,8 +192,8 @@ describe('ManagementAPI: GetActiveCorrelations', () => {
         .managementApiClient
         .getActiveCorrelations(defaultIdentity, 1000);
 
-      should(correlationList.correlations).be.an.instanceOf(Array);
-      should(correlationList.correlations).have.a.lengthOf(0);
+      should(correlationList.correlations).be.an.Array();
+      should(correlationList.correlations).be.empty();
     });
   });
 

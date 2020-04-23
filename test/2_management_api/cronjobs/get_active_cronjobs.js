@@ -108,7 +108,7 @@ describe('ManagementAPI: GetAllActiveCronjobs', () => {
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity, 4);
 
-      should(cronjobList.cronjobs).be.an.instanceOf(Array);
+      should(cronjobList.cronjobs).be.an.Array();
       should(cronjobList.cronjobs).have.a.lengthOf(3);
     });
 
@@ -118,7 +118,7 @@ describe('ManagementAPI: GetAllActiveCronjobs', () => {
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity, 0, 2);
 
-      should(cronjobList.cronjobs).be.an.instanceOf(Array);
+      should(cronjobList.cronjobs).be.an.Array();
       should(cronjobList.cronjobs).have.a.lengthOf(2);
     });
 
@@ -128,7 +128,7 @@ describe('ManagementAPI: GetAllActiveCronjobs', () => {
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity, 3, 2);
 
-      should(cronjobList.cronjobs).be.an.instanceOf(Array);
+      should(cronjobList.cronjobs).be.an.Array();
       should(cronjobList.cronjobs).have.a.lengthOf(2);
     });
 
@@ -138,7 +138,7 @@ describe('ManagementAPI: GetAllActiveCronjobs', () => {
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity, 5, 5);
 
-      should(cronjobList.cronjobs).be.an.instanceOf(Array);
+      should(cronjobList.cronjobs).be.an.Array();
       should(cronjobList.cronjobs).have.a.lengthOf(2);
     });
 
@@ -148,7 +148,7 @@ describe('ManagementAPI: GetAllActiveCronjobs', () => {
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity, 0, 20);
 
-      should(cronjobList.cronjobs).be.an.instanceOf(Array);
+      should(cronjobList.cronjobs).be.an.Array();
       should(cronjobList.cronjobs).have.a.lengthOf(7);
 
     });
@@ -159,8 +159,8 @@ describe('ManagementAPI: GetAllActiveCronjobs', () => {
         .managementApiClient
         .getAllActiveCronjobs(defaultIdentity, 1000);
 
-      should(cronjobList.cronjobs).be.an.instanceOf(Array);
-      should(cronjobList.cronjobs).have.a.lengthOf(0);
+      should(cronjobList.cronjobs).be.an.Array();
+      should(cronjobList.cronjobs).be.empty();
     });
   });
 

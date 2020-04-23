@@ -115,7 +115,7 @@ describe('ConsumerAPI: GetSuspendedTasksForCorrelation', () => {
 
         should(taskList).have.property('tasks');
         should(taskList.tasks).be.instanceOf(Array);
-        should(taskList.tasks).have.a.lengthOf(0);
+        should(taskList.tasks).be.empty();
 
         eventAggregator.publish('/processengine/process/signal/Continue', {});
       });
@@ -131,7 +131,7 @@ describe('ConsumerAPI: GetSuspendedTasksForCorrelation', () => {
 
       should(taskList).have.property('tasks');
       should(taskList.tasks).be.instanceOf(Array);
-      should(taskList.tasks).have.a.lengthOf(0);
+      should(taskList.tasks).be.empty();
     });
   });
 
@@ -155,7 +155,7 @@ describe('ConsumerAPI: GetSuspendedTasksForCorrelation', () => {
         .getSuspendedTasksForCorrelation(defaultIdentity, correlationIdPaginationTest, 4);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(5);
     });
 
@@ -166,7 +166,7 @@ describe('ConsumerAPI: GetSuspendedTasksForCorrelation', () => {
         .getSuspendedTasksForCorrelation(defaultIdentity, correlationIdPaginationTest, 0, 2);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(2);
     });
 
@@ -177,7 +177,7 @@ describe('ConsumerAPI: GetSuspendedTasksForCorrelation', () => {
         .getSuspendedTasksForCorrelation(defaultIdentity, correlationIdPaginationTest, 5, 2);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(2);
     });
 
@@ -188,7 +188,7 @@ describe('ConsumerAPI: GetSuspendedTasksForCorrelation', () => {
         .getSuspendedTasksForCorrelation(defaultIdentity, correlationIdPaginationTest, 6, 5);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(3);
     });
 
@@ -199,7 +199,7 @@ describe('ConsumerAPI: GetSuspendedTasksForCorrelation', () => {
         .getSuspendedTasksForCorrelation(defaultIdentity, correlationIdPaginationTest, 0, 11);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(9);
     });
 
@@ -210,8 +210,8 @@ describe('ConsumerAPI: GetSuspendedTasksForCorrelation', () => {
         .getSuspendedTasksForCorrelation(defaultIdentity, correlationIdPaginationTest, 1000);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
-      should(taskList.tasks).have.a.lengthOf(0);
+      should(taskList.tasks).be.an.Array();
+      should(taskList.tasks).be.empty();
     });
   });
 
@@ -248,8 +248,8 @@ describe('ConsumerAPI: GetSuspendedTasksForCorrelation', () => {
         .getSuspendedTasksForCorrelation(restrictedIdentity, correlationId);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
-      should(taskList.tasks).have.a.lengthOf(0);
+      should(taskList.tasks).be.an.Array();
+      should(taskList.tasks).be.empty();
     });
   });
 });

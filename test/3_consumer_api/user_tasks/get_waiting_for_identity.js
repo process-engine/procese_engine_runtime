@@ -49,7 +49,7 @@ describe('ConsumerAPI: GetWaitingUserTasksByIdentity', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks.length).be.greaterThan(0);
 
       const userTask = userTaskList.userTasks[0];
@@ -74,8 +74,8 @@ describe('ConsumerAPI: GetWaitingUserTasksByIdentity', () => {
         .getWaitingUserTasksByIdentity(restrictedIdentity);
 
       should(userTaskList).have.property('userTasks');
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
-      should(userTaskList.userTasks).have.a.lengthOf(0);
+      should(userTaskList.userTasks).be.an.Array();
+      should(userTaskList.userTasks).be.empty();
     });
   });
 
@@ -99,7 +99,7 @@ describe('ConsumerAPI: GetWaitingUserTasksByIdentity', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(5);
     });
 
@@ -111,7 +111,7 @@ describe('ConsumerAPI: GetWaitingUserTasksByIdentity', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(2);
     });
 
@@ -123,7 +123,7 @@ describe('ConsumerAPI: GetWaitingUserTasksByIdentity', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(2);
     });
 
@@ -135,7 +135,7 @@ describe('ConsumerAPI: GetWaitingUserTasksByIdentity', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(3);
     });
 
@@ -147,7 +147,7 @@ describe('ConsumerAPI: GetWaitingUserTasksByIdentity', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(10);
 
     });
@@ -160,8 +160,8 @@ describe('ConsumerAPI: GetWaitingUserTasksByIdentity', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
-      should(userTaskList.userTasks).have.a.lengthOf(0);
+      should(userTaskList.userTasks).be.an.Array();
+      should(userTaskList.userTasks).be.empty();
     });
   });
 

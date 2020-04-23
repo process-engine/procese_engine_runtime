@@ -154,7 +154,7 @@ describe('ManagementAPI: GetCorrelationsByProcessModelId', () => {
         .managementApiClient
         .getCorrelationsByProcessModelId(defaultIdentity, processModelId, 5);
 
-      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).be.an.Array();
       should(correlationList.correlations).have.a.lengthOf(5);
     });
 
@@ -164,7 +164,7 @@ describe('ManagementAPI: GetCorrelationsByProcessModelId', () => {
         .managementApiClient
         .getCorrelationsByProcessModelId(defaultIdentity, processModelId, 0, 2);
 
-      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).be.an.Array();
       should(correlationList.correlations).have.a.lengthOf(2);
     });
 
@@ -174,7 +174,7 @@ describe('ManagementAPI: GetCorrelationsByProcessModelId', () => {
         .managementApiClient
         .getCorrelationsByProcessModelId(defaultIdentity, processModelId, 5, 2);
 
-      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).be.an.Array();
       should(correlationList.correlations).have.a.lengthOf(2);
     });
 
@@ -184,7 +184,7 @@ describe('ManagementAPI: GetCorrelationsByProcessModelId', () => {
         .managementApiClient
         .getCorrelationsByProcessModelId(defaultIdentity, processModelId, 7, 5);
 
-      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).be.an.Array();
       should(correlationList.correlations).have.a.lengthOf(3);
     });
 
@@ -194,7 +194,7 @@ describe('ManagementAPI: GetCorrelationsByProcessModelId', () => {
         .managementApiClient
         .getCorrelationsByProcessModelId(defaultIdentity, processModelId, 0, 20);
 
-      should(correlationList.correlations).be.an.instanceOf(Array);
+      should(correlationList.correlations).be.an.Array();
       should(correlationList.correlations).have.a.lengthOf(10);
 
     });
@@ -205,8 +205,8 @@ describe('ManagementAPI: GetCorrelationsByProcessModelId', () => {
         .managementApiClient
         .getCorrelationsByProcessModelId(defaultIdentity, processModelId, 1000);
 
-      should(correlationList.correlations).be.an.instanceOf(Array);
-      should(correlationList.correlations).have.a.lengthOf(0);
+      should(correlationList.correlations).be.an.Array();
+      should(correlationList.correlations).be.empty();
     });
   });
 

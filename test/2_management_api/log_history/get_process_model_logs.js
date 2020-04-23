@@ -102,7 +102,7 @@ describe('ManagementAPI: GetProcessModelLgos', () => {
         .managementApiClient
         .getProcessModelLog(defaultIdentity, processModelId, correlationId, 5);
 
-      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).be.an.Array();
       should(logEntryList.logEntries).have.a.lengthOf(9);
     });
 
@@ -112,7 +112,7 @@ describe('ManagementAPI: GetProcessModelLgos', () => {
         .managementApiClient
         .getProcessModelLog(defaultIdentity, processModelId, correlationId, 0, 2);
 
-      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).be.an.Array();
       should(logEntryList.logEntries).have.a.lengthOf(2);
     });
 
@@ -122,7 +122,7 @@ describe('ManagementAPI: GetProcessModelLgos', () => {
         .managementApiClient
         .getProcessModelLog(defaultIdentity, processModelId, correlationId, 5, 2);
 
-      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).be.an.Array();
       should(logEntryList.logEntries).have.a.lengthOf(2);
     });
 
@@ -132,7 +132,7 @@ describe('ManagementAPI: GetProcessModelLgos', () => {
         .managementApiClient
         .getProcessModelLog(defaultIdentity, processModelId, correlationId, 11, 5);
 
-      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).be.an.Array();
       should(logEntryList.logEntries).have.a.lengthOf(3);
     });
 
@@ -142,7 +142,7 @@ describe('ManagementAPI: GetProcessModelLgos', () => {
         .managementApiClient
         .getProcessModelLog(defaultIdentity, processModelId, correlationId, 0, 20);
 
-      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).be.an.Array();
       should(logEntryList.logEntries).have.a.lengthOf(14);
 
     });
@@ -153,8 +153,8 @@ describe('ManagementAPI: GetProcessModelLgos', () => {
         .managementApiClient
         .getProcessModelLog(defaultIdentity, processModelId, correlationId, 1000);
 
-      should(logEntryList.logEntries).be.an.instanceOf(Array);
-      should(logEntryList.logEntries).have.a.lengthOf(0);
+      should(logEntryList.logEntries).be.an.Array();
+      should(logEntryList.logEntries).be.empty();
     });
   });
 

@@ -79,7 +79,7 @@ describe('ManagementAPI: getTokensForFlowNodeByProcessInstanceId', () => {
       .getTokensForFlowNodeByProcessInstanceId(defaultIdentity, 'invalid_process_instance_id', startEventId);
 
     should(tokenHistories).be.an.Object();
-    should(Object.keys(tokenHistories)).have.a.lengthOf(0);
+    should(Object.keys(tokenHistories)).be.empty();
   });
 
   it('should return an empty result set, if the FlowNode does not exist', async () => {
@@ -88,7 +88,7 @@ describe('ManagementAPI: getTokensForFlowNodeByProcessInstanceId', () => {
       .getTokensForFlowNodeByProcessInstanceId(defaultIdentity, processInstanceId, 'invalid_flow_node_id');
 
     should(tokenHistories).be.an.Object();
-    should(Object.keys(tokenHistories)).have.a.lengthOf(0);
+    should(Object.keys(tokenHistories)).be.empty();
   });
 
   it('should fail to retrieve the token history, when the user is unauthorized', async () => {

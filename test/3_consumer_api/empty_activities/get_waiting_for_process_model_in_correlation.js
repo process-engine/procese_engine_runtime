@@ -48,7 +48,7 @@ describe(`ConsumerAPI: GetEmptyActivitiesForProcessModelInCorrelation`, () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(1);
 
       const emptyActivity = emptyActivityList.emptyActivities[0];
@@ -78,8 +78,8 @@ describe(`ConsumerAPI: GetEmptyActivitiesForProcessModelInCorrelation`, () => {
           .getEmptyActivitiesForProcessModel(defaultIdentity, processModelIdNoEmptyActivities);
 
         should(emptyActivityList).have.property('emptyActivities');
-        should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-        should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+        should(emptyActivityList.emptyActivities).be.an.Array();
+        should(emptyActivityList.emptyActivities).be.empty();
 
         eventAggregator.publish('/processengine/process/signal/Continue', {});
       });
@@ -94,8 +94,8 @@ describe(`ConsumerAPI: GetEmptyActivitiesForProcessModelInCorrelation`, () => {
         .getEmptyActivitiesForProcessModelInCorrelation(defaultIdentity, invalidProcessModelId, correlationId);
 
       should(emptyActivityList).have.property('emptyActivities');
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-      should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+      should(emptyActivityList.emptyActivities).be.an.Array();
+      should(emptyActivityList.emptyActivities).be.empty();
     });
 
     it('should return an empty Array, if the correlationId does not exist', async () => {
@@ -107,8 +107,8 @@ describe(`ConsumerAPI: GetEmptyActivitiesForProcessModelInCorrelation`, () => {
         .getEmptyActivitiesForProcessModelInCorrelation(defaultIdentity, processModelId, invalidCorrelationId);
 
       should(emptyActivityList).have.property('emptyActivities');
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-      should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+      should(emptyActivityList.emptyActivities).be.an.Array();
+      should(emptyActivityList.emptyActivities).be.empty();
     });
   });
 
@@ -133,7 +133,7 @@ describe(`ConsumerAPI: GetEmptyActivitiesForProcessModelInCorrelation`, () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(5);
     });
 
@@ -145,7 +145,7 @@ describe(`ConsumerAPI: GetEmptyActivitiesForProcessModelInCorrelation`, () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(2);
     });
 
@@ -157,7 +157,7 @@ describe(`ConsumerAPI: GetEmptyActivitiesForProcessModelInCorrelation`, () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(2);
     });
 
@@ -169,7 +169,7 @@ describe(`ConsumerAPI: GetEmptyActivitiesForProcessModelInCorrelation`, () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(3);
     });
 
@@ -181,7 +181,7 @@ describe(`ConsumerAPI: GetEmptyActivitiesForProcessModelInCorrelation`, () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(10);
 
     });
@@ -194,8 +194,8 @@ describe(`ConsumerAPI: GetEmptyActivitiesForProcessModelInCorrelation`, () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-      should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+      should(emptyActivityList.emptyActivities).be.an.Array();
+      should(emptyActivityList.emptyActivities).be.empty();
     });
   });
 
@@ -232,8 +232,8 @@ describe(`ConsumerAPI: GetEmptyActivitiesForProcessModelInCorrelation`, () => {
         .getEmptyActivitiesForProcessModelInCorrelation(restrictedIdentity, processModelId, correlationId);
 
       should(emptyActivityList).have.property('emptyActivities');
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-      should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+      should(emptyActivityList.emptyActivities).be.an.Array();
+      should(emptyActivityList.emptyActivities).be.empty();
     });
   });
 });

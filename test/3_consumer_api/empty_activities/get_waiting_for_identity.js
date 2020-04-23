@@ -49,7 +49,7 @@ describe('ConsumerAPI: GetWaitingEmptyActivitiesByIdentity', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(1);
 
       const emptyActivity = emptyActivityList.emptyActivities[0];
@@ -74,8 +74,8 @@ describe('ConsumerAPI: GetWaitingEmptyActivitiesByIdentity', () => {
         .getWaitingEmptyActivitiesByIdentity(restrictedIdentity);
 
       should(emptyActivityList).have.property('emptyActivities');
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-      should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+      should(emptyActivityList.emptyActivities).be.an.Array();
+      should(emptyActivityList.emptyActivities).be.empty();
     });
   });
 
@@ -99,7 +99,7 @@ describe('ConsumerAPI: GetWaitingEmptyActivitiesByIdentity', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(5);
     });
 
@@ -111,7 +111,7 @@ describe('ConsumerAPI: GetWaitingEmptyActivitiesByIdentity', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(2);
     });
 
@@ -123,7 +123,7 @@ describe('ConsumerAPI: GetWaitingEmptyActivitiesByIdentity', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(2);
     });
 
@@ -135,7 +135,7 @@ describe('ConsumerAPI: GetWaitingEmptyActivitiesByIdentity', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(3);
     });
 
@@ -147,7 +147,7 @@ describe('ConsumerAPI: GetWaitingEmptyActivitiesByIdentity', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(10);
 
     });
@@ -160,8 +160,8 @@ describe('ConsumerAPI: GetWaitingEmptyActivitiesByIdentity', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-      should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+      should(emptyActivityList.emptyActivities).be.an.Array();
+      should(emptyActivityList.emptyActivities).be.empty();
     });
   });
 
