@@ -89,20 +89,13 @@ describe('ManagementAPI: GetProcessInstancesForProcessModel', () => {
       });
     });
 
-    it('should throw a NotFound error, if no ProcessInstances for the given ProcessModelId exist', async () => {
+    it('should return an empty Array, if no ProcessInstances for the given ProcessModelId exist', async () => {
+      const processInstanceList = await testFixtureProvider
+        .managementApiClient
+        .getProcessInstancesForProcessModel(superAdmin, 'some_id_with_no_instances');
 
-      try {
-        const processInstanceList = await testFixtureProvider
-          .managementApiClient
-          .getProcessInstancesForProcessModel(superAdmin, 'some_id_with_no_instances');
-
-          should.fail(processInstanceList, undefined, 'This request should have failed!');
-        } catch (error) {
-          const expectedErrorMessage = /no.*?found/i;
-          const expectedErrorCode = 404;
-          should(error.message).be.match(expectedErrorMessage);
-          should(error.code).be.equal(expectedErrorCode);
-      }
+      should(processInstanceList.processInstances).be.an.Array();
+      should(processInstanceList.processInstances).be.empty();
     });
   });
 

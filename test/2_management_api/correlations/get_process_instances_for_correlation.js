@@ -84,20 +84,13 @@ describe('ManagementAPI: GetProcessInstancesForCorrelation', () => {
       });
     });
 
-    it('should throw a NotFound error, if no ProcessInstances for the given CorrelationId exist', async () => {
+    it('should return an empty Array, if no ProcessInstances for the given CorrelationId exist', async () => {
+      const processInstanceList = await testFixtureProvider
+        .managementApiClient
+        .getProcessInstancesForCorrelation(superAdmin, 'some_non_existing_correlation');
 
-      try {
-        const processInstanceList = await testFixtureProvider
-          .managementApiClient
-          .getProcessInstancesForCorrelation(superAdmin, 'some_non_existing_correlation');
-
-          should.fail(processInstanceList, undefined, 'This request should have failed!');
-        } catch (error) {
-          const expectedErrorMessage = /no.*?found/i;
-          const expectedErrorCode = 404;
-          should(error.message).be.match(expectedErrorMessage);
-          should(error.code).be.equal(expectedErrorCode);
-      }
+      should(processInstanceList.processInstances).be.an.Array();
+      should(processInstanceList.processInstances).be.empty();
     });
   });
 
