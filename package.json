@@ -75,7 +75,7 @@
     "@essential-projects/http": "2.5.0",
     "@essential-projects/http_extension": "7.1.0",
     "@essential-projects/timing": "5.0.2",
-    "@process-engine/consumer_api_core": "6.4.1",
+    "@process-engine/consumer_api_core": "feature~avoid_unnecessary_not_found_errors",
     "@process-engine/consumer_api_http": "5.5.1",
     "@process-engine/iam": "1.7.4",
     "@process-engine/logging_api_core": "2.0.1",
