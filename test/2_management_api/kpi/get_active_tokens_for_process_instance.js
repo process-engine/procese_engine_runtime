@@ -98,7 +98,7 @@ describe('ManagementAPI: GetActiveTokensForProcessInstance', () => {
         .managementApiClient
         .getActiveTokensForProcessInstance(defaultIdentity, processInstanceId, 1);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(3);
     });
 
@@ -108,7 +108,7 @@ describe('ManagementAPI: GetActiveTokensForProcessInstance', () => {
         .managementApiClient
         .getActiveTokensForProcessInstance(defaultIdentity, processInstanceId, 0, 2);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(2);
     });
 
@@ -118,7 +118,7 @@ describe('ManagementAPI: GetActiveTokensForProcessInstance', () => {
         .managementApiClient
         .getActiveTokensForProcessInstance(defaultIdentity, processInstanceId, 1, 2);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(2);
     });
 
@@ -128,7 +128,7 @@ describe('ManagementAPI: GetActiveTokensForProcessInstance', () => {
         .managementApiClient
         .getActiveTokensForProcessInstance(defaultIdentity, processInstanceId, 2, 5);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(2);
     });
 
@@ -138,7 +138,7 @@ describe('ManagementAPI: GetActiveTokensForProcessInstance', () => {
         .managementApiClient
         .getActiveTokensForProcessInstance(defaultIdentity, processInstanceId, 0, 20);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
+      should(activeTokenList.activeTokens).be.an.Array();
       should(activeTokenList.activeTokens).have.a.lengthOf(4);
 
     });
@@ -149,8 +149,8 @@ describe('ManagementAPI: GetActiveTokensForProcessInstance', () => {
         .managementApiClient
         .getActiveTokensForProcessInstance(defaultIdentity, processInstanceId, 1000);
 
-      should(activeTokenList.activeTokens).be.an.instanceOf(Array);
-      should(activeTokenList.activeTokens).have.a.lengthOf(0);
+      should(activeTokenList.activeTokens).be.an.Array();
+      should(activeTokenList.activeTokens).be.empty();
     });
   });
 

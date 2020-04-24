@@ -42,7 +42,7 @@ describe('ConsumerAPI:   POST  ->  /external_tasks/fetch_and_lock', () => {
       .fetchAndLockExternalTasks(defaultIdentity, workerId, topicName, 1, 0, 10000);
 
     should(availableExternalTasks).be.an.Array();
-    should(availableExternalTasks).have.a.lengthOf(0);
+    should(availableExternalTasks).be.empty();
   });
 
   it('should successfully get a list of ExternalTasks that do not have any payloads', async () => {

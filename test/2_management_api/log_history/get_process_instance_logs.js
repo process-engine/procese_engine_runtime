@@ -78,7 +78,7 @@ describe('ManagementAPI: GetProcessInstanceLogs', () => {
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId, 5);
 
-      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).be.an.Array();
       should(logEntryList.logEntries).have.a.lengthOf(9);
     });
 
@@ -88,7 +88,7 @@ describe('ManagementAPI: GetProcessInstanceLogs', () => {
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId, 0, 2);
 
-      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).be.an.Array();
       should(logEntryList.logEntries).have.a.lengthOf(2);
     });
 
@@ -98,7 +98,7 @@ describe('ManagementAPI: GetProcessInstanceLogs', () => {
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId, 5, 2);
 
-      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).be.an.Array();
       should(logEntryList.logEntries).have.a.lengthOf(2);
     });
 
@@ -108,7 +108,7 @@ describe('ManagementAPI: GetProcessInstanceLogs', () => {
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId, 11, 5);
 
-      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).be.an.Array();
       should(logEntryList.logEntries).have.a.lengthOf(3);
     });
 
@@ -118,7 +118,7 @@ describe('ManagementAPI: GetProcessInstanceLogs', () => {
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId, 0, 20);
 
-      should(logEntryList.logEntries).be.an.instanceOf(Array);
+      should(logEntryList.logEntries).be.an.Array();
       should(logEntryList.logEntries).have.a.lengthOf(14);
 
     });
@@ -129,8 +129,8 @@ describe('ManagementAPI: GetProcessInstanceLogs', () => {
         .managementApiClient
         .getProcessInstanceLog(defaultIdentity, processModelId, processInstanceId, 1000);
 
-      should(logEntryList.logEntries).be.an.instanceOf(Array);
-      should(logEntryList.logEntries).have.a.lengthOf(0);
+      should(logEntryList.logEntries).be.an.Array();
+      should(logEntryList.logEntries).be.empty();
     });
   });
 

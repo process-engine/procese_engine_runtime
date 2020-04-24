@@ -45,7 +45,7 @@ describe('ConsumerAPI: GetEventsForCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(1);
 
       eventList.events.forEach((event) => {
@@ -70,8 +70,8 @@ describe('ConsumerAPI: GetEventsForCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
-      should(eventList.events).have.a.lengthOf(0);
+      should(eventList.events).be.an.Array();
+      should(eventList.events).be.empty();
     });
 
     it('should return an empty Array, when the user has no access to any of the events', async () => {
@@ -86,8 +86,8 @@ describe('ConsumerAPI: GetEventsForCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
-      should(eventList.events).have.a.lengthOf(0);
+      should(eventList.events).be.an.Array();
+      should(eventList.events).be.empty();
 
     });
   });
@@ -113,7 +113,7 @@ describe('ConsumerAPI: GetEventsForCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(5);
     });
 
@@ -125,7 +125,7 @@ describe('ConsumerAPI: GetEventsForCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(2);
     });
 
@@ -137,7 +137,7 @@ describe('ConsumerAPI: GetEventsForCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(2);
     });
 
@@ -149,7 +149,7 @@ describe('ConsumerAPI: GetEventsForCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(3);
     });
 
@@ -161,7 +161,7 @@ describe('ConsumerAPI: GetEventsForCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(10);
 
     });
@@ -174,8 +174,8 @@ describe('ConsumerAPI: GetEventsForCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
-      should(eventList.events).have.a.lengthOf(0);
+      should(eventList.events).be.an.Array();
+      should(eventList.events).be.empty();
     });
   });
 
@@ -211,8 +211,8 @@ describe('ConsumerAPI: GetEventsForCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
-      should(eventList.events).have.a.lengthOf(0);
+      should(eventList.events).be.an.Array();
+      should(eventList.events).be.empty();
     });
   });
 });

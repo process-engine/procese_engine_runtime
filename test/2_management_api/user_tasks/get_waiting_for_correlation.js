@@ -53,7 +53,7 @@ describe('ManagementAPI: GetUserTasksForCorrelation', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks.length).be.greaterThan(0);
 
       const userTask = userTaskList.userTasks[0];
@@ -69,7 +69,7 @@ describe('ManagementAPI: GetUserTasksForCorrelation', () => {
       should(userTask).not.have.property('identity');
 
       should(userTask.data).have.property('formFields');
-      should(userTask.data.formFields).be.an.instanceOf(Array);
+      should(userTask.data.formFields).be.an.Array();
       should(userTask.data.formFields).have.a.lengthOf(1);
 
       const formField = userTask.data.formFields[0];
@@ -92,7 +92,7 @@ describe('ManagementAPI: GetUserTasksForCorrelation', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks.length).be.greaterThan(0);
 
       const userTask = userTaskList.userTasks[0];
@@ -103,7 +103,7 @@ describe('ManagementAPI: GetUserTasksForCorrelation', () => {
       should(userTask).have.property('data');
 
       should(userTask.data).have.property('formFields');
-      should(userTask.data.formFields).be.an.instanceOf(Array);
+      should(userTask.data.formFields).be.an.Array();
       should(userTask.data.formFields).have.a.lengthOf(1);
 
       const formField = userTask.data.formFields[0];
@@ -137,8 +137,8 @@ describe('ManagementAPI: GetUserTasksForCorrelation', () => {
 
 
         should(userTaskList).have.property('userTasks');
-        should(userTaskList.userTasks).be.an.instanceOf(Array);
-        should(userTaskList.userTasks).have.a.lengthOf(0);
+        should(userTaskList.userTasks).be.an.Array();
+        should(userTaskList.userTasks).be.empty();
 
         eventAggregator.publish('/processengine/process/signal/Continue', {});
       });
@@ -153,8 +153,8 @@ describe('ManagementAPI: GetUserTasksForCorrelation', () => {
         .getUserTasksForCorrelation(defaultIdentity, invalidCorrelationId);
 
       should(userTaskList).have.property('userTasks');
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
-      should(userTaskList.userTasks).have.a.lengthOf(0);
+      should(userTaskList.userTasks).be.an.Array();
+      should(userTaskList.userTasks).be.empty();
     });
   });
 
@@ -179,7 +179,7 @@ describe('ManagementAPI: GetUserTasksForCorrelation', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(5);
     });
 
@@ -191,7 +191,7 @@ describe('ManagementAPI: GetUserTasksForCorrelation', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(2);
     });
 
@@ -203,7 +203,7 @@ describe('ManagementAPI: GetUserTasksForCorrelation', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(2);
     });
 
@@ -215,7 +215,7 @@ describe('ManagementAPI: GetUserTasksForCorrelation', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(3);
     });
 
@@ -227,7 +227,7 @@ describe('ManagementAPI: GetUserTasksForCorrelation', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(10);
 
     });
@@ -240,8 +240,8 @@ describe('ManagementAPI: GetUserTasksForCorrelation', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
-      should(userTaskList.userTasks).have.a.lengthOf(0);
+      should(userTaskList.userTasks).be.an.Array();
+      should(userTaskList.userTasks).be.empty();
     });
   });
 
@@ -278,8 +278,8 @@ describe('ManagementAPI: GetUserTasksForCorrelation', () => {
         .getUserTasksForCorrelation(restrictedIdentity, correlationId);
 
       should(userTaskList).have.property('userTasks');
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
-      should(userTaskList.userTasks).have.a.lengthOf(0);
+      should(userTaskList.userTasks).be.an.Array();
+      should(userTaskList.userTasks).be.empty();
     });
   });
 });

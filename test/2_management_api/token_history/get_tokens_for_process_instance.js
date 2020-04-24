@@ -90,7 +90,7 @@ describe('ManagementAPI: GetTokensForProcessInstance', () => {
       .getTokensForProcessInstance(defaultIdentity, 'invalid_process_instance_id');
 
     should(tokenHistories).be.an.Object();
-    should(Object.keys(tokenHistories)).have.a.lengthOf(0);
+    should(Object.keys(tokenHistories)).be.empty();
   });
 
   it('should fail to retrieve the token history, when the user is unauthorized', async () => {

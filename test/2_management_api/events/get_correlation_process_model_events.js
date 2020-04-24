@@ -45,7 +45,7 @@ describe('ManagementAPI: GetEventsForProcessModelInCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events.length).be.greaterThan(0);
 
       eventList.events.forEach((event) => {
@@ -70,8 +70,8 @@ describe('ManagementAPI: GetEventsForProcessModelInCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
-      should(eventList.events).have.a.lengthOf(0);
+      should(eventList.events).be.an.Array();
+      should(eventList.events).be.empty();
     });
 
     it('should return an empty Array, if the correlation_id does not exist', async () => {
@@ -84,8 +84,8 @@ describe('ManagementAPI: GetEventsForProcessModelInCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
-      should(eventList.events).have.a.lengthOf(0);
+      should(eventList.events).be.an.Array();
+      should(eventList.events).be.empty();
     });
   });
 
@@ -110,7 +110,7 @@ describe('ManagementAPI: GetEventsForProcessModelInCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(5);
     });
 
@@ -122,7 +122,7 @@ describe('ManagementAPI: GetEventsForProcessModelInCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(2);
     });
 
@@ -134,7 +134,7 @@ describe('ManagementAPI: GetEventsForProcessModelInCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(2);
     });
 
@@ -146,7 +146,7 @@ describe('ManagementAPI: GetEventsForProcessModelInCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(3);
     });
 
@@ -158,7 +158,7 @@ describe('ManagementAPI: GetEventsForProcessModelInCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
+      should(eventList.events).be.an.Array();
       should(eventList.events).have.a.lengthOf(10);
 
     });
@@ -171,8 +171,8 @@ describe('ManagementAPI: GetEventsForProcessModelInCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
-      should(eventList.events).have.a.lengthOf(0);
+      should(eventList.events).be.an.Array();
+      should(eventList.events).be.empty();
     });
   });
 
@@ -210,8 +210,8 @@ describe('ManagementAPI: GetEventsForProcessModelInCorrelation', () => {
 
       should(eventList).have.property('events');
 
-      should(eventList.events).be.an.instanceOf(Array);
-      should(eventList.events).have.a.lengthOf(0);
+      should(eventList.events).be.an.Array();
+      should(eventList.events).be.empty();
     });
   });
 });

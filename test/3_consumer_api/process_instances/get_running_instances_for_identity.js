@@ -51,7 +51,7 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
       should(results).have.a.property('processInstances');
       const processInstances = results.processInstances;
 
-      should(processInstances).be.an.instanceOf(Array);
+      should(processInstances).be.an.Array();
       should(processInstances.length).be.greaterThan(0);
 
       for (const processInstance of processInstances) {
@@ -75,8 +75,8 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
       should(results).have.a.property('processInstances');
       const processInstances = results.processInstances;
 
-      should(processInstances).be.an.instanceOf(Array);
-      should(processInstances).have.a.lengthOf(0);
+      should(processInstances).be.an.Array();
+      should(processInstances).be.empty();
     });
 
     it('should return an empty Array, if no accessible running ProcessInstances were found', async () => {
@@ -89,8 +89,8 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
 
       const processInstances = results.processInstances;
 
-      should(processInstances).be.an.instanceOf(Array);
-      should(processInstances).have.a.lengthOf(0);
+      should(processInstances).be.an.Array();
+      should(processInstances).be.empty();
     });
 
   });
@@ -115,7 +115,7 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
       should(results).have.a.property('processInstances');
       const processInstances = results.processInstances;
 
-      should(processInstances).be.an.instanceOf(Array);
+      should(processInstances).be.an.Array();
       should(processInstances).have.a.lengthOf(5);
     });
 
@@ -128,7 +128,7 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
       should(results).have.a.property('processInstances');
       const processInstances = results.processInstances;
 
-      should(processInstances).be.an.instanceOf(Array);
+      should(processInstances).be.an.Array();
       should(processInstances).have.a.lengthOf(2);
     });
 
@@ -141,7 +141,7 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
       should(results).have.a.property('processInstances');
       const processInstances = results.processInstances;
 
-      should(processInstances).be.an.instanceOf(Array);
+      should(processInstances).be.an.Array();
       should(processInstances).have.a.lengthOf(2);
     });
 
@@ -154,7 +154,7 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
       should(results).have.a.property('processInstances');
       const processInstances = results.processInstances;
 
-      should(processInstances).be.an.instanceOf(Array);
+      should(processInstances).be.an.Array();
       should(processInstances).have.a.lengthOf(3);
     });
 
@@ -167,7 +167,7 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
       should(results).have.a.property('processInstances');
       const processInstances = results.processInstances;
 
-      should(processInstances).be.an.instanceOf(Array);
+      should(processInstances).be.an.Array();
       should(processInstances).have.a.lengthOf(10);
 
     });
@@ -181,8 +181,8 @@ describe('ConsumerAPI: GetProcessInstancesByIdentity', () => {
       should(results).have.a.property('processInstances');
       const processInstances = results.processInstances;
 
-      should(processInstances).be.an.instanceOf(Array);
-      should(processInstances).have.a.lengthOf(0);
+      should(processInstances).be.an.Array();
+      should(processInstances).be.empty();
     });
   });
 

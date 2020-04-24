@@ -67,7 +67,7 @@ describe('ManagementAPI: GetUserTasksForProcessModel', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks.length).be.greaterThan(0);
 
       const userTask = userTaskList.userTasks[0];
@@ -83,7 +83,7 @@ describe('ManagementAPI: GetUserTasksForProcessModel', () => {
       should(userTask).not.have.property('identity');
 
       should(userTask.data).have.property('formFields');
-      should(userTask.data.formFields).be.an.instanceOf(Array);
+      should(userTask.data.formFields).be.an.Array();
       should(userTask.data.formFields).have.a.lengthOf(1);
 
       const formField = userTask.data.formFields[0];
@@ -114,8 +114,8 @@ describe('ManagementAPI: GetUserTasksForProcessModel', () => {
           .getUserTasksForProcessModel(defaultIdentity, processModelIdNoUserTasks);
 
         should(userTaskList).have.property('userTasks');
-        should(userTaskList.userTasks).be.an.instanceOf(Array);
-        should(userTaskList.userTasks).have.a.lengthOf(0);
+        should(userTaskList.userTasks).be.an.Array();
+        should(userTaskList.userTasks).be.empty();
 
         eventAggregator.publish('/processengine/process/signal/Continue', {});
       });
@@ -130,8 +130,8 @@ describe('ManagementAPI: GetUserTasksForProcessModel', () => {
         .getUserTasksForProcessModel(defaultIdentity, invalidprocessModelId);
 
       should(userTaskList).have.property('userTasks');
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
-      should(userTaskList.userTasks).have.a.lengthOf(0);
+      should(userTaskList.userTasks).be.an.Array();
+      should(userTaskList.userTasks).be.empty();
     });
   });
 
@@ -155,7 +155,7 @@ describe('ManagementAPI: GetUserTasksForProcessModel', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(5);
     });
 
@@ -167,7 +167,7 @@ describe('ManagementAPI: GetUserTasksForProcessModel', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(2);
     });
 
@@ -179,7 +179,7 @@ describe('ManagementAPI: GetUserTasksForProcessModel', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(2);
     });
 
@@ -191,7 +191,7 @@ describe('ManagementAPI: GetUserTasksForProcessModel', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(3);
     });
 
@@ -203,7 +203,7 @@ describe('ManagementAPI: GetUserTasksForProcessModel', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
+      should(userTaskList.userTasks).be.an.Array();
       should(userTaskList.userTasks).have.a.lengthOf(10);
 
     });
@@ -216,8 +216,8 @@ describe('ManagementAPI: GetUserTasksForProcessModel', () => {
 
       should(userTaskList).have.property('userTasks');
 
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
-      should(userTaskList.userTasks).have.a.lengthOf(0);
+      should(userTaskList.userTasks).be.an.Array();
+      should(userTaskList.userTasks).be.empty();
     });
   });
 
@@ -254,8 +254,8 @@ describe('ManagementAPI: GetUserTasksForProcessModel', () => {
         .getUserTasksForProcessModel(restrictedIdentity, processModelId);
 
       should(userTaskList).have.property('userTasks');
-      should(userTaskList.userTasks).be.an.instanceOf(Array);
-      should(userTaskList.userTasks).have.a.lengthOf(0);
+      should(userTaskList.userTasks).be.an.Array();
+      should(userTaskList.userTasks).be.empty();
     });
   });
 });

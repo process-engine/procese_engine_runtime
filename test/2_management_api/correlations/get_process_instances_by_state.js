@@ -105,7 +105,7 @@ describe('ManagementAPI: GetProcessInstancesByState', () => {
         .getProcessInstancesByState(superAdmin, CorrelationState.error);
 
       should(processInstanceList.processInstances).be.an.Array();
-      should(processInstanceList.processInstances).have.a.lengthOf(0);
+      should(processInstanceList.processInstances).be.empty();
     });
   });
 
@@ -130,7 +130,7 @@ describe('ManagementAPI: GetProcessInstancesByState', () => {
         .managementApiClient
         .getProcessInstancesByState(defaultIdentity, CorrelationState.finished, 5);
 
-      should(processInstanceList.processInstances).be.an.instanceOf(Array);
+      should(processInstanceList.processInstances).be.an.Array();
       should(processInstanceList.processInstances).have.a.lengthOf(5);
     });
 
@@ -140,7 +140,7 @@ describe('ManagementAPI: GetProcessInstancesByState', () => {
         .managementApiClient
         .getProcessInstancesByState(defaultIdentity, CorrelationState.finished, 0, 2);
 
-      should(processInstanceList.processInstances).be.an.instanceOf(Array);
+      should(processInstanceList.processInstances).be.an.Array();
       should(processInstanceList.processInstances).have.a.lengthOf(2);
     });
 
@@ -150,7 +150,7 @@ describe('ManagementAPI: GetProcessInstancesByState', () => {
         .managementApiClient
         .getProcessInstancesByState(defaultIdentity, CorrelationState.finished, 5, 2);
 
-      should(processInstanceList.processInstances).be.an.instanceOf(Array);
+      should(processInstanceList.processInstances).be.an.Array();
       should(processInstanceList.processInstances).have.a.lengthOf(2);
     });
 
@@ -160,7 +160,7 @@ describe('ManagementAPI: GetProcessInstancesByState', () => {
         .managementApiClient
         .getProcessInstancesByState(defaultIdentity, CorrelationState.finished, 7, 5);
 
-      should(processInstanceList.processInstances).be.an.instanceOf(Array);
+      should(processInstanceList.processInstances).be.an.Array();
       should(processInstanceList.processInstances).have.a.lengthOf(3);
     });
 
@@ -170,7 +170,7 @@ describe('ManagementAPI: GetProcessInstancesByState', () => {
         .managementApiClient
         .getProcessInstancesByState(defaultIdentity, CorrelationState.finished, 0, 20);
 
-      should(processInstanceList.processInstances).be.an.instanceOf(Array);
+      should(processInstanceList.processInstances).be.an.Array();
       should(processInstanceList.processInstances).have.a.lengthOf(10);
 
     });
@@ -181,8 +181,8 @@ describe('ManagementAPI: GetProcessInstancesByState', () => {
         .managementApiClient
         .getProcessInstancesByState(defaultIdentity, CorrelationState.finished, 1000);
 
-      should(processInstanceList.processInstances).be.an.instanceOf(Array);
-      should(processInstanceList.processInstances).have.a.lengthOf(0);
+      should(processInstanceList.processInstances).be.an.Array();
+      should(processInstanceList.processInstances).be.empty();
     });
   });
 

@@ -76,8 +76,8 @@ describe('ConsumerAPI: GetSuspendedTasksForProcessModelInCorrelation', () => {
           .getSuspendedTasksForProcessModelInCorrelation(defaultIdentity, processModelIdNoTasks, correlationId);
 
         should(taskList).have.property('tasks');
-        should(taskList.tasks).be.an.instanceOf(Array);
-        should(taskList.tasks).have.a.lengthOf(0);
+        should(taskList.tasks).be.an.Array();
+        should(taskList.tasks).be.empty();
 
         eventAggregator.publish('/processengine/process/signal/Continue', {});
       });
@@ -92,8 +92,8 @@ describe('ConsumerAPI: GetSuspendedTasksForProcessModelInCorrelation', () => {
         .getSuspendedTasksForProcessModelInCorrelation(defaultIdentity, invalidProcessModelId, correlationId);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
-      should(taskList.tasks).have.a.lengthOf(0);
+      should(taskList.tasks).be.an.Array();
+      should(taskList.tasks).be.empty();
     });
 
     it('should return an empty Array, if the correlationId does not exist', async () => {
@@ -105,8 +105,8 @@ describe('ConsumerAPI: GetSuspendedTasksForProcessModelInCorrelation', () => {
         .getSuspendedTasksForProcessModelInCorrelation(defaultIdentity, processModelId, invalidCorrelationId);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
-      should(taskList.tasks).have.a.lengthOf(0);
+      should(taskList.tasks).be.an.Array();
+      should(taskList.tasks).be.empty();
     });
   });
 
@@ -130,7 +130,7 @@ describe('ConsumerAPI: GetSuspendedTasksForProcessModelInCorrelation', () => {
         .getSuspendedTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationIdPaginationTest, 4);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(5);
     });
 
@@ -141,7 +141,7 @@ describe('ConsumerAPI: GetSuspendedTasksForProcessModelInCorrelation', () => {
         .getSuspendedTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationIdPaginationTest, 0, 2);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(2);
     });
 
@@ -152,7 +152,7 @@ describe('ConsumerAPI: GetSuspendedTasksForProcessModelInCorrelation', () => {
         .getSuspendedTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationIdPaginationTest, 5, 2);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(2);
     });
 
@@ -163,7 +163,7 @@ describe('ConsumerAPI: GetSuspendedTasksForProcessModelInCorrelation', () => {
         .getSuspendedTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationIdPaginationTest, 6, 5);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(3);
     });
 
@@ -174,7 +174,7 @@ describe('ConsumerAPI: GetSuspendedTasksForProcessModelInCorrelation', () => {
         .getSuspendedTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationIdPaginationTest, 0, 11);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
+      should(taskList.tasks).be.an.Array();
       should(taskList.tasks).have.a.lengthOf(9);
     });
 
@@ -185,8 +185,8 @@ describe('ConsumerAPI: GetSuspendedTasksForProcessModelInCorrelation', () => {
         .getSuspendedTasksForProcessModelInCorrelation(defaultIdentity, processModelId, correlationIdPaginationTest, 1000);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
-      should(taskList.tasks).have.a.lengthOf(0);
+      should(taskList.tasks).be.an.Array();
+      should(taskList.tasks).be.empty();
     });
   });
 
@@ -223,8 +223,8 @@ describe('ConsumerAPI: GetSuspendedTasksForProcessModelInCorrelation', () => {
         .getSuspendedTasksForProcessModelInCorrelation(restrictedIdentity, processModelId, correlationId);
 
       should(taskList).have.property('tasks');
-      should(taskList.tasks).be.an.instanceOf(Array);
-      should(taskList.tasks).have.a.lengthOf(0);
+      should(taskList.tasks).be.an.Array();
+      should(taskList.tasks).be.empty();
     });
   });
 });

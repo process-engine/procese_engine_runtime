@@ -157,7 +157,7 @@ describe('ManagementAPI: GetCronjobExecutionHistoryForCrontab', () => {
         .managementApiClient
         .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 4);
 
-      should(cronjobHistory.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistory.cronjobHistories).be.an.Array();
       should(cronjobHistory.cronjobHistories).have.a.lengthOf(3);
     });
 
@@ -167,7 +167,7 @@ describe('ManagementAPI: GetCronjobExecutionHistoryForCrontab', () => {
         .managementApiClient
         .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 0, 2);
 
-      should(cronjobHistory.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistory.cronjobHistories).be.an.Array();
       should(cronjobHistory.cronjobHistories).have.a.lengthOf(2);
     });
 
@@ -177,7 +177,7 @@ describe('ManagementAPI: GetCronjobExecutionHistoryForCrontab', () => {
         .managementApiClient
         .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 3, 2);
 
-      should(cronjobHistory.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistory.cronjobHistories).be.an.Array();
       should(cronjobHistory.cronjobHistories).have.a.lengthOf(2);
     });
 
@@ -187,7 +187,7 @@ describe('ManagementAPI: GetCronjobExecutionHistoryForCrontab', () => {
         .managementApiClient
         .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 5, 5);
 
-      should(cronjobHistory.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistory.cronjobHistories).be.an.Array();
       should(cronjobHistory.cronjobHistories).have.a.lengthOf(2);
     });
 
@@ -197,7 +197,7 @@ describe('ManagementAPI: GetCronjobExecutionHistoryForCrontab', () => {
         .managementApiClient
         .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 0, 20);
 
-      should(cronjobHistory.cronjobHistories).be.an.instanceOf(Array);
+      should(cronjobHistory.cronjobHistories).be.an.Array();
       should(cronjobHistory.cronjobHistories).have.a.lengthOf(7);
 
     });
@@ -208,8 +208,8 @@ describe('ManagementAPI: GetCronjobExecutionHistoryForCrontab', () => {
         .managementApiClient
         .getCronjobExecutionHistoryForCrontab(defaultIdentity, crontab, 1000);
 
-      should(cronjobHistory.cronjobHistories).be.an.instanceOf(Array);
-      should(cronjobHistory.cronjobHistories).have.a.lengthOf(0);
+      should(cronjobHistory.cronjobHistories).be.an.Array();
+      should(cronjobHistory.cronjobHistories).be.empty();
     });
   });
 

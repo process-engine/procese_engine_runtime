@@ -69,7 +69,7 @@ describe('ConsumerAPI: GetProcessResultForCorrelation', () => {
 
     const correlationResults = results.correlationResults;
 
-    should(correlationResults).be.an.instanceOf(Array);
+    should(correlationResults).be.an.Array();
     should(correlationResults).have.a.lengthOf(1);
 
     const correlationResult = correlationResults[0];
@@ -98,7 +98,7 @@ describe('ConsumerAPI: GetProcessResultForCorrelation', () => {
 
     const correlationResults = results.correlationResults;
 
-    should(correlationResults).be.an.instanceOf(Array);
+    should(correlationResults).be.an.Array();
     should(correlationResults).have.a.lengthOf(2);
 
     const expectedResults = {
@@ -119,40 +119,36 @@ describe('ConsumerAPI: GetProcessResultForCorrelation', () => {
     }
   });
 
-  it('should fail to get the results, if the given correlationId does not exist', async () => {
+  it('should return an empty Array, if the given correlationId does not exist', async () => {
 
     const invalidCorrelationId = 'invalidCorrelationId';
 
-    try {
-      const results = await testFixtureProvider
-        .consumerApiClient
-        .getProcessResultForCorrelation(defaultIdentity, invalidCorrelationId, processModelIdDefault);
+    const results = await testFixtureProvider
+      .consumerApiClient
+      .getProcessResultForCorrelation(defaultIdentity, invalidCorrelationId, processModelIdDefault);
 
-      should.fail(results, undefined, 'This request should have failed!');
-    } catch (error) {
-      const expectedErrorCode = 404;
-      const expectedErrorMessage = /no process results for correlation.*?found/i;
-      should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
-    }
+    should(results).have.a.property('correlationResults');
+
+    const correlationResults = results.correlationResults;
+
+    should(correlationResults).be.an.Array();
+    should(correlationResults).be.empty();
   });
 
-  it('should fail to get the results, if the given process model id does not exist within the given correlation', async () => {
+  it('should return an empty Array, if the given process model id does not exist within the given correlation', async () => {
 
     const invalidprocessModelId = 'invalidprocessModelId';
 
-    try {
-      const results = await testFixtureProvider
-        .consumerApiClient
-        .getProcessResultForCorrelation(defaultIdentity, correlationId, invalidprocessModelId);
+    const results = await testFixtureProvider
+      .consumerApiClient
+      .getProcessResultForCorrelation(defaultIdentity, correlationId, invalidprocessModelId);
 
-      should.fail(results, undefined, 'This request should have failed!');
-    } catch (error) {
-      const expectedErrorCode = 404;
-      const expectedErrorMessage = /processmodel.*?not found/i;
-      should(error.message).be.match(expectedErrorMessage);
-      should(error.code).be.match(expectedErrorCode);
-    }
+    should(results).have.a.property('correlationResults');
+
+    const correlationResults = results.correlationResults;
+
+    should(correlationResults).be.an.Array();
+    should(correlationResults).be.empty();
   });
 
   it('should fail to get the results, when the user is unauthorized', async () => {

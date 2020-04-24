@@ -53,7 +53,7 @@ describe('ConsumerAPI: GetEmptyActivitiesForCorrelation', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(1);
 
       const emptyActivity = emptyActivityList.emptyActivities[0];
@@ -80,7 +80,7 @@ describe('ConsumerAPI: GetEmptyActivitiesForCorrelation', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities.length).be.greaterThan(0);
 
       const emptyActivity = emptyActivityList.emptyActivities[0];
@@ -115,8 +115,8 @@ describe('ConsumerAPI: GetEmptyActivitiesForCorrelation', () => {
           .getEmptyActivitiesForCorrelation(defaultIdentity, processModelIdNoEmptyActivities);
 
         should(emptyActivityList).have.property('emptyActivities');
-        should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-        should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+        should(emptyActivityList.emptyActivities).be.an.Array();
+        should(emptyActivityList.emptyActivities).be.empty();
 
         eventAggregator.publish('/processengine/process/signal/Continue', {});
       });
@@ -131,8 +131,8 @@ describe('ConsumerAPI: GetEmptyActivitiesForCorrelation', () => {
         .getEmptyActivitiesForCorrelation(defaultIdentity, invalidCorrelationId);
 
       should(emptyActivityList).have.property('emptyActivities');
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-      should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+      should(emptyActivityList.emptyActivities).be.an.Array();
+      should(emptyActivityList.emptyActivities).be.empty();
     });
   });
 
@@ -157,7 +157,7 @@ describe('ConsumerAPI: GetEmptyActivitiesForCorrelation', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(5);
     });
 
@@ -169,7 +169,7 @@ describe('ConsumerAPI: GetEmptyActivitiesForCorrelation', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(2);
     });
 
@@ -181,7 +181,7 @@ describe('ConsumerAPI: GetEmptyActivitiesForCorrelation', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(2);
     });
 
@@ -193,7 +193,7 @@ describe('ConsumerAPI: GetEmptyActivitiesForCorrelation', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(3);
     });
 
@@ -205,7 +205,7 @@ describe('ConsumerAPI: GetEmptyActivitiesForCorrelation', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
+      should(emptyActivityList.emptyActivities).be.an.Array();
       should(emptyActivityList.emptyActivities).have.a.lengthOf(10);
 
     });
@@ -218,8 +218,8 @@ describe('ConsumerAPI: GetEmptyActivitiesForCorrelation', () => {
 
       should(emptyActivityList).have.property('emptyActivities');
 
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-      should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+      should(emptyActivityList.emptyActivities).be.an.Array();
+      should(emptyActivityList.emptyActivities).be.empty();
     });
   });
 
@@ -257,8 +257,8 @@ describe('ConsumerAPI: GetEmptyActivitiesForCorrelation', () => {
         .getEmptyActivitiesForCorrelation(restrictedIdentity, correlationId);
 
       should(emptyActivityList).have.property('emptyActivities');
-      should(emptyActivityList.emptyActivities).be.an.instanceOf(Array);
-      should(emptyActivityList.emptyActivities).have.a.lengthOf(0);
+      should(emptyActivityList.emptyActivities).be.an.Array();
+      should(emptyActivityList.emptyActivities).be.empty();
     });
   });
 });

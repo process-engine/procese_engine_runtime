@@ -48,7 +48,7 @@ describe(`ConsumerAPI: GetManualTasksForProcessModelInCorrelation`, () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks.length).be.greaterThan(0);
 
       const manualTask = manualTaskList.manualTasks[0];
@@ -78,8 +78,8 @@ describe(`ConsumerAPI: GetManualTasksForProcessModelInCorrelation`, () => {
           .getManualTasksForProcessModel(defaultIdentity, processModelIdNoManualTasks);
 
         should(manualTaskList).have.property('manualTasks');
-        should(manualTaskList.manualTasks).be.an.instanceOf(Array);
-        should(manualTaskList.manualTasks).have.a.lengthOf(0);
+        should(manualTaskList.manualTasks).be.an.Array();
+        should(manualTaskList.manualTasks).be.empty();
 
         eventAggregator.publish('/processengine/process/signal/Continue', {});
       });
@@ -94,8 +94,8 @@ describe(`ConsumerAPI: GetManualTasksForProcessModelInCorrelation`, () => {
         .getManualTasksForProcessModelInCorrelation(defaultIdentity, invalidProcessModelId, correlationId);
 
       should(manualTaskList).have.property('manualTasks');
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
-      should(manualTaskList.manualTasks).have.a.lengthOf(0);
+      should(manualTaskList.manualTasks).be.an.Array();
+      should(manualTaskList.manualTasks).be.empty();
     });
 
     it('should return an empty Array, if the correlationId does not exist', async () => {
@@ -107,8 +107,8 @@ describe(`ConsumerAPI: GetManualTasksForProcessModelInCorrelation`, () => {
         .getManualTasksForProcessModelInCorrelation(defaultIdentity, processModelId, invalidCorrelationId);
 
       should(manualTaskList).have.property('manualTasks');
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
-      should(manualTaskList.manualTasks).have.a.lengthOf(0);
+      should(manualTaskList.manualTasks).be.an.Array();
+      should(manualTaskList.manualTasks).be.empty();
     });
   });
 
@@ -133,7 +133,7 @@ describe(`ConsumerAPI: GetManualTasksForProcessModelInCorrelation`, () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(5);
     });
 
@@ -145,7 +145,7 @@ describe(`ConsumerAPI: GetManualTasksForProcessModelInCorrelation`, () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(2);
     });
 
@@ -157,7 +157,7 @@ describe(`ConsumerAPI: GetManualTasksForProcessModelInCorrelation`, () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(2);
     });
 
@@ -169,7 +169,7 @@ describe(`ConsumerAPI: GetManualTasksForProcessModelInCorrelation`, () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(3);
     });
 
@@ -181,7 +181,7 @@ describe(`ConsumerAPI: GetManualTasksForProcessModelInCorrelation`, () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
+      should(manualTaskList.manualTasks).be.an.Array();
       should(manualTaskList.manualTasks).have.a.lengthOf(10);
 
     });
@@ -194,8 +194,8 @@ describe(`ConsumerAPI: GetManualTasksForProcessModelInCorrelation`, () => {
 
       should(manualTaskList).have.property('manualTasks');
 
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
-      should(manualTaskList.manualTasks).have.a.lengthOf(0);
+      should(manualTaskList.manualTasks).be.an.Array();
+      should(manualTaskList.manualTasks).be.empty();
     });
   });
 
@@ -232,8 +232,8 @@ describe(`ConsumerAPI: GetManualTasksForProcessModelInCorrelation`, () => {
         .getManualTasksForProcessModelInCorrelation(restrictedIdentity, processModelId, correlationId);
 
       should(manualTaskList).have.property('manualTasks');
-      should(manualTaskList.manualTasks).be.an.instanceOf(Array);
-      should(manualTaskList.manualTasks).have.a.lengthOf(0);
+      should(manualTaskList.manualTasks).be.an.Array();
+      should(manualTaskList.manualTasks).be.empty();
     });
   });
 });
