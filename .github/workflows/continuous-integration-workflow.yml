@@ -474,25 +474,6 @@ jobs:
         GH_USER: ${{ secrets.GH_USER }}
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-    - name: Slack Notification
-      uses: homoluctus/slatify@master
-      if: always()
-      with:
-        type: ${{ job.status }}
-        job_name: 'GitHub Release'
-        mention_if: 'always'
-        url: ${{ secrets.SLACK_WEBHOOK }}
-        commit: true
-        token: ${{ secrets.GH_TOKEN }}
-
-
-    - name: Announce Release Notes
-      if: github.ref == 'refs/heads/master'
-      run: |
-        ./node_modules/.bin/ci_tools publish-releasenotes-on-slack
-      env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_ANNOUNCER_WEBHOOK }}
-
   build_docker:
     name: "Build & Publish Docker Image"
     needs: commit_and_tag_version
@@ -549,3 +530,28 @@ jobs:
 
     - name: Push Docker Image
       run: docker push 5minds/process_engine_runtime
+
+  notify_about_build:
+    name: "Notify About Build"
+    needs: [publish_npm, publish_github, build_docker]
+    runs-on: ubuntu-18.04
+
+    steps:
+    - name: Slack Notification
+      uses: homoluctus/slatify@master
+      if: always()
+      with:
+        type: ${{ job.status }}
+        job_name: 'GitHub Release'
+        mention_if: 'always'
+        url: ${{ secrets.SLACK_WEBHOOK }}
+        commit: true
+        token: ${{ secrets.GH_TOKEN }}
+
+
+    - name: Announce Release Notes
+      if: github.ref == 'refs/heads/master'
+      run: |
+        ./node_modules/.bin/ci_tools publish-releasenotes-on-slack
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_ANNOUNCER_WEBHOOK }}
