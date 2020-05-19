@@ -537,6 +537,12 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
+    - name: Get node_modules from Cache
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: npm-cache-fix-${{ hashFiles('package-lock.json') }}
+
     - name: Slack Notification
       uses: homoluctus/slatify@master
       if: always()
