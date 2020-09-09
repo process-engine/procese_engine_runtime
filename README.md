@@ -1,3 +1,10 @@
+# Deprecation Notice
+
+The ProcessEngine has been effectively replaced by the [AtlasEngine](https://www.npmjs.com/package/@atlas-engine/fullstack_server)
+
+There will be no further updates for the ProcessEngine Runtime. 
+Please consider switching to the AtlasEngine at your earliest convenience.
+
 # Process Engine Runtime
 
 This is a stand-alone Server of the ProcessEngine, that can be installed and started globally.
